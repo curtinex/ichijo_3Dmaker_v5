@@ -550,10 +550,10 @@ FURNITURE_COLOR_OPTIONS = {
 
 def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
     """
-    ピクセル座標の矩形をメートル座標に変換（グリッドスナップなし）
+    ピクセル座標の四角形をメートル座標に変換（グリッドスナップなし）
     
     Args:
-        rect_pixel: (x1, y1, x2, y2) ピクセル座標の矩形
+        rect_pixel: (x1, y1, x2, y2) ピクセル座標の四角形
         json_data: JSON壁データ（座標変換用）
         scale: 可視化スケール (px/m)
         grid_size: グリッド間隔（m）※未使用
@@ -572,7 +572,7 @@ def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
     margin = 50
     img_height = int((max_y - min_y) * scale) + 2 * margin
     
-    # ピクセル → メートル座標に変換（スナップなし、矩形範囲をそのまま使用）
+    # ピクセル → メートル座標に変換（スナップなし、四角形範囲をそのまま使用）
     x1_m = (min(x1_px, x2_px) - margin) / scale + min_x
     y1_m = (img_height - max(y1_px, y2_px) - margin) / scale + min_y
     x2_m = (max(x1_px, x2_px) - margin) / scale + min_x
@@ -638,7 +638,7 @@ def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, wi
 
 
 def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
-    """矩形選択から線を追加（2点から自動判定した方向で線を生成）"""
+    """四角形選択から線を追加（2点から自動判定した方向で線を生成）"""
     import copy
     
     # 元データを保護するためディープコピー
@@ -654,7 +654,7 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
         heights = [w.get('height', 2.4) for w in walls if 'height' in w]
         wall_height = sum(heights) / len(heights) if heights else 2.4
     
-    # 矩形の座標を計算
+    # 四角形の座標を計算
     x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
     x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
     
@@ -678,12 +678,12 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     
     # 新しい壁線を生成
     if direction == "vertical":
-        # 縦線：x座標を矩形の中央に固定、y座標は上下端
+        # 縦線：x座標を四角形の中央に固定、y座標は上下端
         x_center = (x1_m + x2_m) / 2
         start_pt = [x_center, min(y1_m, y2_m)]
         end_pt = [x_center, max(y1_m, y2_m)]
     else:  # horizontal
-        # 横線：y座標を矩形の中央に固定、x座標は左右端
+        # 横線：y座標を四角形の中央に固定、x座標は左右端
         y_center = (y1_m + y2_m) / 2
         start_pt = [min(x1_m, x2_m), y_center]
         end_pt = [max(x1_m, x2_m), y_center]
@@ -722,7 +722,7 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
 
 
 def _point_in_rect(point, rect):
-    """点が矩形内にあるかチェック（可視化画像のピクセル座標）"""
+    """点が四角形内にあるかチェック（可視化画像のピクセル座標）"""
     x, y = point
     x_min, y_min = rect['left'], rect['top']
     x_max, y_max = rect['left'] + rect['width'], rect['top'] + rect['height']
@@ -730,24 +730,24 @@ def _point_in_rect(point, rect):
 
 
 def _line_intersects_rect(x1, y1, x2, y2, rect, tolerance=20):
-    """線分が矩形と交差または近接しているかチェック（拡張版）"""
+    """線分が四角形と交差または近接しているかチェック（拡張版）"""
     x_min = rect['left'] - tolerance
     y_min = rect['top'] - tolerance
     x_max = rect['left'] + rect['width'] + tolerance
     y_max = rect['top'] + rect['height'] + tolerance
     
-    # 1. 端点が矩形内にある
+    # 1. 端点が四角形内にある
     if (x_min <= x1 <= x_max and y_min <= y1 <= y_max) or \
        (x_min <= x2 <= x_max and y_min <= y2 <= y_max):
         return True
     
-    # 2. 線分が矩形の辺と交差するか（簡易判定）
-    # 線分が矩形を完全に横断している場合
+    # 2. 線分が四角形の辺と交差するか（簡易判定）
+    # 線分が四角形を完全に横断している場合
     if (x1 < x_min and x2 > x_max) or (x2 < x_min and x1 > x_max) or \
        (y1 < y_min and y2 > y_max) or (y2 < y_min and y1 > y_max):
         return True
     
-    # 3. 矩形が線分の間にある
+    # 3. 四角形が線分の間にある
     if (min(x1, x2) <= x_max and max(x1, x2) >= x_min) and \
        (min(y1, y2) <= y_max and max(y1, y2) >= y_min):
         return True
@@ -756,21 +756,21 @@ def _line_intersects_rect(x1, y1, x2, y2, rect, tolerance=20):
 
 
 def _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y):
-    """壁線が矩形選択範囲内または近接しているかチェック（拡張版）"""
+    """壁線が四角形選択範囲内または近接しているかチェック（拡張版）"""
     # 壁線のメートル座標をピクセル座標に変換（visualize_3d_wallsと同じロジック）
     x1_px = int((wall['start'][0] - min_x) * scale) + margin
     y1_px = img_height - (int((wall['start'][1] - min_y) * scale) + margin)
     x2_px = int((wall['end'][0] - min_x) * scale) + margin
     y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
     
-    # 線分が矩形と交差または近接しているかチェック（許容範囲20ピクセル）
+    # 線分が四角形と交差または近接しているかチェック（許容範囲20ピクセル）
     return _line_intersects_rect(x1_px, y1_px, x2_px, y2_px, rect, tolerance=20)
 
 
 def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y):
     """
-    矩形範囲内に完全に含まれる壁線のみを返す（精密フィルタリング）
-    交差や近接ではなく、両端点が矩形内にある線のみを抽出
+    四角形範囲内に完全に含まれる壁線のみを返す（精密フィルタリング）
+    交差や近接ではなく、両端点が四角形内にある線のみを抽出
     """
     filtered_walls = []
     
@@ -786,7 +786,7 @@ def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x
         x2_px = int((wall['end'][0] - min_x) * scale) + margin
         y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
         
-        # 両端点が矩形内にあるかチェック（許容値なし）
+        # 両端点が四角形内にあるかチェック（許容値なし）
         if (x_rect_min <= x1_px <= x_rect_max and y_rect_min <= y1_px <= y_rect_max and
             x_rect_min <= x2_px <= x_rect_max and y_rect_min <= y2_px <= y_rect_max):
             filtered_walls.append(wall)
@@ -795,7 +795,7 @@ def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x
 
 
 def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_right=None, rect_bottom=None, tolerance=0):
-    """線分が矩形と交差または近接しているかチェック。
+    """線分が四角形と交差または近接しているかチェック。
     互換性を持たせるため、以下の呼び出し形式の両方を受け入れます:
       - _line_intersects_rect(x1,y1,x2,y2, rect_dict, tolerance=...)
       - _line_intersects_rect(x1,y1,x2,y2, left, top, right, bottom)
@@ -812,13 +812,13 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
         # 数値で渡された場合
         rect_left = rect_or_left
 
-    # 拡張判定: tolerance を矩形に適用して拡大する
+    # 拡張判定: tolerance を四角形に適用して拡大する
     x_min = rect_left - tolerance
     y_min = rect_top - tolerance
     x_max = rect_right + tolerance
     y_max = rect_bottom + tolerance
 
-    # 1. 端点が矩形内にある
+    # 1. 端点が四角形内にある
     if (x_min <= x1 <= x_max and y_min <= y1 <= y_max) or \
        (x_min <= x2 <= x_max and y_min <= y2 <= y_max):
         return True
@@ -851,7 +851,7 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
 
         return (o1 * o2 < 0) and (o3 * o4 < 0)
 
-    # 2. 線分と矩形の4辺が交差しているか厳密に判定
+    # 2. 線分と四角形の4辺が交差しているか厳密に判定
     rect_edges = [
         ((x_min, y_min), (x_max, y_min)),  # top
         ((x_max, y_min), (x_max, y_max)),  # right
@@ -870,7 +870,7 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
 
 def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y, tolerance=0, debug=False):
     """
-    矩形範囲内に端点があるか、線分が矩形と交差する壁線を返す（窓追加モード用）
+    四角形範囲内に端点があるか、線分が四角形と交差する壁線を返す（窓追加モード用）
     
     Args:
         tolerance: 端点判定の許容範囲（ピクセル）デフォルト0px（誤検出防止）
@@ -885,8 +885,8 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
     y_rect_max = rect['top'] + rect['height']
     
     if debug:
-        debug_info.append(f"矩形範囲: X[{x_rect_min:.1f}, {x_rect_max:.1f}], Y[{y_rect_min:.1f}, {y_rect_max:.1f}]")
-        debug_info.append(f"矩形サイズ: {rect['width']:.1f} x {rect['height']:.1f} px")
+        debug_info.append(f"四角形範囲: X[{x_rect_min:.1f}, {x_rect_max:.1f}], Y[{y_rect_min:.1f}, {y_rect_max:.1f}]")
+        debug_info.append(f"四角形サイズ: {rect['width']:.1f} x {rect['height']:.1f} px")
         if tolerance > 0:
             debug_info.append(f"許容範囲: ±{tolerance}px")
         debug_info.append(f"検証対象の壁数: {len(walls)}本")
@@ -899,7 +899,7 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
         x2_px = int((wall['end'][0] - min_x) * scale) + margin
         y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
         
-        # 端点が矩形内にあるかチェック
+        # 端点が四角形内にあるかチェック
         start_in_rect = (
             x_rect_min - tolerance <= x1_px <= x_rect_max + tolerance and 
             y_rect_min - tolerance <= y1_px <= y_rect_max + tolerance
@@ -909,7 +909,7 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
             y_rect_min - tolerance <= y2_px <= y_rect_max + tolerance
         )
         
-        # 線分が矩形と交差するかチェック
+        # 線分が四角形と交差するかチェック
         intersects = _line_intersects_rect(
             x1_px, y1_px, x2_px, y2_px,
             x_rect_min, y_rect_min, x_rect_max, y_rect_max
@@ -1858,7 +1858,7 @@ def main():
                 # 3DビューアHTMLダウンロードボタン
                 if st.session_state.viewer_html_bytes:
                     st.download_button(
-                        label="3Dモデル用ビューアHTMLをダウンロード",
+                        label="3Dモデルをダウンロード",
                         data=st.session_state.viewer_html_bytes,
                         file_name=st.session_state.viewer_html_name,
                         mime="text/html"
@@ -1875,8 +1875,8 @@ def main():
             st.divider()
             st.markdown("## ステップ ② スケール校正")
         st.info(
-            "**ステップ②：** 壁のサイズを確認してスケールを調整してください(一条CAD図面 1マス = 編集画面 2マス推奨)\n\n"
-            "2点クリックして基準となる壁を選択後、修正スケール値を入力して実行してください。(スキップ可)"
+            "壁のサイズを確認してスケールを調整してください(一条CAD図面 1マス = 編集画面 2マス推奨)\n\n"
+            "基準となる壁を囲む四角形をつくるように2点クリックして、修正スケール値を入力して実行してください。(スキップ可)"
         )
         
         col_skip_calib = st.container()
@@ -1887,7 +1887,7 @@ def main():
 
         # 2点選択用の簡易編集エリアを即時表示
         # st.markdown("### 🖼️ 画像をクリックして2点を選択")
-        st.caption("2点をクリックすると赤丸と矩形を表示し、範囲内の壁を赤色にハイライトします。選択しない場合はスキップで次へ進めます。")
+        st.caption("2点をクリックすると赤丸と四角形を表示し、範囲内の壁を赤色にハイライトします。選択しない場合はスキップで次へ進めます。")
 
         # 初期化
         if "scale_points" not in st.session_state:
@@ -1938,19 +1938,19 @@ def main():
                     dy = int(pt["y"] * scale_disp)
                     draw.ellipse((dx - 6, dy - 6, dx + 6, dy + 6), fill=(255, 0, 0), outline=(255, 0, 0))
 
-                # 2点そろったら矩形と壁のハイライト
+                # 2点そろったら四角形と壁のハイライト
                 if len(st.session_state.scale_points) == 2:
                     p1, p2 = st.session_state.scale_points
                     rx1, rx2 = sorted([p1["x"], p2["x"]])
                     ry1, ry2 = sorted([p1["y"], p2["y"]])
 
-                    # 表示座標で矩形描画
+                    # 表示座標で四角形描画
                     draw.rectangle(
                         (int(rx1 * scale_disp), int(ry1 * scale_disp), int(rx2 * scale_disp), int(ry2 * scale_disp)),
                         outline=(0, 200, 0), width=3
                     )
 
-                    # 矩形内の壁を赤で描画（Y座標反転を考慮）
+                    # 四角形内の壁を赤で描画（Y座標反転を考慮）
                     for w in walls:
                         s = w.get("start", [])
                         e = w.get("end", [])
@@ -1961,7 +1961,7 @@ def main():
                             x2 = int((e[0] - min_x) * scale_px) + margin
                             y2 = img_height_calc - (int((e[1] - min_y) * scale_px) + margin)
 
-                            # 壁の両端が矩形内に含まれるかチェック（誤差5px）
+                            # 壁の両端が四角形内に含まれるかチェック（誤差5px）
                             tolerance = 5
                             start_in_rect = (rx1 - tolerance <= x1 <= rx2 + tolerance and
                                            ry1 - tolerance <= y1 <= ry2 + tolerance)
@@ -1976,7 +1976,7 @@ def main():
                                 dy2 = int(y2 * scale_disp)
                                 draw.line((dx1, dy1, dx2, dy2), fill=(255, 0, 0), width=4)
 
-                    # 矩形内の壁を検出（streamlit_app.pyと同じロジック）
+                    # 四角形内の壁を検出（streamlit_app.pyと同じロジック）
                     walls_in_rect = []
                     for w in walls:
                         s = w.get("start", [])
@@ -1988,7 +1988,7 @@ def main():
                             x2 = int((e[0] - min_x) * scale_px) + margin
                             y2 = img_height_calc - (int((e[1] - min_y) * scale_px) + margin)
 
-                            # 壁の両端が矩形内に含まれるかチェック（誤差5px）
+                            # 壁の両端が四角形内に含まれるかチェック（誤差5px）
                             tolerance = 5
                             start_in_rect = (rx1 - tolerance <= x1 <= rx2 + tolerance and
                                            ry1 - tolerance <= y1 <= ry2 + tolerance)
@@ -2010,13 +2010,13 @@ def main():
                         target_wall_data = max(walls_in_rect, key=lambda w: w['length_px'])
                         px_distance = target_wall_data['length_px']
                         wall_id = target_wall_data['id']
-                        # 2点選択直後（スケール校正/矩形選択）では表示を抑制する
+                        # 2点選択直後（スケール校正/四角形選択）では表示を抑制する
                         if not (len(st.session_state.get('rect_coords', [])) == 2 or len(st.session_state.get('scale_points', [])) == 2):
                             st.success(f"✅ 壁({wall_id})を検出: {px_distance:.1f}px")
                     else:
                         # 同様に2点選択直後はエラーメッセージを表示しない
                         if not (len(st.session_state.get('rect_coords', [])) == 2 or len(st.session_state.get('scale_points', [])) == 2):
-                            st.error("❌ 矩形内に完全に含まれる壁が見つかりません")
+                            st.error("❌ 四角形内に完全に含まれる壁が見つかりません")
                         px_distance = None
                         target_wall_data = None
 
@@ -2237,53 +2237,52 @@ def main():
             #["線を結合", "線を追加", "線を削除", "窓を追加", "照明を配置", "オブジェクトを配置", "床を追加"],
             ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置"],
             horizontal=True,
-            #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：矩形範囲を選択して床を追加"
+            #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：四角形範囲を選択して床を追加"
             help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置"
         )
         
         if edit_mode == "線を結合":
             st.markdown(
-                "可視化画像上で**クリックして結合範囲を指定**すると、自動的に近接する壁線を結合します。\n\n"
-                "壁全体を囲む必要はありません。結合したい壁の端点2つだけを小さく囲めばOKです。\n\n"
+                "結合したい2つの壁線の両端を選択して、壁線を結合します。\n\n"
+                "壁全体を囲む必要はなく、結合する2つの壁の両端を囲む四角形を作るように2点クリックしてください。\n\n"
             )
         elif edit_mode == "窓を追加":
             st.markdown(
-                "可視化画像上で窓で分断された2本の壁の端点を囲むと、その間に床側と天井側の壁を追加します。\n\n"
-                "壁全体を囲む必要はありません。窓を追加したい壁の端点2つだけを小さく囲めばOKです。\n\n"
-                "窓のサイズ（高さと床からの距離）を入力して、開口部の上下に壁を生成します。"
+                "窓追加したい2本の壁の両端を囲むと、その間に窓を追加します。\n\n"
+                "壁全体を囲む必要はなく、窓追加したい2つの壁の両端を囲む四角形を作るように2点クリックしてください。\n\n"
+                "一条工務店の型番から窓のサイズ（高さと床からの距離）を入力できます。"
             )
         elif edit_mode == "線を追加":
             st.markdown(
-                "可視化画像上でクリックして追加範囲を指定すると、矩形の方向に応じた線が自動生成されます。\n\n"
-                "縦矩形→縦線、横矩形→横線が矩形の中央に追加されます。"
+                "壁を追加したい範囲を2点クリックすると、壁線が自動生成されます。"
             )
         elif edit_mode == "線を削除":
             st.markdown(
-                "可視化画像上でクリックして削除対象を指定すると、矩形で囲んだ範囲に完全に含まれる**全ての壁線が削除**されます。"
+                "削除したい壁線を指定すると、四角形で囲んだ範囲に完全に含まれる全ての壁線が削除されます。"
             )
         elif edit_mode == "オブジェクトを配置":
             st.markdown(
-                "可視化画像上で矩形を指定すると、その範囲に合わせて家具(オブジェクト)を配置します。"
+                "オブジェクトを配置したい範囲を2点クリックすると、その範囲に合わせて家具(オブジェクト)を配置します。"
             )
         elif edit_mode == "床を追加":
             st.markdown(
-                "可視化画像上で**矩形を指定**すると、その範囲に床を追加します。\n\n"
-                "**複数の床を追加可能**で、非矩形の間取りにも対応できます。"
+                "床を追加したい範囲を2点クリックすると、その範囲に床を追加します。\n\n"
+                "**複数の床を追加可能**で、非四角形の間取りにも対応できます。"
             )
         
         with st.expander("💡 使い方", expanded=False):
             if edit_mode == "線を結合":
                 st.markdown(
                     "**複数線結合の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**して矩形の対角を指定\n\n"
-                    "2. 結合したい壁線の端点を矩形で囲む\n\n"
+                    "1. 下の画像上で**2回クリック**して四角形の対角を指定\n\n"
+                    "2. 結合したい壁線の端点を四角形で囲む\n\n"
                     "3. さらに結合したい箇所があれば手順1-2を繰り返す\n\n"
                     "4. 「🔗 結合実行」で全ての選択範囲を一括結合\n\n"
                 )
             elif edit_mode == "窓を追加":
                 st.markdown(
                     "**窓追加の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**して窓を追加したい2本の壁の端点を矩形で囲む（端点付近だけでOK）\n\n"
+                    "1. 下の画像上で**2回クリック**して窓を追加したい2本の壁の端点を四角形で囲む（端点付近だけでOK）\n\n"
                     "2. さらに窓を追加したければ手順1を繰り返す\n\n"
                     "3. 窓のサイズを入力:\n\n"
                     "   - 窓の高さ（mm）: 例 1200mm\n\n"
@@ -2302,22 +2301,22 @@ def main():
             elif edit_mode == "線を削除":
                 st.markdown(
                     "**線削除の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**して削除したい壁線を矩形で囲む（複数本可）\n\n"
+                    "1. 下の画像上で**2回クリック**して削除したい壁線を四角形で囲む（複数本可）\n\n"
                     "2. さらに削除対象を追加したければ手順1を繰り返す\n\n"
-                    "3. 「🗑️ 削除実行」で選択した全ての矩形内の壁を一括削除\n\n"
+                    "3. 「🗑️ 削除実行」で選択した全ての四角形内の壁を一括削除\n\n"
                 )
             elif edit_mode == "オブジェクトを配置":
                 st.markdown(
                     "**オブジェクト配置の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**してオブジェクトを配置したい領域を矩形で囲む\n\n"
+                    "1. 下の画像上で**2回クリック**してオブジェクトを配置したい領域を四角形で囲む\n\n"
                     "2. 配置するオブジェクトの種類を選択\n\n"
                     "3. 「🪑 オブジェクト配置実行」で家具を配置\n\n"
                     )
             elif edit_mode == "床を追加":
                 st.markdown(
                     "**床追加の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**して矩形の対角を指定\n\n"
-                    "2. 床を配置したい範囲を**矩形で囲む**\n\n"
+                    "1. 下の画像上で**2回クリック**して四角形の対角を指定\n\n"
+                    "2. 床を配置したい範囲を**四角形で囲む**\n\n"
                     "3. 「➕ この選択を追加」ボタンで追加（色が変わります）\n\n"
                     "4. さらに床を追加したければ手順1-3を繰り返す\n\n"
                     "5. 「🟫 床追加実行」で全ての選択範囲に床を追加\n\n"
@@ -2327,11 +2326,11 @@ def main():
                     "- 色分け表示：各選択範囲が異なる色で表示される"
                     )
         
-        # セッションステートで矩形座標を管理
+        # セッションステートで四角形座標を管理
         if 'rect_coords' not in st.session_state:
             st.session_state.rect_coords = []
         if 'rect_coords_list' not in st.session_state:
-            st.session_state.rect_coords_list = []  # 確定した矩形のリスト
+            st.session_state.rect_coords_list = []  # 確定した四角形のリスト
         if 'reset_flag' not in st.session_state:
             st.session_state.reset_flag = False
         if 'last_click' not in st.session_state:
@@ -2356,7 +2355,7 @@ def main():
                 # 他のモード用の処理（必要に応じて）
                 pass
         
-        # 矩形の色定義（OpenCV BGRフォーマット）
+        # 四角形の色定義（OpenCV BGRフォーマット）
         RECT_COLORS = [
             (255, 0, 0),      # 赤
             (0, 255, 0),      # 緑
@@ -2602,13 +2601,13 @@ def main():
                             st.session_state.merge_result = None  # 結合結果もクリア
                             st.rerun()
                     
-                    # 確定済みの矩形を描画（異なる色で）
+                    # 確定済みの四角形を描画（異なる色で）
                     for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                         color = RECT_COLORS[idx % len(RECT_COLORS)]
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                         
-                        # 線削除モードの場合は矩形内の壁を色変更
+                        # 線削除モードの場合は四角形内の壁を色変更
                         if edit_mode == "線を削除":
                             try:
                                 json_data_del = json.loads(st.session_state.json_bytes.decode("utf-8"))
@@ -2652,20 +2651,20 @@ def main():
                                         # 赤色で太い線を描画（削除対象）
                                         cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (0, 0, 255), 8)
                                 else:
-                                    # 壁が見つからない場合は矩形を表示
+                                    # 壁が見つからない場合は四角形を表示
                                     overlay = display_img_array.copy()
                                     cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                     cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                     cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                     cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                             except Exception:
-                                # エラー時は矩形を表示
+                                # エラー時は四角形を表示
                                 overlay = display_img_array.copy()
                                 cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                 cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                 cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                 cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-                        # 窓追加モードまたは線を結合モードの場合は矩形ではなく追加予定の壁を線で表示
+                        # 窓追加モードまたは線を結合モードの場合は四角形ではなく追加予定の壁を線で表示
                         elif edit_mode == "窓を追加" or edit_mode == "線を結合":
                             try:
                                 json_data_confirmed = json.loads(st.session_state.json_bytes.decode("utf-8"))
@@ -2770,7 +2769,7 @@ def main():
                                         text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
                                         text_x = mid_x - text_size[0] // 2
                                         text_y = mid_y - 20  # 線の上側に配置
-                                        # 白背景の矩形を描画
+                                        # 白背景の四角形を描画
                                         cv2.rectangle(display_img_array, 
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
@@ -2784,47 +2783,47 @@ def main():
                                         cv2.putText(display_img_array, text, (text_x, text_y), 
                                                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
                                 else:
-                                    # 2本検出できない場合は矩形を表示
+                                    # 2本検出できない場合は四角形を表示
                                     overlay = display_img_array.copy()
                                     cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                     cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                     cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                     cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                             except Exception:
-                                # エラー時は通常の矩形表示
+                                # エラー時は通常の四角形表示
                                 overlay = display_img_array.copy()
                                 cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                 cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                 cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                 cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                         else:
-                            # 窓追加モード・線を結合モード以外は通常の矩形表示
-                            # 半透明の矩形を描画
+                            # 窓追加モード・線を結合モード以外は通常の四角形表示
+                            # 半透明の四角形を描画
                             overlay = display_img_array.copy()
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                             cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
-                            # 矩形の枠線を描画
+                            # 四角形の枠線を描画
                             cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                             # 番号を描画
                             cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                     
-                    # 現在選択中の矩形を描画（赤色で表示）
+                    # 現在選択中の四角形を描画（赤色で表示）
                     if len(st.session_state.rect_coords) == 1:
                         # 1点目を赤い円で表示
                         red_color = (0, 0, 255)  # BGR形式で赤色
                         cv2.circle(display_img_array, st.session_state.rect_coords[0], 12, red_color, -1)  # 塗りつぶし円
                         cv2.circle(display_img_array, st.session_state.rect_coords[0], 15, (255, 255, 255), 2)  # 白枠
                     elif len(st.session_state.rect_coords) == 2:
-                        # 2点を赤い円で表示し、矩形も描画
+                        # 2点を赤い円で表示し、四角形も描画
                         red_color = (0, 0, 255)  # BGR形式で赤色
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        # 半透明の矩形を描画
+                        # 半透明の四角形を描画
                         overlay = display_img_array.copy()
                         cv2.rectangle(overlay, (x1, y1), (x2, y2), red_color, -1)
                         cv2.addWeighted(overlay, 0.3, display_img_array, 0.7, 0, display_img_array)
-                        # 矩形の枠線を描画
+                        # 四角形の枠線を描画
                         cv2.rectangle(display_img_array, (x1, y1), (x2, y2), red_color, 3)
                         # 両端に赤い円を表示
                         cv2.circle(display_img_array, p1, 12, red_color, -1)
@@ -2918,7 +2917,7 @@ def main():
                                     base_height_preview = params.get('base_height', 0.9)
                                     room_height_preview = params.get('room_height', 2.4)
 
-                                    # 2本より多い場合は矩形の主方向に沿って最も離れた2本を選ぶ
+                                    # 2本より多い場合は四角形の主方向に沿って最も離れた2本を選ぶ
                                     selected_walls = None
                                     try:
                                         rect_w = rect_preview.get('width', 0)
@@ -3006,7 +3005,7 @@ def main():
                                         except Exception:
                                             pass
                             except Exception as e:
-                                # プレビュー描画のエラーは無視（通常の矩形表示を続行）
+                                # プレビュー描画のエラーは無視（通常の四角形表示を続行）
                                 pass
                     
                     display_img = Image.fromarray(display_img_array)
@@ -3014,9 +3013,10 @@ def main():
                     
                     # UI表示：モード別
                     if edit_mode == "線を削除":
-                        # 削除モード：2点選択で矩形を指定
+                        # 削除モード：2点選択で四角形を指定
                         if len(st.session_state.rect_coords) == 1:
-                            st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            pass
+                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
                         elif len(st.session_state.rect_coords) == 2:
                             p1, p2 = st.session_state.rect_coords
                             x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
@@ -3026,18 +3026,20 @@ def main():
                     elif edit_mode == "スケール校正":
                         # スケール校正モード：2点選択で線を囲む
                         if len(st.session_state.rect_coords) == 1:
-                            st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            pass
+                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
                         elif len(st.session_state.rect_coords) == 2:
                             p1, p2 = st.session_state.rect_coords
                             x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                             x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                             px_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-                            st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})\n\n線の長さ: {px_distance:.1f}px")
-                        st.write("画像をクリックして矩形の2点を指定してください（1点目→2点目）")
+                            #st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})\n\n線の長さ: {px_distance:.1f}px")
+                        st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
                     else:
                         # 結合・追加モード：2点選択
                         if len(st.session_state.rect_coords) == 1:
-                            st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            pass
+                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
                         elif len(st.session_state.rect_coords) == 2:
                             # 窓追加モードで自動追加される場合は、前のrerunでrect_coordsがクリアされるため、
                             # このブロックに到達しない。失敗時のみここに到達する
@@ -3046,8 +3048,8 @@ def main():
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
-                                st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
-                        st.write("画像をクリックして矩形の2点を指定してください（1点目→2点目）")
+                                #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
+                        st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
                         
                         # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示
                         if edit_mode in ("窓を追加", "線を結合") and len(st.session_state.rect_coords) == 2:
@@ -3108,7 +3110,7 @@ def main():
                                     # プレビューで2本検出された場合、確定集合にも反映して表示を整合させる
                                     try:
                                         walls_in_rect_confirmed = walls_in_rect_filtered
-                                        # プレビューで2本検出された矩形情報とIDをセッションに保存
+                                        # プレビューで2本検出された四角形情報とIDをセッションに保存
                                         try:
                                             st.session_state['last_preview_pair'] = [walls_in_rect_filtered[0]['id'], walls_in_rect_filtered[1]['id']]
                                             st.session_state['last_preview_rect'] = rect_preview
@@ -3190,7 +3192,7 @@ def main():
                         new_point = (value["x"], value["y"])
                     
                         if edit_mode == "線を削除":
-                            # 削除モード：2点選択で矩形、2点目で自動追加
+                            # 削除モード：2点選択で四角形、2点目で自動追加
                             if len(st.session_state.rect_coords) < 2:
                                 if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
                                     st.session_state.rect_coords.append(new_point)
@@ -3211,7 +3213,7 @@ def main():
                                     st.session_state.last_click = new_point
                                     
                                     # 窓追加モード、線を結合モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
-                                    # 2本の壁が検出されたら自動追加（オブジェクト配置では矩形をそのまま追加）
+                                    # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
                                     if (edit_mode in ("窓を追加", "線を結合", "線を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
                                         try:
                                             json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
@@ -3289,7 +3291,7 @@ def main():
                                                     except Exception:
                                                         pass
                                             else:
-                                                # オブジェクト配置モードでは矩形をそのまま追加（壁検出は不要）
+                                                # オブジェクト配置モードでは四角形をそのまま追加（壁検出は不要）
                                                 st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                 st.session_state.rect_coords = []
                                                 st.session_state.last_click = None
@@ -3305,7 +3307,7 @@ def main():
                 
                     # 選択完了時のUI
                     if edit_mode == "線を削除" and len(st.session_state.rect_coords) == 2:
-                        # 削除モード：2点選択完了（矩形）
+                        # 削除モード：2点選択完了（四角形）
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
@@ -3577,7 +3579,7 @@ def main():
                         
                         elif edit_mode == "窓を追加":
                             # 窓追加モード：右側に重複して表示していた入力は削除
-                            # 矩形が選択されている場合でも、画面上部のフォームで入力してください
+                            # 四角形が選択されている場合でも、画面上部のフォームで入力してください
                             if len(st.session_state.rect_coords_list) > 0:
                                 # セッションから現在の窓高さを決定（mm->m 変換を優先）
                                 if st.session_state.get('window_execution_params'):
@@ -3647,7 +3649,7 @@ def main():
                                 except Exception:
                                     pass
                                 
-                                # 処理対象の矩形リストを作成
+                                # 処理対象の四角形リストを作成
                                 target_rects = list(st.session_state.rect_coords_list)
                                 window_params_list = st.session_state.get('window_params_list', [])
                                 
@@ -3755,7 +3757,7 @@ def main():
                                             'height': abs(p2[1] - p1[1])
                                         }
                                     
-                                        # 矩形内に端点がある壁線を抽出（窓追加モード：端点2つだけを囲めばOK）
+                                        # 四角形内に端点がある壁線を抽出（窓追加モード：端点2つだけを囲めばOK）
                                         # デバッグモードで詳細情報を取得
                                         walls_in_rect, debug_info = _filter_walls_by_endpoints_in_rect(
                                             updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y, 
@@ -3843,9 +3845,9 @@ def main():
                                                 append_debug(f"Window rect #{rect_idx+1} skipped during execution: found {len(walls_in_rect)} walls")
                                             except Exception:
                                                 pass
-                                            st.warning(f"⚠️ 矩形#{rect_idx+1}: 2本の壁が必要ですが、{len(walls_in_rect)}本しか見つかりません")
+                                            st.warning(f"⚠️ 四角形#{rect_idx+1}: 2本の壁が必要ですが、{len(walls_in_rect)}本しか見つかりません")
                                         else:
-                                            st.warning(f"⚠️ 矩形#{rect_idx+1}: 2本の壁を選択してください（{len(walls_in_rect)}本選択されています）")
+                                            st.warning(f"⚠️ 四角形#{rect_idx+1}: 2本の壁を選択してください（{len(walls_in_rect)}本選択されています）")
                     
                                     if total_added_count > 0:
                                         st.success(f"✅✅ 合計 {total_added_count} 本の壁を追加しました（窓{len(window_details)}箇所）")
@@ -3913,7 +3915,7 @@ def main():
                             
                             if should_execute:
                                 try:
-                                    # 処理対象の矩形リストを作成（確定済み選択 + 現在選択中の2点）
+                                    # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
                                     target_rects = list(st.session_state.rect_coords_list)
                                     if len(st.session_state.rect_coords) == 2:
                                         target_rects.append(tuple(st.session_state.rect_coords))
@@ -3965,21 +3967,21 @@ def main():
                                         else:
                                             furniture_height = FURNITURE_HEIGHT_OPTIONS[height_option]
                                         
-                                        # 各矩形をループして処理
+                                        # 各四角形をループして処理
                                         total_placed_count = 0
                                         furniture_details = []
                                         
                                         for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            st.markdown(f"---\n\n**矩形#{rect_idx+1}の処理:**")
+                                            st.markdown(f"---\n\n**四角形#{rect_idx+1}の処理:**")
                                             
-                                            # 矩形範囲をメートル座標に変換
+                                            # 四角形範囲をメートル座標に変換
                                             x_start, y_start, width, depth = _snap_to_grid(
                                                 (p1[0], p1[1], p2[0], p2[1]),
                                                 json_data,
                                                 scale
                                             )
                                             
-                                            st.write(f"**矩形範囲をそのまま使用:**")
+                                            st.write(f"**四角形範囲をそのまま使用:**")
                                             st.write(f"- 配置位置: ({x_start:.2f}, {y_start:.2f}) m")
                                             st.write(f"- サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm")
                                             
@@ -4015,7 +4017,7 @@ def main():
                                         # 詳細リスト
                                         with st.expander("📋 配置詳細", expanded=True):
                                             for detail in furniture_details:
-                                                st.write(f"**矩形#{detail['rect_idx']+1}（{detail['color_name']}）:** "
+                                                st.write(f"**四角形#{detail['rect_idx']+1}（{detail['color_name']}）:** "
                                                        f"{detail['color']}の家具 - "
                                                        f"幅{detail['dimensions'][0]*100:.0f}cm × "
                                                        f"奥行き{detail['dimensions'][1]*100:.0f}cm × "
@@ -4049,7 +4051,7 @@ def main():
                                         
                                     elif edit_mode == "線を結合":
                                         # ===== 線を結合モード =====
-                                        # 各矩形をループして処理
+                                        # 各四角形をループして処理
                                         total_merged_count = 0
                                         merge_details = []
                                     
@@ -4066,7 +4068,7 @@ def main():
                                                     append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
                                                 except Exception:
                                                     pass
-                                                st.write(f"矩形: {rect}")
+                                                st.write(f"四角形: {rect}")
                                             except Exception:
                                                 pass
                                         
@@ -4075,9 +4077,9 @@ def main():
                                             walls_in_selection = _filter_walls_strictly_in_rect(
                                                 updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                             )
-                                            # 追加の可視デバッグ: 矩形のピクセル/メートル座標と各壁のピクセル位置を表示
+                                            # 追加の可視デバッグ: 四角形のピクセル/メートル座標と各壁のピクセル位置を表示
                                             try:
-                                                with st.expander(f"🔎 座標マッピング（矩形#{rect_idx+1}）", expanded=False):
+                                                with st.expander(f"🔎 座標マッピング（四角形#{rect_idx+1}）", expanded=False):
                                                     px_x1, px_y1 = p1
                                                     px_x2, px_y2 = p2
                                                     def px_to_meter(px_x, px_y):
@@ -4089,7 +4091,7 @@ def main():
                                                     m2 = px_to_meter(px_x2, px_y2)
                                                     st.write({'p1_px': (px_x1, px_y1), 'p2_px': (px_x2, px_y2), 'p1_m': m1, 'p2_m': m2})
 
-                                                    # 各壁のピクセル端点を表示してどの壁が矩形にマッチしたか明示
+                                                    # 各壁のピクセル端点を表示してどの壁が四角形にマッチしたか明示
                                                     debug_list = []
                                                     for w in updated_json.get('walls', []):
                                                         x1_px = int((w['start'][0] - min_x) * scale) + margin
@@ -4118,7 +4120,7 @@ def main():
 
                                             # --- 追加デバッグ出力 ---
                                             try:
-                                                st.write(f"🔧 デバッグ: 矩形#{rect_idx+1} の walls_in_selection 件数: {len(walls_in_selection)}")
+                                                st.write(f"🔧 デバッグ: 四角形#{rect_idx+1} の walls_in_selection 件数: {len(walls_in_selection)}")
                                                 st.write(f"🔧 wall ids: {[w.get('id') for w in walls_in_selection]}")
                                                 st.write(f"🔧 セッション preview pair: {st.session_state.get('last_preview_pair')}")
                                                 st.write(f"🔧 セッション preview rect: {st.session_state.get('last_preview_rect')}")
@@ -4128,7 +4130,7 @@ def main():
                                             # ----------------------
 
                                             # プレビューでフィルタ済みIDがセッションに保存されている場合、
-                                            # 矩形が一致すれば execution 側の検出集合をプレビューのフィルタ済み集合に合わせる。
+                                            # 四角形が一致すれば execution 側の検出集合をプレビューのフィルタ済み集合に合わせる。
                                             try:
                                                 last_filtered = st.session_state.get('last_preview_filtered_ids')
                                                 last_rect = st.session_state.get('last_preview_rect')
@@ -4137,7 +4139,7 @@ def main():
                                                         abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
                                                         abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
                                                         abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
-                                                        # updated_json の walls から該当IDを抽出（矩形外でも preview が見ていたIDを優先）
+                                                        # updated_json の walls から該当IDを抽出（四角形外でも preview が見ていたIDを優先）
                                                         id_set = set(last_filtered)
                                                         walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
                                                         try:
@@ -4151,7 +4153,7 @@ def main():
                                             except Exception:
                                                 pass
                                         
-                                            # まず、プレビューで選ばれたペアがあるかを確認し、矩形が一致すればそれを優先する
+                                            # まず、プレビューで選ばれたペアがあるかを確認し、四角形が一致すればそれを優先する
                                             walls_to_use = None
                                             try:
                                                 last_pair = st.session_state.get('last_preview_pair')
@@ -4207,7 +4209,7 @@ def main():
                                         
                                             if len(walls_to_use) >= 2:
                                                 # 複数線が選択されている場合、方向を判定して最も離れた2本のペアのみを結合
-                                                # 矩形の幅と高さから方向を判定
+                                                # 四角形の幅と高さから方向を判定
                                                 rect_width = abs(p2[0] - p1[0])
                                                 rect_height = abs(p2[1] - p1[1])
                                             
@@ -4328,7 +4330,7 @@ def main():
                                                             except Exception:
                                                                 pass
                                                         else:
-                                                            st.warning("フォールバックでも候補が見つかりませんでした。矩形選択や閾値を確認してください。")
+                                                            st.warning("フォールバックでも候補が見つかりませんでした。四角形選択や閾値を確認してください。")
                                                     except Exception:
                                                         pass
 
@@ -4439,14 +4441,14 @@ def main():
                                                     except Exception:
                                                         pass
 
-                                                # 強制適用: プレビューで選ばれたペアがある場合、矩形が一致すれば候補が空でも強制的にペアを作成して結合する
+                                                # 強制適用: プレビューで選ばれたペアがある場合、四角形が一致すれば候補が空でも強制的にペアを作成して結合する
                                                 if not candidates:
                                                     try:
                                                         last_pair = st.session_state.get('last_preview_pair')
                                                         last_rect = st.session_state.get('last_preview_rect')
                                                         if last_pair:
                                                                     # プレビューで指定されたペアが現在の選択と一致すれば
-                                                                    # 矩形の完全一致に依存せず強制適用する（ユーザがプレビューで選択した意図を尊重）
+                                                                    # 四角形の完全一致に依存せず強制適用する（ユーザがプレビューで選択した意図を尊重）
                                                                     id_set = set(last_pair)
                                                                     sel_ids = {selected_walls[0]['id'], selected_walls[1]['id']}
                                                                     if id_set == sel_ids:
@@ -4557,7 +4559,7 @@ def main():
                                                         import sys
                                                         sys.exit(1)
                                                 
-                                                    # 矩形内の他の不要な線分（中間線）を削除
+                                                    # 四角形内の他の不要な線分（中間線）を削除
                                                     # 削除対象は、実際に選択・フィルタされた集合 `walls_to_use` を基準とする。
                                                     # ただし、窓追加などで自動生成された壁（source=='window_added'）は削除対象から除外する。
                                                     walls_to_delete = []
@@ -4618,7 +4620,7 @@ def main():
                                                         'deleted_walls': walls_to_delete
                                                     })
                                                 else:
-                                                    st.warning(f"⚠️ 矩形内の壁が接続されていません")
+                                                    st.warning(f"⚠️ 四角形内の壁が接続されていません")
                                     
                                         if total_merged_count > 0:
                                             st.success(f"✅ 合計 {total_merged_count} 個の選択範囲で結合が完了しました")
@@ -4705,13 +4707,13 @@ def main():
                                                 'height': abs(p2[1] - p1[1])
                                             }
                                         
-                                            # 矩形内に完全に含まれる壁線を抽出
+                                            # 四角形内に完全に含まれる壁線を抽出
                                             walls_in_rect = _filter_walls_strictly_in_rect(
                                                 updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                             )
                                         
                                             if walls_in_rect:
-                                                # 矩形内の壁をすべて削除対象に追加
+                                                # 四角形内の壁をすべて削除対象に追加
                                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
                                                 for wall in walls_in_rect:
                                                     walls_to_delete.append(wall['id'])
@@ -4748,7 +4750,7 @@ def main():
                                             updated_json['floors'] = []
                                         
                                         for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            # 矩形範囲をメートル座標に変換
+                                            # 四角形範囲をメートル座標に変換
                                             px_x1, px_y1 = p1
                                             px_x2, px_y2 = p2
                                             
@@ -4905,8 +4907,9 @@ def main():
             # 編集済み3DビューアHTML（viewer_html_bytesを常に表示）
             if st.session_state.viewer_html_bytes:
                 st.download_button(
-                    label=" 編集済み3Dモデル用ビューアHTMLをダウンロード",
+                    label=" 編集済み3Dモデルをダウンロード",
                     data=st.session_state.viewer_html_bytes,
+                    type="primary",
                     file_name=st.session_state.viewer_html_name,
                     mime="text/html"
                 )
@@ -4914,7 +4917,7 @@ def main():
             # 照明付き3DビューアHTML（配置されている場合のみ）
             if st.session_state.get('viewer_html_lights_bytes'):
                 st.download_button(
-                    label=" 💡照明付き3Dモデル用ビューアHTMLをダウンロード",
+                    label=" 💡照明付き3Dモデルをダウンロード",
                     data=st.session_state.viewer_html_lights_bytes,
                     file_name=st.session_state.viewer_html_lights_name,
                     mime="text/html"
