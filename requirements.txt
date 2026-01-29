@@ -1,7 +1,4 @@
 
-# Private package from GitHub
-ichijo_core @ git+https://${GITHUB_TOKEN}@github.com/curtinex/ichijo_core.git@v0.0.4
-
 streamlit
 numpy
 Pillow

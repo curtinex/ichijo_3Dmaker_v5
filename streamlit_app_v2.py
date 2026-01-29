@@ -10,6 +10,52 @@ Streamlitアプリ: 図面(PDF/JPG/PNG) → 壁線抽出 → 3D(JSON) → Blende
   3) 生成されたJSON/Blenderスクリプト/可視化をダウンロード
 """
 
+# ichijo_coreのインストールチェックと自動インストール
+import subprocess
+import sys
+import os
+
+def install_ichijo_core():
+    """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
+    try:
+        import ichijo_core
+        return True
+    except ImportError:
+        pass
+    
+    # Streamlit Cloudのsecretsからトークンを取得
+    try:
+        import streamlit as st_temp
+        if hasattr(st_temp, 'secrets') and 'GITHUB_TOKEN' in st_temp.secrets:
+            token = st_temp.secrets['GITHUB_TOKEN']
+            install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@v0.0.4"
+            
+            print(f"Installing ichijo_core from GitHub...")
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", install_url],
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0:
+                print("✓ ichijo_core installed successfully")
+                return True
+            else:
+                print(f"✗ Failed to install ichijo_core: {result.stderr}")
+                return False
+        else:
+            print("✗ GITHUB_TOKEN not found in Streamlit secrets")
+            return False
+    except Exception as e:
+        print(f"✗ Error during installation: {e}")
+        return False
+
+# アプリ起動時に一度だけインストール
+if not install_ichijo_core():
+    import streamlit as st
+    st.error("❌ ichijo_core のインストールに失敗しました。Streamlit Cloud の Secrets に GITHUB_TOKEN が設定されているか確認してください。")
+    st.stop()
+
 import io
 import re
 import time
