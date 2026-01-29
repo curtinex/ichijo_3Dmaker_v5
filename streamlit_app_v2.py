@@ -17,12 +17,8 @@ import os
 
 def install_ichijo_core():
     """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
-    try:
-        import ichijo_core
-        print("✓ ichijo_core is already installed")
-        return True, None
-    except ImportError:
-        print("→ ichijo_core not found, attempting to install...")
+    # まずインストールを試みる（既にインストール済みかどうかは後でチェック）
+    print("→ Checking ichijo_core installation...")
     
     # Streamlit Cloudのsecretsからトークンを取得
     try:
@@ -99,7 +95,17 @@ def install_ichijo_core():
             importlib.invalidate_caches()
             print("✓ Import caches invalidated")
             
-            return True, None
+            # インストール後、実際にインポートできるか確認
+            try:
+                import ichijo_core
+                print(f"✓ ichijo_core successfully imported from: {ichijo_core.__file__}")
+                return True, None
+            except Exception as import_error:
+                error_msg = f"Installation succeeded but import failed: {type(import_error).__name__}: {str(import_error)}"
+                print(f"✗ {error_msg}")
+                import traceback
+                traceback.print_exc()
+                return False, error_msg
         else:
             error_msg = f"pip install failed (exit code {result.returncode})"
             print(f"✗ {error_msg}")
