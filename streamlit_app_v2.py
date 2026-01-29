@@ -3335,9 +3335,69 @@ def main():
                                 st.session_state.last_click = None
                                 st.rerun()
                     
+                    # オブジェクト配置モード：家具のオプション選択を画像の下に表示
+                    if edit_mode == "オブジェクトを配置" and len(st.session_state.rect_coords_list) > 0:
+                        st.markdown("---")
+                        st.markdown("### 🪑 家具のオプションを選択")
+                        
+                        col_height, col_color = st.columns(2)
+                        
+                        with col_height:
+                            height_option = st.selectbox(
+                                "高さ",
+                                list(FURNITURE_HEIGHT_OPTIONS.keys()),
+                                help="家具の高さを選択してください",
+                                key="furniture_height_option"
+                            )
+                        
+                        with col_color:
+                            color_option = st.selectbox(
+                                "配色",
+                                list(FURNITURE_COLOR_OPTIONS.keys()),
+                                help="家具の色を選択してください",
+                                key="furniture_color_option"
+                            )
+                        
+                        # 選択された高さを取得（天井合わせの場合は壁の高さ）
+                        if height_option == "天井合わせ":
+                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            walls = json_data['walls']
+                            heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                            selected_height = max(heights) if heights else 2.4
+                            height_display = f"天井合わせ（{selected_height*100:.0f}cm）"
+                        else:
+                            selected_height = FURNITURE_HEIGHT_OPTIONS[height_option]
+                            height_display = height_option
+                        
+                        # セッションステートに保存
+                        st.session_state.furniture_params = {
+                            'height_option': height_option,
+                            'color_option': color_option,
+                            'selected_height': selected_height
+                        }
+                        
+                        # 選択された家具の情報を表示
+                        st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
+                        
+                        # 配置範囲のサイズを予測表示
+                        if len(st.session_state.rect_coords_list) > 0:
+                            rect = st.session_state.rect_coords_list[0]
+                            p1, p2 = rect
+                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            x_start, y_start, width, depth = _snap_to_grid(
+                                (p1[0], p1[1], p2[0], p2[1]), 
+                                json_data, 
+                                st.session_state.viz_scale
+                            )
+                            st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
+                        
+                        if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
+                            st.session_state.execute_furniture_placement = True
+                            st.rerun()
+                    
                     # 確定済み選択の表示
                     # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
-                    if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加"):
+                    if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加", "オブジェクトを配置"):
                         if edit_mode == "線を削除":
                             st.markdown("### 📋 追加済みの削除対象")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
@@ -3528,54 +3588,7 @@ def main():
                         else:  # 線を削除
                             button_label = "🗑️ 削除実行"
                     
-                        if edit_mode == "オブジェクトを配置":
-                            # オブジェクト配置：選択範囲があれば家具オプション選択を表示
-                            if len(st.session_state.rect_coords_list) > 0:
-                                st.markdown("### 🪑 家具のオプションを選択")
-                                
-                                col_height, col_color = st.columns(2)
-                                
-                                with col_height:
-                                    height_option = st.selectbox(
-                                        "高さ",
-                                        list(FURNITURE_HEIGHT_OPTIONS.keys()),
-                                        help="家具の高さを選択してください"
-                                    )
-                                
-                                with col_color:
-                                    color_option = st.selectbox(
-                                        "配色",
-                                        list(FURNITURE_COLOR_OPTIONS.keys()),
-                                        help="家具の色を選択してください"
-                                    )
-                                
-                                # 選択された高さを取得（天井合わせの場合は壁の高さ）
-                                if height_option == "天井合わせ":
-                                    json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    walls = json_data['walls']
-                                    heights = [w.get('height', 2.4) for w in walls if 'height' in w]
-                                    selected_height = max(heights) if heights else 2.4
-                                    height_display = f"天井合わせ（{selected_height*100:.0f}cm）"
-                                else:
-                                    selected_height = FURNITURE_HEIGHT_OPTIONS[height_option]
-                                    height_display = height_option
-                                
-                                # 選択された家具の情報を表示
-                                st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
-                                
-                                # 配置範囲のサイズを予測表示
-                                if len(st.session_state.rect_coords_list) > 0:
-                                    rect = st.session_state.rect_coords_list[0]
-                                    p1, p2 = rect
-                                    json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    x_start, y_start, width, depth = _snap_to_grid(
-                                        (p1[0], p1[1], p2[0], p2[1]), 
-                                        json_data, 
-                                        st.session_state.viz_scale
-                                    )
-                                    st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
-                        
-                        elif edit_mode == "窓を追加":
+                        if edit_mode == "窓を追加":
                             # 窓追加モード：右側に重複して表示していた入力は削除
                             # 四角形が選択されている場合でも、画面上部のフォームで入力してください
                             if len(st.session_state.rect_coords_list) > 0:
@@ -3958,12 +3971,17 @@ def main():
                                         # ===== オブジェクトを配置モード =====
                                         st.markdown("### 🪑 オブジェクト配置処理")
                                         
+                                        # セッションステートから家具パラメータを取得
+                                        furniture_params = st.session_state.get('furniture_params', {})
+                                        height_option = furniture_params.get('height_option', '30cm')
+                                        color_option = furniture_params.get('color_option', 'ダーク')
+                                        
                                         # 高さオプションの取得
                                         if height_option == "天井合わせ":
                                             heights = [w.get('height', 2.4) for w in walls if 'height' in w]
                                             furniture_height = max(heights) if heights else 2.4
                                         else:
-                                            furniture_height = FURNITURE_HEIGHT_OPTIONS[height_option]
+                                            furniture_height = FURNITURE_HEIGHT_OPTIONS.get(height_option, 0.3)
                                         
                                         # 各四角形をループして処理
                                         total_placed_count = 0
