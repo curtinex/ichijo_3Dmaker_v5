@@ -385,6 +385,19 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             '            dirLight.shadow.mapSize.width = 2048;\n'
             '            dirLight.shadow.mapSize.height = 2048;\n'
             '            dirLight.shadow.bias = -0.0005;\n'
+            '            // シャドウカメラの範囲をフロア/図面サイズに合わせて自動調整\n'
+            '            if (dirLight.shadow && dirLight.shadow.camera) {\n'
+            '                const s = Math.max((typeof floorW !== "undefined" ? floorW : (maxX - minX)), (typeof floorD !== "undefined" ? floorD : (maxY - minY)), 10);\n'
+            '                if (dirLight.shadow.camera.isOrthographicCamera) {\n'
+            '                    dirLight.shadow.camera.left = -s;\n'
+            '                    dirLight.shadow.camera.right = s;\n'
+            '                    dirLight.shadow.camera.top = s;\n'
+            '                    dirLight.shadow.camera.bottom = -s;\n'
+            '                    dirLight.shadow.camera.near = 0.5;\n'
+            '                    dirLight.shadow.camera.far = 200;\n'
+            '                    dirLight.shadow.camera.updateProjectionMatrix();\n'
+            '                }\n'
+            '            }\n'
             '            scene.add(dirLight);\n\n'
             '            // 補助のリムライト（反対側からの弱い光で輪郭を浮かび上がらせる）\n'
             '            const rimLight = new THREE.DirectionalLight(0xfff2e0, 0.25);\n'
@@ -454,12 +467,17 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
         # 通常バージョン：白壁、ライトグレー背景、ディレクショナルライトあり
         emissive_intensity = '0.4'
         background_color = '0xf0f0f0'
-        ambient_light_code = 'const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);\n\n            scene.add(ambientLight);'
-        # デフォルトのディレクショナルライトを原点の真上に固定して影が斜めにならないようにする
-        directional_light_code = '''const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-            // 真上から照らす（シーン原点を照らす）
-            dirLight.position.set(0, 50, 0);
-            // ターゲットを原点に設定
+        ambient_light_code = '''const ambientLight = new THREE.AmbientLight(0xffffff, 0.18);
+            scene.add(ambientLight);
+
+            // HemisphereLight: 上空と地面の色差で柔らかな拡散光を追加
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.7);
+            hemiLight.position.set(0, 50, 0);
+            scene.add(hemiLight);'''
+        # デフォルトのディレクショナルライトを設置して影と輪郭を出す
+        directional_light_code = '''const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            // 少し斜め上から照らすことで影と形状を強調
+            dirLight.position.set(20, 30, 10);
             dirLight.target = new THREE.Object3D();
             dirLight.target.position.set(0, 0, 0);
             scene.add(dirLight.target);
@@ -468,15 +486,26 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             dirLight.shadow.mapSize.width = 2048;
             dirLight.shadow.mapSize.height = 2048;
             dirLight.shadow.bias = -0.0005;
-            // オルソカメラの範囲はフロアサイズに合わせて自動調整（floorW/floorD が存在すれば利用）
-            if (dirLight.shadow && dirLight.shadow.camera && dirLight.shadow.camera.isOrthographicCamera) {
-                const s = Math.max((typeof floorW !== 'undefined' ? floorW : 10), (typeof floorD !== 'undefined' ? floorD : 10));
-                dirLight.shadow.camera.left = -s;
-                dirLight.shadow.camera.right = s;
-                dirLight.shadow.camera.top = s;
-                dirLight.shadow.camera.bottom = -s;
-                dirLight.shadow.camera.near = 0.5;
-                dirLight.shadow.camera.far = 200;
+            // シャドウカメラの範囲をフロア/図面サイズに合わせて自動調整
+            if (dirLight.shadow && dirLight.shadow.camera) {
+                const s = Math.max((typeof floorW !== 'undefined' ? floorW : (maxX - minX)), (typeof floorD !== 'undefined' ? floorD : (maxY - minY)), 10);
+                if (dirLight.shadow.camera.isOrthographicCamera) {
+                    dirLight.shadow.camera.left = -s;
+                    dirLight.shadow.camera.right = s;
+                    dirLight.shadow.camera.top = s;
+                    dirLight.shadow.camera.bottom = -s;
+                    dirLight.shadow.camera.near = 0.5;
+                    dirLight.shadow.camera.far = 200;
+                    dirLight.shadow.camera.updateProjectionMatrix();
+                }
+            }
+            scene.add(dirLight);
+
+            // 補助のリムライト（反対側からの弱い光で輪郭を浮かび上がらせる）
+            const rimLight = new THREE.DirectionalLight(0xfff2e0, 0.25);
+            rimLight.position.set(-15, 8, -15);
+            rimLight.castShadow = false;
+            scene.add(rimLight);'''
             }
             scene.add(dirLight);'''
         lights_code = '                    // 照明機能なし\n\n'
@@ -1432,9 +1461,7 @@ def _generate_blender_script(json_path: Path, out_path: Path) -> Path:
 def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ")
-    st.caption("CAD図面から3Dモデルを生成します。\n" \
-    "アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。"
-    )
+    st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
