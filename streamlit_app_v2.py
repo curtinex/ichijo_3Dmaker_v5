@@ -43,13 +43,26 @@ def install_ichijo_core():
         token_preview = token[:8] + "..." if len(token) > 8 else "***"
         print(f"✓ GITHUB_TOKEN found: {token_preview}")
         
+        # 既存のichijo_coreを削除（権限エラー対策）
+        print("→ Attempting to uninstall existing ichijo_core...")
+        uninstall_result = subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        if uninstall_result.returncode == 0:
+            print("✓ Existing ichijo_core uninstalled")
+        else:
+            print("→ No existing ichijo_core found (or uninstall failed)")
+        
         # コミットハッシュを使用（タグv0.0.4に相当）
         commit_hash = "c66a226"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--upgrade", install_url],
+            [sys.executable, "-m", "pip", "install", "--no-cache-dir", install_url],
             capture_output=True,
             text=True,
             timeout=300  # 5分タイムアウト
