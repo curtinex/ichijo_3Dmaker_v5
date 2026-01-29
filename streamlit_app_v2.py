@@ -4374,7 +4374,7 @@ def main():
                                                         cand_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
                                                     else:
                                                         cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                st.write("**デバッグ (候補一覧):**", cand_list)
+                                                #st.write("**デバッグ (候補一覧):**", cand_list)
                                                 append_debug(f"候補一覧: {cand_list}")
                                             except Exception:
                                                 pass
@@ -4384,17 +4384,17 @@ def main():
                                                 try:
                                                     fallback_dist = max(distance_threshold * 2, 0.5)
                                                     fallback_angle = max(merge_angle_threshold * 2, 45)
-                                                    st.warning(f"候補が見つかりません。フォールバック閾値で再探索します (距離: {fallback_dist}m, 角度: {fallback_angle}°)")
+                                                    #st.warning(f"候補が見つかりません。フォールバック閾値で再探索します (距離: {fallback_dist}m, 角度: {fallback_angle}°)")
                                                     candidates = _find_mergeable_walls(
                                                         walls_to_use,
                                                         distance_threshold=fallback_dist,
                                                         angle_threshold=fallback_angle
                                                     )
                                                     if candidates:
-                                                        st.info("フォールバックで候補が見つかりました。結合を実行します。")
+                                                        #st.info("フォールバックで候補が見つかりました。結合を実行します。")
                                                         append_debug(f"Fallback candidates found")
                                                     else:
-                                                        st.warning("フォールバックでも候補が見つかりませんでした。")
+                                                        #st.warning("フォールバックでも候補が見つかりませんでした。")
                                                 except Exception:
                                                     pass
                                             
@@ -4452,7 +4452,7 @@ def main():
                                                         'confidence': 0.0
                                                     }
                                                     candidates = [forced_candidate]
-                                                    st.info(f'クリック選択された2本の壁を強制的に結合します（距離={min_dist:.3f}m, 角度差={angle_diff_sel:.2f}°）')
+                                                    #st.info(f'クリック選択された2本の壁を強制的に結合します（距離={min_dist:.3f}m, 角度差={angle_diff_sel:.2f}°）')
                                                     append_debug(f"Forced candidate created: {w1.get('id')} + {w2.get('id')}")
                                                 except Exception as e:
                                                     st.error(f"強制候補作成エラー: {e}")
@@ -4460,13 +4460,13 @@ def main():
                                             # 結合実行
                                             if candidates:
                                                 top_candidate = candidates[0]
-                                                st.write(f"**検出されたペア：**")
+                                                #st.write(f"**検出されたペア：**")
                                                 if top_candidate.get('is_chain', False):
                                                     chain_wall_ids = [w['id'] for w in top_candidate['walls']]
-                                                    st.write(f"チェーン: {chain_wall_ids}")
+                                                    #st.write(f"チェーン: {chain_wall_ids}")
                                                 else:
-                                                    st.write(f"ペア: 壁#{top_candidate['wall1']['id']} + 壁#{top_candidate['wall2']['id']}")
-                                                
+                                                    #st.write(f"ペア: 壁#{top_candidate['wall1']['id']} + 壁#{top_candidate['wall2']['id']}")
+                                                    pass
                                                 try:
                                                     updated_json = _merge_walls_in_json(updated_json, candidates[:1])
                                                     total_merged_count += 1
@@ -5325,14 +5325,7 @@ def main():
                     mime="text/html"
                 )
             
-            # 照明付き3DビューアHTML（配置されている場合のみ）
-            if st.session_state.get('viewer_html_lights_bytes'):
-                st.download_button(
-                    label=" 💡照明付き3Dモデルをダウンロード",
-                    data=st.session_state.viewer_html_lights_bytes,
-                    file_name=st.session_state.viewer_html_lights_name,
-                    mime="text/html"
-                )
+
 
 
 if __name__ == "__main__":
