@@ -223,3 +223,6 @@ data/
 
 # Streamlit secrets
 .streamlit/secrets.toml
+
+# Allow window catalog JSON to be tracked despite general *.json ignore
+!window_catalog.json
