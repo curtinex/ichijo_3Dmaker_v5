@@ -5367,15 +5367,19 @@ def main():
                                             st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                             st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                            # 状態を完全にクリアして続行
+                                            # 状態を完全にクリアして続行（選択リセットと同じ処理）
                                             st.session_state.rect_coords = []
                                             st.session_state.rect_coords_list = []
+                                            st.session_state.reset_flag = True  # リセットフラグを設定
                                             st.session_state.last_click = None
+                                            st.session_state.merge_result = None  # 結合結果もクリア
                                             st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
                                             st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
                                             st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
                                             if 'skip_click_processing' in st.session_state:
                                                 del st.session_state.skip_click_processing  # スキップフラグもクリア
+                                            if 'merge_walls_to_process' in st.session_state:
+                                                del st.session_state.merge_walls_to_process  # 処理用壁データもクリア
                                             if 'window_execution_params' in st.session_state:
                                                 del st.session_state.window_execution_params
                                             if 'window_click_params' in st.session_state:
