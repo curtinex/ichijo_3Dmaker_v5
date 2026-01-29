@@ -4453,7 +4453,11 @@ def main():
                                         merge_details = []
                                         
                                         if len(st.session_state.selected_walls_for_merge) == 2:
-                                            wall1, wall2 = st.session_state.selected_walls_for_merge
+                                            # 選択された壁をローカル変数にコピー
+                                            wall1, wall2 = st.session_state.selected_walls_for_merge[0], st.session_state.selected_walls_for_merge[1]
+                                            
+                                            # 即座に選択リストをクリア（処理開始前にクリアして確実に消去）
+                                            st.session_state.selected_walls_for_merge = []
                                             
                                             try:
                                                 append_debug(f"Merge started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
@@ -4589,9 +4593,6 @@ def main():
                                                     updated_json = _merge_walls_in_json(updated_json, candidates[:1])
                                                     total_merged_count += 1
                                                     append_debug(f"Merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
-                                                    
-                                                    # 結合成功後、即座に選択リストをクリア（ハイライト消去）
-                                                    st.session_state.selected_walls_for_merge = []
                                                     
                                                     merge_details.append({
                                                         'rect_idx': 0,
