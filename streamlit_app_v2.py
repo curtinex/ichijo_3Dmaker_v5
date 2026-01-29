@@ -74,7 +74,7 @@ def install_ichijo_core():
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--force-reinstall", "--no-cache-dir", install_url],
+            [sys.executable, "-m", "pip", "install", "--user", "--force-reinstall", "--no-cache-dir", install_url],
             capture_output=True,
             text=True,
             timeout=300  # 5分タイムアウト
