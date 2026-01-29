@@ -3443,41 +3443,46 @@ def main():
                     
                         if edit_mode == "線を結合":
                             # 線を結合モード：壁線をクリックで選択（最大2本）
-                            try:
-                                json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                walls_merge = json_data_merge.get('walls', [])
-                                
-                                all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
-                                all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
-                                min_x_merge = min(all_x_merge)
-                                min_y_merge = min(all_y_merge)
-                                max_x_merge = max(all_x_merge)
-                                max_y_merge = max(all_y_merge)
-                                
-                                scale_merge = int(st.session_state.viz_scale)
-                                margin_merge = 50
-                                img_height_merge = viz_img.height
-                                
-                                # クリック位置から最も近い壁を検出
-                                nearest_wall, distance = _find_nearest_wall_from_click(
-                                    new_point[0], new_point[1],
-                                    walls_merge, scale_merge, margin_merge,
-                                    img_height_merge, min_x_merge, min_y_merge, max_x_merge, max_y_merge,
-                                    threshold=20
-                                )
-                                
-                                if nearest_wall is not None:
-                                    # 既に選択されている場合は選択解除
-                                    if nearest_wall in st.session_state.selected_walls_for_merge:
-                                        st.session_state.selected_walls_for_merge.remove(nearest_wall)
-                                    else:
-                                        # 最大2本まで選択可能
-                                        if len(st.session_state.selected_walls_for_merge) < 2:
-                                            st.session_state.selected_walls_for_merge.append(nearest_wall)
-                                    st.session_state.last_click = new_point
-                                    st.rerun()
-                            except Exception as e:
-                                st.error(f"壁選択エラー: {e}")
+                            # 同じ座標の連続処理を防ぐ（無限ループ防止）
+                            if st.session_state.last_click == new_point:
+                                # 既に処理済みのクリックなのでスキップ
+                                pass
+                            else:
+                                try:
+                                    json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    walls_merge = json_data_merge.get('walls', [])
+                                    
+                                    all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
+                                    all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
+                                    min_x_merge = min(all_x_merge)
+                                    min_y_merge = min(all_y_merge)
+                                    max_x_merge = max(all_x_merge)
+                                    max_y_merge = max(all_y_merge)
+                                    
+                                    scale_merge = int(st.session_state.viz_scale)
+                                    margin_merge = 50
+                                    img_height_merge = viz_img.height
+                                    
+                                    # クリック位置から最も近い壁を検出
+                                    nearest_wall, distance = _find_nearest_wall_from_click(
+                                        new_point[0], new_point[1],
+                                        walls_merge, scale_merge, margin_merge,
+                                        img_height_merge, min_x_merge, min_y_merge, max_x_merge, max_y_merge,
+                                        threshold=20
+                                    )
+                                    
+                                    if nearest_wall is not None:
+                                        # 既に選択されている場合は選択解除
+                                        if nearest_wall in st.session_state.selected_walls_for_merge:
+                                            st.session_state.selected_walls_for_merge.remove(nearest_wall)
+                                        else:
+                                            # 最大2本まで選択可能
+                                            if len(st.session_state.selected_walls_for_merge) < 2:
+                                                st.session_state.selected_walls_for_merge.append(nearest_wall)
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"壁選択エラー: {e}")
                         elif edit_mode == "線を削除":
                             # 削除モード：2点選択で四角形、2点目で自動追加
                             if len(st.session_state.rect_coords) < 2:
