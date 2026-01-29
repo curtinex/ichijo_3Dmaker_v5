@@ -56,13 +56,25 @@ def install_ichijo_core():
         else:
             print("→ No existing ichijo_core found (or uninstall failed)")
         
+        # 残存ディレクトリを強制削除
+        import shutil
+        site_packages = os.path.dirname(os.__file__) + '/site-packages'
+        ichijo_core_path = os.path.join(site_packages, 'ichijo_core')
+        if os.path.exists(ichijo_core_path):
+            print(f"→ Removing residual directory: {ichijo_core_path}")
+            try:
+                shutil.rmtree(ichijo_core_path, ignore_errors=True)
+                print("✓ Residual directory removed")
+            except Exception as e:
+                print(f"→ Could not remove directory: {e}")
+        
         # コミットハッシュを使用（タグv0.0.4に相当）
         commit_hash = "c66a226"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--no-cache-dir", install_url],
+            [sys.executable, "-m", "pip", "install", "--force-reinstall", "--no-cache-dir", install_url],
             capture_output=True,
             text=True,
             timeout=300  # 5分タイムアウト
