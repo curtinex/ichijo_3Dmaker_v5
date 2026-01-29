@@ -506,8 +506,6 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             rimLight.position.set(-15, 8, -15);
             rimLight.castShadow = false;
             scene.add(rimLight);'''
-            }
-            scene.add(dirLight);'''
         lights_code = '                    // 照明機能なし\n\n'
     
     # プレースホルダーを置換
