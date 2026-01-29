@@ -366,25 +366,31 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
         emissive_intensity = '0.05'
         background_color = '0x000000'
         ambient_light_code = (
-            'const ambientLight = new THREE.AmbientLight(0xffffff, 0.08);\n'
+            'const ambientLight = new THREE.AmbientLight(0xffffff, 0.12);\n'
             '            scene.add(ambientLight);\n\n'
-            '            // HemisphereLight を追加して上方向と下方向の色差で奥行きを出す\n'
-            '            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);\n'
+            '            // HemisphereLight: 空と地面の色差で自然な拡散光を追加\n'
+            '            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.9);\n'
             '            hemiLight.position.set(0, 50, 0);\n'
             '            scene.add(hemiLight);'
         )
         directional_light_code = (
-            '// メインの方向光で柔らかいリム照明を追加\n'
-            '            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);\n'
-            '            dirLight.position.set(10, 20, 10);\n'
+            '// メインの方向光: メインシャドウと形状の強調\n'
+            '            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);\n'
+            '            dirLight.position.set(30, 40, 20);\n'
             '            dirLight.target = new THREE.Object3D();\n'
             '            dirLight.target.position.set(0, 0, 0);\n'
             '            scene.add(dirLight.target);\n'
             '            dirLight.castShadow = true;\n'
-            '            dirLight.shadow.mapSize.width = 1024;\n'
-            '            dirLight.shadow.mapSize.height = 1024;\n'
+            '            // 高解像度のシャドウで境界をくっきりさせる\n'
+            '            dirLight.shadow.mapSize.width = 2048;\n'
+            '            dirLight.shadow.mapSize.height = 2048;\n'
             '            dirLight.shadow.bias = -0.0005;\n'
-            '            scene.add(dirLight);'
+            '            scene.add(dirLight);\n\n'
+            '            // 補助のリムライト（反対側からの弱い光で輪郭を浮かび上がらせる）\n'
+            '            const rimLight = new THREE.DirectionalLight(0xfff2e0, 0.25);\n'
+            '            rimLight.position.set(-20, 10, -20);\n'
+            '            rimLight.castShadow = false;\n'
+            '            scene.add(rimLight);'
         )
         
         lights_code = '''
@@ -1426,7 +1432,7 @@ def _generate_blender_script(json_path: Path, out_path: Path) -> Path:
 def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ")
-    st.caption("CAD図面から3Dモデルを生成します。\n\n" \
+    st.caption("CAD図面から3Dモデルを生成します。\n" \
     "アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。"
     )
     
