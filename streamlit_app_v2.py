@@ -4286,6 +4286,12 @@ def main():
                             if edit_mode == "線を結合":
                                 if len(st.session_state.selected_walls_for_merge) == 2:
                                     if st.button(button_label, type="primary", key="btn_merge_exec"):
+                                        # 選択された壁をセッションに保存してから選択リストをクリア
+                                        st.session_state.merge_walls_to_process = [
+                                            st.session_state.selected_walls_for_merge[0],
+                                            st.session_state.selected_walls_for_merge[1]
+                                        ]
+                                        st.session_state.selected_walls_for_merge = []
                                         should_execute = True
                             elif edit_mode == "窓を追加":
                                 if len(st.session_state.selected_walls_for_window) == 2:
@@ -4448,16 +4454,16 @@ def main():
                                         
                                     elif edit_mode == "線を結合":
                                         # ===== 線を結合モード =====
-                                        # 選択された2本の壁を直接使用（クリック選択方式）
+                                        # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                                         total_merged_count = 0
                                         merge_details = []
                                         
-                                        if len(st.session_state.selected_walls_for_merge) == 2:
-                                            # 選択された壁をローカル変数にコピー
-                                            wall1, wall2 = st.session_state.selected_walls_for_merge[0], st.session_state.selected_walls_for_merge[1]
+                                        if st.session_state.get('merge_walls_to_process'):
+                                            # セッションから壁を取得
+                                            wall1, wall2 = st.session_state.merge_walls_to_process[0], st.session_state.merge_walls_to_process[1]
                                             
-                                            # 即座に選択リストをクリア（処理開始前にクリアして確実に消去）
-                                            st.session_state.selected_walls_for_merge = []
+                                            # 処理完了後にセッションから削除
+                                            del st.session_state.merge_walls_to_process
                                             
                                             try:
                                                 append_debug(f"Merge started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
