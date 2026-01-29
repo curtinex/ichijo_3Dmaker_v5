@@ -1299,54 +1299,6 @@ def _find_closest_wall_to_point(walls, point_px, scale, margin, img_height, min_
     return closest_wall, min_distance
 
 
-def _generate_blender_script(json_path: Path, out_path: Path) -> Path:
-    """テンプレート(blender_import_walls.py)からJSONパスを書き換えて出力"""
-    tpl_path = BASE_DIR / "blender_import_walls.py"
-    if not tpl_path.exists():
-        raise FileNotFoundError("blender_import_walls.py が見つかりません")
-
-    content = tpl_path.read_text(encoding="utf-8")
-
-    # 既存の json_path = r"..." の代入行を置換（関数replで安全に挿入）
-    pattern = r"(?m)^json_path\s*=\s*r\".*\"\s*$"
-    replacement_line = f'json_path = r"{str(json_path)}"'
-
-    try:
-        if re.search(pattern, content):
-            # 関数replを使うことで、置換文字列中のバックスラッシュが解釈されない
-            new_content = re.sub(pattern, lambda m: replacement_line, content)
-        else:
-            # フォールバック: 末尾に安全に追記
-            appended = (
-                "\n\n# 追加: 自動生成により設定\n\n"
-                f"json_path = r\"{str(json_path)}\"\n\n"
-                "if Path(json_path).exists():\n\n"
-                "    import_walls_from_json(json_path, create_floor=True)\n\n"
-                "else:\n\n"
-                "    print(\"Error: File not found: {}\".format(json_path))\n\n"
-            )
-            new_content = content + appended
-    except re.error:
-        # 正規表現トラブル時は行ベース置換にフォールバック
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            if line.strip().startswith("json_path"):
-                lines[i] = replacement_line
-                break
-        else:
-            lines.append("")
-            lines.append("# 追加: 自動生成により設定")
-            lines.append(replacement_line)
-            lines.append("if Path(json_path).exists():")
-            lines.append("    import_walls_from_json(json_path, create_floor=True)")
-            lines.append("else:")
-            lines.append("    print(\"Error: File not found: {}\".format(json_path))")
-        new_content = "\n\n".join(lines)
-
-    out_path.write_text(new_content, encoding="utf-8")
-    return out_path
-
-
 def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ")
@@ -1360,7 +1312,7 @@ def main():
         st.session_state.processed = False
     for key in [
         "out_dir", "refined_img", "refined_name", "refined_bytes", "json_bytes", "json_name",
-        "blender_bytes", "blender_name", "viz_bytes", "viz_name", "viewer_html_bytes", "viewer_html_name",
+        "viz_bytes", "viz_name", "viewer_html_bytes", "viewer_html_name",
         "zip_bytes", "zip_name", "merged_json_bytes", "merged_json_name", "merged_viz_bytes", "merged_viz_name",
         "merged_processed"
     ]:
@@ -1670,17 +1622,6 @@ def main():
                 canvas = None
                 st.warning(f"可視化の生成に失敗しました: {e}")
 
-            # Blenderスクリプト生成
-            if show_progress:
-                # st.write("Blenderインポートスクリプトを生成中…")
-                st.write("3D用スクリプトを生成中…")
-            blender_script = out_dir / "blender_import_autogen.py"
-            try:
-                _generate_blender_script(json_path, blender_script)
-            except Exception as e:
-                st.error(f"3D用スクリプト生成でエラー: {e}")
-                return
-
             # Three.js HTMLビューア生成
             if show_progress:
                 st.write("3DビューアHTMLを生成中…")
@@ -1698,8 +1639,6 @@ def main():
             st.session_state.refined_bytes = refined_path.read_bytes()
             st.session_state.json_bytes = json_path.read_bytes()
             st.session_state.json_name = json_path.name
-            st.session_state.blender_bytes = blender_script.read_bytes()
-            st.session_state.blender_name = blender_script.name
             st.session_state.viewer_html_bytes = viewer_html.read_bytes()
             st.session_state.viewer_html_name = viewer_html.name
             if canvas is not None and viz_path.exists():
@@ -1754,12 +1693,11 @@ def main():
                 st.warning(f"⚠️ 自動結合でエラー: {e}")
                 st.session_state.merged_processed = False
             
-            # ZIP生成（JSON+Blenderスクリプト+抽出PNG+3DビューアHTML）
+            # ZIP生成（JSON+抽出PNG+3DビューアHTML）
             try:
                 zip_buf = io.BytesIO()
                 with zipfile.ZipFile(zip_buf, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(st.session_state.json_name, st.session_state.json_bytes)
-                    zf.writestr(st.session_state.blender_name, st.session_state.blender_bytes)
                     zf.writestr(st.session_state.viewer_html_name, st.session_state.viewer_html_bytes)
                     if st.session_state.refined_bytes and st.session_state.refined_name:
                         zf.writestr(st.session_state.refined_name, st.session_state.refined_bytes)
