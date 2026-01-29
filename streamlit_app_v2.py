@@ -17,8 +17,18 @@ import os
 
 def install_ichijo_core():
     """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
-    # まずインストールを試みる（既にインストール済みかどうかは後でチェック）
     print("→ Checking ichijo_core installation...")
+    
+    # 既にインストール済みで正常にインポートできるかチェック
+    try:
+        import ichijo_core
+        print(f"✓ ichijo_core already installed and importable")
+        print(f"  Location: {ichijo_core.__file__}")
+        print(f"  Version: {ichijo_core.__version__}")
+        return True, None
+    except Exception as e:
+        print(f"→ ichijo_core not available: {type(e).__name__}: {e}")
+        print("→ Proceeding with installation...")
     
     # Streamlit Cloudのsecretsからトークンを取得
     try:
@@ -38,31 +48,6 @@ def install_ichijo_core():
         token = st_temp.secrets['GITHUB_TOKEN']
         token_preview = token[:8] + "..." if len(token) > 8 else "***"
         print(f"✓ GITHUB_TOKEN found: {token_preview}")
-        
-        # 既存のichijo_coreを削除（権限エラー対策）
-        print("→ Attempting to uninstall existing ichijo_core...")
-        uninstall_result = subprocess.run(
-            [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-        if uninstall_result.returncode == 0:
-            print("✓ Existing ichijo_core uninstalled")
-        else:
-            print("→ No existing ichijo_core found (or uninstall failed)")
-        
-        # 残存ディレクトリを強制削除
-        import shutil
-        site_packages = os.path.dirname(os.__file__) + '/site-packages'
-        ichijo_core_path = os.path.join(site_packages, 'ichijo_core')
-        if os.path.exists(ichijo_core_path):
-            print(f"→ Removing residual directory: {ichijo_core_path}")
-            try:
-                shutil.rmtree(ichijo_core_path, ignore_errors=True)
-                print("✓ Residual directory removed")
-            except Exception as e:
-                print(f"→ Could not remove directory: {e}")
         
         # 一時ディレクトリを作成（インストール先）
         import tempfile
