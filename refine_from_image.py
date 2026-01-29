@@ -268,8 +268,13 @@ def refine_floor_plan_from_image(
     """
     print(f"画像を読み込み中: {image_path}")
     
-    # 画像読み込み（グレースケール）
-    image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+    # 画像読み込み（グレースケール）- 日本語パス対応
+    # cv2.imreadは日本語パスを扱えないため、numpy経由で読み込む
+    import numpy as np
+    from PIL import Image
+    
+    pil_img = Image.open(str(image_path))
+    image = np.array(pil_img.convert('L'))  # グレースケール変換
     
     if image is None:
         raise ValueError(f"画像を読み込めませんでした: {image_path}")
@@ -332,9 +337,11 @@ def refine_floor_plan_from_image(
     # 白黒反転（黒線が黒になるように）
     refined = cv2.bitwise_not(cropped)
     
-    # 保存
+    # 保存（日本語パス対応）
     output_path = f"refined_t{black_threshold}_w{min_thickness}.png"
-    cv2.imwrite(output_path, refined)
+    from PIL import Image as PILImage
+    pil_img = PILImage.fromarray(refined)
+    pil_img.save(output_path)
     
     print(f"\n[OK] 完了: {output_path}")
     print(f"  出力サイズ: {refined.shape[1]}x{refined.shape[0]} ピクセル")

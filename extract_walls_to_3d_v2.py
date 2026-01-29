@@ -279,8 +279,11 @@ def process_image_to_3d(image_path, output_json, wall_height=2.4, pixel_to_meter
     """
     print(f"Processing: {image_path}")
     
-    # 画像読み込み
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    # 画像読み込み（日本語パス対応）
+    import numpy as np
+    from PIL import Image as PILImage
+    pil_img = PILImage.open(image_path)
+    img = np.array(pil_img.convert('L'))  # グレースケール変換
     if img is None:
         print(f"Error: Could not load image: {image_path}")
         return None

@@ -157,9 +157,17 @@ def visualize_3d_walls(json_path, output_image="walls_3d_visualization.png", sca
             outline_color = (0, 150, 0)
             cv2.rectangle(canvas, (x1_px, y2_px), (x2_px, y1_px), outline_color, 2)
     
-    # 保存
-    cv2.imwrite(output_image, canvas)
-    print(f"Saved: {output_image}")
+    # 保存（日本語パス対応）
+    try:
+        from PIL import Image as PILImage
+        pil_img = PILImage.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
+        pil_img.save(output_image)
+        print(f"Saved: {output_image}")
+    except Exception as e:
+        print(f"ERROR saving image: {e}")
+        import traceback
+        traceback.print_exc()
+        raise
     
     return canvas
 

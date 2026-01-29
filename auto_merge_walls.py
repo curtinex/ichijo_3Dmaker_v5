@@ -31,8 +31,11 @@ class WallAutoMerger:
         """refined画像を読み込んで骨格化"""
         print(f"Loading refined image: {refined_image_path}")
         
-        # グレースケールで読み込み
-        refined = cv2.imread(str(refined_image_path), cv2.IMREAD_GRAYSCALE)
+        # グレースケールで読み込み（日本語パス対応）
+        import numpy as np
+        from PIL import Image as PILImage
+        pil_img = PILImage.open(str(refined_image_path))
+        refined = np.array(pil_img.convert('L'))  # グレースケール変換
         if refined is None:
             raise ValueError(f"Cannot load image: {refined_image_path}")
         
@@ -46,9 +49,11 @@ class WallAutoMerger:
         skeleton = skeletonize(binary > 0)
         skeleton_img = (skeleton * 255).astype(np.uint8)
         
-        # デバッグ用に骨格画像を保存
+        # デバッグ用に骨格画像を保存（日本語パス対応）
         skeleton_path = Path(refined_image_path).parent / "skeleton_debug.png"
-        cv2.imwrite(str(skeleton_path), skeleton_img)
+        from PIL import Image as PILImage
+        pil_img = PILImage.fromarray(skeleton_img)
+        pil_img.save(str(skeleton_path))
         print(f"  Skeleton saved: {skeleton_path}")
         
         return skeleton_img, refined.shape, refined
@@ -454,9 +459,11 @@ class WallAutoMerger:
                 cv2.circle(vis_img, closest_pair[0], 12, (0, 255, 255), 2)
                 cv2.circle(vis_img, closest_pair[1], 12, (0, 255, 255), 2)
         
-        # 保存
+        # 保存（日本語パス対応）
         debug_path = output_dir / "merge_debug_visualization.png"
-        cv2.imwrite(str(debug_path), vis_img)
+        from PIL import Image as PILImage
+        pil_img = PILImage.fromarray(cv2.cvtColor(vis_img, cv2.COLOR_BGR2RGB))
+        pil_img.save(str(debug_path))
         print(f"  Debug visualization saved: {debug_path}")
     
     def process(self, refined_image_path, walls_json_path, output_json_path):
