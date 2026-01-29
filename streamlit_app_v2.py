@@ -4394,6 +4394,7 @@ def main():
                                                         #st.info("フォールバックで候補が見つかりました。結合を実行します。")
                                                         append_debug(f"Fallback candidates found")
                                                     else:
+                                                        pass
                                                         #st.warning("フォールバックでも候補が見つかりませんでした。")
                                                 except Exception:
                                                     pass
@@ -4481,6 +4482,14 @@ def main():
                                                         'direction': 'クリック選択',
                                                         'deleted_walls': []
                                                     })
+                                                    st.session_state.rect_coords = []                    # 現在選択中の2点をクリア
+                                                    st.session_state.rect_coords_list = []               # 確定済み選択範囲リストをクリア
+                                                    st.session_state.reset_flag = True                   # リセットフラグを設定
+                                                    st.session_state.last_click = None                   # 最後のクリック位置をクリア
+                                                    st.session_state.merge_result = None                 # 結合結果をクリア
+                                                    st.session_state.selected_walls_for_merge = []       # 線を結合モードの壁選択をクリア
+                                                    st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
+                                                    st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
                                                 except Exception as e:
                                                     st.error(f"結合実行エラー: {e}")
                                                     import traceback
