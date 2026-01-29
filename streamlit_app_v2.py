@@ -387,11 +387,11 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             '            dirLight.shadow.bias = -0.0005;\n'
             '            // シャドウカメラの範囲調整は遅延して行う（maxX/minX が後で計算されるため）\n'
             '            scene.add(dirLight);\n\n'
-            '            // 遅延実行でシャドウカメラを図面サイズに合わせる\n'
+            '            // 遅延実行でシャドウカメラを図面サイズに合わせる（安全に maxX/minX を参照）\n'
             '            setTimeout(() => {\n'
             '                try {\n'
             '                    if (dirLight.shadow && dirLight.shadow.camera) {\n'
-            '                        const s = Math.max((typeof floorW !== "undefined" ? floorW : (maxX - minX)), (typeof floorD !== "undefined" ? floorD : (maxY - minY)), 10);\n'
+            '                        const s = Math.max((typeof floorW !== "undefined" ? floorW : ((typeof maxX !== "undefined" && typeof minX !== "undefined") ? (maxX - minX) : 10)), (typeof floorD !== "undefined" ? floorD : ((typeof maxY !== "undefined" && typeof minY !== "undefined") ? (maxY - minY) : 10)), 10);\n'
             '                        if (dirLight.shadow.camera.isOrthographicCamera) {\n'
             '                            dirLight.shadow.camera.left = -s;\n'
             '                            dirLight.shadow.camera.right = s;\n'
@@ -418,8 +418,8 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
                     // 天井生成
                     const avgWallHeight = walls.reduce((sum, w) => sum + w.height, 0) / walls.length || 2.7;
                     // floorW/floorD はフロア生成時に定義されない場合があるため、ここでは図面の範囲から算出する
-                    const _floorW = (typeof floorW !== 'undefined') ? floorW : (maxX - minX);
-                    const _floorD = (typeof floorD !== 'undefined') ? floorD : (maxY - minY);
+                    const _floorW = (typeof floorW !== 'undefined') ? floorW : ((typeof maxX !== 'undefined' && typeof minX !== 'undefined') ? (maxX - minX) : 10);
+                    const _floorD = (typeof floorD !== 'undefined') ? floorD : ((typeof maxY !== 'undefined' && typeof minY !== 'undefined') ? (maxY - minY) : 10);
                     const ceilingGeometry = new THREE.BoxGeometry(_floorW, 0.1, _floorD);
                     const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f0 });
                     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
