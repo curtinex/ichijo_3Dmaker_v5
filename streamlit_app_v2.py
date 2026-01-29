@@ -51,15 +51,13 @@ def _display_to_meter(display_x, display_y, display_scale, orig_img_height, marg
     meter_y = (orig_img_height - orig_y - margin) / scale_px + min_y
     return meter_x, meter_y, orig_x, orig_y
 
-# ローカルモジュール
-from pdf_to_image import pdf_to_image
-from refine_from_image import refine_floor_plan_from_image
-from extract_walls_to_3d_v2 import process_image_to_3d
-from visualize_3d_walls import visualize_3d_walls
-from auto_merge_walls import WallAutoMerger
-
-# ichijo_core からビジネスロジック関数をインポート（必須）
+# ichijo_core から全モジュールをインポート（必須）
 try:
+    from ichijo_core.pdf_to_image import pdf_to_image
+    from ichijo_core.refine_from_image import refine_floor_plan_from_image
+    from ichijo_core.extract_walls_to_3d_v2 import process_image_to_3d
+    from ichijo_core.visualize_3d_walls import visualize_3d_walls
+    from ichijo_core.auto_merge_walls import WallAutoMerger
     from ichijo_core.geometry_utils import (
         calc_distance as _calc_distance,
         calc_angle_diff as _calc_angle_diff,
