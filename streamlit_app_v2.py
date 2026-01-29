@@ -3134,12 +3134,8 @@ def main():
 
                                 # 端点が重なって複数の壁が検出される場合、縦横を判定して最適な2本を選択
                                 try:
-                                    if len(walls_in_rect_check) == 4:
-                                        # 4本の場合：縦横を分類して最も近い平行な壁のペアを選ぶ
-                                        best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
-                                        walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
-                                    elif len(walls_in_rect_check) == 3:
-                                        # 3本の場合：4本の選択ロジックを流用（3本でも縦横分類できる）
+                                    if len(walls_in_rect_check) >= 3:
+                                        # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
                                         walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
                                     else:
@@ -3188,7 +3184,7 @@ def main():
                                             pass
                                     except Exception:
                                         pass
-                                    st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）")
+                                    st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
                                 elif len(walls_in_rect_filtered) == 0:
                                     st.error("❌ **この範囲に壁が検出されませんでした。**\n\n💡 **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
                                 elif len(walls_in_rect_filtered) == 1:
