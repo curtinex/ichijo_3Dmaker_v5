@@ -729,6 +729,14 @@ def _select_best_wall_pair_from_4(walls):
         else:
             horizontal_walls.append(wall)
     
+    # デバッグ情報を追加
+    try:
+        v_ids = [w.get('id', '?') for w in vertical_walls]
+        h_ids = [w.get('id', '?') for w in horizontal_walls]
+        append_debug(f"Wall classification: vertical={v_ids} ({len(vertical_walls)}), horizontal={h_ids} ({len(horizontal_walls)})")
+    except:
+        pass
+    
     # 縦方向の壁が2本ある場合：各壁の平均X座標の差を計算
     dX = float('inf')
     if len(vertical_walls) >= 2:
@@ -751,13 +759,39 @@ def _select_best_wall_pair_from_4(walls):
         
         dY = abs(avg_y1 - avg_y2)
     
+    # デバッグ情報を追加
+    try:
+        append_debug(f"Distance comparison: dX={dX:.3f}, dY={dY:.3f}")
+    except:
+        pass
+    
     # dXとdYの小さい方が結合すべき壁の組み合わせ
+    # 両方ともinfの場合（縦2本も横2本もない）はNoneを返す
+    if dX == float('inf') and dY == float('inf'):
+        try:
+            append_debug(f"ERROR: No valid pair found (both dX and dY are inf)")
+        except:
+            pass
+        return None
+    
     if dX < dY:
         # 縦方向の壁2本を選択
-        return vertical_walls[:2] if len(vertical_walls) >= 2 else None
+        result = vertical_walls[:2] if len(vertical_walls) >= 2 else None
+        try:
+            result_ids = [w.get('id', '?') for w in result] if result else []
+            append_debug(f"Selected vertical walls: {result_ids}")
+        except:
+            pass
+        return result
     else:
         # 横方向の壁2本を選択
-        return horizontal_walls[:2] if len(horizontal_walls) >= 2 else None
+        result = horizontal_walls[:2] if len(horizontal_walls) >= 2 else None
+        try:
+            result_ids = [w.get('id', '?') for w in result] if result else []
+            append_debug(f"Selected horizontal walls: {result_ids}")
+        except:
+            pass
+        return result
 
 
 def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
@@ -3136,6 +3170,18 @@ def main():
 
                                 # 端点が重なって複数の壁が検出される場合、縦横を判定して最適な2本を選択
                                 try:
+                                    # デバッグ: 検出された全ての壁の情報を表示
+                                    try:
+                                        all_wall_details = []
+                                        for w in walls_in_rect_check:
+                                            dx = abs(w['end'][0] - w['start'][0])
+                                            dy = abs(w['end'][1] - w['start'][1])
+                                            direction = "縦" if dx < dy else "横"
+                                            all_wall_details.append(f"ID{w['id']}({direction})")
+                                        append_debug(f"Detected walls before filtering: {', '.join(all_wall_details)}")
+                                    except:
+                                        pass
+                                    
                                     if len(walls_in_rect_check) >= 3:
                                         # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
@@ -3186,7 +3232,17 @@ def main():
                                             pass
                                     except Exception:
                                         pass
-                                    st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
+                                    # デバッグ: 選択された壁の詳細情報を表示
+                                    try:
+                                        wall_details = []
+                                        for w in walls_in_rect_filtered:
+                                            dx = abs(w['end'][0] - w['start'][0])
+                                            dy = abs(w['end'][1] - w['start'][1])
+                                            direction = "縦" if dx < dy else "横"
+                                            wall_details.append(f"ID{w['id']}({direction}, dx={dx:.2f}, dy={dy:.2f})")
+                                        st.info(f"🎯 この範囲に2本の壁が検出されました\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本\n選択された壁: {', '.join(wall_details)}")
+                                    except Exception:
+                                        st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
                                 elif len(walls_in_rect_filtered) == 0:
                                     st.error("❌ **この範囲に壁が検出されませんでした。**\n\n💡 **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
                                 elif len(walls_in_rect_filtered) == 1:
