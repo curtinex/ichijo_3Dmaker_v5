@@ -93,6 +93,12 @@ def install_ichijo_core():
         if result.returncode == 0:
             print("✓ ichijo_core installed successfully")
             print(f"STDOUT: {result.stdout[-500:]}")  # 最後の500文字
+            
+            # インポートキャッシュを無効化（新しいパスを認識させる）
+            import importlib
+            importlib.invalidate_caches()
+            print("✓ Import caches invalidated")
+            
             return True, None
         else:
             error_msg = f"pip install failed (exit code {result.returncode})"
