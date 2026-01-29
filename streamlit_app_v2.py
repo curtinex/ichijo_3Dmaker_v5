@@ -255,7 +255,22 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
 
                     mesh.castShadow = true;
                     mesh.receiveShadow = true;
+                    // ポリゴンのZファイティングを避けるためにポリゴンオフセットを有効化
+                    if (mesh.material) {
+                        mesh.material.polygonOffset = true;
+                        mesh.material.polygonOffsetFactor = 1;
+                        mesh.material.polygonOffsetUnits = 1;
+                    }
                     scene.add(mesh);
+
+                    // エッジを薄く描画して壁の境界を明瞭にする
+                    const edgeGeom = new THREE.EdgesGeometry(geometry);
+                    const edgeMat = new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 1, transparent: true, opacity: 0.8 });
+                    const edgeLines = new THREE.LineSegments(edgeGeom, edgeMat);
+                    edgeLines.position.copy(mesh.position);
+                    edgeLines.rotation.copy(mesh.rotation);
+                    edgeLines.renderOrder = 2;
+                    scene.add(edgeLines);
                 });
 
                 // 床生成
@@ -365,51 +380,8 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
         # 照明付きバージョン：白壁、黒背景、スポットライト
         emissive_intensity = '0.05'
         background_color = '0x000000'
-        ambient_light_code = (
-            'const ambientLight = new THREE.AmbientLight(0xffffff, 0.12);\n'
-            '            scene.add(ambientLight);\n\n'
-            '            // HemisphereLight: 空と地面の色差で自然な拡散光を追加\n'
-            '            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.9);\n'
-            '            hemiLight.position.set(0, 50, 0);\n'
-            '            scene.add(hemiLight);'
-        )
-        directional_light_code = (
-            '// メインの方向光: メインシャドウと形状の強調\n'
-            '            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);\n'
-            '            dirLight.position.set(30, 40, 20);\n'
-            '            dirLight.target = new THREE.Object3D();\n'
-            '            dirLight.target.position.set(0, 0, 0);\n'
-            '            scene.add(dirLight.target);\n'
-            '            dirLight.castShadow = true;\n'
-            '            // 高解像度のシャドウで境界をくっきりさせる\n'
-            '            dirLight.shadow.mapSize.width = 2048;\n'
-            '            dirLight.shadow.mapSize.height = 2048;\n'
-            '            dirLight.shadow.bias = -0.0005;\n'
-            '            // シャドウカメラの範囲調整は遅延して行う（maxX/minX が後で計算されるため）\n'
-            '            scene.add(dirLight);\n\n'
-            '            // 遅延実行でシャドウカメラを図面サイズに合わせる（安全に maxX/minX を参照）\n'
-            '            setTimeout(() => {\n'
-            '                try {\n'
-            '                    if (dirLight.shadow && dirLight.shadow.camera) {\n'
-            '                        const s = Math.max((typeof floorW !== "undefined" ? floorW : ((typeof maxX !== "undefined" && typeof minX !== "undefined") ? (maxX - minX) : 10)), (typeof floorD !== "undefined" ? floorD : ((typeof maxY !== "undefined" && typeof minY !== "undefined") ? (maxY - minY) : 10)), 10);\n'
-            '                        if (dirLight.shadow.camera.isOrthographicCamera) {\n'
-            '                            dirLight.shadow.camera.left = -s;\n'
-            '                            dirLight.shadow.camera.right = s;\n'
-            '                            dirLight.shadow.camera.top = s;\n'
-            '                            dirLight.shadow.camera.bottom = -s;\n'
-            '                            dirLight.shadow.camera.near = 0.5;\n'
-            '                            dirLight.shadow.camera.far = 200;\n'
-            '                            dirLight.shadow.camera.updateProjectionMatrix();\n'
-            '                        }\n'
-            '                    }\n'
-            '                } catch (e) { /* ignore if vars not ready */ }\n'
-            '            }, 0);\n\n'
-            '            // 補助のリムライト（反対側からの弱い光で輪郭を浮かび上がらせる）\n'
-            '            const rimLight = new THREE.DirectionalLight(0xfff2e0, 0.25);\n'
-            '            rimLight.position.set(-20, 10, -20);\n'
-            '            rimLight.castShadow = false;\n'
-            '            scene.add(rimLight);'
-        )
+        ambient_light_code = 'const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);\n\n            scene.add(ambientLight);'
+        directional_light_code = '// ディレクショナルライトなし（スポットライトのみ）'
         
         lights_code = '''
                     // スポットライト配置
@@ -418,8 +390,8 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
                     // 天井生成
                     const avgWallHeight = walls.reduce((sum, w) => sum + w.height, 0) / walls.length || 2.7;
                     // floorW/floorD はフロア生成時に定義されない場合があるため、ここでは図面の範囲から算出する
-                    const _floorW = (typeof floorW !== 'undefined') ? floorW : ((typeof maxX !== 'undefined' && typeof minX !== 'undefined') ? (maxX - minX) : 10);
-                    const _floorD = (typeof floorD !== 'undefined') ? floorD : ((typeof maxY !== 'undefined' && typeof minY !== 'undefined') ? (maxY - minY) : 10);
+                    const _floorW = (typeof floorW !== 'undefined') ? floorW : (maxX - minX);
+                    const _floorD = (typeof floorD !== 'undefined') ? floorD : (maxY - minY);
                     const ceilingGeometry = new THREE.BoxGeometry(_floorW, 0.1, _floorD);
                     const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f0 });
                     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
@@ -472,17 +444,12 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
         # 通常バージョン：白壁、ライトグレー背景、ディレクショナルライトあり
         emissive_intensity = '0.4'
         background_color = '0xf0f0f0'
-        ambient_light_code = '''const ambientLight = new THREE.AmbientLight(0xffffff, 0.18);
-            scene.add(ambientLight);
-
-            // HemisphereLight: 上空と地面の色差で柔らかな拡散光を追加
-            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.7);
-            hemiLight.position.set(0, 50, 0);
-            scene.add(hemiLight);'''
-        # デフォルトのディレクショナルライトを設置して影と輪郭を出す
-        directional_light_code = '''const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-            // 少し斜め上から照らすことで影と形状を強調
-            dirLight.position.set(20, 30, 10);
+        ambient_light_code = 'const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);\n\n            scene.add(ambientLight);'
+        # デフォルトのディレクショナルライトを原点の真上に固定して影が斜めにならないようにする
+        directional_light_code = '''const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+            // 真上から照らす（シーン原点を照らす）
+            dirLight.position.set(0, 50, 0);
+            // ターゲットを原点に設定
             dirLight.target = new THREE.Object3D();
             dirLight.target.position.set(0, 0, 0);
             scene.add(dirLight.target);
@@ -491,26 +458,17 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             dirLight.shadow.mapSize.width = 2048;
             dirLight.shadow.mapSize.height = 2048;
             dirLight.shadow.bias = -0.0005;
-            // シャドウカメラの範囲をフロア/図面サイズに合わせて自動調整
-            if (dirLight.shadow && dirLight.shadow.camera) {
-                const s = Math.max((typeof floorW !== 'undefined' ? floorW : (maxX - minX)), (typeof floorD !== 'undefined' ? floorD : (maxY - minY)), 10);
-                if (dirLight.shadow.camera.isOrthographicCamera) {
-                    dirLight.shadow.camera.left = -s;
-                    dirLight.shadow.camera.right = s;
-                    dirLight.shadow.camera.top = s;
-                    dirLight.shadow.camera.bottom = -s;
-                    dirLight.shadow.camera.near = 0.5;
-                    dirLight.shadow.camera.far = 200;
-                    dirLight.shadow.camera.updateProjectionMatrix();
-                }
+            // オルソカメラの範囲はフロアサイズに合わせて自動調整（floorW/floorD が存在すれば利用）
+            if (dirLight.shadow && dirLight.shadow.camera && dirLight.shadow.camera.isOrthographicCamera) {
+                const s = Math.max((typeof floorW !== 'undefined' ? floorW : 10), (typeof floorD !== 'undefined' ? floorD : 10));
+                dirLight.shadow.camera.left = -s;
+                dirLight.shadow.camera.right = s;
+                dirLight.shadow.camera.top = s;
+                dirLight.shadow.camera.bottom = -s;
+                dirLight.shadow.camera.near = 0.5;
+                dirLight.shadow.camera.far = 200;
             }
-            scene.add(dirLight);
-
-            // 補助のリムライト（反対側からの弱い光で輪郭を浮かび上がらせる）
-            const rimLight = new THREE.DirectionalLight(0xfff2e0, 0.25);
-            rimLight.position.set(-15, 8, -15);
-            rimLight.castShadow = false;
-            scene.add(rimLight);'''
+            scene.add(dirLight);'''
         lights_code = '                    // 照明機能なし\n\n'
     
     # プレースホルダーを置換
