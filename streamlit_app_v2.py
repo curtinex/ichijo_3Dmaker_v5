@@ -2783,10 +2783,20 @@ def main():
                             st.session_state.last_click = None
                             st.session_state.merge_result = None  # 結合結果もクリア
                             st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
+                            st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
+                            st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
                             st.rerun()
                     
-                    # 線を結合モード：選択された壁をハイライト表示
+                    # 線を結合モード・窓追加モード・線削除モード：選択された壁をハイライト表示
+                    selected_walls_to_highlight = []
                     if edit_mode == "線を結合" and len(st.session_state.selected_walls_for_merge) > 0:
+                        selected_walls_to_highlight = st.session_state.selected_walls_for_merge
+                    elif edit_mode == "窓を追加" and len(st.session_state.selected_walls_for_window) > 0:
+                        selected_walls_to_highlight = st.session_state.selected_walls_for_window
+                    elif edit_mode == "線を削除" and len(st.session_state.selected_walls_for_delete) > 0:
+                        selected_walls_to_highlight = st.session_state.selected_walls_for_delete
+                    
+                    if len(selected_walls_to_highlight) > 0:
                         try:
                             json_data_highlight = json.loads(st.session_state.json_bytes.decode("utf-8"))
                             walls_highlight = json_data_highlight.get('walls', [])
@@ -2803,8 +2813,14 @@ def main():
                             img_height_highlight = viz_img.height
                             
                             # 選択された壁を色分けして描画
-                            colors = [(255, 0, 0), (0, 255, 0)]  # 1本目：青、2本目：緑（BGR形式）
-                            for idx, wall in enumerate(st.session_state.selected_walls_for_merge):
+                            # 線を結合・窓追加：1本目青、2本目緑
+                            # 線削除：すべて赤
+                            if edit_mode == "線を削除":
+                                colors = [(0, 0, 255)] * 20  # 赤色で統一（BGR形式）
+                            else:
+                                colors = [(255, 0, 0), (0, 255, 0)]  # 1本目：青、2本目：緑（BGR形式）
+                            
+                            for idx, wall in enumerate(selected_walls_to_highlight):
                                 start_m = wall['start']
                                 end_m = wall['end']
                                 
@@ -2838,7 +2854,7 @@ def main():
                                 # 番号を描画（黒文字）
                                 cv2.putText(display_img_array, text, (text_x, text_y), 
                                           cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
-                        except Exception as e:
+                        except Exception:
                             pass  # エラー時は無視
                     
                     # 確定済みの四角形を描画（異なる色で）
@@ -3248,17 +3264,21 @@ def main():
                             st.info("✅ **1本目選択完了** → 2本目の壁線をクリックしてください")
                         elif len(st.session_state.selected_walls_for_merge) == 2:
                             st.success("✅ **2本選択完了** → 右側の「🔗 結合実行」ボタンをクリックしてください")
+                    elif edit_mode == "窓を追加":
+                        # 窓追加モード：壁線クリック選択（2本）
+                        if len(st.session_state.selected_walls_for_window) == 0:
+                            st.write("💡 **窓で繋ぎたい壁線を1本目クリックしてください**")
+                        elif len(st.session_state.selected_walls_for_window) == 1:
+                            st.info("✅ **1本目選択完了** → 2本目の壁線をクリックしてください")
+                        elif len(st.session_state.selected_walls_for_window) == 2:
+                            st.success("✅ **2本選択完了** → 右側で窓パラメータを入力して「🪟 窓追加実行」ボタンをクリックしてください")
                     elif edit_mode == "線を削除":
-                        # 削除モード：2点選択で四角形を指定
-                        if len(st.session_state.rect_coords) == 1:
-                            pass
-                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
-                        elif len(st.session_state.rect_coords) == 2:
-                            p1, p2 = st.session_state.rect_coords
-                            x1, y1 = min(p1[0], p2[0]), min(p1[0], p2[1])
-                            x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                            st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
-                        st.write("画像を2点クリックして対象の壁を選択してください（1点目→2点目）")
+                        # 線削除モード：壁線クリック選択（複数本可能）
+                        num_selected = len(st.session_state.selected_walls_for_delete)
+                        if num_selected == 0:
+                            st.write("💡 **削除したい壁線をクリックしてください（複数選択可能）**")
+                        else:
+                            st.info(f"✅ **{num_selected}本選択中** → さらに追加する場合はクリック、削除する場合は右側の「🗑️ 削除実行」ボタンをクリックしてください")
                     elif edit_mode == "スケール校正":
                         # スケール校正モード：2点選択で線を囲む
                         if len(st.session_state.rect_coords) == 1:
@@ -3483,8 +3503,87 @@ def main():
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"壁選択エラー: {e}")
+                        elif edit_mode == "窓を追加":
+                            # 窓追加モード：壁線をクリックで選択（最大2本）
+                            if st.session_state.last_click == new_point:
+                                pass
+                            else:
+                                try:
+                                    json_data_window = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    walls_window = json_data_window.get('walls', [])
+                                    
+                                    all_x_window = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
+                                    all_y_window = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
+                                    min_x_window = min(all_x_window)
+                                    min_y_window = min(all_y_window)
+                                    max_x_window = max(all_x_window)
+                                    max_y_window = max(all_y_window)
+                                    
+                                    scale_window = int(st.session_state.viz_scale)
+                                    margin_window = 50
+                                    img_height_window = viz_img.height
+                                    
+                                    # クリック位置から最も近い壁を検出
+                                    nearest_wall, distance = _find_nearest_wall_from_click(
+                                        new_point[0], new_point[1],
+                                        walls_window, scale_window, margin_window,
+                                        img_height_window, min_x_window, min_y_window, max_x_window, max_y_window,
+                                        threshold=20
+                                    )
+                                    
+                                    if nearest_wall is not None:
+                                        # 既に選択されている場合は選択解除
+                                        if nearest_wall in st.session_state.selected_walls_for_window:
+                                            st.session_state.selected_walls_for_window.remove(nearest_wall)
+                                        else:
+                                            # 最大2本まで選択可能
+                                            if len(st.session_state.selected_walls_for_window) < 2:
+                                                st.session_state.selected_walls_for_window.append(nearest_wall)
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"壁選択エラー: {e}")
                         elif edit_mode == "線を削除":
-                            # 削除モード：2点選択で四角形、2点目で自動追加
+                            # 線削除モード：壁線をクリックで選択（複数本可能）
+                            if st.session_state.last_click == new_point:
+                                pass
+                            else:
+                                try:
+                                    json_data_delete = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    walls_delete = json_data_delete.get('walls', [])
+                                    
+                                    all_x_delete = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
+                                    all_y_delete = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
+                                    min_x_delete = min(all_x_delete)
+                                    min_y_delete = min(all_y_delete)
+                                    max_x_delete = max(all_x_delete)
+                                    max_y_delete = max(all_y_delete)
+                                    
+                                    scale_delete = int(st.session_state.viz_scale)
+                                    margin_delete = 50
+                                    img_height_delete = viz_img.height
+                                    
+                                    # クリック位置から最も近い壁を検出
+                                    nearest_wall, distance = _find_nearest_wall_from_click(
+                                        new_point[0], new_point[1],
+                                        walls_delete, scale_delete, margin_delete,
+                                        img_height_delete, min_x_delete, min_y_delete, max_x_delete, max_y_delete,
+                                        threshold=20
+                                    )
+                                    
+                                    if nearest_wall is not None:
+                                        # 既に選択されている場合は選択解除
+                                        if nearest_wall in st.session_state.selected_walls_for_delete:
+                                            st.session_state.selected_walls_for_delete.remove(nearest_wall)
+                                        else:
+                                            # 複数本選択可能
+                                            st.session_state.selected_walls_for_delete.append(nearest_wall)
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"壁選択エラー: {e}")
+                        elif edit_mode == "スケール校正":
+                            # スケール校正モード：2点選択
                             if len(st.session_state.rect_coords) < 2:
                                 if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
                                     st.session_state.rect_coords.append(new_point)
@@ -4179,14 +4278,62 @@ def main():
                                 import traceback
                                 st.code(traceback.format_exc())
                         
-                        elif edit_mode != "窓を追加" and ((edit_mode == "線を結合" and len(st.session_state.selected_walls_for_merge) == 2) or (edit_mode != "線を結合" and (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2))):
-                            # 結合・追加・削除モードの実行ボタン（窓追加モードは上記で別処理）
+                        elif edit_mode in ("線を結合", "窓を追加", "線を削除") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
+                            # 結合・窓追加・削除モードの実行ボタン
                             should_execute = False
                             
-                            # 線を結合モードの場合は2本選択完了時のみボタンを有効化
+                            # 各モードで選択完了時のみボタンを有効化
                             if edit_mode == "線を結合":
                                 if len(st.session_state.selected_walls_for_merge) == 2:
-                                    if st.button(button_label, type="primary", key="btn_general_edit_exec"):
+                                    if st.button(button_label, type="primary", key="btn_merge_exec"):
+                                        should_execute = True
+                            elif edit_mode == "窓を追加":
+                                if len(st.session_state.selected_walls_for_window) == 2:
+                                    # 窓パラメータ入力フォーム
+                                    st.markdown("### 🪟 窓のサイズを入力")
+                                    
+                                    col1, col2, col3 = st.columns(3)
+                                    
+                                    with col1:
+                                        window_model = st.selectbox(
+                                            "窓の型番",
+                                            list(WINDOW_CATALOG.keys()),
+                                            help="窓の型番を選択してください",
+                                            key="window_model_click"
+                                        )
+                                        window_width_mm = WINDOW_CATALOG[window_model]
+                                    
+                                    with col2:
+                                        window_height_mm = st.number_input(
+                                            "窓長さ(高さ) (mm)",
+                                            min_value=50,
+                                            max_value=3000,
+                                            value=1200,
+                                            step=1,
+                                            key="window_height_click"
+                                        )
+                                    
+                                    with col3:
+                                        window_base_mm = st.number_input(
+                                            "床から窓下端 (mm)",
+                                            min_value=0,
+                                            max_value=5000,
+                                            value=900,
+                                            step=1,
+                                            key="window_base_click"
+                                        )
+                                    
+                                    if st.button(button_label, type="primary", key="btn_window_exec"):
+                                        should_execute = True
+                                        st.session_state.window_click_params = {
+                                            'model': window_model,
+                                            'width_mm': window_width_mm,
+                                            'height_mm': window_height_mm,
+                                            'base_mm': window_base_mm
+                                        }
+                            elif edit_mode == "線を削除":
+                                if len(st.session_state.selected_walls_for_delete) > 0:
+                                    if st.button(button_label, type="primary", key="btn_delete_exec"):
                                         should_execute = True
                             else:
                                 if st.button(button_label, type="primary", key="btn_general_edit_exec"):
@@ -4442,6 +4589,9 @@ def main():
                                                     updated_json = _merge_walls_in_json(updated_json, candidates[:1])
                                                     total_merged_count += 1
                                                     append_debug(f"Merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
+                                                    
+                                                    # 結合成功後、即座に選択リストをクリア（ハイライト消去）
+                                                    st.session_state.selected_walls_for_merge = []
                                                     
                                                     merge_details.append({
                                                         'rect_idx': 0,
@@ -5053,7 +5203,24 @@ def main():
                                         total_deleted_count = 0
                                         delete_details = []
                                         walls_to_delete = []  # 削除対象の壁IDリスト
-                                    
+                                        
+                                        # クリック選択された壁を削除
+                                        if len(st.session_state.selected_walls_for_delete) > 0:
+                                            for wall in st.session_state.selected_walls_for_delete:
+                                                walls_to_delete.append(wall['id'])
+                                                delete_details.append({
+                                                    'method': 'クリック選択',
+                                                    'wall_id': wall['id']
+                                                })
+                                            total_deleted_count = len(walls_to_delete)
+                                            
+                                            # 壁を削除
+                                            if len(walls_to_delete) > 0:
+                                                updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                                # 削除成功後、選択リストをクリア
+                                                st.session_state.selected_walls_for_delete = []
+                                        
+                                        # 四角形ベースの削除（後方互換性のため残す）
                                         for rect_idx, (p1, p2) in enumerate(target_rects):
                                             rect = {
                                                 'left': min(p1[0], p2[0]),
@@ -5071,12 +5238,14 @@ def main():
                                                 # 四角形内の壁をすべて削除対象に追加
                                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
                                                 for wall in walls_in_rect:
-                                                    walls_to_delete.append(wall['id'])
-                                                    delete_details.append({
-                                                        'rect_idx': rect_idx,
-                                                        'color_name': color_name,
-                                                        'wall_id': wall['id']
-                                                    })
+                                                    if wall['id'] not in walls_to_delete:  # 重複を避ける
+                                                        walls_to_delete.append(wall['id'])
+                                                        delete_details.append({
+                                                            'rect_idx': rect_idx,
+                                                            'color_name': color_name,
+                                                            'wall_id': wall['id']
+                                                        })
+                                                        total_deleted_count += 1
                                     
                                         if len(walls_to_delete) > 0:
                                             # 壁を削除
@@ -5173,7 +5342,7 @@ def main():
                                     viewer_html_bytes = temp_viewer_path.read_bytes()
                                 
                                     # オブジェクト配置モード、線を結合モード、線を追加モードでは、比較表示をせず即座にセッションへ反映して続行する
-                                    if edit_mode in ("オブジェクトを配置", "線を結合", "線を追加", "線を削除"):
+                                    if edit_mode in ("オブジェクトを配置", "線を結合", "線を追加", "線を削除", "窓を追加"):
                                         try:
                                             # 更新済みJSON/可視化/ビューアは既に生成済みの場合がある
                                             # ここでは最新の temp_* が存在すればそれをセッションへ反映する
@@ -5188,8 +5357,12 @@ def main():
                                             st.session_state.rect_coords_list = []
                                             st.session_state.last_click = None
                                             st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
+                                            st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
+                                            st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
                                             if 'window_execution_params' in st.session_state:
                                                 del st.session_state.window_execution_params
+                                            if 'window_click_params' in st.session_state:
+                                                del st.session_state.window_click_params
                                             if edit_mode == "線を結合":
                                                 try:
                                                     st.session_state.last_edit_count = total_merged_count
@@ -5197,6 +5370,10 @@ def main():
                                                     st.success(f"✅ 線を結合しました（{total_merged_count} 件）。比較表示をせず保存しました。")
                                                 except Exception:
                                                     st.success("✅ 線を結合しました。比較表示をせず保存しました。")
+                                            elif edit_mode == "窓を追加":
+                                                st.success("✅ 窓を追加しました。比較表示をせず保存しました。")
+                                            elif edit_mode == "線を削除":
+                                                st.success(f"✅ {total_deleted_count}本の壁を削除しました。比較表示をせず保存しました。")
                                             else:
                                                 st.success("✅ オブジェクト配置を保存しました。編集結果を比較表示せず次へ進みます。")
                                             time.sleep(0.3)
