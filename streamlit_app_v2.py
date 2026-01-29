@@ -4205,11 +4205,19 @@ def main():
                                             except Exception:
                                                 pass
 
-                                            st.write(f"**選択範囲内の壁:** {len(walls_to_use)}本")
-                                            if walls_to_use:
-                                                wall_ids_in_selection = [w['id'] for w in walls_to_use]
-                                                wall_display = ", ".join([f"壁({wid})" for wid in wall_ids_in_selection])
-                                                st.write(f"壁: {wall_display}")
+                                            # デバッグログにも追加
+                                            try:
+                                                wall_info = f"選択範囲内の壁: {len(walls_to_use)}本"
+                                                st.write(f"**{wall_info}**")
+                                                append_debug(wall_info)
+                                                if walls_to_use:
+                                                    wall_ids_in_selection = [w['id'] for w in walls_to_use]
+                                                    wall_display = ", ".join([f"壁({wid})" for wid in wall_ids_in_selection])
+                                                    wall_list_info = f"壁: {wall_display}"
+                                                    st.write(wall_list_info)
+                                                    append_debug(wall_list_info)
+                                            except Exception:
+                                                pass
                                         
                                             if len(walls_to_use) >= 2:
                                                 # 複数線が選択されている場合、方向を判定して最も離れた2本のペアのみを結合
@@ -4238,8 +4246,16 @@ def main():
                                                     selected_walls = [bottom_wall, top_wall]
                                                     direction = "Y方向"
                                             
-                                                st.write(f"**方向判定:** {direction} (幅: {rect_width}px, 高さ: {rect_height}px)")
-                                                st.write(f"**結合対象:** 壁({selected_walls[0]['id']}) ← → 壁({selected_walls[1]['id']})")
+                                                # デバッグログにも追加
+                                                try:
+                                                    direction_info = f"方向判定: {direction} (幅: {rect_width}px, 高さ: {rect_height}px)"
+                                                    merge_target_info = f"結合対象: 壁({selected_walls[0]['id']}) ← → 壁({selected_walls[1]['id']})"
+                                                    st.write(f"**{direction_info}**")
+                                                    st.write(f"**{merge_target_info}**")
+                                                    append_debug(direction_info)
+                                                    append_debug(merge_target_info)
+                                                except Exception:
+                                                    pass
                                             
                                                 # 結合候補を探す（選択された2本だけ）
                                                 # 結合側の閾値はプレビューの角度フィルタと合わせて30度に緩和
@@ -4261,9 +4277,10 @@ def main():
                                                                         min_d = d
                                                             ang = _calc_angle_diff(wa, wb)
                                                             pair_debug.append({'wall1': wa.get('id'), 'wall2': wb.get('id'), 'min_endpoint_dist_m': round(min_d,4) if min_d is not None else None, 'angle_diff_deg': round(ang,2)})
+                                                    pair_debug_str = str(pair_debug)
                                                     st.write('**デバッグ (全ペア距離/角度):**', pair_debug)
                                                     try:
-                                                        append_debug(f"Pair debug: {pair_debug}")
+                                                        append_debug(f"全ペア距離/角度: {pair_debug_str}")
                                                     except Exception:
                                                         pass
                                                 except Exception:
@@ -4284,9 +4301,10 @@ def main():
                                                     endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
                                                     endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
                                                     min_dist = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
-                                                    st.write(f"**選択壁の角度差:** {angle_diff_sel:.2f}度, **最短端点距離:** {min_dist:.3f} m")
+                                                    selected_wall_info = f"選択壁の角度差: {angle_diff_sel:.2f}度, 最短端点距離: {min_dist:.3f} m"
+                                                    st.write(f"**{selected_wall_info}**")
                                                     try:
-                                                        append_debug(f"Selected walls angle_diff={angle_diff_sel:.2f}, min_endpoint_dist_m={min_dist:.4f}")
+                                                        append_debug(selected_wall_info)
                                                     except Exception:
                                                         pass
                                                 except Exception:
@@ -4300,9 +4318,10 @@ def main():
                                                             cand_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
                                                         else:
                                                             cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
+                                                    cand_list_str = str(cand_list)
                                                     st.write("**デバッグ (候補一覧):**", cand_list)
                                                     try:
-                                                        append_debug(f"Candidates: {cand_list}")
+                                                        append_debug(f"候補一覧: {cand_list_str}")
                                                     except Exception:
                                                         pass
                                                 except Exception:
