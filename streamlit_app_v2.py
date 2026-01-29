@@ -2768,8 +2768,10 @@ def main():
                                     if len(walls_in_rect_confirmed) >= 3:
                                         # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_confirmed)
-                                        if best_pair:
-                                            walls_in_rect_confirmed = best_pair
+                                        walls_in_rect_confirmed = best_pair if best_pair else walls_in_rect_confirmed[:2]
+                                    else:
+                                        # 2本以下の場合はそのまま使用
+                                        walls_in_rect_confirmed = walls_in_rect_confirmed
                                 except Exception:
                                     pass
 
