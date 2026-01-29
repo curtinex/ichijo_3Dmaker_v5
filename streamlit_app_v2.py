@@ -2492,6 +2492,12 @@ def main():
                     delta=result['updated_json']['metadata']['total_walls'] - result['json_data']['metadata']['total_walls']
                 )
             
+            # デバッグログを表示（rerun後も表示される）
+            if 'debug_log' in result and result['debug_log']:
+                with st.expander("🔍 デバッグログ（詳細情報）", expanded=True):
+                    for log_entry in result['debug_log']:
+                        st.text(log_entry)
+            
             # セッションステート更新の確認
             st.divider()
             col_save, col_discard = st.columns(2)
@@ -4839,6 +4845,9 @@ def main():
                                             edit_count = total_deleted_count
                                             edit_details = delete_details
 
+                                        # デバッグログを保存
+                                        debug_log = st.session_state.get('debug_log', [])
+                                        
                                         st.session_state.merge_result = {
                                             'original_viz_bytes': original_viz_bytes,
                                             'edited_viz_bytes': edited_viz_bytes,
@@ -4849,7 +4858,8 @@ def main():
                                             'temp_viewer_path': temp_viewer_path,
                                             'viewer_html_bytes': viewer_html_bytes,
                                             'edit_count': edit_count,
-                                            'edit_details': edit_details
+                                            'edit_details': edit_details,
+                                            'debug_log': debug_log.copy()  # デバッグログをコピーして保存
                                         }
                                         # 編集状態をリセット
                                         st.session_state.rect_coords = []
