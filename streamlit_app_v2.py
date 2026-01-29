@@ -220,13 +220,13 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             
             info.innerHTML = `<strong>間取り図 3Dビューア</strong><br>壁数: ${walls.length}<br>マウス: 回転・拡大縮小・移動`;
 
-            // 壁マテリアル（視認性向上のため発光を抑え、粗さを上げてシャドウが効くようにする）
+            // 壁マテリアル
             const wallMaterial = new THREE.MeshStandardMaterial({
-                color: 0xf2f2f2, // やや暖かめの薄いグレー
-                emissive: 0x000000, // 発光を無効化
-                emissiveIntensity: EMISSIVE_INTENSITY_PLACEHOLDER, // placeholder の値は残す（0でも機能）
-                roughness: 0.92, // 粗さを高めて拡散反射を強める
-                metalness: 0.0 // 金属感を無くす
+                color: 0xffffff,
+                emissive: 0xffffff,
+                emissiveIntensity: EMISSIVE_INTENSITY_PLACEHOLDER,
+                roughness: 0.7,
+                metalness: 0.1
             });
 
             walls.forEach(wall => {
@@ -365,8 +365,27 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
         # 照明付きバージョン：白壁、黒背景、スポットライト
         emissive_intensity = '0.05'
         background_color = '0x000000'
-        ambient_light_code = 'const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);\n\n            scene.add(ambientLight);'
-        directional_light_code = '// ディレクショナルライトなし（スポットライトのみ）'
+        ambient_light_code = (
+            'const ambientLight = new THREE.AmbientLight(0xffffff, 0.08);\n'
+            '            scene.add(ambientLight);\n\n'
+            '            // HemisphereLight を追加して上方向と下方向の色差で奥行きを出す\n'
+            '            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);\n'
+            '            hemiLight.position.set(0, 50, 0);\n'
+            '            scene.add(hemiLight);'
+        )
+        directional_light_code = (
+            '// メインの方向光で柔らかいリム照明を追加\n'
+            '            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);\n'
+            '            dirLight.position.set(10, 20, 10);\n'
+            '            dirLight.target = new THREE.Object3D();\n'
+            '            dirLight.target.position.set(0, 0, 0);\n'
+            '            scene.add(dirLight.target);\n'
+            '            dirLight.castShadow = true;\n'
+            '            dirLight.shadow.mapSize.width = 1024;\n'
+            '            dirLight.shadow.mapSize.height = 1024;\n'
+            '            dirLight.shadow.bias = -0.0005;\n'
+            '            scene.add(dirLight);'
+        )
         
         lights_code = '''
                     // スポットライト配置
@@ -1407,7 +1426,9 @@ def _generate_blender_script(json_path: Path, out_path: Path) -> Path:
 def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ")
-    st.caption("CAD/図面画像から3Dモデル用データとビューアを生成します。")
+    st.caption("CAD図面から3Dモデルを生成します。\n\n" \
+    "アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。"
+    )
     
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
@@ -2069,7 +2090,7 @@ def main():
                         
                         default_grid = st.session_state.get("step3_grid_input_val", 1.0)
                         grid_count = st.number_input(
-                            "この壁は何マス分ですか？ (1マス=0.9m)",
+                            "この壁は一条工務店CAD図面上で何マス分ですか？ (1マス=0.9m)",
                             min_value=0.1,
                             max_value=100.0,
                             value=float(default_grid),
