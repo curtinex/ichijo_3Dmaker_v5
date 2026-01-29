@@ -220,13 +220,13 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
             
             info.innerHTML = `<strong>間取り図 3Dビューア</strong><br>壁数: ${walls.length}<br>マウス: 回転・拡大縮小・移動`;
 
-            // 壁マテリアル
+            // 壁マテリアル（視認性向上のため発光を抑え、粗さを上げてシャドウが効くようにする）
             const wallMaterial = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                emissive: 0xffffff,
-                emissiveIntensity: EMISSIVE_INTENSITY_PLACEHOLDER,
-                roughness: 0.7,
-                metalness: 0.1
+                color: 0xf2f2f2, // やや暖かめの薄いグレー
+                emissive: 0x000000, // 発光を無効化
+                emissiveIntensity: EMISSIVE_INTENSITY_PLACEHOLDER, // placeholder の値は残す（0でも機能）
+                roughness: 0.92, // 粗さを高めて拡散反射を強める
+                metalness: 0.0 // 金属感を無くす
             });
 
             walls.forEach(wall => {
@@ -336,24 +336,6 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
                     scene.add(furnitureMesh);
                 });
 
-            // すべてのメッシュに対してエッジ(輪郭)を追加（視認性向上）
-            (function addEdgesToMeshes(){
-                scene.traverse(function(obj){
-                    if (obj.isMesh){
-                        try{
-                            const edgesGeom = new THREE.EdgesGeometry(obj.geometry);
-                            const edgeLines = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x333333 }));
-                            edgeLines.renderOrder = 1;
-                            edgeLines.material.depthTest = true;
-                            // わずかにオフセットしてZファイティングを抑制
-                            edgeLines.position.set(0, 0.001, 0);
-                            obj.add(edgeLines);
-                        } catch (e) {
-                            console.warn('エッジ追加失敗:', e);
-                        }
-                    }
-                });
-            })();
 
             // アニメーションループ
             function animate() {
@@ -3125,7 +3107,7 @@ def main():
 
 
 
-                                if len(walls_in_rect_filtered) == 2:
+                                if len(walls_in_rect_filtered) in (2, 3):
                                     # プレビューで2本検出された場合、確定集合にも反映して表示を整合させる
                                     try:
                                         walls_in_rect_confirmed = walls_in_rect_filtered
@@ -3169,7 +3151,7 @@ def main():
                                 elif len(walls_in_rect_filtered) == 1:
                                     st.warning(f"⚠️ **この範囲に1本の壁しか検出されません。**\n\n💡 **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
                                 else:
-                                    st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 **窓で分断された2本の壁だけを含むように**、選択範囲を狭めてください。余分な壁が含まれないように調整してください。")
+                                    st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
                             except Exception:
                                 pass
                     
