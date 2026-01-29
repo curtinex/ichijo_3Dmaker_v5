@@ -68,13 +68,23 @@ def install_ichijo_core():
             except Exception as e:
                 print(f"→ Could not remove directory: {e}")
         
+        # 一時ディレクトリを作成（インストール先）
+        import tempfile
+        target_dir = tempfile.mkdtemp(prefix="ichijo_core_")
+        print(f"→ Created target directory: {target_dir}")
+        
+        # sys.pathに追加（パッケージをインポート可能にする）
+        if target_dir not in sys.path:
+            sys.path.insert(0, target_dir)
+            print(f"✓ Added to sys.path: {target_dir}")
+        
         # コミットハッシュを使用（タグv0.0.4に相当）
         commit_hash = "c66a226"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--user", "--force-reinstall", "--no-cache-dir", install_url],
+            [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", install_url],
             capture_output=True,
             text=True,
             timeout=300  # 5分タイムアウト
