@@ -336,6 +336,24 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
                     scene.add(furnitureMesh);
                 });
 
+            // すべてのメッシュに対してエッジ(輪郭)を追加（視認性向上）
+            (function addEdgesToMeshes(){
+                scene.traverse(function(obj){
+                    if (obj.isMesh){
+                        try{
+                            const edgesGeom = new THREE.EdgesGeometry(obj.geometry);
+                            const edgeLines = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x333333 }));
+                            edgeLines.renderOrder = 1;
+                            edgeLines.material.depthTest = true;
+                            // わずかにオフセットしてZファイティングを抑制
+                            edgeLines.position.set(0, 0.001, 0);
+                            obj.add(edgeLines);
+                        } catch (e) {
+                            console.warn('エッジ追加失敗:', e);
+                        }
+                    }
+                });
+            })();
 
             // アニメーションループ
             function animate() {
@@ -1866,9 +1884,10 @@ def main():
 
                 # ステップ1: 読み取り完了ボタン（左寄せ、押すとStep2へ遷移）
                 st.session_state.setdefault('debug_log', []).append("render: before creating step1_complete button")
-                col_btn, col_rest = st.columns([1, 9])
+                # ボタン列幅を広げ、ボタンをコンテナ幅いっぱいに表示して折返しを防止
+                col_btn, col_rest = st.columns([3, 7])
                 with col_btn:
-                    st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,))
+                    st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
 
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
         if st.session_state.workflow_step >= 2 and st.session_state.processed:
