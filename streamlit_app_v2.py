@@ -3700,12 +3700,6 @@ def main():
                                 # 天井高さ（部屋の高さ）を取得
                                 heights = [w.get('height', 2.4) for w in walls if 'height' in w]
                                 room_height = max(heights) if heights else 2.4
-                                                f"窓高さ={wh_m}m ({wh_mm}mm), "
-                                                f"床から={wb_m}m ({wb_mm}mm), "
-                                                f"合計={wb_m + wh_m}m ({wb_mm + wh_mm}mm)")
-                                        st.write(f"　→ 天井側壁の高さ = {room_height}m - {wb_m + wh_m}m = **{ceiling_h}m ({ceiling_h*1000:.0f}mm)**")
-                                
-                                st.markdown("---")
                                 
                                 # ===== 窓を追加モード =====
                                 # デバッグが必要なため、詳細ログはデフォルトで展開表示する
