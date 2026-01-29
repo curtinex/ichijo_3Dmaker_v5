@@ -3377,7 +3377,7 @@ def main():
                         }
                         
                         # 選択された家具の情報を表示
-                        st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
+                        #st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
                         
                         # 配置範囲のサイズを予測表示
                         if len(st.session_state.rect_coords_list) > 0:
@@ -3389,7 +3389,7 @@ def main():
                                 json_data, 
                                 st.session_state.viz_scale
                             )
-                            st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
+                            #st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
                         
                         if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
                             st.session_state.execute_furniture_placement = True
@@ -3654,9 +3654,8 @@ def main():
                             st.session_state.execute_window_batch = False
                             
                             try:
-                                st.info("🔄 窓追加処理を開始します...")
                                 try:
-                                    append_debug(f"Window-add execute: target_rects_count={len(target_rects)}, window_params_count={len(window_params_list)}")
+                                    append_debug(f"Window-add execute: target_rects_count={len(st.session_state.rect_coords_list)}, window_params_count={len(st.session_state.get('window_params_list', []))}")
                                 except Exception:
                                     pass
                                 
@@ -3698,36 +3697,9 @@ def main():
                                 # 追加した壁のID（赤色表示用）
                                 added_wall_ids = []
                                 
-                                # ===== デバッグ情報を先に表示 =====
-                                st.markdown("---")
-                                st.markdown("### 🔍 窓追加処理のデバッグ情報")
-                                
                                 # 天井高さ（部屋の高さ）を取得
                                 heights = [w.get('height', 2.4) for w in walls if 'height' in w]
                                 room_height = max(heights) if heights else 2.4
-                                
-                                st.info(f"📦 処理対象窓数: {len(target_rects)}個")
-                                st.write(f"**room_height (既存壁の最大高さ):** {room_height}m = {room_height*1000:.0f}mm")
-                                
-                                # 既存壁の高さ分布を表示
-                                if heights:
-                                    st.write(f"**既存壁の高さ一覧:** {[f'{h}m' for h in sorted(set(heights))]}")
-                                    st.write(f"**既存壁の数:** {len(walls)}本")
-                                    # 最初の数本の壁の詳細を表示
-                                    st.write("**既存壁のサンプル（最初の3本）:**")
-                                    for i, w in enumerate(walls[:3]):
-                                        st.write(f"  壁#{w.get('id', i)}: height={w.get('height', 'N/A')}m, base_height={w.get('base_height', 0)}m")
-                                
-                                # 各窓のパラメータを表示
-                                for idx in range(len(target_rects)):
-                                    if idx < len(window_params_list):
-                                        wp = window_params_list[idx]
-                                        wh_mm = wp.get('height_mm', 0)
-                                        wb_mm = wp.get('base_mm', 0)
-                                        wh_m = wh_mm / 1000.0
-                                        wb_m = wb_mm / 1000.0
-                                        ceiling_h = room_height - (wb_m + wh_m)
-                                        st.write(f"**窓#{idx+1}:** 型番={wp.get('model', '不明')}, "
                                                 f"窓高さ={wh_m}m ({wh_mm}mm), "
                                                 f"床から={wb_m}m ({wb_mm}mm), "
                                                 f"合計={wb_m + wh_m}m ({wb_mm + wh_mm}mm)")
@@ -3969,8 +3941,6 @@ def main():
                                     
                                     if edit_mode == "オブジェクトを配置":
                                         # ===== オブジェクトを配置モード =====
-                                        st.markdown("### 🪑 オブジェクト配置処理")
-                                        
                                         # セッションステートから家具パラメータを取得
                                         furniture_params = st.session_state.get('furniture_params', {})
                                         height_option = furniture_params.get('height_option', '30cm')
@@ -3984,22 +3954,13 @@ def main():
                                             furniture_height = FURNITURE_HEIGHT_OPTIONS.get(height_option, 0.3)
                                         
                                         # 各四角形をループして処理
-                                        total_placed_count = 0
-                                        furniture_details = []
-                                        
                                         for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            st.markdown(f"---\n\n**四角形#{rect_idx+1}の処理:**")
-                                            
                                             # 四角形範囲をメートル座標に変換
                                             x_start, y_start, width, depth = _snap_to_grid(
                                                 (p1[0], p1[1], p2[0], p2[1]),
                                                 json_data,
                                                 scale
                                             )
-                                            
-                                            st.write(f"**四角形範囲をそのまま使用:**")
-                                            st.write(f"- 配置位置: ({x_start:.2f}, {y_start:.2f}) m")
-                                            st.write(f"- サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm")
                                             
                                             # 家具を追加
                                             updated_json = _add_furniture_to_json(
@@ -4011,33 +3972,7 @@ def main():
                                                 width,
                                                 depth
                                             )
-                                            
-                                            total_placed_count += 1
-                                            
-                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                            furniture_details.append({
-                                                'rect_idx': rect_idx,
-                                                'color_name': color_name,
-                                                'color': color_option,
-                                                'height': furniture_height,
-                                                'position': (x_start + width/2, y_start + depth/2),
-                                                'dimensions': (width, depth, furniture_height)
-                                            })
-                                            
-                                            st.success(f"✅ {color_option}の家具を配置しました")
                                         
-                                        # 結果サマリー
-                                        st.markdown("---")
-                                        st.success(f"🎉 合計 {total_placed_count}個の家具を配置しました！")
-                                        
-                                        # 詳細リスト
-                                        with st.expander("📋 配置詳細", expanded=True):
-                                            for detail in furniture_details:
-                                                st.write(f"**四角形#{detail['rect_idx']+1}（{detail['color_name']}）:** "
-                                                       f"{detail['color']}の家具 - "
-                                                       f"幅{detail['dimensions'][0]*100:.0f}cm × "
-                                                       f"奥行き{detail['dimensions'][1]*100:.0f}cm × "
-                                                       f"高さ{detail['dimensions'][2]*100:.0f}cm")
                                         # 自動保存: オブジェクト配置結果を JSON/可視化/3Dビューアに反映
                                         try:
                                             temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
@@ -4061,7 +3996,6 @@ def main():
                                             st.session_state.rect_coords = []
                                             st.session_state.rect_coords_list = []
                                             st.session_state.last_click = None
-                                            st.success("✅ オブジェクト配置結果を保存し、可視化・3Dビューアを更新しました。")
                                         except Exception as e:
                                             st.error(f"保存エラー: {e}")
                                         
@@ -4079,12 +4013,7 @@ def main():
                                                 'height': abs(p2[1] - p1[1])
                                             }
                                             try:
-                                                st.info(f"🔍 デバッグ: 結合処理に入りました (rect_idx={rect_idx+1})")
-                                                try:
-                                                    append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
-                                                except Exception:
-                                                    pass
-                                                st.write(f"四角形: {rect}")
+                                                append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
                                             except Exception:
                                                 pass
                                         
@@ -4093,36 +4022,6 @@ def main():
                                             walls_in_selection = _filter_walls_strictly_in_rect(
                                                 updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                             )
-                                            # 追加の可視デバッグ: 四角形のピクセル/メートル座標と各壁のピクセル位置を表示
-                                            try:
-                                                with st.expander(f"🔎 座標マッピング（四角形#{rect_idx+1}）", expanded=False):
-                                                    px_x1, px_y1 = p1
-                                                    px_x2, px_y2 = p2
-                                                    def px_to_meter(px_x, px_y):
-                                                        mx = min_x + (px_x - margin) / scale
-                                                        my = min_y + (img_height - px_y - margin) / scale
-                                                        return mx, my
-
-                                                    m1 = px_to_meter(px_x1, px_y1)
-                                                    m2 = px_to_meter(px_x2, px_y2)
-                                                    st.write({'p1_px': (px_x1, px_y1), 'p2_px': (px_x2, px_y2), 'p1_m': m1, 'p2_m': m2})
-
-                                                    # 各壁のピクセル端点を表示してどの壁が四角形にマッチしたか明示
-                                                    debug_list = []
-                                                    for w in updated_json.get('walls', []):
-                                                        x1_px = int((w['start'][0] - min_x) * scale) + margin
-                                                        y1_px = img_height - (int((w['start'][1] - min_y) * scale) + margin)
-                                                        x2_px = int((w['end'][0] - min_x) * scale) + margin
-                                                        y2_px = img_height - (int((w['end'][1] - min_y) * scale) + margin)
-                                                        in_rect = (
-                                                            (rect['left'] <= x1_px <= rect['left'] + rect['width'] and rect['top'] <= y1_px <= rect['top'] + rect['height']) or
-                                                            (rect['left'] <= x2_px <= rect['left'] + rect['width'] and rect['top'] <= y2_px <= rect['top'] + rect['height']) or
-                                                            _line_intersects_rect(x1_px, y1_px, x2_px, y2_px, rect, tolerance=20)
-                                                        )
-                                                        debug_list.append({'id': w.get('id'), 'start_px': (x1_px, y1_px), 'end_px': (x2_px, y2_px), 'in_rect': in_rect})
-                                                    st.write(debug_list)
-                                            except Exception:
-                                                pass
                                             # 端点ベースで何も見つからなければ、交差/近接ベースでフォールバック（これを無効にする場合は削除）
                                             if len(walls_in_selection) == 0:
                                                 walls_in_selection = [
@@ -4133,17 +4032,6 @@ def main():
                                                 append_debug(f"walls_in_selection ids: {[w.get('id') for w in walls_in_selection]} (count={len(walls_in_selection)})")
                                             except Exception:
                                                 pass
-
-                                            # --- 追加デバッグ出力 ---
-                                            try:
-                                                st.write(f"🔧 デバッグ: 四角形#{rect_idx+1} の walls_in_selection 件数: {len(walls_in_selection)}")
-                                                st.write(f"🔧 wall ids: {[w.get('id') for w in walls_in_selection]}")
-                                                st.write(f"🔧 セッション preview pair: {st.session_state.get('last_preview_pair')}")
-                                                st.write(f"🔧 セッション preview rect: {st.session_state.get('last_preview_rect')}")
-                                                st.write(f"🔧 全壁数: {len(updated_json.get('walls', []))}")
-                                            except Exception:
-                                                pass
-                                            # ----------------------
 
                                             # プレビューでフィルタ済みIDがセッションに保存されている場合、
                                             # 四角形が一致すれば execution 側の検出集合をプレビューのフィルタ済み集合に合わせる。
@@ -4685,30 +4573,7 @@ def main():
                                             updated_json, direction, new_wall = _add_line_to_json(
                                                 updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
                                             )
-                                            total_added_count += 1
-                                        
-                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                            direction_jp = "縦線" if direction == "vertical" else "横線"
-                                            add_details.append({
-                                                'rect_idx': rect_idx,
-                                                'color_name': color_name,
-                                                'wall_id': new_wall['id'],
-                                                'direction': direction_jp,
-                                                'length': new_wall['length']
-                                            })
                                     
-                                        if total_added_count > 0:
-                                            st.success(f"✅ 合計 {total_added_count} 本の線を追加しました")
-                                        
-                                            # 追加詳細を表示
-                                            st.markdown("**追加結果:**")
-                                            for detail in add_details:
-                                                st.write(
-                                                    f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
-                                                    f"壁#{detail['wall_id']} - {detail['direction']} "
-                                                    f"（長さ: {detail['length']:.3f}m）"
-                                                )
-                                
                                     elif edit_mode == "線を削除":
                                         # ===== 線を削除モード =====
                                         total_deleted_count = 0
@@ -4742,17 +4607,6 @@ def main():
                                         if len(walls_to_delete) > 0:
                                             # 壁を削除
                                             updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                            total_deleted_count = len(walls_to_delete)
-                                        
-                                            st.success(f"✅ 合計 {total_deleted_count} 本の壁を削除しました")
-                                        
-                                            # 削除詳細を表示
-                                            st.markdown("**削除結果:**")
-                                            for detail in delete_details:
-                                                st.write(
-                                                    f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
-                                                    f"壁({detail['wall_id']})を削除"
-                                                )
                                         else:
                                             st.warning("⚠️ 削除対象の壁が見つかりません")
                                 
