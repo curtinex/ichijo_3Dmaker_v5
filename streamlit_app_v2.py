@@ -58,6 +58,24 @@ from extract_walls_to_3d_v2 import process_image_to_3d
 from visualize_3d_walls import visualize_3d_walls
 from auto_merge_walls import WallAutoMerger
 
+# ichijo_core からビジネスロジック関数をインポート（段階的移行）
+try:
+    from ichijo_core.geometry_utils import (
+        calc_distance as _calc_distance,
+        calc_angle_diff as _calc_angle_diff,
+        wall_angle_deg as _wall_angle_deg,
+        angle_diff_deg as _angle_diff_deg,
+        determine_line_direction as _determine_line_direction,
+    )
+    from ichijo_core.furniture_utils import (
+        FURNITURE_HEIGHT_OPTIONS,
+        FURNITURE_COLOR_OPTIONS,
+    )
+    _USING_ICHIJO_CORE = True
+except ImportError:
+    # ichijo_core が利用できない場合は後方互換のためローカル定義を使用
+    _USING_ICHIJO_CORE = False
+
 BASE_DIR = Path(__file__).parent
 OUTPUTS_DIR = BASE_DIR / "outputs"
 OUTPUTS_DIR.mkdir(exist_ok=True)
@@ -468,84 +486,85 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
     return out_path
 
 
-def _calc_distance(p1, p2):
-    """2点間の距離を計算"""
-    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+# 以下の関数は ichijo_core.geometry_utils からインポート済み
+# - _calc_distance, _calc_angle_diff, _wall_angle_deg, _angle_diff_deg, _determine_line_direction
+if not _USING_ICHIJO_CORE:
+    # 後方互換のためのローカル定義（ichijo_core が利用できない場合）
+    def _calc_distance(p1, p2):
+        """2点間の距離を計算"""
+        return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+    def _calc_angle_diff(wall1, wall2):
+        """2つの壁線の角度差を計算（度数法、180度回転も同一方向として扱う）"""
+        dx1 = wall1['end'][0] - wall1['start'][0]
+        dy1 = wall1['end'][1] - wall1['start'][1]
+        angle1 = math.atan2(dy1, dx1) * 180 / math.pi
+        
+        dx2 = wall2['end'][0] - wall2['start'][0]
+        dy2 = wall2['end'][1] - wall2['start'][1]
+        angle2 = math.atan2(dy2, dx2) * 180 / math.pi
+        
+        # 角度差を計算
+        diff = abs(angle1 - angle2)
+        # 360度周期を考慮
+        if diff > 180:
+            diff = 360 - diff
+        # 180度回転も同一方向として扱う（180度で剰余を取る）
+        diff = min(diff, 180 - diff)
+        return diff
+
+    def _wall_angle_deg(wall):
+        """壁線の向き角度を度で返す（-180〜180）"""
+        dx = wall['end'][0] - wall['start'][0]
+        dy = wall['end'][1] - wall['start'][1]
+        return math.degrees(math.atan2(dy, dx))
+
+    def _angle_diff_deg(a, b):
+        """2つの角度（度）間の最短差を返す（180度回転を同一視）"""
+        diff = abs(a - b)
+        if diff > 180:
+            diff = 360 - diff
+        # 180度回転を同一視する（180で剰余）
+        diff = min(diff, 180 - diff)
+        return diff
+
+    def _determine_line_direction(p1, p2):
+        """2点から線の方向を判定：縦(vertical)または横(horizontal)"""
+        dx = abs(p2[0] - p1[0])
+        dy = abs(p2[1] - p1[1])
+        return "horizontal" if dx > dy else "vertical"
 
 
-def _calc_angle_diff(wall1, wall2):
-    """2つの壁線の角度差を計算（度数法、180度回転も同一方向として扱う）"""
-    dx1 = wall1['end'][0] - wall1['start'][0]
-    dy1 = wall1['end'][1] - wall1['start'][1]
-    angle1 = math.atan2(dy1, dx1) * 180 / math.pi
-    
-    dx2 = wall2['end'][0] - wall2['start'][0]
-    dy2 = wall2['end'][1] - wall2['start'][1]
-    angle2 = math.atan2(dy2, dx2) * 180 / math.pi
-    
-    # 角度差を計算
-    diff = abs(angle1 - angle2)
-    # 360度周期を考慮
-    if diff > 180:
-        diff = 360 - diff
-    # 180度回転も同一方向として扱う（180度で剰余を取る）
-    diff = min(diff, 180 - diff)
-    return diff
-
-
-def _wall_angle_deg(wall):
-    """壁線の向き角度を度で返す（-180〜180）"""
-    dx = wall['end'][0] - wall['start'][0]
-    dy = wall['end'][1] - wall['start'][1]
-    return math.degrees(math.atan2(dy, dx))
-
-
-def _angle_diff_deg(a, b):
-    """2つの角度（度）間の最短差を返す（180度回転を同一視）"""
-    diff = abs(a - b)
-    if diff > 180:
-        diff = 360 - diff
-    # 180度回転を同一視する（180で剰余）
-    diff = min(diff, 180 - diff)
-    return diff
-
-
-def _determine_line_direction(p1, p2):
-    """2点から線の方向を判定：縦(vertical)または横(horizontal)"""
-    dx = abs(p2[0] - p1[0])
-    dy = abs(p2[1] - p1[1])
-    return "horizontal" if dx > dy else "vertical"
-
-
-# 家具オブジェクトの定義
-FURNITURE_HEIGHT_OPTIONS = {
-    "30cm": 0.30,
-    "45cm": 0.45,
-    "60cm": 0.60,
-    "85cm": 0.85,
-    "120cm": 1.20,
-    "180cm": 1.80,
-    "天井合わせ": None  # 実行時に壁の高さから取得
-}
-
-FURNITURE_COLOR_OPTIONS = {
-    "ダーク": {
-        "rgb": (55, 67, 85),  # BGR: #554337
-        "three_js": "0x554337"
-    },
-    "グレージュ": {
-        "rgb": (138, 165, 186),  # BGR: #BAA58A
-        "three_js": "0xBAA58A"
-    },
-    "サンド": {
-        "rgb": (167, 203, 227),  # BGR: #E3CBA7
-        "three_js": "0xE3CBA7"
-    },
-    "ホワイト": {
-        "rgb": (230, 240, 244),  # BGR: #F4F0E6
-        "three_js": "0xF4F0E6"
+# 家具オブジェクトの定義（ichijo_core.furniture_utils からインポート済み）
+if not _USING_ICHIJO_CORE:
+    FURNITURE_HEIGHT_OPTIONS = {
+        "30cm": 0.30,
+        "45cm": 0.45,
+        "60cm": 0.60,
+        "85cm": 0.85,
+        "120cm": 1.20,
+        "180cm": 1.80,
+        "天井合わせ": None  # 実行時に壁の高さから取得
     }
-}
+
+    FURNITURE_COLOR_OPTIONS = {
+        "ダーク": {
+            "rgb": (55, 67, 85),  # BGR: #554337
+            "three_js": "0x554337"
+        },
+        "グレージュ": {
+            "rgb": (138, 165, 186),  # BGR: #BAA58A
+            "three_js": "0xBAA58A"
+        },
+        "サンド": {
+            "rgb": (167, 203, 227),  # BGR: #E3CBA7
+            "three_js": "0xE3CBA7"
+        },
+        "ホワイト": {
+            "rgb": (230, 240, 244),  # BGR: #F4F0E6
+            "three_js": "0xF4F0E6"
+        }
+    }
 
 
 def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
