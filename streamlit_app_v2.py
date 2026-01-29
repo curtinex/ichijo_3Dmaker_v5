@@ -696,6 +696,59 @@ def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, wi
     return updated_data
 
 
+def _are_walls_collinear(wall1, wall2, angle_tolerance=5.0, distance_tolerance=0.3):
+    """2本の壁が同一直線上にあるかを判定
+    
+    Args:
+        wall1, wall2: 壁データ（start, end を持つ辞書）
+        angle_tolerance: 角度差の許容範囲（度）
+        distance_tolerance: 垂直距離の許容範囲（メートル）
+    
+    Returns:
+        (is_collinear, score): 同一直線上にあるか、および同一直線性スコア（小さいほど良い）
+    """
+    import math
+    
+    # 角度差を計算
+    angle1 = _wall_angle_deg(wall1)
+    angle2 = _wall_angle_deg(wall2)
+    angle_diff = _angle_diff_deg(angle1, angle2)
+    
+    # 角度差が大きい場合は同一直線上にない
+    if angle_diff > angle_tolerance:
+        return False, float('inf')
+    
+    # wall1からwall2の各端点への垂直距離を計算
+    # 壁を直線として、点から直線への距離を計算
+    def point_to_line_distance(px, py, line_start, line_end):
+        """点(px, py)から線分(line_start, line_end)への垂直距離"""
+        x1, y1 = line_start
+        x2, y2 = line_end
+        
+        # 線分の長さ
+        line_len = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        if line_len < 1e-6:
+            return math.sqrt((px - x1)**2 + (py - y1)**2)
+        
+        # 垂直距離の計算
+        return abs((x2 - x1) * (y1 - py) - (x1 - px) * (y2 - y1)) / line_len
+    
+    # wall2の両端点からwall1への距離
+    dist1 = point_to_line_distance(wall2['start'][0], wall2['start'][1], wall1['start'], wall1['end'])
+    dist2 = point_to_line_distance(wall2['end'][0], wall2['end'][1], wall1['start'], wall1['end'])
+    
+    # 平均距離
+    avg_dist = (dist1 + dist2) / 2
+    
+    # 同一直線性スコア（角度差と距離の重み付け和）
+    score = angle_diff * 0.1 + avg_dist * 10.0
+    
+    # 距離が許容範囲内なら同一直線上
+    is_collinear = avg_dist < distance_tolerance
+    
+    return is_collinear, score
+
+
 def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     """四角形選択から線を追加（2点から自動判定した方向で線を生成）"""
     import copy
@@ -2699,21 +2752,44 @@ def main():
                                         img_height_confirmed, min_x_confirmed, min_y_confirmed, max_x_confirmed, max_y_confirmed
                                     )
 
-                                # プレビューと同じく、端点が重なって余分な短い線が含まれるケース対策として
-                                # 角度差でフィルタする（デフォルト30度）。2本以上残れば置換、なければフォールバックで元を使用。
+                                # プレビューと同じく、端点が重なって余分な線が含まれる場合は同一直線上の2本を選択
                                 try:
-                                    angle_threshold_confirmed = 30.0
-                                    angles_c = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_confirmed]
-                                    sx_c = sum(math.cos(a) for a in angles_c) if angles_c else 0
-                                    sy_c = sum(math.sin(a) for a in angles_c) if angles_c else 0
-                                    if sx_c == 0 and sy_c == 0:
-                                        avg_angle_c = 0.0
-                                    else:
-                                        avg_angle_c = math.degrees(math.atan2(sy_c, sx_c))
-
-                                    kept_confirmed = [w for w in walls_in_rect_confirmed if _angle_diff_deg(_wall_angle_deg(w), avg_angle_c) < angle_threshold_confirmed]
-                                    if len(kept_confirmed) >= 2:
-                                        walls_in_rect_confirmed = kept_confirmed
+                                    if len(walls_in_rect_confirmed) >= 4:
+                                        # 4本以上：同一直線上のペアを選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_confirmed)):
+                                            for j in range(i+1, len(walls_in_rect_confirmed)):
+                                                wall1 = walls_in_rect_confirmed[i]
+                                                wall2 = walls_in_rect_confirmed[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        if best_pair:
+                                            walls_in_rect_confirmed = best_pair
+                                    elif len(walls_in_rect_confirmed) == 3:
+                                        # 3本：同一直線上のペアを選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_confirmed)):
+                                            for j in range(i+1, len(walls_in_rect_confirmed)):
+                                                wall1 = walls_in_rect_confirmed[i]
+                                                wall2 = walls_in_rect_confirmed[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        if best_pair:
+                                            walls_in_rect_confirmed = best_pair
                                 except Exception:
                                     pass
 
@@ -2867,20 +2943,54 @@ def main():
                                         img_height_preview, min_x_preview, min_y_preview, max_x_preview, max_y_preview
                                     )
 
-                                # 追加表示用に、角度が大きく異なる線を除外（プレビュー整合性）
+                                # 追加表示用に、同一直線上にある線を選択（プレビュー整合性）
                                 try:
-                                    angle_threshold_preview = 30.0
-                                    angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_preview]
-                                    sx = sum(math.cos(a) for a in angles) if angles else 0
-                                    sy = sum(math.sin(a) for a in angles) if angles else 0
-                                    if sx == 0 and sy == 0:
-                                        avg_angle = 0.0
+                                    if len(walls_in_rect_preview) >= 4:
+                                        # 4本以上：同一直線上のペアを選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_preview)):
+                                            for j in range(i+1, len(walls_in_rect_preview)):
+                                                wall1 = walls_in_rect_preview[i]
+                                                wall2 = walls_in_rect_preview[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        if best_pair:
+                                            walls_in_rect_filtered = best_pair
+                                        else:
+                                            # 同一直線上のペアが見つからない場合は角度フィルタにフォールバック
+                                            angle_threshold_preview = 30.0
+                                            angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_preview]
+                                            sx = sum(math.cos(a) for a in angles) if angles else 0
+                                            sy = sum(math.sin(a) for a in angles) if angles else 0
+                                            avg_angle = math.degrees(math.atan2(sy, sx)) if (sx != 0 or sy != 0) else 0.0
+                                            kept_preview = [w for w in walls_in_rect_preview if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
+                                            walls_in_rect_filtered = kept_preview if len(kept_preview) >= 2 else walls_in_rect_preview
+                                    elif len(walls_in_rect_preview) == 3:
+                                        # 3本：同一直線上のペアを選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_preview)):
+                                            for j in range(i+1, len(walls_in_rect_preview)):
+                                                wall1 = walls_in_rect_preview[i]
+                                                wall2 = walls_in_rect_preview[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_preview[:2]
                                     else:
-                                        avg_angle = math.degrees(math.atan2(sy, sx))
-                                    kept_preview = [w for w in walls_in_rect_preview if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
-                                    if len(kept_preview) >= 2:
-                                        walls_in_rect_filtered = kept_preview
-                                    else:
+                                        # 2本以下の場合はそのまま使用
                                         walls_in_rect_filtered = walls_in_rect_preview
                                 except Exception:
                                     walls_in_rect_filtered = walls_in_rect_preview
@@ -3082,22 +3192,57 @@ def main():
                                     tolerance=0, debug=False
                                 )
 
-                                # 添付のように端点が重なって不要な線が含まれる場合があるため
-                                # 角度が大きく異なる壁（デフォルト30度）を除外してみる
+                                # 端点が重なって複数の壁が検出される場合、同一直線上にある2本を選択
                                 try:
-                                    angle_threshold_preview = 30.0
-                                    angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_check]
-                                    sx = sum(math.cos(a) for a in angles)
-                                    sy = sum(math.sin(a) for a in angles)
-                                    if sx == 0 and sy == 0:
-                                        avg_angle = 0.0
+                                    if len(walls_in_rect_check) >= 4:
+                                        # 4本以上の場合：全ての2本の組み合わせから最も同一直線上にあるペアを選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_check)):
+                                            for j in range(i+1, len(walls_in_rect_check)):
+                                                wall1 = walls_in_rect_check[i]
+                                                wall2 = walls_in_rect_check[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        if best_pair:
+                                            walls_in_rect_filtered = best_pair
+                                        else:
+                                            # 同一直線上のペアが見つからない場合は角度フィルタにフォールバック
+                                            angle_threshold_preview = 30.0
+                                            angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_check]
+                                            sx = sum(math.cos(a) for a in angles)
+                                            sy = sum(math.sin(a) for a in angles)
+                                            if sx == 0 and sy == 0:
+                                                avg_angle = 0.0
+                                            else:
+                                                avg_angle = math.degrees(math.atan2(sy, sx))
+                                            kept = [w for w in walls_in_rect_check if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
+                                            walls_in_rect_filtered = kept if len(kept) >= 2 else walls_in_rect_check
+                                    elif len(walls_in_rect_check) == 3:
+                                        # 3本の場合：最も同一直線上にある2本を選ぶ
+                                        best_pair = None
+                                        best_score = float('inf')
+                                        
+                                        for i in range(len(walls_in_rect_check)):
+                                            for j in range(i+1, len(walls_in_rect_check)):
+                                                wall1 = walls_in_rect_check[i]
+                                                wall2 = walls_in_rect_check[j]
+                                                
+                                                is_collinear, score = _are_walls_collinear(wall1, wall2, angle_tolerance=10.0, distance_tolerance=0.5)
+                                                
+                                                if is_collinear and score < best_score:
+                                                    best_score = score
+                                                    best_pair = [wall1, wall2]
+                                        
+                                        walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
                                     else:
-                                        avg_angle = math.degrees(math.atan2(sy, sx))
-
-                                    kept = [w for w in walls_in_rect_check if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
-                                    if len(kept) >= 2:
-                                        walls_in_rect_filtered = kept
-                                    else:
+                                        # 2本以下の場合はそのまま使用
                                         walls_in_rect_filtered = walls_in_rect_check
                                 except Exception:
                                     walls_in_rect_filtered = walls_in_rect_check
