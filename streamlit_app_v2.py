@@ -255,22 +255,7 @@ def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool 
 
                     mesh.castShadow = true;
                     mesh.receiveShadow = true;
-                    // ポリゴンのZファイティングを避けるためにポリゴンオフセットを有効化
-                    if (mesh.material) {
-                        mesh.material.polygonOffset = true;
-                        mesh.material.polygonOffsetFactor = 1;
-                        mesh.material.polygonOffsetUnits = 1;
-                    }
                     scene.add(mesh);
-
-                    // エッジを薄く描画して壁の境界を明瞭にする
-                    const edgeGeom = new THREE.EdgesGeometry(geometry);
-                    const edgeMat = new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 1, transparent: true, opacity: 0.8 });
-                    const edgeLines = new THREE.LineSegments(edgeGeom, edgeMat);
-                    edgeLines.position.copy(mesh.position);
-                    edgeLines.rotation.copy(mesh.rotation);
-                    edgeLines.renderOrder = 2;
-                    scene.add(edgeLines);
                 });
 
                 // 床生成
