@@ -19,41 +19,77 @@ def install_ichijo_core():
     """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
     try:
         import ichijo_core
-        return True
+        print("✓ ichijo_core is already installed")
+        return True, None
     except ImportError:
-        pass
+        print("→ ichijo_core not found, attempting to install...")
     
     # Streamlit Cloudのsecretsからトークンを取得
     try:
         import streamlit as st_temp
-        if hasattr(st_temp, 'secrets') and 'GITHUB_TOKEN' in st_temp.secrets:
-            token = st_temp.secrets['GITHUB_TOKEN']
-            install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@v0.0.4"
-            
-            print(f"Installing ichijo_core from GitHub...")
-            result = subprocess.run(
-                [sys.executable, "-m", "pip", "install", install_url],
-                capture_output=True,
-                text=True
-            )
-            
-            if result.returncode == 0:
-                print("✓ ichijo_core installed successfully")
-                return True
-            else:
-                print(f"✗ Failed to install ichijo_core: {result.stderr}")
-                return False
+        print(f"→ Checking for GITHUB_TOKEN in secrets...")
+        
+        if not hasattr(st_temp, 'secrets'):
+            error_msg = "Streamlit secrets not available"
+            print(f"✗ {error_msg}")
+            return False, error_msg
+        
+        if 'GITHUB_TOKEN' not in st_temp.secrets:
+            error_msg = "GITHUB_TOKEN not found in Streamlit secrets"
+            print(f"✗ {error_msg}")
+            return False, error_msg
+        
+        token = st_temp.secrets['GITHUB_TOKEN']
+        token_preview = token[:8] + "..." if len(token) > 8 else "***"
+        print(f"✓ GITHUB_TOKEN found: {token_preview}")
+        
+        install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@v0.0.4"
+        print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@v0.0.4")
+        
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--upgrade", install_url],
+            capture_output=True,
+            text=True,
+            timeout=300  # 5分タイムアウト
+        )
+        
+        if result.returncode == 0:
+            print("✓ ichijo_core installed successfully")
+            print(f"STDOUT: {result.stdout[-500:]}")  # 最後の500文字
+            return True, None
         else:
-            print("✗ GITHUB_TOKEN not found in Streamlit secrets")
-            return False
+            error_msg = f"pip install failed (exit code {result.returncode})"
+            print(f"✗ {error_msg}")
+            print(f"STDERR: {result.stderr}")
+            print(f"STDOUT: {result.stdout}")
+            return False, f"{error_msg}\n\nSTDERR:\n{result.stderr[:1000]}"
+    except subprocess.TimeoutExpired:
+        error_msg = "Installation timed out after 5 minutes"
+        print(f"✗ {error_msg}")
+        return False, error_msg
     except Exception as e:
-        print(f"✗ Error during installation: {e}")
-        return False
+        error_msg = f"Unexpected error: {type(e).__name__}: {str(e)}"
+        print(f"✗ {error_msg}")
+        import traceback
+        traceback.print_exc()
+        return False, error_msg
 
 # アプリ起動時に一度だけインストール
-if not install_ichijo_core():
+success, error_detail = install_ichijo_core()
+if not success:
     import streamlit as st
-    st.error("❌ ichijo_core のインストールに失敗しました。Streamlit Cloud の Secrets に GITHUB_TOKEN が設定されているか確認してください。")
+    st.error("❌ ichijo_core のインストールに失敗しました")
+    if error_detail:
+        with st.expander("🔍 エラー詳細を表示"):
+            st.code(error_detail)
+    st.info("""
+    **トラブルシューティング:**
+    
+    1. Streamlit Cloud の **Settings → Secrets** で `GITHUB_TOKEN` が正しく設定されているか確認
+    2. トークンの形式: `GITHUB_TOKEN = "ghp_xxxxxxxxxxxx"`
+    3. トークンの権限: Contents (Read-only), ichijo_core リポジトリへのアクセス権
+    4. アプリを再起動してみてください
+    """)
     st.stop()
 
 import io
