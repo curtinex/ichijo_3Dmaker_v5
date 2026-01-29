@@ -3460,8 +3460,11 @@ def main():
                     # クリックされた座標を記録（重複チェック）
                     if value is not None and value.get("x") is not None:
                         new_point = (value["x"], value["y"])
-                    
-                        if edit_mode == "線を結合":
+                        
+                        # 結合実行直後はクリック処理をスキップ
+                        if st.session_state.get('skip_click_processing'):
+                            st.session_state.skip_click_processing = False
+                        elif edit_mode == "線を結合":
                             # 線を結合モード：壁線をクリックで選択（最大2本）
                             # 同じ座標の連続処理を防ぐ（無限ループ防止）
                             if st.session_state.last_click == new_point:
@@ -4292,6 +4295,7 @@ def main():
                                             st.session_state.selected_walls_for_merge[1]
                                         ]
                                         st.session_state.selected_walls_for_merge = []
+                                        st.session_state.skip_click_processing = True  # クリック処理をスキップ
                                         # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
                                         st.rerun()
                                 elif st.session_state.get('merge_walls_to_process'):
@@ -5370,6 +5374,8 @@ def main():
                                             st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
                                             st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
                                             st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
+                                            if 'skip_click_processing' in st.session_state:
+                                                del st.session_state.skip_click_processing  # スキップフラグもクリア
                                             if 'window_execution_params' in st.session_state:
                                                 del st.session_state.window_execution_params
                                             if 'window_click_params' in st.session_state:
