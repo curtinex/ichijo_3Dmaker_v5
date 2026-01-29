@@ -4292,7 +4292,11 @@ def main():
                                             st.session_state.selected_walls_for_merge[1]
                                         ]
                                         st.session_state.selected_walls_for_merge = []
-                                        should_execute = True
+                                        # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                                        st.rerun()
+                                elif st.session_state.get('merge_walls_to_process'):
+                                    # 前回のrerunで保存された壁を処理
+                                    should_execute = True
                             elif edit_mode == "窓を追加":
                                 if len(st.session_state.selected_walls_for_window) == 2:
                                     # 窓パラメータ入力フォーム
