@@ -2779,12 +2779,28 @@ def main():
                                             # ギャップ部分を赤線で描画（太さ6）
                                             cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
                                             
-                                            # ギャップの中心に窓番号を表示
+                                            # ギャップの中心に窓番号を表示（四角囲み+薄い水色背景）
                                             center_x = (gap_start_px_x + gap_end_px_x) // 2
                                             center_y = (gap_start_px_y + gap_end_px_y) // 2
                                             window_num = pair_idx + 1
-                                            cv2.putText(display_img_array, f"{window_num}", (center_x - 15, center_y + 10),
-                                                       cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                                            text = f"{window_num}"
+                                            text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.2, 2)[0]
+                                            text_x = center_x - text_size[0] // 2
+                                            text_y = center_y + text_size[1] // 2
+                                            
+                                            # 薄い水色背景の四角形を描画 (BGR: 255, 220, 180)
+                                            cv2.rectangle(display_img_array, 
+                                                        (text_x - 5, text_y - text_size[1] - 5),
+                                                        (text_x + text_size[0] + 5, text_y + 5),
+                                                        (255, 220, 180), -1)
+                                            # 黒枠を描画
+                                            cv2.rectangle(display_img_array, 
+                                                        (text_x - 5, text_y - text_size[1] - 5),
+                                                        (text_x + text_size[0] + 5, text_y + 5),
+                                                        (0, 0, 0), 2)
+                                            # 番号を描画（黒文字）
+                                            cv2.putText(display_img_array, text, (text_x, text_y), 
+                                                      cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 2)
                                     except Exception:
                                         pass
                                 
@@ -2806,14 +2822,27 @@ def main():
                                         # 壁線を青色でハイライト表示（太さ6）
                                         cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
                                         
-                                        # 壁線の中心に「窓○:1」と表示
-                                        center_x = (start_px_x + end_px_x) // 2
-                                        center_y = (start_px_y + end_px_y) // 2
-                                        cv2.putText(display_img_array, f"{next_window_num}:1", (center_x - 25, center_y + 10),
-                                                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 3)
+                                        # 壁線の中心に「1」と表示（四角囲み、線結合と同じスタイル）
+                                        mid_x = (start_px_x + end_px_x) // 2
+                                        mid_y = (start_px_y + end_px_y) // 2
+                                        text = "1"
+                                        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]
+                                        text_x = mid_x - text_size[0] // 2
+                                        text_y = mid_y + text_size[1] // 2
                                         
-                                        # デバッグ：奇数本描画確認
-                                        print(f"[DEBUG] 奇数本描画: 窓{next_window_num}:1, 座標=({start_px_x},{start_px_y})-({end_px_x},{end_px_y})")
+                                        # 白背景の四角形を描画
+                                        cv2.rectangle(display_img_array, 
+                                                    (text_x - 5, text_y - text_size[1] - 5),
+                                                    (text_x + text_size[0] + 5, text_y + 5),
+                                                    (255, 255, 255), -1)
+                                        # 黒枠を描画
+                                        cv2.rectangle(display_img_array, 
+                                                    (text_x - 5, text_y - text_size[1] - 5),
+                                                    (text_x + text_size[0] + 5, text_y + 5),
+                                                    (0, 0, 0), 2)
+                                        # 番号を描画（黒文字）
+                                        cv2.putText(display_img_array, text, (text_x, text_y), 
+                                                  cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                                     except Exception as e:
                                         print(f"[ERROR] 奇数本描画エラー: {e}")
                                         pass
