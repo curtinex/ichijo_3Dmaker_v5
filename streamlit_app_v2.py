@@ -2708,34 +2708,35 @@ def main():
                                 cv2.putText(display_img_array, text, (text_x, text_y), 
                                           cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                                 
-                                # 2本目：結合候補を検出して結合後の壁を赤線で表示
+                                # 2本目：結合候補を検出して結合によって埋まる部分（端点間のギャップ）を赤線で表示
                                 try:
                                     wall2 = selected_walls_to_highlight[1]
-                                    candidates = _find_mergeable_walls([wall1, wall2], distance_threshold=0.3, angle_threshold=30)
                                     
-                                    if candidates:
-                                        # 結合候補が見つかった場合、結合後の壁を赤線で描画
-                                        top_candidate = candidates[0]
-                                        new_start = top_candidate.get('new_start')
-                                        new_end = top_candidate.get('new_end')
+                                    # 2つの壁の4つの端点から最も近い組み合わせを見つける
+                                    endpoints1 = [wall1['start'], wall1['end']]
+                                    endpoints2 = [wall2['start'], wall2['end']]
+                                    
+                                    min_dist = float('inf')
+                                    closest_p1 = None
+                                    closest_p2 = None
+                                    
+                                    for p1 in endpoints1:
+                                        for p2 in endpoints2:
+                                            dist = _calc_distance(p1, p2)
+                                            if dist < min_dist:
+                                                min_dist = dist
+                                                closest_p1 = p1
+                                                closest_p2 = p2
+                                    
+                                    # 最も近い端点同士を赤線で結ぶ（ギャップ部分のみ）
+                                    if closest_p1 and closest_p2:
+                                        gap_start_px_x = int((closest_p1[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        gap_start_px_y = img_height_highlight - (int((closest_p1[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        gap_end_px_x = int((closest_p2[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        gap_end_px_y = img_height_highlight - (int((closest_p2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                         
-                                        if new_start and new_end:
-                                            new_start_px_x = int((new_start[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                            new_start_px_y = img_height_highlight - (int((new_start[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                            new_end_px_x = int((new_end[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                            new_end_px_y = img_height_highlight - (int((new_end[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                            
-                                            # 結合後の壁を赤線で描画（太さ6）
-                                            cv2.line(display_img_array, (new_start_px_x, new_start_px_y), (new_end_px_x, new_end_px_y), (0, 0, 255), 6)
-                                    else:
-                                        # 候補が見つからない場合は2本目も青線で表示（番号なし）
-                                        start_m2 = wall2['start']
-                                        end_m2 = wall2['end']
-                                        start_px_x2 = int((start_m2[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                        start_px_y2 = img_height_highlight - (int((start_m2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                        end_px_x2 = int((end_m2[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                        end_px_y2 = img_height_highlight - (int((end_m2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                        cv2.line(display_img_array, (start_px_x2, start_px_y2), (end_px_x2, end_px_y2), (255, 0, 0), 6)
+                                        # ギャップ部分を赤線で描画（太さ6）
+                                        cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
                                 except Exception:
                                     pass
                             else:
