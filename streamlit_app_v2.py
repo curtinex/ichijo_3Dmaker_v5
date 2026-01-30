@@ -1632,8 +1632,8 @@ def main():
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
     # 固定画像幅（自動結合と手動編集で統一）
-    # カラム幅（60%）を考慮して600pxに設定（画面幅1000pxで600px、1920pxで1152pxのカラムに対して余裕を持たせる）
-    DISPLAY_IMAGE_WIDTH = 600
+    # 編集画面では動的なカラム幅検出を使用するため、ここは他の画面用のデフォルト値
+    DISPLAY_IMAGE_WIDTH = 800
 
     # セッション状態の初期化（結果の永続化）
     if "processed" not in st.session_state:
@@ -3292,11 +3292,61 @@ def main():
                                 pass
                     
                     display_img = Image.fromarray(display_img_array)
-                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=DISPLAY_IMAGE_WIDTH)
                     
                     # skip_click_processingフラグを画面描画時に無条件でクリア（フラグが残り続けるのを防ぐ）
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
+                    
+                    # JavaScriptでカラムの実際の幅を取得してセッションステートに保存
+                    import streamlit.components.v1 as components
+                    column_width_html = """
+                    <script>
+                    function sendColumnWidth() {
+                        // 少し待ってからカラム幅を取得（DOMが完全にレンダリングされるのを待つ）
+                        setTimeout(function() {
+                            const columns = document.querySelectorAll('[data-testid="column"]');
+                            if (columns.length > 0) {
+                                const leftColumn = columns[0];
+                                const width = leftColumn.offsetWidth;
+                                // Streamlitに幅を送信
+                                window.parent.postMessage({
+                                    type: 'streamlit:setComponentValue',
+                                    value: width
+                                }, '*');
+                            }
+                        }, 100);
+                    }
+                    
+                    // 初回実行
+                    sendColumnWidth();
+                    
+                    // ウィンドウリサイズ時にも実行
+                    let resizeTimer;
+                    window.addEventListener('resize', function() {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(sendColumnWidth, 200);
+                    });
+                    </script>
+                    """
+                    
+                    # カラム幅を取得（デフォルト値は800）
+                    detected_width = components.html(column_width_html, height=0)
+                    
+                    # セッションステートに保存（Noneの場合はデフォルト値を使用）
+                    if detected_width is not None and detected_width > 0:
+                        st.session_state['dynamic_column_width'] = int(detected_width)
+                    
+                    # 現在のカラム幅を取得（デフォルトは800）
+                    current_column_width = st.session_state.get('dynamic_column_width', 800)
+                    
+                    # カラム幅の90%を画像の最大幅として使用（余白を考慮）
+                    dynamic_image_width = int(current_column_width * 0.9)
+                    
+                    # 最小幅と最大幅を設定
+                    dynamic_image_width = max(400, min(dynamic_image_width, 1200))
+                    
+                    # 動的な幅で画像をリサイズ
+                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=dynamic_image_width)
                     
                     # レスポンシブなカラムレイアウトのためのCSS
                     st.markdown("""
