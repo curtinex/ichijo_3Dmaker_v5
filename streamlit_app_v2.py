@@ -3613,9 +3613,11 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除
+                                        # 既に選択されている場合は選択解除（ただし2本選択完了時は保護）
                                         if nearest_wall in st.session_state.selected_walls_for_merge:
-                                            st.session_state.selected_walls_for_merge.remove(nearest_wall)
+                                            # 2本選択完了後は削除不可（確定済み）
+                                            if len(st.session_state.selected_walls_for_merge) < 2:
+                                                st.session_state.selected_walls_for_merge.remove(nearest_wall)
                                         else:
                                             # 最大2本まで選択可能
                                             if len(st.session_state.selected_walls_for_merge) < 2:
@@ -3653,9 +3655,15 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除
+                                        # 既に選択されている場合は選択解除（ただしペア完成済みは保護）
                                         if nearest_wall in st.session_state.selected_walls_for_window:
-                                            st.session_state.selected_walls_for_window.remove(nearest_wall)
+                                            # 現在の選択数
+                                            current_count = len(st.session_state.selected_walls_for_window)
+                                            # ペア完成済み（偶数本）の壁は削除不可、奇数本目（選択中）のみ削除可能
+                                            if current_count % 2 == 1:  # 奇数本選択中のみ削除可能
+                                                # 最後の1本（現在選択中）のみ削除可能
+                                                if st.session_state.selected_walls_for_window[-1] == nearest_wall:
+                                                    st.session_state.selected_walls_for_window.remove(nearest_wall)
                                         else:
                                             # 制限なし（偶数本選択で窓ペアを作成）
                                             st.session_state.selected_walls_for_window.append(nearest_wall)
