@@ -3302,62 +3302,62 @@ def main():
                     
                     with col_img:
                         # UI表示：モード別（画像の上部に表示）
-                    if edit_mode == "線を結合":
-                        # 線を結合モード：壁線クリック選択
-                        if len(st.session_state.selected_walls_for_merge) == 0:
-                            st.write("💡 **結合したい壁線を1本目クリックしてください**")
-                        elif len(st.session_state.selected_walls_for_merge) == 1:
-                            st.info("✅ **1本目選択完了** → 2本目の壁線をクリックしてください")
-                        elif len(st.session_state.selected_walls_for_merge) == 2:
-                            st.success("✅ **2本選択完了** → 右側の「🔗 結合実行」ボタンをクリックしてください")
-                    elif edit_mode == "窓を追加":
-                        # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
-                        num_selected = len(st.session_state.selected_walls_for_window)
-                        if num_selected == 0:
-                            st.write("💡 **窓1つ目：繋ぎたい壁線を1本目クリックしてください**")
-                        elif num_selected % 2 == 1:
-                            window_num = (num_selected // 2) + 1
-                            st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
-                        else:
-                            window_count = num_selected // 2
-                            st.success(f"✅ **{window_count}組の窓を選択完了**\n\n→ さらに窓を追加する場合は次の壁線をクリック\n\n→ 確定する場合は右側で窓パラメータを入力して「🪟 窓追加実行」ボタンをクリックしてください")
-                    elif edit_mode == "線を削除":
-                        # 線削除モード：壁線クリック選択（複数本可能）
-                        num_selected = len(st.session_state.selected_walls_for_delete)
-                        if num_selected == 0:
-                            st.write("💡 **削除したい壁線をクリックしてください（複数選択可能）**")
-                        else:
-                            st.info(f"✅ **{num_selected}本選択中** → さらに追加する場合はクリック、削除する場合は右側の「🗑️ 削除実行」ボタンをクリックしてください")
-                    elif edit_mode == "スケール校正":
-                        # スケール校正モード：2点選択で線を囲む
-                        if len(st.session_state.rect_coords) == 1:
-                            pass
-                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
-                        elif len(st.session_state.rect_coords) == 2:
-                            p1, p2 = st.session_state.rect_coords
-                            x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
-                            x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                            px_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-                            #st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})\n\n線の長さ: {px_distance:.1f}px")
-                        st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
-                    else:
-                        # 結合・追加モード：2点選択
-                        if len(st.session_state.rect_coords) == 1:
-                            pass
-                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
-                        elif len(st.session_state.rect_coords) == 2:
-                            # 窓追加モードで自動追加される場合は、前のrerunでrect_coordsがクリアされるため、
-                            # このブロックに到達しない。失敗時のみここに到達する
-                            if edit_mode != "窓を追加":
+                        if edit_mode == "線を結合":
+                            # 線を結合モード：壁線クリック選択
+                            if len(st.session_state.selected_walls_for_merge) == 0:
+                                st.write("💡 **結合したい壁線を1本目クリックしてください**")
+                            elif len(st.session_state.selected_walls_for_merge) == 1:
+                                st.info("✅ **1本目選択完了** → 2本目の壁線をクリックしてください")
+                            elif len(st.session_state.selected_walls_for_merge) == 2:
+                                st.success("✅ **2本選択完了** → 右側の「🔗 結合実行」ボタンをクリックしてください")
+                        elif edit_mode == "窓を追加":
+                            # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
+                            num_selected = len(st.session_state.selected_walls_for_window)
+                            if num_selected == 0:
+                                st.write("💡 **窓1つ目：繋ぎたい壁線を1本目クリックしてください**")
+                            elif num_selected % 2 == 1:
+                                window_num = (num_selected // 2) + 1
+                                st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                            else:
+                                window_count = num_selected // 2
+                                st.success(f"✅ **{window_count}組の窓を選択完了**\n\n→ さらに窓を追加する場合は次の壁線をクリック\n\n→ 確定する場合は右側で窓パラメータを入力して「🪟 窓追加実行」ボタンをクリックしてください")
+                        elif edit_mode == "線を削除":
+                            # 線削除モード：壁線クリック選択（複数本可能）
+                            num_selected = len(st.session_state.selected_walls_for_delete)
+                            if num_selected == 0:
+                                st.write("💡 **削除したい壁線をクリックしてください（複数選択可能）**")
+                            else:
+                                st.info(f"✅ **{num_selected}本選択中** → さらに追加する場合はクリック、削除する場合は右側の「🗑️ 削除実行」ボタンをクリックしてください")
+                        elif edit_mode == "スケール校正":
+                            # スケール校正モード：2点選択で線を囲む
+                            if len(st.session_state.rect_coords) == 1:
+                                pass
+                                #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            elif len(st.session_state.rect_coords) == 2:
                                 p1, p2 = st.session_state.rect_coords
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                                color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
-                                #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
-                        st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
-                        
-                        # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示（線を結合モードは除外）
-                        if edit_mode == "窓を追加" and len(st.session_state.rect_coords) == 2:
+                                px_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+                                #st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})\n\n線の長さ: {px_distance:.1f}px")
+                            st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
+                        else:
+                            # 結合・追加モード：2点選択
+                            if len(st.session_state.rect_coords) == 1:
+                                pass
+                                #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            elif len(st.session_state.rect_coords) == 2:
+                                # 窓追加モードで自動追加される場合は、前のrerunでrect_coordsがクリアされるため、
+                                # このブロックに到達しない。失敗時のみここに到達する
+                                if edit_mode != "窓を追加":
+                                    p1, p2 = st.session_state.rect_coords
+                                    x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
+                                    x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
+                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
+                                    #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
+                            st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
+                            
+                            # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示（線を結合モードは除外）
+                            if edit_mode == "窓を追加" and len(st.session_state.rect_coords) == 2:
                             try:
                                 json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls_check = json_data_check['walls']
@@ -3472,52 +3472,52 @@ def main():
                                     st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
                             except Exception:
                                 pass
-                    
-                    # クリック可能な画像を表示（キーを動的に変更して値をリセット）
-                    # edit_modeを含めることで、モード切り替え時に座標がリセットされる
-                    # selection_reset_counterを含めることで、リセット後に座標がクリアされる
-                    reset_counter = st.session_state.get('selection_reset_counter', 0)
-                    coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
-                    
-                    st.markdown(
-                        """
-                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                        💡 <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
-                        </p>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    
-                    # 画像を元のサイズで表示（リサイズなし）
-                    value = streamlit_image_coordinates(
-                        display_img_resized,
-                        key=coord_key
-                    )
-                    
-                    # リサイズ時の座標変換
-                    if value is not None and value.get("x") is not None and scale_ratio != 1.0:
-                        # 元の座標に変換
-                        ox, oy = _display_to_original(value["x"], value["y"], scale_ratio)
-                        value["x"] = ox
-                        value["y"] = oy
-
-                    # デバッグ: クリック座標を表示
-                    #if value is not None and value.get("x") is not None:
-                    #    st.caption(
-                    #        f"クリック座標: raw=({value['x']}, {value['y']}) | "
-                    #        f"表示画像サイズ={display_img_resized.width}x{display_img_resized.height}px | "
-                    #        f"scale_ratio={scale_ratio:.3f}"
-                    #    )
-                
-                    # クリックされた座標を記録（重複チェック）
-                    if value is not None and value.get("x") is not None:
-                        new_point = (value["x"], value["y"])
                         
-                        if edit_mode == "線を結合":
-                            # 線を結合モード：壁線をクリックで選択（最大2本）
-                            # 同じ座標の連続処理を防ぐ（無限ループ防止）
-                            if st.session_state.last_click == new_point:
-                                # 既に処理済みのクリックなのでスキップ
+                        # クリック可能な画像を表示（キーを動的に変更して値をリセット）
+                        # edit_modeを含めることで、モード切り替え時に座標がリセットされる
+                        # selection_reset_counterを含めることで、リセット後に座標がクリアされる
+                        reset_counter = st.session_state.get('selection_reset_counter', 0)
+                        coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
+                        
+                        st.markdown(
+                            """
+                            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                            💡 <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
+                            </p>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        
+                        # 画像を元のサイズで表示（リサイズなし）
+                        value = streamlit_image_coordinates(
+                            display_img_resized,
+                            key=coord_key
+                        )
+                        
+                        # リサイズ時の座標変換
+                        if value is not None and value.get("x") is not None and scale_ratio != 1.0:
+                            # 元の座標に変換
+                            ox, oy = _display_to_original(value["x"], value["y"], scale_ratio)
+                            value["x"] = ox
+                            value["y"] = oy
+
+                        # デバッグ: クリック座標を表示
+                        #if value is not None and value.get("x") is not None:
+                        #    st.caption(
+                        #        f"クリック座標: raw=({value['x']}, {value['y']}) | "
+                        #        f"表示画像サイズ={display_img_resized.width}x{display_img_resized.height}px | "
+                        #        f="scale_ratio={scale_ratio:.3f}"
+                        #    )
+                    
+                        # クリックされた座標を記録（重複チェック）
+                        if value is not None and value.get("x") is not None:
+                            new_point = (value["x"], value["y"])
+                            
+                            if edit_mode == "線を結合":
+                                # 線を結合モード：壁線をクリックで選択（最大2本）
+                                # 同じ座標の連続処理を防ぐ（無限ループ防止）
+                                if st.session_state.last_click == new_point:
+                                    # 既に処理済みのクリックなのでスキップ
                                 pass
                             else:
                                 try:
