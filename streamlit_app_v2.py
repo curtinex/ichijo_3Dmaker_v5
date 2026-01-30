@@ -5289,8 +5289,7 @@ def main():
                                             st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
                                             st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
                                             st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
-                                            if 'skip_click_processing' in st.session_state:
-                                                del st.session_state.skip_click_processing  # スキップフラグもクリア
+                                            # 処理用の一時データをクリア
                                             if 'merge_walls_to_process' in st.session_state:
                                                 del st.session_state.merge_walls_to_process  # 処理用壁データもクリア
                                             if 'window_execution_params' in st.session_state:
