@@ -3361,115 +3361,115 @@ def main():
                                 try:
                                     json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                     walls_check = json_data_check['walls']
-                                
-                                all_x_check = [w['start'][0] for w in walls_check] + [w['end'][0] for w in walls_check]
-                                all_y_check = [w['start'][1] for w in walls_check] + [w['end'][1] for w in walls_check]
-                                min_x_check, max_x_check = min(all_x_check), max(all_x_check)
-                                min_y_check, max_y_check = min(all_y_check), max(all_y_check)
-                                
-                                scale_check = int(viz_scale)
-                                margin_check = 50
-                                img_height_check = viz_img.height
-                                
-                                p1_check, p2_check = st.session_state.rect_coords
-                                x1_check, y1_check = min(p1_check[0], p2_check[0]), min(p1_check[1], p2_check[1])
-                                x2_check, y2_check = max(p1_check[0], p2_check[0]), max(p1_check[1], p2_check[1])
-                                
-                                rect_check = {
-                                    'left': x1_check,
-                                    'top': y1_check,
-                                    'width': x2_check - x1_check,
-                                    'height': y2_check - y1_check
-                                }
-                                
-                                # 端点のみを囲む操作に対応するため、厳密フィルタではなく端点/交差ベースのフィルタを使用
-                                walls_in_rect_check = _filter_walls_by_endpoints_in_rect(
-                                    walls_check, rect_check, scale_check, margin_check,
-                                    img_height_check, min_x_check, min_y_check, max_x_check, max_y_check,
-                                    tolerance=0, debug=False
-                                )
-
-                                # 端点が重なって複数の壁が検出される場合、縦横を判定して最適な2本を選択
-                                try:
-                                    # デバッグ: 検出された全ての壁の情報を表示
-                                    try:
-                                        all_wall_details = []
-                                        for w in walls_in_rect_check:
-                                            dx = abs(w['end'][0] - w['start'][0])
-                                            dy = abs(w['end'][1] - w['start'][1])
-                                            direction = "縦" if dx < dy else "横"
-                                            all_wall_details.append(f"ID{w['id']}({direction})")
-                                        append_debug(f"Detected walls before filtering: {', '.join(all_wall_details)}")
-                                    except:
-                                        pass
                                     
-                                    if len(walls_in_rect_check) >= 3:
-                                        # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
-                                        best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
-                                        walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
-                                    else:
-                                        # 2本以下の場合はそのまま使用
-                                        walls_in_rect_filtered = walls_in_rect_check
-                                except Exception:
-                                    walls_in_rect_filtered = walls_in_rect_check
+                                    all_x_check = [w['start'][0] for w in walls_check] + [w['end'][0] for w in walls_check]
+                                    all_y_check = [w['start'][1] for w in walls_check] + [w['end'][1] for w in walls_check]
+                                    min_x_check, max_x_check = min(all_x_check), max(all_x_check)
+                                    min_y_check, max_y_check = min(all_y_check), max(all_y_check)
+                                    
+                                    scale_check = int(viz_scale)
+                                    margin_check = 50
+                                    img_height_check = viz_img.height
+                                    
+                                    p1_check, p2_check = st.session_state.rect_coords
+                                    x1_check, y1_check = min(p1_check[0], p2_check[0]), min(p1_check[1], p2_check[1])
+                                    x2_check, y2_check = max(p1_check[0], p2_check[0]), max(p1_check[1], p2_check[1])
+                                    
+                                    rect_check = {
+                                        'left': x1_check,
+                                        'top': y1_check,
+                                        'width': x2_check - x1_check,
+                                        'height': y2_check - y1_check
+                                    }
+                                    
+                                    # 端点のみを囲む操作に対応するため、厳密フィルタではなく端点/交差ベースのフィルタを使用
+                                    walls_in_rect_check = _filter_walls_by_endpoints_in_rect(
+                                        walls_check, rect_check, scale_check, margin_check,
+                                        img_height_check, min_x_check, min_y_check, max_x_check, max_y_check,
+                                        tolerance=0, debug=False
+                                    )
 
-
-
-                                if len(walls_in_rect_filtered) in (2, 3):
-                                    # プレビューで2本検出された場合、確定集合にも反映して表示を整合させる
+                                    # 端点が重なって複数の壁が検出される場合、縦横を判定して最適な2本を選択
                                     try:
-                                        walls_in_rect_confirmed = walls_in_rect_filtered
-                                        # プレビューで2本検出された四角形情報とIDをセッションに保存
+                                        # デバッグ: 検出された全ての壁の情報を表示
                                         try:
-                                            st.session_state['last_preview_pair'] = [walls_in_rect_filtered[0]['id'], walls_in_rect_filtered[1]['id']]
-                                            st.session_state['last_preview_rect'] = rect_preview
-                                            # 検出/フィルタ済みIDもセッション保存して実行時に優先できるようにする
+                                            all_wall_details = []
+                                            for w in walls_in_rect_check:
+                                                dx = abs(w['end'][0] - w['start'][0])
+                                                dy = abs(w['end'][1] - w['start'][1])
+                                                direction = "縦" if dx < dy else "横"
+                                                all_wall_details.append(f"ID{w['id']}({direction})")
+                                            append_debug(f"Detected walls before filtering: {', '.join(all_wall_details)}")
+                                        except:
+                                            pass
+                                        
+                                        if len(walls_in_rect_check) >= 3:
+                                            # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
+                                            best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
+                                            walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
+                                        else:
+                                            # 2本以下の場合はそのまま使用
+                                            walls_in_rect_filtered = walls_in_rect_check
+                                    except Exception:
+                                        walls_in_rect_filtered = walls_in_rect_check
+
+
+
+                                    if len(walls_in_rect_filtered) in (2, 3):
+                                        # プレビューで2本検出された場合、確定集合にも反映して表示を整合させる
+                                        try:
+                                            walls_in_rect_confirmed = walls_in_rect_filtered
+                                            # プレビューで2本検出された四角形情報とIDをセッションに保存
                                             try:
-                                                st.session_state['last_preview_detected_ids'] = [w.get('id') for w in walls_in_rect_check]
-                                                st.session_state['last_preview_filtered_ids'] = [w.get('id') for w in walls_in_rect_filtered]
+                                                st.session_state['last_preview_pair'] = [walls_in_rect_filtered[0]['id'], walls_in_rect_filtered[1]['id']]
+                                                st.session_state['last_preview_rect'] = rect_preview
+                                                # 検出/フィルタ済みIDもセッション保存して実行時に優先できるようにする
+                                                try:
+                                                    st.session_state['last_preview_detected_ids'] = [w.get('id') for w in walls_in_rect_check]
+                                                    st.session_state['last_preview_filtered_ids'] = [w.get('id') for w in walls_in_rect_filtered]
+                                                except Exception:
+                                                    pass
                                             except Exception:
                                                 pass
                                         except Exception:
                                             pass
-                                    except Exception:
-                                        pass
-                                    # プレビュー確定表示は不要になったためUI非表示（内部データは保持）
-                                    try:
-                                        preview_debug_confirm = []
-                                        for w in walls_check:
-                                            x1w = int((w['start'][0] - min_x_check) * scale_check) + margin_check
-                                            y1w = img_height_check - (int((w['start'][1] - min_y_check) * scale_check) + margin_check)
-                                            x2w = int((w['end'][0] - min_x_check) * scale_check) + margin_check
-                                            y2w = img_height_check - (int((w['end'][1] - min_y_check) * scale_check) + margin_check)
-                                            in_rect = (
-                                                (rect_check['left'] <= x1w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y1w <= rect_check['top'] + rect_check['height']) or
-                                                (rect_check['left'] <= x2w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y2w <= rect_check['top'] + rect_check['height']) or
-                                                _line_intersects_rect(x1w, y1w, x2w, y2w, rect_check, tolerance=20)
-                                            )
-                                            preview_debug_confirm.append({'id': w.get('id'), 'start_px': (x1w, y1w), 'end_px': (x2w, y2w), 'in_rect': in_rect})
+                                        # プレビュー確定表示は不要になったためUI非表示（内部データは保持）
                                         try:
-                                            append_debug(f"Preview confirmed mapping: detected={[d['id'] for d in preview_debug_confirm if d.get('in_rect')]}, total_checked={len(preview_debug_confirm)}")
+                                            preview_debug_confirm = []
+                                            for w in walls_check:
+                                                x1w = int((w['start'][0] - min_x_check) * scale_check) + margin_check
+                                                y1w = img_height_check - (int((w['start'][1] - min_y_check) * scale_check) + margin_check)
+                                                x2w = int((w['end'][0] - min_x_check) * scale_check) + margin_check
+                                                y2w = img_height_check - (int((w['end'][1] - min_y_check) * scale_check) + margin_check)
+                                                in_rect = (
+                                                    (rect_check['left'] <= x1w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y1w <= rect_check['top'] + rect_check['height']) or
+                                                    (rect_check['left'] <= x2w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y2w <= rect_check['top'] + rect_check['height']) or
+                                                    _line_intersects_rect(x1w, y1w, x2w, y2w, rect_check, tolerance=20)
+                                                )
+                                                preview_debug_confirm.append({'id': w.get('id'), 'start_px': (x1w, y1w), 'end_px': (x2w, y2w), 'in_rect': in_rect})
+                                            try:
+                                                append_debug(f"Preview confirmed mapping: detected={[d['id'] for d in preview_debug_confirm if d.get('in_rect')]}, total_checked={len(preview_debug_confirm)}")
+                                            except Exception:
+                                                pass
                                         except Exception:
                                             pass
-                                    except Exception:
-                                        pass
-                                    # デバッグ: 選択された壁の詳細情報を表示
-                                    try:
-                                        wall_details = []
-                                        for w in walls_in_rect_filtered:
-                                            dx = abs(w['end'][0] - w['start'][0])
-                                            dy = abs(w['end'][1] - w['start'][1])
-                                            direction = "縦" if dx < dy else "横"
-                                            wall_details.append(f"ID{w['id']}({direction}, dx={dx:.2f}, dy={dy:.2f})")
-                                        st.info(f"🎯 この範囲に2本の壁が検出されました\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本\n選択された壁: {', '.join(wall_details)}")
-                                    except Exception:
-                                        st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
-                                elif len(walls_in_rect_filtered) == 0:
-                                    st.error("❌ **この範囲に壁が検出されませんでした。**\n\n💡 **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
-                                elif len(walls_in_rect_filtered) == 1:
-                                    st.warning(f"⚠️ **この範囲に1本の壁しか検出されません。**\n\n💡 **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
-                                else:
-                                    st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
+                                        # デバッグ: 選択された壁の詳細情報を表示
+                                        try:
+                                            wall_details = []
+                                            for w in walls_in_rect_filtered:
+                                                dx = abs(w['end'][0] - w['start'][0])
+                                                dy = abs(w['end'][1] - w['start'][1])
+                                                direction = "縦" if dx < dy else "横"
+                                                wall_details.append(f"ID{w['id']}({direction}, dx={dx:.2f}, dy={dy:.2f})")
+                                            st.info(f"🎯 この範囲に2本の壁が検出されました\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本\n選択された壁: {', '.join(wall_details)}")
+                                        except Exception:
+                                            st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
+                                    elif len(walls_in_rect_filtered) == 0:
+                                        st.error("❌ **この範囲に壁が検出されませんでした。**\n\n💡 **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
+                                    elif len(walls_in_rect_filtered) == 1:
+                                        st.warning(f"⚠️ **この範囲に1本の壁しか検出されません。**\n\n💡 **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
+                                    else:
+                                        st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
                                 except Exception:
                                     pass
                         
