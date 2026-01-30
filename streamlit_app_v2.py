@@ -2654,6 +2654,7 @@ def main():
                             st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
                             st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
                             st.rerun()
+                            st.rerun()
                     
                     # 線を結合モード・窓追加モード・線削除モード：選択された壁をハイライト表示
                     selected_walls_to_highlight = []
