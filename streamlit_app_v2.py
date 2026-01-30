@@ -3523,38 +3523,38 @@ def main():
                                     try:
                                         json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                         walls_merge = json_data_merge.get('walls', [])
-                                    
-                                    all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
-                                    all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
-                                    min_x_merge = min(all_x_merge)
-                                    min_y_merge = min(all_y_merge)
-                                    max_x_merge = max(all_x_merge)
-                                    max_y_merge = max(all_y_merge)
-                                    
-                                    scale_merge = int(st.session_state.viz_scale)
-                                    margin_merge = 50
-                                    img_height_merge = viz_img.height
-                                    
-                                    # クリック位置から最も近い壁を検出
-                                    nearest_wall, distance = _find_nearest_wall_from_click(
-                                        new_point[0], new_point[1],
-                                        walls_merge, scale_merge, margin_merge,
-                                        img_height_merge, min_x_merge, min_y_merge, max_x_merge, max_y_merge,
-                                        threshold=20
-                                    )
-                                    
-                                    if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除
-                                        if nearest_wall in st.session_state.selected_walls_for_merge:
-                                            st.session_state.selected_walls_for_merge.remove(nearest_wall)
-                                        else:
-                                            # 最大2本まで選択可能
-                                            if len(st.session_state.selected_walls_for_merge) < 2:
-                                                st.session_state.selected_walls_for_merge.append(nearest_wall)
-                                        st.session_state.last_click = new_point
-                                        st.rerun()
-                                except Exception as e:
-                                    st.error(f"壁選択エラー: {e}")
+                                        
+                                        all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
+                                        all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
+                                        min_x_merge = min(all_x_merge)
+                                        min_y_merge = min(all_y_merge)
+                                        max_x_merge = max(all_x_merge)
+                                        max_y_merge = max(all_y_merge)
+                                        
+                                        scale_merge = int(st.session_state.viz_scale)
+                                        margin_merge = 50
+                                        img_height_merge = viz_img.height
+                                        
+                                        # クリック位置から最も近い壁を検出
+                                        nearest_wall, distance = _find_nearest_wall_from_click(
+                                            new_point[0], new_point[1],
+                                            walls_merge, scale_merge, margin_merge,
+                                            img_height_merge, min_x_merge, min_y_merge, max_x_merge, max_y_merge,
+                                            threshold=20
+                                        )
+                                        
+                                        if nearest_wall is not None:
+                                            # 既に選択されている場合は選択解除
+                                            if nearest_wall in st.session_state.selected_walls_for_merge:
+                                                st.session_state.selected_walls_for_merge.remove(nearest_wall)
+                                            else:
+                                                # 最大2本まで選択可能
+                                                if len(st.session_state.selected_walls_for_merge) < 2:
+                                                    st.session_state.selected_walls_for_merge.append(nearest_wall)
+                                            st.session_state.last_click = new_point
+                                            st.rerun()
+                                    except Exception as e:
+                                        st.error(f"壁選択エラー: {e}")
                             elif edit_mode == "窓を追加":
                                 # 窓追加モード：壁線をクリックで選択（最大2本）
                                 if st.session_state.last_click == new_point:
@@ -3563,37 +3563,37 @@ def main():
                                     try:
                                         json_data_window = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                         walls_window = json_data_window.get('walls', [])
-                                    
-                                    all_x_window = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
-                                    all_y_window = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
-                                    min_x_window = min(all_x_window)
-                                    min_y_window = min(all_y_window)
-                                    max_x_window = max(all_x_window)
-                                    max_y_window = max(all_y_window)
-                                    
-                                    scale_window = int(st.session_state.viz_scale)
-                                    margin_window = 50
-                                    img_height_window = viz_img.height
-                                    
-                                    # クリック位置から最も近い壁を検出
-                                    nearest_wall, distance = _find_nearest_wall_from_click(
-                                        new_point[0], new_point[1],
-                                        walls_window, scale_window, margin_window,
-                                        img_height_window, min_x_window, min_y_window, max_x_window, max_y_window,
-                                        threshold=20
-                                    )
-                                    
-                                    if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除
-                                        if nearest_wall in st.session_state.selected_walls_for_window:
-                                            st.session_state.selected_walls_for_window.remove(nearest_wall)
-                                        else:
-                                            # 制限なし（偶数本選択で窓ペアを作成）
-                                            st.session_state.selected_walls_for_window.append(nearest_wall)
-                                        st.session_state.last_click = new_point
-                                        st.rerun()
-                                except Exception as e:
-                                    st.error(f"壁選択エラー: {e}")
+                                        
+                                        all_x_window = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
+                                        all_y_window = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
+                                        min_x_window = min(all_x_window)
+                                        min_y_window = min(all_y_window)
+                                        max_x_window = max(all_x_window)
+                                        max_y_window = max(all_y_window)
+                                        
+                                        scale_window = int(st.session_state.viz_scale)
+                                        margin_window = 50
+                                        img_height_window = viz_img.height
+                                        
+                                        # クリック位置から最も近い壁を検出
+                                        nearest_wall, distance = _find_nearest_wall_from_click(
+                                            new_point[0], new_point[1],
+                                            walls_window, scale_window, margin_window,
+                                            img_height_window, min_x_window, min_y_window, max_x_window, max_y_window,
+                                            threshold=20
+                                        )
+                                        
+                                        if nearest_wall is not None:
+                                            # 既に選択されている場合は選択解除
+                                            if nearest_wall in st.session_state.selected_walls_for_window:
+                                                st.session_state.selected_walls_for_window.remove(nearest_wall)
+                                            else:
+                                                # 制限なし（偶数本選択で窓ペアを作成）
+                                                st.session_state.selected_walls_for_window.append(nearest_wall)
+                                            st.session_state.last_click = new_point
+                                            st.rerun()
+                                    except Exception as e:
+                                        st.error(f"壁選択エラー: {e}")
                             elif edit_mode == "線を削除":
                                 # 線削除モード：壁線をクリックで選択（複数本可能）
                                 if st.session_state.last_click == new_point:
@@ -3602,37 +3602,37 @@ def main():
                                     try:
                                         json_data_delete = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                         walls_delete = json_data_delete.get('walls', [])
-                                    
-                                    all_x_delete = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
-                                    all_y_delete = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
-                                    min_x_delete = min(all_x_delete)
-                                    min_y_delete = min(all_y_delete)
-                                    max_x_delete = max(all_x_delete)
-                                    max_y_delete = max(all_y_delete)
-                                    
-                                    scale_delete = int(st.session_state.viz_scale)
-                                    margin_delete = 50
-                                    img_height_delete = viz_img.height
-                                    
-                                    # クリック位置から最も近い壁を検出
-                                    nearest_wall, distance = _find_nearest_wall_from_click(
-                                        new_point[0], new_point[1],
-                                        walls_delete, scale_delete, margin_delete,
-                                        img_height_delete, min_x_delete, min_y_delete, max_x_delete, max_y_delete,
-                                        threshold=20
-                                    )
-                                    
-                                    if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除
-                                        if nearest_wall in st.session_state.selected_walls_for_delete:
-                                            st.session_state.selected_walls_for_delete.remove(nearest_wall)
-                                        else:
-                                            # 複数本選択可能
-                                            st.session_state.selected_walls_for_delete.append(nearest_wall)
-                                        st.session_state.last_click = new_point
-                                        st.rerun()
-                                except Exception as e:
-                                    st.error(f"壁選択エラー: {e}")
+                                        
+                                        all_x_delete = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
+                                        all_y_delete = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
+                                        min_x_delete = min(all_x_delete)
+                                        min_y_delete = min(all_y_delete)
+                                        max_x_delete = max(all_x_delete)
+                                        max_y_delete = max(all_y_delete)
+                                        
+                                        scale_delete = int(st.session_state.viz_scale)
+                                        margin_delete = 50
+                                        img_height_delete = viz_img.height
+                                        
+                                        # クリック位置から最も近い壁を検出
+                                        nearest_wall, distance = _find_nearest_wall_from_click(
+                                            new_point[0], new_point[1],
+                                            walls_delete, scale_delete, margin_delete,
+                                            img_height_delete, min_x_delete, min_y_delete, max_x_delete, max_y_delete,
+                                            threshold=20
+                                        )
+                                        
+                                        if nearest_wall is not None:
+                                            # 既に選択されている場合は選択解除
+                                            if nearest_wall in st.session_state.selected_walls_for_delete:
+                                                st.session_state.selected_walls_for_delete.remove(nearest_wall)
+                                            else:
+                                                # 複数本選択可能
+                                                st.session_state.selected_walls_for_delete.append(nearest_wall)
+                                            st.session_state.last_click = new_point
+                                            st.rerun()
+                                    except Exception as e:
+                                        st.error(f"壁選択エラー: {e}")
                             elif edit_mode == "スケール校正":
                                 # スケール校正モード：2点選択
                                 if len(st.session_state.rect_coords) < 2:
