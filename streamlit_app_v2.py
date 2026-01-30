@@ -3297,9 +3297,14 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # 画像を大きめにリサイズ（1200px）してCSSでカラム幅に自動調整
-                    # これにより、どの画面サイズでも最適な表示が可能
-                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=1200)
+                    # カラム幅が60%なので、元の画像サイズに0.6を掛けた値を最大幅として使用
+                    # これにより、画面サイズに応じて適切なサイズで表示される
+                    original_width = display_img.width
+                    # 元の幅の60%を最大幅として使用（最小600px、最大1200px）
+                    target_max_width = int(original_width * 0.6)
+                    target_max_width = max(600, min(target_max_width, 1200))
+                    
+                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=target_max_width)
                     
                     # レスポンシブなカラムレイアウトのためのCSS
                     st.markdown("""
