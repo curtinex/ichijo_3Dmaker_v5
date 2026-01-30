@@ -3655,17 +3655,16 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除（ただしペア完成済みは保護）
-                                        if nearest_wall in st.session_state.selected_walls_for_window:
-                                            # 現在の選択数
-                                            current_count = len(st.session_state.selected_walls_for_window)
-                                            # ペア完成済み（偶数本）の壁は削除不可、奇数本目（選択中）のみ削除可能
-                                            if current_count % 2 == 1:  # 奇数本選択中のみ削除可能
-                                                # 最後の1本（現在選択中）のみ削除可能
-                                                if st.session_state.selected_walls_for_window[-1] == nearest_wall:
-                                                    st.session_state.selected_walls_for_window.remove(nearest_wall)
+                                        # 奇数本選択中で、最後の壁と同じ場合のみ削除（やり直し用）
+                                        # それ以外は常に追加（同じ壁を複数の窓ペアで使用可能）
+                                        current_count = len(st.session_state.selected_walls_for_window)
+                                        if (current_count % 2 == 1 and 
+                                            current_count > 0 and 
+                                            st.session_state.selected_walls_for_window[-1] == nearest_wall):
+                                            # 奇数本目選択中で、最後に選択した壁と同じ場合のみ削除
+                                            st.session_state.selected_walls_for_window.remove(nearest_wall)
                                         else:
-                                            # 制限なし（偶数本選択で窓ペアを作成）
+                                            # それ以外は常に追加（同じ壁を別の窓ペアで再利用可能）
                                             st.session_state.selected_walls_for_window.append(nearest_wall)
                                         st.session_state.last_click = new_point
                                         st.rerun()
