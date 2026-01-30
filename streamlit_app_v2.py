@@ -3944,6 +3944,10 @@ def main():
                                 st.session_state.viz_scale
                             )
                             #st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
+                        
+                        if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
+                            st.session_state.execute_furniture_placement = True
+                            st.rerun()
                     
                     # 確定済み選択の表示
                     # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
@@ -4457,7 +4461,8 @@ def main():
                                 if len(st.session_state.selected_walls_for_delete) > 0:
                                     if st.button(button_label, type="primary", key="btn_delete_exec"):
                                         should_execute = True
-                            else:
+                            elif edit_mode != "オブジェクトを配置":
+                                # オブジェクト配置モード以外（線を追加、床を追加など）
                                 if st.button(button_label, type="primary", key="btn_general_edit_exec"):
                                     should_execute = True
                             
