@@ -5376,6 +5376,12 @@ def main():
                     file_name=st.session_state.viewer_html_name,
                     mime="text/html"
                 )
+            else:
+                # 可視化画像がない場合のエラーメッセージ
+                st.warning("⚠️ 手動編集画面を表示するには、まずStep 1で図面を変換してください。")
+                if st.button("📄 Step 1に戻る", type="primary"):
+                    st.session_state.workflow_step = 1
+                    st.rerun()
             
 
 
