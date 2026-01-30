@@ -2676,38 +2676,9 @@ def main():
                             margin_highlight = 50
                             img_height_highlight = viz_img.height
                             
-                            # 線を結合モードで2本選択された場合：1本目に番号「1」、結合後の壁を赤線で表示
+                            # 線を結合モードで2本選択された場合：ギャップ部分のみを赤線で表示（1本目の表示は消す）
                             if edit_mode == "線を結合" and len(selected_walls_to_highlight) == 2:
-                                # 1本目：青色で描画 + 番号「1」
                                 wall1 = selected_walls_to_highlight[0]
-                                start_m = wall1['start']
-                                end_m = wall1['end']
-                                
-                                start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                
-                                cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
-                                
-                                mid_x = (start_px_x + end_px_x) // 2
-                                mid_y = (start_px_y + end_px_y) // 2
-                                text = "1"
-                                text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]
-                                text_x = mid_x - text_size[0] // 2
-                                text_y = mid_y + text_size[1] // 2
-                                
-                                cv2.rectangle(display_img_array, 
-                                            (text_x - 5, text_y - text_size[1] - 5),
-                                            (text_x + text_size[0] + 5, text_y + 5),
-                                            (255, 255, 255), -1)
-                                cv2.rectangle(display_img_array, 
-                                            (text_x - 5, text_y - text_size[1] - 5),
-                                            (text_x + text_size[0] + 5, text_y + 5),
-                                            (0, 0, 0), 2)
-                                cv2.putText(display_img_array, text, (text_x, text_y), 
-                                          cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
-                                
                                 # 2本目：結合候補を検出して結合によって埋まる部分（端点間のギャップ）を赤線で表示
                                 try:
                                     wall2 = selected_walls_to_highlight[1]
