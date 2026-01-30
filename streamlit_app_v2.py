@@ -4173,6 +4173,10 @@ def main():
                                 st.session_state.last_click = None
                                 st.session_state.reset_flag = False
                                 st.session_state.merge_result = None
+                                st.session_state.selected_walls_for_merge = []       # 線を結合モードの壁選択をクリア
+                                st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
+                                st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
+                                st.session_state.skip_click_processing = True        # クリック処理をスキップ（再選択を防ぐ）
                                 
                                 # 窓追加パラメータもクリア
                                 if 'window_execution_params' in st.session_state:
