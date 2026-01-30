@@ -3297,62 +3297,9 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # JavaScriptでカラムの実際の幅を取得してセッションステートに保存
-                    import streamlit.components.v1 as components
-                    column_width_html = """
-                    <script>
-                    function sendColumnWidth() {
-                        // 少し待ってからカラム幅を取得（DOMが完全にレンダリングされるのを待つ）
-                        setTimeout(function() {
-                            const columns = document.querySelectorAll('[data-testid="column"]');
-                            if (columns.length > 0) {
-                                const leftColumn = columns[0];
-                                const width = leftColumn.offsetWidth;
-                                // Streamlitに幅を送信
-                                window.parent.postMessage({
-                                    type: 'streamlit:setComponentValue',
-                                    value: width
-                                }, '*');
-                            }
-                        }, 100);
-                    }
-                    
-                    // 初回実行
-                    sendColumnWidth();
-                    
-                    // ウィンドウリサイズ時にも実行
-                    let resizeTimer;
-                    window.addEventListener('resize', function() {
-                        clearTimeout(resizeTimer);
-                        resizeTimer = setTimeout(sendColumnWidth, 200);
-                    });
-                    </script>
-                    """
-                    
-                    # カラム幅を取得（デフォルト値は800）
-                    detected_width = components.html(column_width_html, height=0)
-                    
-                    # セッションステートに保存（型を安全にチェック）
-                    try:
-                        if detected_width is not None:
-                            width_value = int(detected_width)
-                            if width_value > 0:
-                                st.session_state['dynamic_column_width'] = width_value
-                    except (ValueError, TypeError):
-                        # 変換できない場合は無視
-                        pass
-                    
-                    # 現在のカラム幅を取得（デフォルトは800）
-                    current_column_width = st.session_state.get('dynamic_column_width', 800)
-                    
-                    # カラム幅の90%を画像の最大幅として使用（余白を考慮）
-                    dynamic_image_width = int(current_column_width * 0.9)
-                    
-                    # 最小幅と最大幅を設定
-                    dynamic_image_width = max(400, min(dynamic_image_width, 1200))
-                    
-                    # 動的な幅で画像をリサイズ
-                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=dynamic_image_width)
+                    # 画像を大きめにリサイズ（1200px）してCSSでカラム幅に自動調整
+                    # これにより、どの画面サイズでも最適な表示が可能
+                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=1200)
                     
                     # レスポンシブなカラムレイアウトのためのCSS
                     st.markdown("""
