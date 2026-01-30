@@ -3354,14 +3354,30 @@ def main():
                                         help="窓の型番を選択してください",
                                         key=f"window_model_click_{window_idx}"
                                     )
-                                    window_width_mm = WINDOW_CATALOG[window_model]
+                                    
+                                    # 型番からカタログ情報を取得
+                                    catalog_info = WINDOW_CATALOG.get(window_model, {"height": 1200, "base": 900})
+                                    catalog_height_mm = catalog_info.get("height", 1200)
+                                    catalog_base_mm = catalog_info.get("base", 900)
+                                    
+                                    # 型番が変更された場合、カタログの値を使用
+                                    # セッションに保存された型番と異なる場合は、カタログ値を優先
+                                    prev_model = st.session_state.window_click_params_list[window_idx].get('model')
+                                    if prev_model != window_model:
+                                        # 型番が変更された場合、カタログ値をデフォルトとして使用
+                                        default_height_mm = catalog_height_mm
+                                        default_base_mm = catalog_base_mm
+                                    else:
+                                        # 型番が同じ場合、セッションの値を使用
+                                        default_height_mm = st.session_state.window_click_params_list[window_idx].get('height_mm', catalog_height_mm)
+                                        default_base_mm = st.session_state.window_click_params_list[window_idx].get('base_mm', catalog_base_mm)
                                 
                                 with col2:
                                     window_height_mm = st.number_input(
                                         f"窓長さ(高さ) (mm)",
                                         min_value=50,
                                         max_value=3000,
-                                        value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
+                                        value=default_height_mm,
                                         step=1,
                                         key=f"window_height_click_{window_idx}"
                                     )
@@ -3371,7 +3387,7 @@ def main():
                                         f"床から窓下端 (mm)",
                                         min_value=0,
                                         max_value=5000,
-                                        value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
+                                        value=default_base_mm,
                                         step=1,
                                         key=f"window_base_click_{window_idx}"
                                     )
@@ -3379,7 +3395,7 @@ def main():
                                 # パラメータを保存
                                 window_params_to_save.append({
                                     'model': window_model,
-                                    'width_mm': window_width_mm,
+                                    'width_mm': catalog_info.get("width", 0),  # 幅はカタログから取得（使用していない可能性あり）
                                     'height_mm': window_height_mm,
                                     'base_mm': window_base_mm
                                 })
