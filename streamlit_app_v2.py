@@ -1632,7 +1632,8 @@ def main():
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
     # 固定画像幅（自動結合と手動編集で統一）
-    DISPLAY_IMAGE_WIDTH = 800
+    # カラム幅（60%）を考慮して600pxに設定（画面幅1000pxで600px、1920pxで1152pxのカラムに対して余裕を持たせる）
+    DISPLAY_IMAGE_WIDTH = 600
 
     # セッション状態の初期化（結果の永続化）
     if "processed" not in st.session_state:
@@ -3300,11 +3301,24 @@ def main():
                     # レスポンシブなカラムレイアウトのためのCSS
                     st.markdown("""
                     <style>
+                    /* 左側カラム全体の幅制限 */
+                    [data-testid="column"]:first-child {
+                        overflow: visible !important;
+                    }
                     /* 左側の画像カラムをレスポンシブ化 */
                     [data-testid="column"]:first-child img {
                         max-width: 100% !important;
                         height: auto !important;
-                        width: auto !important;
+                        width: 100% !important;
+                        object-fit: contain !important;
+                    }
+                    /* 画像コンテナ全体を制限 */
+                    [data-testid="column"]:first-child > div {
+                        max-width: 100% !important;
+                        overflow: hidden !important;
+                    }
+                    [data-testid="column"]:first-child iframe {
+                        max-width: 100% !important;
                     }
                     /* 右側のUIカラムが見切れないようにレスポンシブ化 */
                     [data-testid="column"] {
