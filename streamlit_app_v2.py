@@ -2676,8 +2676,8 @@ def main():
                             margin_highlight = 50
                             img_height_highlight = viz_img.height
                             
-                            # 線を結合モードで2本選択された場合：ギャップ部分のみを赤線で表示（1本目の表示は消す）
-                            if edit_mode == "線を結合" and len(selected_walls_to_highlight) == 2:
+                            # 線を結合モード・窓追加モードで2本選択された場合：ギャップ部分のみを赤線で表示（1本目の表示は消す）
+                            if edit_mode in ("線を結合", "窓を追加") and len(selected_walls_to_highlight) == 2:
                                 wall1 = selected_walls_to_highlight[0]
                                 # 2本目：結合候補を検出して結合によって埋まる部分（端点間のギャップ）を赤線で表示
                                 try:
@@ -2711,9 +2711,9 @@ def main():
                                 except Exception:
                                     pass
                             else:
-                                # その他のモード（窓追加、線削除）または1本のみ選択時：従来通り
+                                # その他のモード（線削除）または1本のみ選択時：従来通り
                                 # 線を削除：すべて赤
-                                # 線を結合（1本のみ）・窓追加：1本目青、2本目緑
+                                # 線を結合・窓追加（1本のみ）：青色で表示
                                 if edit_mode == "線を削除":
                                     colors = [(0, 0, 255)] * 20  # 赤色で統一（BGR形式）
                                 else:
