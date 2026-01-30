@@ -3300,6 +3300,12 @@ def main():
                     # レスポンシブなカラムレイアウトのためのCSS
                     st.markdown("""
                     <style>
+                    /* 左側の画像カラムをレスポンシブ化 */
+                    [data-testid="column"]:first-child img {
+                        max-width: 100% !important;
+                        height: auto !important;
+                        width: auto !important;
+                    }
                     /* 右側のUIカラムが見切れないようにレスポンシブ化 */
                     [data-testid="column"] {
                         overflow-x: auto !important;
