@@ -2710,38 +2710,109 @@ def main():
                             img_height_highlight = viz_img.height
                             
                             # 線を結合モード・窓追加モードで2本以上選択された場合：ギャップ部分のみを赤線で表示
-                            if edit_mode == "線を結合" and len(selected_walls_to_highlight) == 2:
-                                wall1 = selected_walls_to_highlight[0]
-                                wall2 = selected_walls_to_highlight[1]
-                                # 結合候補を検出して結合によって埋まる部分（端点間のギャップ）を赤線で表示
-                                try:
-                                    # 2つの壁の4つの端点から最も近い組み合わせを見つける
-                                    endpoints1 = [wall1['start'], wall1['end']]
-                                    endpoints2 = [wall2['start'], wall2['end']]
-                                    
-                                    min_dist = float('inf')
-                                    closest_p1 = None
-                                    closest_p2 = None
-                                    
-                                    for p1 in endpoints1:
-                                        for p2 in endpoints2:
-                                            dist = _calc_distance(p1, p2)
-                                            if dist < min_dist:
-                                                min_dist = dist
-                                                closest_p1 = p1
-                                                closest_p2 = p2
-                                    
-                                    # 最も近い端点同士を赤線で結ぶ（ギャップ部分のみ）
-                                    if closest_p1 and closest_p2:
-                                        gap_start_px_x = int((closest_p1[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                        gap_start_px_y = img_height_highlight - (int((closest_p1[1] - min_y_highlight) * scale_highlight) + margin_highlight)
-                                        gap_end_px_x = int((closest_p2[0] - min_x_highlight) * scale_highlight) + margin_highlight
-                                        gap_end_px_y = img_height_highlight - (int((closest_p2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                            if edit_mode == "線を結合" and len(selected_walls_to_highlight) >= 1:
+                                # 線を結合モード：2本ずつペアでギャップを表示し、番号を振る
+                                # 奇数本選択時は最後の1本を単独で表示
+                                merge_pairs = []
+                                for i in range(0, len(selected_walls_to_highlight), 2):
+                                    if i + 1 < len(selected_walls_to_highlight):
+                                        merge_pairs.append((selected_walls_to_highlight[i], selected_walls_to_highlight[i + 1]))
+                                
+                                # ペアになっている結合を表示
+                                for pair_idx, (wall1, wall2) in enumerate(merge_pairs):
+                                    try:
+                                        # 2つの壁の4つの端点から最も近い組み合わせを見つける
+                                        endpoints1 = [wall1['start'], wall1['end']]
+                                        endpoints2 = [wall2['start'], wall2['end']]
                                         
-                                        # ギャップ部分を赤線で描画（太さ6）
-                                        cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
-                                except Exception:
-                                    pass
+                                        min_dist = float('inf')
+                                        closest_p1 = None
+                                        closest_p2 = None
+                                        
+                                        for p1 in endpoints1:
+                                            for p2 in endpoints2:
+                                                dist = _calc_distance(p1, p2)
+                                                if dist < min_dist:
+                                                    min_dist = dist
+                                                    closest_p1 = p1
+                                                    closest_p2 = p2
+                                        
+                                        # 最も近い端点同士を赤線で結び、番号を表示
+                                        if closest_p1 and closest_p2:
+                                            gap_start_px_x = int((closest_p1[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                            gap_start_px_y = img_height_highlight - (int((closest_p1[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                            gap_end_px_x = int((closest_p2[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                            gap_end_px_y = img_height_highlight - (int((closest_p2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                            
+                                            # ギャップ部分を赤線で描画（太さ6）
+                                            cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
+                                            
+                                            # ギャップの中心に結合番号を表示（薄いオレンジ背景の四角で囲む）
+                                            center_x = (gap_start_px_x + gap_end_px_x) // 2
+                                            center_y = (gap_start_px_y + gap_end_px_y) // 2
+                                            merge_num = pair_idx + 1
+                                            text = f"{merge_num}"
+                                            text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.2, 2)[0]
+                                            text_x = center_x - text_size[0] // 2
+                                            text_y = center_y + text_size[1] // 2
+                                            
+                                            # 薄いオレンジ背景の四角形を描画 (BGR: 180, 220, 255 = 薄いオレンジ)
+                                            cv2.rectangle(display_img_array,
+                                                        (text_x - 5, text_y - text_size[1] - 5),
+                                                        (text_x + text_size[0] + 5, text_y + 5),
+                                                        (180, 220, 255), -1)
+                                            # 黒枠を描画
+                                            cv2.rectangle(display_img_array,
+                                                        (text_x - 5, text_y - text_size[1] - 5),
+                                                        (text_x + text_size[0] + 5, text_y + 5),
+                                                        (0, 0, 0), 2)
+                                            # 番号を描画（黒文字）
+                                            cv2.putText(display_img_array, text, (text_x, text_y),
+                                                       cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 2)
+                                    except Exception:
+                                        pass
+                                
+                                # 奇数本選択時：最後の1本を単独で表示（線結合と同じスタイルで「1」表示）
+                                if len(selected_walls_to_highlight) % 2 == 1:
+                                    last_wall = selected_walls_to_highlight[-1]
+                                    
+                                    try:
+                                        start_m = last_wall['start']
+                                        end_m = last_wall['end']
+                                        
+                                        # メートル→ピクセル変換
+                                        start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        
+                                        # 壁線を青色でハイライト表示（太さ6）
+                                        cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
+                                        
+                                        # 壁線の中心に「1」を四角で囲んで表示（線結合と同じスタイル）
+                                        mid_x = (start_px_x + end_px_x) // 2
+                                        mid_y = (start_px_y + end_px_y) // 2
+                                        text = "1"
+                                        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]
+                                        text_x = mid_x - text_size[0] // 2
+                                        text_y = mid_y + text_size[1] // 2
+                                        
+                                        # 白背景の四角形を描画
+                                        cv2.rectangle(display_img_array,
+                                                    (text_x - 5, text_y - text_size[1] - 5),
+                                                    (text_x + text_size[0] + 5, text_y + 5),
+                                                    (255, 255, 255), -1)
+                                        # 黒枠を描画
+                                        cv2.rectangle(display_img_array,
+                                                    (text_x - 5, text_y - text_size[1] - 5),
+                                                    (text_x + text_size[0] + 5, text_y + 5),
+                                                    (0, 0, 0), 2)
+                                        # 番号を描画（黒文字）
+                                        cv2.putText(display_img_array, text, (text_x, text_y),
+                                                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
+                                    except Exception as e:
+                                        print(f"[ERROR] 奇数本描画エラー: {e}")
+                                        pass
                             elif edit_mode == "窓を追加" and len(selected_walls_to_highlight) >= 1:
                                 # 窓追加モード：2本ずつペアでギャップを表示し、番号を振る
                                 # 奇数本選択時は最後の1本を単独で表示
@@ -3298,13 +3369,26 @@ def main():
                     
                     # UI表示：モード別
                     if edit_mode == "線を結合":
-                        # 線を結合モード：壁線クリック選択
-                        if len(st.session_state.selected_walls_for_merge) == 0:
-                            st.write("💡 **結合したい壁線を1本目クリックしてください**")
-                        elif len(st.session_state.selected_walls_for_merge) == 1:
-                            st.info("✅ **1本目選択完了** → 2本目の壁線をクリックしてください")
-                        elif len(st.session_state.selected_walls_for_merge) == 2:
-                            st.success("✅ **2本選択完了** → 右側の「🔗 結合実行」ボタンをクリックしてください")
+                        # 線を結合モード：壁線クリック選択（2本ずつペアで複数結合可能）
+                        num_selected = len(st.session_state.selected_walls_for_merge)
+                        if num_selected == 0:
+                            st.write("💡 **結合1つ目：結合したい壁線を1本目クリックしてください**")
+                        elif num_selected % 2 == 1:
+                            merge_num = (num_selected // 2) + 1
+                            st.info(f"✅ **結合{merge_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                        else:
+                            merge_count = num_selected // 2
+                            st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
+                            
+                            # 結合実行ボタン（選択完了メッセージの直後、画像の前に表示）
+                            st.markdown("---")
+                            if st.button("🔗 結合実行", type="primary", key="btn_merge_exec_top"):
+                                # 選択された壁をセッションに保存してから選択リストをクリア
+                                st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
+                                st.session_state.selected_walls_for_merge = []
+                                st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                                st.rerun()
                     elif edit_mode == "窓を追加":
                         # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
                         num_selected = len(st.session_state.selected_walls_for_window)
@@ -3613,15 +3697,17 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # 既に選択されている場合は選択解除（ただし2本選択完了時は保護）
-                                        if nearest_wall in st.session_state.selected_walls_for_merge:
-                                            # 2本選択完了後は削除不可（確定済み）
-                                            if len(st.session_state.selected_walls_for_merge) < 2:
-                                                st.session_state.selected_walls_for_merge.remove(nearest_wall)
+                                        # 奇数本選択中で、最後の壁と同じ場合のみ削除（やり直し用）
+                                        # それ以外は常に追加（同じ壁を複数の結合ペアで使用可能）
+                                        current_count = len(st.session_state.selected_walls_for_merge)
+                                        if (current_count % 2 == 1 and 
+                                            current_count > 0 and 
+                                            st.session_state.selected_walls_for_merge[-1] == nearest_wall):
+                                            # 奇数本目選択中で、最後に選択した壁と同じ場合のみ削除
+                                            st.session_state.selected_walls_for_merge.remove(nearest_wall)
                                         else:
-                                            # 最大2本まで選択可能
-                                            if len(st.session_state.selected_walls_for_merge) < 2:
-                                                st.session_state.selected_walls_for_merge.append(nearest_wall)
+                                            # それ以外は常に追加（同じ壁を別の結合ペアで再利用可能）
+                                            st.session_state.selected_walls_for_merge.append(nearest_wall)
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
@@ -4541,171 +4627,141 @@ def main():
                                             st.error(f"保存エラー: {e}")
                                         
                                     elif edit_mode == "線を結合":
-                                        # ===== 線を結合モード =====
+                                        # ===== 線を結合モード（複数ペア一括対応） =====
                                         # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                                         total_merged_count = 0
                                         merge_details = []
                                         
                                         if st.session_state.get('merge_walls_to_process'):
-                                            # セッションから壁を取得
-                                            wall1, wall2 = st.session_state.merge_walls_to_process[0], st.session_state.merge_walls_to_process[1]
+                                            # セッションから壁リストを取得
+                                            walls_list = st.session_state.merge_walls_to_process
                                             
                                             # 処理完了後にセッションから削除
                                             del st.session_state.merge_walls_to_process
                                             
-                                            try:
-                                                append_debug(f"Merge started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
-                                            except Exception:
-                                                pass
+                                            # 2本ずつペアにして処理
+                                            merge_count = len(walls_list) // 2
+                                            success_count = 0
                                             
-                                            # クリック選択した2本の壁を直接結合処理
-                                            walls_to_use = [wall1, wall2]
-                                            selected_walls = [wall1, wall2]
-                                            
-                                            # デバッグ情報: 選択した2本の角度差と最短端点距離を表示
-                                            try:
-                                                angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                min_dist = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
-                                                selected_wall_info = f"選択壁の角度差: {angle_diff_sel:.2f}度, 最短端点距離: {min_dist:.3f} m"
-                                                st.write(f"**{selected_wall_info}**")
-                                                append_debug(selected_wall_info)
-                                            except Exception:
-                                                pass
-                                            
-                                            # 結合候補を探す
-                                            merge_angle_threshold = 30
-                                            candidates = _find_mergeable_walls(
-                                                walls_to_use,
-                                                distance_threshold=distance_threshold,
-                                                angle_threshold=merge_angle_threshold
-                                            )
-                                            
-                                            # 候補の詳細を表示
-                                            try:
-                                                cand_list = []
-                                                for c in candidates:
-                                                    if c.get('is_chain'):
-                                                        cand_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                    else:
-                                                        cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                #st.write("**デバッグ (候補一覧):**", cand_list)
-                                                append_debug(f"候補一覧: {cand_list}")
-                                            except Exception:
-                                                pass
-                                            
-                                            # フォールバック: 候補が見つからなければ閾値を緩めて再探索
-                                            if not candidates:
+                                            for pair_idx in range(merge_count):
+                                                wall1 = walls_list[pair_idx * 2]
+                                                wall2 = walls_list[pair_idx * 2 + 1]
+                                                
                                                 try:
-                                                    fallback_dist = max(distance_threshold * 2, 0.5)
-                                                    fallback_angle = max(merge_angle_threshold * 2, 45)
-                                                    #st.warning(f"候補が見つかりません。フォールバック閾値で再探索します (距離: {fallback_dist}m, 角度: {fallback_angle}°)")
-                                                    candidates = _find_mergeable_walls(
-                                                        walls_to_use,
-                                                        distance_threshold=fallback_dist,
-                                                        angle_threshold=fallback_angle
-                                                    )
-                                                    if candidates:
-                                                        #st.info("フォールバックで候補が見つかりました。結合を実行します。")
-                                                        append_debug(f"Fallback candidates found")
-                                                    else:
-                                                        pass
-                                                        #st.warning("フォールバックでも候補が見つかりませんでした。")
+                                                    append_debug(f"Merge {pair_idx + 1} started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
                                                 except Exception:
                                                     pass
-                                            
-                                            # 最終フォールバック: それでも見つからない場合、強制的に候補を作成
-                                            if not candidates:
-                                                try:
-                                                    endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                    endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                    min_dist = None
-                                                    min_pair = None
-                                                    for p1 in endpoints1:
-                                                        for p2 in endpoints2:
-                                                            d = _calc_distance(p1, p2)
-                                                            if min_dist is None or d < min_dist:
-                                                                min_dist = d
-                                                                min_pair = (p1, p2)
-                                                    
-                                                    angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                    
-                                                    # 接続タイプを決定
-                                                    p1, p2 = min_pair
-                                                    w1 = selected_walls[0]
-                                                    w2 = selected_walls[1]
-                                                    
-                                                    if p1 == w1['end'] and p2 == w2['start']:
-                                                        conn = 'end-start'
-                                                        new_start = w1['start']
-                                                        new_end = w2['end']
-                                                    elif p1 == w1['end'] and p2 == w2['end']:
-                                                        conn = 'end-end'
-                                                        new_start = w1['start']
-                                                        new_end = w2['start']
-                                                    elif p1 == w1['start'] and p2 == w2['start']:
-                                                        conn = 'start-start'
-                                                        new_start = w1['end']
-                                                        new_end = w2['end']
-                                                    elif p1 == w1['start'] and p2 == w2['end']:
-                                                        conn = 'start-end'
-                                                        new_start = w1['end']
-                                                        new_end = w2['start']
-                                                    else:
-                                                        conn = 'end-start'
-                                                        new_start = w1['start']
-                                                        new_end = w2['end']
-                                                    
-                                                    forced_candidate = {
-                                                        'wall1': w1,
-                                                        'wall2': w2,
-                                                        'is_chain': False,
-                                                        'distance': min_dist,
-                                                        'angle_diff': angle_diff_sel,
-                                                        'connection': conn,
-                                                        'new_start': new_start,
-                                                        'new_end': new_end,
-                                                        'confidence': 0.0
-                                                    }
-                                                    candidates = [forced_candidate]
-                                                    #st.info(f'クリック選択された2本の壁を強制的に結合します（距離={min_dist:.3f}m, 角度差={angle_diff_sel:.2f}°）')
-                                                    append_debug(f"Forced candidate created: {w1.get('id')} + {w2.get('id')}")
-                                                except Exception as e:
-                                                    st.error(f"強制候補作成エラー: {e}")
-                                            
-                                            # 結合実行
-                                            if candidates:
-                                                top_candidate = candidates[0]
-                                                #st.write(f"**検出されたペア：**")
-                                                if top_candidate.get('is_chain', False):
-                                                    chain_wall_ids = [w['id'] for w in top_candidate['walls']]
-                                                    #st.write(f"チェーン: {chain_wall_ids}")
+                                                
+                                                # クリック選択した2本の壁を直接結合処理
+                                                walls_to_use = [wall1, wall2]
+                                                selected_walls = [wall1, wall2]
+                                                
+                                                # 結合候補を探す
+                                                merge_angle_threshold = 30
+                                                candidates = _find_mergeable_walls(
+                                                    walls_to_use,
+                                                    distance_threshold=distance_threshold,
+                                                    angle_threshold=merge_angle_threshold
+                                                )
+                                                
+                                                # フォールバック: 候補が見つからなければ閾値を緩めて再探索
+                                                if not candidates:
+                                                    try:
+                                                        fallback_dist = max(distance_threshold * 2, 0.5)
+                                                        fallback_angle = max(merge_angle_threshold * 2, 45)
+                                                        candidates = _find_mergeable_walls(
+                                                            walls_to_use,
+                                                            distance_threshold=fallback_dist,
+                                                            angle_threshold=fallback_angle
+                                                        )
+                                                        if candidates:
+                                                            append_debug(f"Merge {pair_idx + 1}: Fallback candidates found")
+                                                    except Exception:
+                                                        pass
+                                                
+                                                # 最終フォールバック: それでも見つからない場合、強制的に候補を作成
+                                                if not candidates:
+                                                    try:
+                                                        endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
+                                                        endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
+                                                        min_dist = None
+                                                        min_pair = None
+                                                        for p1 in endpoints1:
+                                                            for p2 in endpoints2:
+                                                                d = _calc_distance(p1, p2)
+                                                                if min_dist is None or d < min_dist:
+                                                                    min_dist = d
+                                                                    min_pair = (p1, p2)
+                                                        
+                                                        angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
+                                                        
+                                                        # 接続タイプを決定
+                                                        p1, p2 = min_pair
+                                                        w1 = selected_walls[0]
+                                                        w2 = selected_walls[1]
+                                                        
+                                                        if p1 == w1['end'] and p2 == w2['start']:
+                                                            conn = 'end-start'
+                                                            new_start = w1['start']
+                                                            new_end = w2['end']
+                                                        elif p1 == w1['end'] and p2 == w2['end']:
+                                                            conn = 'end-end'
+                                                            new_start = w1['start']
+                                                            new_end = w2['start']
+                                                        elif p1 == w1['start'] and p2 == w2['start']:
+                                                            conn = 'start-start'
+                                                            new_start = w1['end']
+                                                            new_end = w2['end']
+                                                        elif p1 == w1['start'] and p2 == w2['end']:
+                                                            conn = 'start-end'
+                                                            new_start = w1['end']
+                                                            new_end = w2['start']
+                                                        else:
+                                                            conn = 'end-start'
+                                                            new_start = w1['start']
+                                                            new_end = w2['end']
+                                                        
+                                                        forced_candidate = {
+                                                            'wall1': w1,
+                                                            'wall2': w2,
+                                                            'is_chain': False,
+                                                            'distance': min_dist,
+                                                            'angle_diff': angle_diff_sel,
+                                                            'connection': conn,
+                                                            'new_start': new_start,
+                                                            'new_end': new_end,
+                                                            'confidence': 0.0
+                                                        }
+                                                        candidates = [forced_candidate]
+                                                        append_debug(f"Merge {pair_idx + 1}: Forced candidate created: {w1.get('id')} + {w2.get('id')}")
+                                                    except Exception as e:
+                                                        pass
+                                                
+                                                # 結合実行
+                                                if candidates:
+                                                    top_candidate = candidates[0]
+                                                    try:
+                                                        updated_json = _merge_walls_in_json(updated_json, candidates[:1])
+                                                        total_merged_count += 1
+                                                        success_count += 1
+                                                        append_debug(f"Merge {pair_idx + 1}: Successfully merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
+                                                        
+                                                        merge_details.append({
+                                                            'rect_idx': pair_idx,
+                                                            'color_name': f'結合{pair_idx + 1}',
+                                                            'is_chain': False,
+                                                            'walls': [wall1['id'], wall2['id']],
+                                                            'distance': top_candidate['distance'],
+                                                            'direction': 'クリック選択',
+                                                            'deleted_walls': []
+                                                        })
+                                                    except Exception as e:
+                                                        append_debug(f"Merge {pair_idx + 1}: Error: {e}")
                                                 else:
-                                                    #st.write(f"ペア: 壁#{top_candidate['wall1']['id']} + 壁#{top_candidate['wall2']['id']}")
-                                                    pass
-                                                try:
-                                                    updated_json = _merge_walls_in_json(updated_json, candidates[:1])
-                                                    total_merged_count += 1
-                                                    append_debug(f"Merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
-                                                    
-                                                    merge_details.append({
-                                                        'rect_idx': 0,
-                                                        'color_name': 'クリック選択',
-                                                        'is_chain': False,
-                                                        'walls': [wall1['id'], wall2['id']],
-                                                        'distance': top_candidate['distance'],
-                                                        'direction': 'クリック選択',
-                                                        'deleted_walls': []
-                                                    })
-                                                    # 選択状態をクリア（統一関数を使用）
-                                                    _reset_selection_state()
-                                                except Exception as e:
-                                                    st.error(f"結合実行エラー: {e}")
-                                                    import traceback
-                                                    st.code(traceback.format_exc())
-                                            else:
-                                                st.warning("⚠️ 結合可能な壁線が見つかりません")
+                                                    append_debug(f"Merge {pair_idx + 1}: No candidates found")
+                                            
+                                            # すべての結合が完了したら選択状態をクリア
+                                            _reset_selection_state()
                                     
                                         # 以下、既存の四角形ベース処理（削除予定 - 後方互換のため残す）
                                         for rect_idx, (p1, p2) in enumerate(target_rects):
@@ -5249,7 +5305,11 @@ def main():
                                                     st.warning(f"⚠️ 四角形内の壁が接続されていません")
                                     
                                         if total_merged_count > 0:
-                                            st.success(f"✅ 合計 {total_merged_count} 個の選択範囲で結合が完了しました")
+                                            # クリック選択の場合は組数を表示
+                                            if st.session_state.get('edit_mode') == "線を結合" and len(merge_details) > 0 and merge_details[0].get('color_name', '').startswith('結合'):
+                                                st.success(f"✅ 合計 {total_merged_count} 組の結合が完了しました")
+                                            else:
+                                                st.success(f"✅ 合計 {total_merged_count} 個の選択範囲で結合が完了しました")
                                         
                                             # 結合詳細を表示
                                             st.markdown("**結合結果:**")
