@@ -2676,48 +2676,111 @@ def main():
                             margin_highlight = 50
                             img_height_highlight = viz_img.height
                             
-                            # 選択された壁を色分けして描画
-                            # 線を結合・窓追加：1本目青、2本目緑
-                            # 線削除：すべて赤
-                            if edit_mode == "線を削除":
-                                colors = [(0, 0, 255)] * 20  # 赤色で統一（BGR形式）
-                            else:
-                                colors = [(255, 0, 0), (0, 255, 0)]  # 1本目：青、2本目：緑（BGR形式）
-                            
-                            for idx, wall in enumerate(selected_walls_to_highlight):
-                                start_m = wall['start']
-                                end_m = wall['end']
+                            # 線を結合モードで2本選択された場合：1本目に番号「1」、結合後の壁を赤線で表示
+                            if edit_mode == "線を結合" and len(selected_walls_to_highlight) == 2:
+                                # 1本目：青色で描画 + 番号「1」
+                                wall1 = selected_walls_to_highlight[0]
+                                start_m = wall1['start']
+                                end_m = wall1['end']
                                 
-                                # メートル→ピクセル変換
                                 start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                 start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                 end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                 end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                 
-                                # 選択された壁を太く描画
-                                cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), colors[idx], 6)
+                                cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
                                 
-                                # 壁の中心に番号を表示
                                 mid_x = (start_px_x + end_px_x) // 2
                                 mid_y = (start_px_y + end_px_y) // 2
-                                text = f"{idx+1}"
+                                text = "1"
                                 text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]
                                 text_x = mid_x - text_size[0] // 2
                                 text_y = mid_y + text_size[1] // 2
                                 
-                                # 白背景の四角形を描画
                                 cv2.rectangle(display_img_array, 
                                             (text_x - 5, text_y - text_size[1] - 5),
                                             (text_x + text_size[0] + 5, text_y + 5),
                                             (255, 255, 255), -1)
-                                # 黒枠を描画
                                 cv2.rectangle(display_img_array, 
                                             (text_x - 5, text_y - text_size[1] - 5),
                                             (text_x + text_size[0] + 5, text_y + 5),
                                             (0, 0, 0), 2)
-                                # 番号を描画（黒文字）
                                 cv2.putText(display_img_array, text, (text_x, text_y), 
                                           cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
+                                
+                                # 2本目：結合候補を検出して結合後の壁を赤線で表示
+                                try:
+                                    wall2 = selected_walls_to_highlight[1]
+                                    candidates = _find_mergeable_walls([wall1, wall2], distance_threshold=0.3, angle_threshold=30)
+                                    
+                                    if candidates:
+                                        # 結合候補が見つかった場合、結合後の壁を赤線で描画
+                                        top_candidate = candidates[0]
+                                        new_start = top_candidate.get('new_start')
+                                        new_end = top_candidate.get('new_end')
+                                        
+                                        if new_start and new_end:
+                                            new_start_px_x = int((new_start[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                            new_start_px_y = img_height_highlight - (int((new_start[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                            new_end_px_x = int((new_end[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                            new_end_px_y = img_height_highlight - (int((new_end[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                            
+                                            # 結合後の壁を赤線で描画（太さ6）
+                                            cv2.line(display_img_array, (new_start_px_x, new_start_px_y), (new_end_px_x, new_end_px_y), (0, 0, 255), 6)
+                                    else:
+                                        # 候補が見つからない場合は2本目も青線で表示（番号なし）
+                                        start_m2 = wall2['start']
+                                        end_m2 = wall2['end']
+                                        start_px_x2 = int((start_m2[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        start_px_y2 = img_height_highlight - (int((start_m2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        end_px_x2 = int((end_m2[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        end_px_y2 = img_height_highlight - (int((end_m2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        cv2.line(display_img_array, (start_px_x2, start_px_y2), (end_px_x2, end_px_y2), (255, 0, 0), 6)
+                                except Exception:
+                                    pass
+                            else:
+                                # その他のモード（窓追加、線削除）または1本のみ選択時：従来通り
+                                # 線を削除：すべて赤
+                                # 線を結合（1本のみ）・窓追加：1本目青、2本目緑
+                                if edit_mode == "線を削除":
+                                    colors = [(0, 0, 255)] * 20  # 赤色で統一（BGR形式）
+                                else:
+                                    colors = [(255, 0, 0), (0, 255, 0)]  # 1本目：青、2本目：緑（BGR形式）
+                                
+                                for idx, wall in enumerate(selected_walls_to_highlight):
+                                    start_m = wall['start']
+                                    end_m = wall['end']
+                                    
+                                    # メートル→ピクセル変換
+                                    start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                    start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                    end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                    end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                    
+                                    # 選択された壁を太く描画
+                                    cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), colors[idx], 6)
+                                    
+                                    # 壁の中心に番号を表示
+                                    mid_x = (start_px_x + end_px_x) // 2
+                                    mid_y = (start_px_y + end_px_y) // 2
+                                    text = f"{idx+1}"
+                                    text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]
+                                    text_x = mid_x - text_size[0] // 2
+                                    text_y = mid_y + text_size[1] // 2
+                                    
+                                    # 白背景の四角形を描画
+                                    cv2.rectangle(display_img_array, 
+                                                (text_x - 5, text_y - text_size[1] - 5),
+                                                (text_x + text_size[0] + 5, text_y + 5),
+                                                (255, 255, 255), -1)
+                                    # 黒枠を描画
+                                    cv2.rectangle(display_img_array, 
+                                                (text_x - 5, text_y - text_size[1] - 5),
+                                                (text_x + text_size[0] + 5, text_y + 5),
+                                                (0, 0, 0), 2)
+                                    # 番号を描画（黒文字）
+                                    cv2.putText(display_img_array, text, (text_x, text_y), 
+                                              cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                         except Exception:
                             pass  # エラー時は無視
                     
