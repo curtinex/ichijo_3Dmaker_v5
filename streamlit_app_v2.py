@@ -222,6 +222,33 @@ def _save_uploaded_file(uploaded_file, dst_path: Path) -> Path:
     return dst_path
 
 
+def _reset_selection_state():
+    """選択状態を完全にリセットする統一関数
+    
+    線を結合、窓を追加、線を削除などの実行後に呼び出して、
+    選択状態を完全にクリアし、次の操作に備える。
+    """
+    st.session_state.skip_click_processing = True        # クリック処理をスキップ（再選択を防ぐ）
+    st.session_state.rect_coords = []                    # 現在選択中の2点をクリア
+    st.session_state.rect_coords_list = []               # 確定済み選択範囲リストをクリア
+    st.session_state.reset_flag = True                   # リセットフラグを設定
+    st.session_state.last_click = None                   # 最後のクリック位置をクリア
+    st.session_state.merge_result = None                 # 結合結果をクリア
+    st.session_state.selected_walls_for_merge = []       # 線を結合モードの壁選択をクリア
+    st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
+    st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
+    
+    # 処理用の一時データをクリア
+    if 'merge_walls_to_process' in st.session_state:
+        del st.session_state.merge_walls_to_process
+    if 'window_walls_to_process' in st.session_state:
+        del st.session_state.window_walls_to_process
+    if 'window_execution_params' in st.session_state:
+        del st.session_state.window_execution_params
+    if 'window_click_params' in st.session_state:
+        del st.session_state.window_click_params
+
+
 def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool = False) -> Path:
     """Three.js HTMLビューアを自動生成（JSON内容を直接埋め込み）
     
@@ -2645,15 +2672,7 @@ def main():
                     col_reset, col_add, col_exec = st.columns(3)
                     with col_reset:
                         if st.button("🗑️ 選択リセット"):
-                            st.session_state.rect_coords = []
-                            st.session_state.rect_coords_list = []
-                            st.session_state.reset_flag = True
-                            st.session_state.last_click = None
-                            st.session_state.merge_result = None  # 結合結果もクリア
-                            st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
-                            st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
-                            st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
-                            st.rerun()
+                            _reset_selection_state()
                             st.rerun()
                     
                     # 線を結合モード・窓追加モード・線削除モード：選択された壁をハイライト表示
@@ -4167,20 +4186,9 @@ def main():
                                 st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                 st.session_state.viewer_html_name = temp_viewer_path.name
                                 
-                                # 編集状態を完全にクリア
-                                st.session_state.rect_coords = []
-                                st.session_state.rect_coords_list = []
-                                st.session_state.last_click = None
-                                st.session_state.reset_flag = False
-                                st.session_state.merge_result = None
-                                st.session_state.selected_walls_for_merge = []       # 線を結合モードの壁選択をクリア
-                                st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
-                                st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
-                                st.session_state.skip_click_processing = True        # クリック処理をスキップ（再選択を防ぐ）
-                                
-                                # 窓追加パラメータもクリア
-                                if 'window_execution_params' in st.session_state:
-                                    del st.session_state.window_execution_params
+                                # 編集状態を完全にクリア（統一関数を使用）
+                                _reset_selection_state()
+                                st.session_state.reset_flag = False  # このフラグだけはFalseに設定
                                 
                                 st.success("✅ 窓追加完了！自動保存しました。さらに編集を続けることができます。")
                                 time.sleep(0.5)
@@ -4377,11 +4385,8 @@ def main():
                                             st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                             st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                            # 選択状態をクリア（再選択を防ぐためskip_click_processingフラグを設定）
-                                            st.session_state.skip_click_processing = True
-                                            st.session_state.rect_coords = []
-                                            st.session_state.rect_coords_list = []
-                                            st.session_state.last_click = None
+                                            # 選択状態をクリア（統一関数を使用）
+                                            _reset_selection_state()
                                         except Exception as e:
                                             st.error(f"保存エラー: {e}")
                                         
@@ -4543,16 +4548,8 @@ def main():
                                                         'direction': 'クリック選択',
                                                         'deleted_walls': []
                                                     })
-                                                    # 選択状態をクリア（再選択を防ぐためskip_click_processingフラグを設定）
-                                                    st.session_state.skip_click_processing = True        # クリック処理をスキップ
-                                                    st.session_state.rect_coords = []                    # 現在選択中の2点をクリア
-                                                    st.session_state.rect_coords_list = []               # 確定済み選択範囲リストをクリア
-                                                    st.session_state.reset_flag = True                   # リセットフラグを設定
-                                                    st.session_state.last_click = None                   # 最後のクリック位置をクリア
-                                                    st.session_state.merge_result = None                 # 結合結果をクリア
-                                                    st.session_state.selected_walls_for_merge = []       # 線を結合モードの壁選択をクリア
-                                                    st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
-                                                    st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
+                                                    # 選択状態をクリア（統一関数を使用）
+                                                    _reset_selection_state()
                                                 except Exception as e:
                                                     st.error(f"結合実行エラー: {e}")
                                                     import traceback
@@ -5222,7 +5219,7 @@ def main():
                                             # 壁を削除
                                             if len(walls_to_delete) > 0:
                                                 updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                                # 削除成功後、選択リストをクリア
+                                                # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
                                                 st.session_state.selected_walls_for_delete = []
                                         
                                         # 四角形ベースの削除（後方互換性のため残す）
@@ -5357,25 +5354,9 @@ def main():
                                             st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                             st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                            # 状態を完全にクリアして続行（選択リセットと同じ処理、再選択を防ぐためskip_click_processingフラグを設定）
-                                            st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                            st.session_state.rect_coords = []
-                                            st.session_state.rect_coords_list = []
-                                            st.session_state.reset_flag = True  # リセットフラグを設定
-                                            st.session_state.last_click = None
-                                            st.session_state.merge_result = None  # 結合結果もクリア
-                                            st.session_state.selected_walls_for_merge = []  # 壁選択もクリア
-                                            st.session_state.selected_walls_for_window = []  # 窓追加の壁選択もクリア
-                                            st.session_state.selected_walls_for_delete = []  # 線削除の壁選択もクリア
-                                            # 処理用の一時データをクリア
-                                            if 'merge_walls_to_process' in st.session_state:
-                                                del st.session_state.merge_walls_to_process  # 処理用壁データもクリア
-                                            if 'window_walls_to_process' in st.session_state:
-                                                del st.session_state.window_walls_to_process  # 窓追加用壁データもクリア
-                                            if 'window_execution_params' in st.session_state:
-                                                del st.session_state.window_execution_params
-                                            if 'window_click_params' in st.session_state:
-                                                del st.session_state.window_click_params
+                                            # 状態を完全にクリアして続行（統一関数を使用）
+                                            _reset_selection_state()
+                                            
                                             if edit_mode == "線を結合":
                                                 try:
                                                     st.session_state.last_edit_count = total_merged_count
