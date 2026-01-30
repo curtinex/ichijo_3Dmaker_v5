@@ -5126,10 +5126,11 @@ def main():
                                         wall1, wall2 = st.session_state.window_walls_to_process[0], st.session_state.window_walls_to_process[1]
                                         window_params = st.session_state.get('window_click_params', {})
                                         
-                                        # 処理完了後にセッションから削除
-                                        del st.session_state.window_walls_to_process
-                                        
                                         st.markdown("### 🪟 窓追加処理")
+                                        
+                                        # 天井高さ（部屋の高さ）を取得
+                                        heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                                        room_height = max(heights) if heights else 2.4
                                         
                                         # パラメータを取得
                                         window_model = window_params.get('model')
@@ -5164,6 +5165,10 @@ def main():
                                             for aw in added_walls:
                                                 st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
                                                         f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
+                                            
+                                            # 処理成功後にセッションから削除
+                                            if 'window_walls_to_process' in st.session_state:
+                                                del st.session_state.window_walls_to_process
                                         except Exception as e:
                                             st.error(f"窓追加エラー: {e}")
                                             import traceback
