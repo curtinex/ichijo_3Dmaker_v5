@@ -2182,50 +2182,8 @@ def main():
 
                     # スケール入力と反映
                     if px_distance is not None and target_wall_data is not None:
-                        # 壁が選択された場合は常に表示
-                            # 現在のデータから座標範囲を表示
-                            st.markdown("---")
-                            st.markdown("### 📊 現在のデータ情報")
-                            
-                            # 現在のJSONデータから座標範囲を取得
-                            json_data_current = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                            walls_current = json_data_current.get("walls", [])
-                            all_x_current = []
-                            all_y_current = []
-                            for w in walls_current:
-                                if "start" in w and "end" in w:
-                                    all_x_current.extend([w["start"][0], w["end"][0]])
-                                    all_y_current.extend([w["start"][1], w["end"][1]])
-                            
-                            if all_x_current and all_y_current:
-                                min_x_current = min(all_x_current)
-                                max_x_current = max(all_x_current)
-                                min_y_current = min(all_y_current)
-                                max_y_current = max(all_y_current)
-                                width_current = max_x_current - min_x_current
-                                height_current = max_y_current - min_y_current
-                                
-                                st.info(
-                                    f"**現在の座標範囲:**\n"
-                                    f"- X軸（幅）: {min_x_current:.3f}m ～ {max_x_current:.3f}m → **{width_current:.3f}m** = **{width_current/0.9:.1f}マス**\n"
-                                    f"- Y軸（奥行）: {min_y_current:.3f}m ～ {max_y_current:.3f}m → **{height_current:.3f}m** = **{height_current/0.9:.1f}マス**"
-                                )
-                                
-                                # 選択した壁の情報
-                                current_wall = target_wall_data['wall']
-                                wall_length = current_wall.get('length')
-                                wall_height = current_wall.get('height', 2.4)
-                                wall_thickness = current_wall.get('thickness', 0.1)
-                                st.write(
-                                    f"**選択した壁（ID: {target_wall_data['id']}）:**\n\n"
-                                    f"- 長さ: {wall_length:.3f}m = {wall_length/0.9:.2f}マス\n\n"
-                                    f"- 高さ: {wall_height}m（校正後は2.4m固定）\n\n"
-                                    f"- 厚さ: {wall_thickness}m（校正後は0.1m固定）"
-                                )
-                            
-                            st.markdown("---")
-                    
-                    default_grid = st.session_state.get("step3_grid_input_val", 1.0)
+                        # マス数入力フォーム
+                        default_grid = st.session_state.get("step3_grid_input_val", 1.0)
                     grid_count = st.number_input(
                         "この壁は一条工務店CAD図面上で何マス分ですか？ (1マス=0.9m)",
                         min_value=0.1,
