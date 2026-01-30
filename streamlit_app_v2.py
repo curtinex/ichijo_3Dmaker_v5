@@ -238,6 +238,11 @@ def _reset_selection_state():
     st.session_state.selected_walls_for_window = []      # 窓追加モードの壁選択をクリア
     st.session_state.selected_walls_for_delete = []      # 線削除モードの壁選択をクリア
     
+    # リセットカウンターをインクリメント（画像コンポーネントのキーをリセットするため）
+    if 'selection_reset_counter' not in st.session_state:
+        st.session_state.selection_reset_counter = 0
+    st.session_state.selection_reset_counter += 1
+    
     # 処理用の一時データをクリア
     if 'merge_walls_to_process' in st.session_state:
         del st.session_state.merge_walls_to_process
@@ -3353,7 +3358,9 @@ def main():
                     
                     # クリック可能な画像を表示（キーを動的に変更して値をリセット）
                     # edit_modeを含めることで、モード切り替え時に座標がリセットされる
-                    coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}"
+                    # selection_reset_counterを含めることで、リセット後に座標がクリアされる
+                    reset_counter = st.session_state.get('selection_reset_counter', 0)
+                    coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
                     st.markdown(
                         """
