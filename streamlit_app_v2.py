@@ -3358,9 +3358,9 @@ def main():
                             
                             # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示（線を結合モードは除外）
                             if edit_mode == "窓を追加" and len(st.session_state.rect_coords) == 2:
-                            try:
-                                json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                walls_check = json_data_check['walls']
+                                try:
+                                    json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    walls_check = json_data_check['walls']
                                 
                                 all_x_check = [w['start'][0] for w in walls_check] + [w['end'][0] for w in walls_check]
                                 all_y_check = [w['start'][1] for w in walls_check] + [w['end'][1] for w in walls_check]
@@ -3470,8 +3470,8 @@ def main():
                                     st.warning(f"⚠️ **この範囲に1本の壁しか検出されません。**\n\n💡 **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
                                 else:
                                     st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
-                            except Exception:
-                                pass
+                                except Exception:
+                                    pass
                         
                         # クリック可能な画像を表示（キーを動的に変更して値をリセット）
                         # edit_modeを含めることで、モード切り替え時に座標がリセットされる
