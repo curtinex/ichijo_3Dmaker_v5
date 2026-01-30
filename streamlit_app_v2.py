@@ -3363,6 +3363,7 @@ def main():
                         # 結合実行直後はクリック処理をスキップ
                         if st.session_state.get('skip_click_processing'):
                             st.session_state.skip_click_processing = False
+                            st.session_state.last_click = new_point  # クリック座標を記録して再処理を防ぐ
                         elif edit_mode == "線を結合":
                             # 線を結合モード：壁線をクリックで選択（最大2本）
                             # 同じ座標の連続処理を防ぐ（無限ループ防止）
