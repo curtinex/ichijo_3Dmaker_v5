@@ -3302,7 +3302,7 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # ブラウザの画面幅を取得するJavaScript
+                    # ブラウザの画面幅を取得するJavaScript（デバッグ用）
                     get_width_js = """
                     <script>
                     const width = window.innerWidth || document.documentElement.clientWidth;
@@ -3310,28 +3310,31 @@ def main():
                     </script>
                     """
                     
-                    # 画面幅を取得
+                    # 画面幅を取得（デバッグ表示用のみ）
                     import streamlit.components.v1 as components
                     browser_width = components.html(get_width_js, height=0)
                     
-                    # セッションステートに保存
+                    # セッションステートに保存（デバッグ表示用）
                     if browser_width is not None and isinstance(browser_width, (int, float)) and browser_width > 0:
                         st.session_state['browser_width'] = int(browser_width)
                     
                     # 現在の画面幅を取得（デフォルトは1920px）
                     current_width = st.session_state.get('browser_width', 1920)
                     
-                    # カラムが60%なので、画面幅 * 0.6 * 0.85（余白考慮）を画像の最大幅とする
-                    calculated_width = int(current_width * 0.6 * 0.85)
-                    # 最小500px、最大1200pxに制限
-                    target_width = max(500, min(calculated_width, 1200))
+                    # streamlit_image_coordinatesコンポーネント（iframe）にはCSSが効かないため、
+                    # 保守的な固定サイズを使用して見切れを防ぐ
+                    # 最小想定画面（1366px）のカラム幅60%×余白90% = 737px → 安全のため700pxに設定
+                    target_width = 700
                     
-                    # デバッグ情報を表示（開発時のみ）
+                    # カラム幅に応じた計算値（デバッグ表示用）
+                    calculated_width = int(current_width * 0.6 * 0.85)
+                    
+                    # デバッグ情報を表示
                     debug_mode = st.session_state.get('debug_image_size', False)
                     if debug_mode:
-                        st.info(f"🔍 デバッグ: ブラウザ幅={current_width}px, 計算幅={calculated_width}px, 画像幅={target_width}px")
+                        st.info(f"🔍 デバッグ: ブラウザ幅={current_width}px, 計算幅={calculated_width}px, 画像幅={target_width}px (固定)")
                     
-                    # 計算された幅で画像をリサイズ
+                    # 固定幅で画像をリサイズ
                     display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=target_width)
                     
                     # レスポンシブなカラムレイアウトのためのCSS（シンプルで確実な方式）
