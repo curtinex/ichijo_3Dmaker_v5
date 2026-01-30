@@ -1619,9 +1619,13 @@ def main():
     if "viz_scale" not in st.session_state:
         st.session_state.viz_scale = 100  # 可視化スケール（メートル→ピクセル）固定値
     
-    # 壁選択用のセッション状態（線を結合モード用）
+    # 壁選択用のセッション状態（各編集モード用）
     if "selected_walls_for_merge" not in st.session_state:
-        st.session_state.selected_walls_for_merge = []  # 選択された壁のリスト（最大2本）
+        st.session_state.selected_walls_for_merge = []  # 線を結合モード：選択された壁のリスト（最大2本）
+    if "selected_walls_for_window" not in st.session_state:
+        st.session_state.selected_walls_for_window = []  # 窓を追加モード：選択された壁のリスト（最大2本）
+    if "selected_walls_for_delete" not in st.session_state:
+        st.session_state.selected_walls_for_delete = []  # 線を削除モード：選択された壁のリスト（無制限）
 
     # 2D可視化スケールを固定値に設定
     viz_scale = 100
