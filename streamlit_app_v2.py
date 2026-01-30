@@ -3297,7 +3297,11 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # UI表示：モード別
+                    # 左右2カラムに分割：左に画像、右にUI
+                    col_img, col_ui = st.columns([6, 4])
+                    
+                    with col_img:
+                        # UI表示：モード別（画像の上部に表示）
                     if edit_mode == "線を結合":
                         # 線を結合モード：壁線クリック選択
                         if len(st.session_state.selected_walls_for_merge) == 0:
@@ -4317,8 +4321,10 @@ def main():
                                 st.error(f"エラーが発生しました: {e}")
                                 import traceback
                                 st.code(traceback.format_exc())
-                        
-                        elif edit_mode in ("線を結合", "窓を追加", "線を削除") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
+                    
+                    # 右カラム：窓パラメータ入力と実行ボタン
+                    with col_ui:
+                        if edit_mode in ("線を結合", "窓を追加", "線を削除") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
                             # 結合・窓追加・削除モードの実行ボタン
                             should_execute = False
                             
