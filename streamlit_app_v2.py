@@ -4248,13 +4248,24 @@ def main():
                                         )
                                     
                                     if st.button(button_label, type="primary", key="btn_window_exec"):
-                                        should_execute = True
+                                        # 選択された壁とパラメータをセッションに保存してから選択リストをクリア
+                                        st.session_state.window_walls_to_process = [
+                                            st.session_state.selected_walls_for_window[0],
+                                            st.session_state.selected_walls_for_window[1]
+                                        ]
                                         st.session_state.window_click_params = {
                                             'model': window_model,
                                             'width_mm': window_width_mm,
                                             'height_mm': window_height_mm,
                                             'base_mm': window_base_mm
                                         }
+                                        st.session_state.selected_walls_for_window = []
+                                        st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                                        # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                                        st.rerun()
+                                elif st.session_state.get('window_walls_to_process'):
+                                    # 前回のrerunで保存された壁を処理
+                                    should_execute = True
                             elif edit_mode == "線を削除":
                                 if len(st.session_state.selected_walls_for_delete) > 0:
                                     if st.button(button_label, type="primary", key="btn_delete_exec"):
@@ -4267,12 +4278,15 @@ def main():
                                 try:
                                     # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
                                     # 線を結合モードの場合は使用しない
-                                    if edit_mode != "線を結合":
+                                    # 窓を追加モードでクリック選択の場合も使用しない
+                                    if edit_mode == "線を結合":
+                                        target_rects = []  # 線を結合モードでは不使用
+                                    elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                                        target_rects = []  # 窓を追加モード（クリック選択）では不使用
+                                    else:
                                         target_rects = list(st.session_state.rect_coords_list)
                                         if len(st.session_state.rect_coords) == 2:
                                             target_rects.append(tuple(st.session_state.rect_coords))
-                                    else:
-                                        target_rects = []  # 線を結合モードでは不使用
                                 
                                     # JSONデータを読み込み
                                     json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
@@ -5106,6 +5120,55 @@ def main():
                                         else:
                                             st.warning("⚠️ 選択範囲内に結合可能な壁線が見つかりません")
                                 
+                                    elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                                        # ===== 窓を追加モード（クリック選択） =====
+                                        # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                                        wall1, wall2 = st.session_state.window_walls_to_process[0], st.session_state.window_walls_to_process[1]
+                                        window_params = st.session_state.get('window_click_params', {})
+                                        
+                                        # 処理完了後にセッションから削除
+                                        del st.session_state.window_walls_to_process
+                                        
+                                        st.markdown("### 🪟 窓追加処理")
+                                        
+                                        # パラメータを取得
+                                        window_model = window_params.get('model')
+                                        window_width_mm = window_params.get('width_mm', 1200)
+                                        window_height_mm = window_params.get('height_mm', 1200)
+                                        base_height_mm = window_params.get('base_mm', 900)
+                                        
+                                        window_height = float(window_height_mm) / 1000.0
+                                        base_height = float(base_height_mm) / 1000.0
+                                        
+                                        st.info(f"📝 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
+                                               f"窓高さ={window_height}m ({window_height_mm}mm), "
+                                               f"床から={base_height}m ({base_height_mm}mm)")
+                                        
+                                        # 選択された2本の壁の間に窓を追加
+                                        try:
+                                            updated_json, added_walls = _add_window_walls(
+                                                updated_json,
+                                                wall1,
+                                                wall2,
+                                                window_height,
+                                                base_height,
+                                                room_height,
+                                                window_model if window_model != 'カスタム（手入力）' else None,
+                                                window_height_mm
+                                            )
+                                            
+                                            added_wall_ids.extend([w['id'] for w in added_walls])
+                                            st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
+                                            
+                                            # 追加した壁の詳細を表示
+                                            for aw in added_walls:
+                                                st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
+                                                        f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
+                                        except Exception as e:
+                                            st.error(f"窓追加エラー: {e}")
+                                            import traceback
+                                            st.code(traceback.format_exc())
+                                
                                     elif edit_mode == "線を追加":
                                         # ===== 線を追加モード =====
                                         total_added_count = 0
@@ -5302,6 +5365,8 @@ def main():
                                             # 処理用の一時データをクリア
                                             if 'merge_walls_to_process' in st.session_state:
                                                 del st.session_state.merge_walls_to_process  # 処理用壁データもクリア
+                                            if 'window_walls_to_process' in st.session_state:
+                                                del st.session_state.window_walls_to_process  # 窓追加用壁データもクリア
                                             if 'window_execution_params' in st.session_state:
                                                 del st.session_state.window_execution_params
                                             if 'window_click_params' in st.session_state:
