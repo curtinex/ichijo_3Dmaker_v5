@@ -3370,15 +3370,6 @@ def main():
                                                 # 古い形式の場合（幅のみ）
                                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = 1200
                                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = 900
-                                        
-                                        # number_inputのウィジェット状態をクリア
-                                        height_key = f"window_height_click_{window_idx}"
-                                        base_key = f"window_base_click_{window_idx}"
-                                        if height_key in st.session_state:
-                                            del st.session_state[height_key]
-                                        if base_key in st.session_state:
-                                            del st.session_state[base_key]
-                                        
                                         st.rerun()
                                 
                                 with col2:
@@ -3388,8 +3379,9 @@ def main():
                                         max_value=3000,
                                         value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
                                         step=1,
-                                        key=f"window_height_click_{window_idx}"
+                                        key=f"window_height_click_{window_idx}_{window_model}"
                                     )
+                                    st.session_state.window_click_params_list[window_idx]['height_mm'] = window_height_mm
                                 
                                 with col3:
                                     window_base_mm = st.number_input(
@@ -3398,8 +3390,9 @@ def main():
                                         max_value=5000,
                                         value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
                                         step=1,
-                                        key=f"window_base_click_{window_idx}"
+                                        key=f"window_base_click_{window_idx}_{window_model}"
                                     )
+                                    st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
                                 
                                 # パラメータを保存
                                 window_params_to_save.append({
@@ -3408,11 +3401,6 @@ def main():
                                     'height_mm': window_height_mm,
                                     'base_mm': window_base_mm
                                 })
-                                
-                                # 現在のパラメータをセッションに保存（型番変更時以外）
-                                # 型番変更時はst.rerun()の前に既に保存済み
-                                st.session_state.window_click_params_list[window_idx]['height_mm'] = window_height_mm
-                                st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
                             
                             # 実行ボタンを表示
                             if st.button("🪟 窓追加実行", type="primary", key="btn_window_exec_top"):
