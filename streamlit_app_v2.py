@@ -3662,89 +3662,89 @@ def main():
                                                 json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                                 walls_auto = json_data_auto['walls']
                                             
-                                            all_x_auto = [w['start'][0] for w in walls_auto] + [w['end'][0] for w in walls_auto]
-                                            all_y_auto = [w['start'][1] for w in walls_auto] + [w['end'][1] for w in walls_auto]
-                                            min_x_auto, max_x_auto = min(all_x_auto), max(all_x_auto)
-                                            min_y_auto, max_y_auto = min(all_y_auto), max(all_y_auto)
-                                            
-                                            scale_auto = int(st.session_state.viz_scale)
-                                            margin_auto = 50
-                                            img_height_auto = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
-                                            
-                                            p1_auto, p2_auto = st.session_state.rect_coords
-                                            x1_auto, y1_auto = min(p1_auto[0], p2_auto[0]), min(p1_auto[1], p2_auto[1])
-                                            x2_auto, y2_auto = max(p1_auto[0], p2_auto[0]), max(p1_auto[1], p2_auto[1])
-                                            
-                                            rect_auto = {
-                                                'left': x1_auto,
-                                                'top': y1_auto,
-                                                'width': x2_auto - x1_auto,
-                                                'height': y2_auto - y1_auto
-                                            }
-                                            
-                                            # 窓追加モードと線を結合モードは端点/交差ベースで検出（端点だけ囲む操作に対応）
-                                            if edit_mode in ("窓を追加", "線を結合"):
-                                                walls_in_rect_auto = _filter_walls_by_endpoints_in_rect(
-                                                    walls_auto, rect_auto, scale_auto, margin_auto,
-                                                    img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto,
-                                                    tolerance=0, debug=False
-                                                )
-                                            else:
-                                                # 通常の線結合などは従来通り厳密判定
-                                                walls_in_rect_auto = _filter_walls_strictly_in_rect(
-                                                    walls_auto, rect_auto, scale_auto, margin_auto,
-                                                    img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto
-                                                )
+                                                all_x_auto = [w['start'][0] for w in walls_auto] + [w['end'][0] for w in walls_auto]
+                                                all_y_auto = [w['start'][1] for w in walls_auto] + [w['end'][1] for w in walls_auto]
+                                                min_x_auto, max_x_auto = min(all_x_auto), max(all_x_auto)
+                                                min_y_auto, max_y_auto = min(all_y_auto), max(all_y_auto)
+                                                
+                                                scale_auto = int(st.session_state.viz_scale)
+                                                margin_auto = 50
+                                                img_height_auto = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
+                                                
+                                                p1_auto, p2_auto = st.session_state.rect_coords
+                                                x1_auto, y1_auto = min(p1_auto[0], p2_auto[0]), min(p1_auto[1], p2_auto[1])
+                                                x2_auto, y2_auto = max(p1_auto[0], p2_auto[0]), max(p1_auto[1], p2_auto[1])
+                                                
+                                                rect_auto = {
+                                                    'left': x1_auto,
+                                                    'top': y1_auto,
+                                                    'width': x2_auto - x1_auto,
+                                                    'height': y2_auto - y1_auto
+                                                }
+                                                
+                                                # 窓追加モードと線を結合モードは端点/交差ベースで検出（端点だけ囲む操作に対応）
+                                                if edit_mode in ("窓を追加", "線を結合"):
+                                                    walls_in_rect_auto = _filter_walls_by_endpoints_in_rect(
+                                                        walls_auto, rect_auto, scale_auto, margin_auto,
+                                                        img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto,
+                                                        tolerance=0, debug=False
+                                                    )
+                                                else:
+                                                    # 通常の線結合などは従来通り厳密判定
+                                                    walls_in_rect_auto = _filter_walls_strictly_in_rect(
+                                                        walls_auto, rect_auto, scale_auto, margin_auto,
+                                                        img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto
+                                                    )
 
-                                            # 2本の壁が検出された場合のみ自動追加（窓追加のみ、線を結合は除外）
-                                            if edit_mode == "窓を追加":
-                                                if len(walls_in_rect_auto) == 2:
+                                                # 2本の壁が検出された場合のみ自動追加（窓追加のみ、線を結合は除外）
+                                                if edit_mode == "窓を追加":
+                                                    if len(walls_in_rect_auto) == 2:
+                                                        st.session_state.rect_coords_list.append((p1_auto, p2_auto))
+                                                        st.session_state.rect_coords = []
+                                                        st.session_state.last_click = None
+                                                        try:
+                                                            append_debug(f"Auto-added selection (2 walls detected): ids={[w.get('id') for w in walls_in_rect_auto]}")
+                                                        except Exception:
+                                                            pass
+                                                        st.rerun()
+                                                    else:
+                                                        # 端点が多く2本に絞れない場合、角度フィルタで2本に絞れれば自動追加する
+                                                        try:
+                                                            if len(walls_in_rect_auto) >= 2:
+                                                                angle_threshold_preview = 30.0
+                                                                angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_auto]
+                                                                sx = sum(math.cos(a) for a in angles) if angles else 0
+                                                                sy = sum(math.sin(a) for a in angles) if angles else 0
+                                                                if sx == 0 and sy == 0:
+                                                                    avg_angle = 0.0
+                                                                else:
+                                                                    avg_angle = math.degrees(math.atan2(sy, sx))
+
+                                                                kept_preview = [w for w in walls_in_rect_auto if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
+                                                                if len(kept_preview) == 2:
+                                                                    # 条件を満たすので自動で選択を追加
+                                                                    st.session_state.rect_coords_list.append((p1_auto, p2_auto))
+                                                                    st.session_state.rect_coords = []
+                                                                    st.session_state.last_click = None
+                                                                    try:
+                                                                        append_debug(f"Auto-added selection (angle-filtered): kept_ids={[w.get('id') for w in kept_preview]}, avg_angle={avg_angle}")
+                                                                    except Exception:
+                                                                        pass
+                                                                    st.rerun()
+                                                        except Exception:
+                                                            pass
+                                                else:
+                                                    # オブジェクト配置モードでは四角形をそのまま追加（壁検出は不要）
                                                     st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                     st.session_state.rect_coords = []
                                                     st.session_state.last_click = None
                                                     try:
-                                                        append_debug(f"Auto-added selection (2 walls detected): ids={[w.get('id') for w in walls_in_rect_auto]}")
+                                                        append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
                                                     except Exception:
                                                         pass
                                                     st.rerun()
-                                                else:
-                                                    # 端点が多く2本に絞れない場合、角度フィルタで2本に絞れれば自動追加する
-                                                    try:
-                                                        if len(walls_in_rect_auto) >= 2:
-                                                            angle_threshold_preview = 30.0
-                                                            angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_rect_auto]
-                                                            sx = sum(math.cos(a) for a in angles) if angles else 0
-                                                            sy = sum(math.sin(a) for a in angles) if angles else 0
-                                                            if sx == 0 and sy == 0:
-                                                                avg_angle = 0.0
-                                                            else:
-                                                                avg_angle = math.degrees(math.atan2(sy, sx))
-
-                                                            kept_preview = [w for w in walls_in_rect_auto if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
-                                                            if len(kept_preview) == 2:
-                                                                # 条件を満たすので自動で選択を追加
-                                                                st.session_state.rect_coords_list.append((p1_auto, p2_auto))
-                                                                st.session_state.rect_coords = []
-                                                                st.session_state.last_click = None
-                                                                try:
-                                                                    append_debug(f"Auto-added selection (angle-filtered): kept_ids={[w.get('id') for w in kept_preview]}, avg_angle={avg_angle}")
-                                                                except Exception:
-                                                                    pass
-                                                                st.rerun()
-                                                    except Exception:
-                                                        pass
-                                            else:
-                                                # オブジェクト配置モードでは四角形をそのまま追加（壁検出は不要）
-                                                st.session_state.rect_coords_list.append((p1_auto, p2_auto))
-                                                st.session_state.rect_coords = []
-                                                st.session_state.last_click = None
-                                                try:
-                                                    append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
-                                                except Exception:
-                                                    pass
-                                                st.rerun()
-                                        except Exception:
-                                            pass
+                                            except Exception:
+                                                pass
                                     
                                     st.rerun()  # 画像を再描画して選択点を表示
                 
