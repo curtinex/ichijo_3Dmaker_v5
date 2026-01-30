@@ -3332,9 +3332,15 @@ def main():
                     # カラム幅を取得（デフォルト値は800）
                     detected_width = components.html(column_width_html, height=0)
                     
-                    # セッションステートに保存（Noneの場合はデフォルト値を使用）
-                    if detected_width is not None and detected_width > 0:
-                        st.session_state['dynamic_column_width'] = int(detected_width)
+                    # セッションステートに保存（型を安全にチェック）
+                    try:
+                        if detected_width is not None:
+                            width_value = int(detected_width)
+                            if width_value > 0:
+                                st.session_state['dynamic_column_width'] = width_value
+                    except (ValueError, TypeError):
+                        # 変換できない場合は無視
+                        pass
                     
                     # 現在のカラム幅を取得（デフォルトは800）
                     current_column_width = st.session_state.get('dynamic_column_width', 800)
