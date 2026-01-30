@@ -3518,11 +3518,11 @@ def main():
                                 # 同じ座標の連続処理を防ぐ（無限ループ防止）
                                 if st.session_state.last_click == new_point:
                                     # 既に処理済みのクリックなのでスキップ
-                                pass
-                            else:
-                                try:
-                                    json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    walls_merge = json_data_merge.get('walls', [])
+                                    pass
+                                else:
+                                    try:
+                                        json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                        walls_merge = json_data_merge.get('walls', [])
                                     
                                     all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
                                     all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
@@ -3555,14 +3555,14 @@ def main():
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"壁選択エラー: {e}")
-                        elif edit_mode == "窓を追加":
-                            # 窓追加モード：壁線をクリックで選択（最大2本）
-                            if st.session_state.last_click == new_point:
-                                pass
-                            else:
-                                try:
-                                    json_data_window = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    walls_window = json_data_window.get('walls', [])
+                            elif edit_mode == "窓を追加":
+                                # 窓追加モード：壁線をクリックで選択（最大2本）
+                                if st.session_state.last_click == new_point:
+                                    pass
+                                else:
+                                    try:
+                                        json_data_window = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                        walls_window = json_data_window.get('walls', [])
                                     
                                     all_x_window = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
                                     all_y_window = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
@@ -3594,14 +3594,14 @@ def main():
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"壁選択エラー: {e}")
-                        elif edit_mode == "線を削除":
-                            # 線削除モード：壁線をクリックで選択（複数本可能）
-                            if st.session_state.last_click == new_point:
-                                pass
-                            else:
-                                try:
-                                    json_data_delete = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    walls_delete = json_data_delete.get('walls', [])
+                            elif edit_mode == "線を削除":
+                                # 線削除モード：壁線をクリックで選択（複数本可能）
+                                if st.session_state.last_click == new_point:
+                                    pass
+                                else:
+                                    try:
+                                        json_data_delete = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                        walls_delete = json_data_delete.get('walls', [])
                                     
                                     all_x_delete = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
                                     all_y_delete = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
@@ -3633,21 +3633,21 @@ def main():
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"壁選択エラー: {e}")
-                        elif edit_mode == "スケール校正":
-                            # スケール校正モード：2点選択
-                            if len(st.session_state.rect_coords) < 2:
-                                if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
-                                    st.session_state.rect_coords.append(new_point)
-                                    st.session_state.last_click = new_point
-                                    
-                                    # 2点目クリック時に自動追加
-                                    if len(st.session_state.rect_coords) == 2:
-                                        st.session_state.rect_coords_list.append(tuple(st.session_state.rect_coords))
-                                        st.session_state.rect_coords = []
-                                        st.session_state.last_click = None
-                                    
-                                    st.rerun()
-                        else:
+                            elif edit_mode == "スケール校正":
+                                # スケール校正モード：2点選択
+                                if len(st.session_state.rect_coords) < 2:
+                                    if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
+                                        st.session_state.rect_coords.append(new_point)
+                                        st.session_state.last_click = new_point
+                                        
+                                        # 2点目クリック時に自動追加
+                                        if len(st.session_state.rect_coords) == 2:
+                                            st.session_state.rect_coords_list.append(tuple(st.session_state.rect_coords))
+                                            st.session_state.rect_coords = []
+                                            st.session_state.last_click = None
+                                        
+                                        st.rerun()
+                            else:
                             # その他のモード：2点選択
                             if len(st.session_state.rect_coords) < 2:
                                 if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
