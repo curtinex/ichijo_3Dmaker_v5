@@ -2635,7 +2635,7 @@ def main():
                             _reset_selection_state()
                             st.rerun()
                     
-                    # 線を結合モード・窓追加モード・線削除モード：選択された壁をハイライト表示
+                    # 線を結合モード・窓追加モード・線削除モード・スケール校正モード：選択された壁をハイライト表示
                     selected_walls_to_highlight = []
                     if edit_mode == "線を結合" and len(st.session_state.selected_walls_for_merge) > 0:
                         selected_walls_to_highlight = st.session_state.selected_walls_for_merge
@@ -2643,6 +2643,8 @@ def main():
                         selected_walls_to_highlight = st.session_state.selected_walls_for_window
                     elif edit_mode == "線を削除" and len(st.session_state.selected_walls_for_delete) > 0:
                         selected_walls_to_highlight = st.session_state.selected_walls_for_delete
+                    elif edit_mode == "スケール校正" and st.session_state.selected_wall_for_calibration:
+                        selected_walls_to_highlight = [st.session_state.selected_wall_for_calibration]
                     
                     if len(selected_walls_to_highlight) > 0:
                         try:
@@ -2867,6 +2869,24 @@ def main():
                                     except Exception as e:
                                         print(f"[ERROR] 奇数本描画エラー: {e}")
                                         pass
+                            elif edit_mode == "スケール校正" and len(selected_walls_to_highlight) > 0:
+                                # スケール校正モード：選択された1本の壁を赤色でハイライト
+                                wall = selected_walls_to_highlight[0]
+                                try:
+                                    start_m = wall['start']
+                                    end_m = wall['end']
+                                    
+                                    # メートル→ピクセル変換
+                                    start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                    start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                    end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                    end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                    
+                                    # 壁線を赤色でハイライト表示（太さ6）
+                                    cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (0, 0, 255), 6)
+                                except Exception as e:
+                                    print(f"[ERROR] スケール校正モード描画エラー: {e}")
+                                    pass
                             elif edit_mode != "窓を追加":
                                 # その他のモード（線削除、線を結合）のみ：従来通り
                                 # 線を削除：すべて赤
@@ -3742,19 +3762,49 @@ def main():
                                 except Exception as e:
                                     st.error(f"壁選択エラー: {e}")
                         elif edit_mode == "スケール校正":
-                            # スケール校正モード：2点選択
-                            if len(st.session_state.rect_coords) < 2:
-                                if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
-                                    st.session_state.rect_coords.append(new_point)
-                                    st.session_state.last_click = new_point
+                            # スケール校正モード：壁を1クリックで選択
+                            if st.session_state.last_click != new_point:
+                                try:
+                                    # 壁データと座標範囲を取得
+                                    json_data_calib = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    walls_calib = json_data_calib.get("walls", [])
                                     
-                                    # 2点目クリック時に自動追加
-                                    if len(st.session_state.rect_coords) == 2:
-                                        st.session_state.rect_coords_list.append(tuple(st.session_state.rect_coords))
-                                        st.session_state.rect_coords = []
-                                        st.session_state.last_click = None
+                                    all_x_calib = []
+                                    all_y_calib = []
+                                    for w in walls_calib:
+                                        if "start" in w and "end" in w:
+                                            all_x_calib.extend([w["start"][0], w["end"][0]])
+                                            all_y_calib.extend([w["start"][1], w["end"][1]])
                                     
-                                    st.rerun()
+                                    if all_x_calib and all_y_calib:
+                                        min_x_calib = min(all_x_calib)
+                                        max_x_calib = max(all_x_calib)
+                                        min_y_calib = min(all_y_calib)
+                                        max_y_calib = max(all_y_calib)
+                                        
+                                        scale_calib = int(st.session_state.viz_scale)
+                                        margin_calib = 50
+                                        img_height_calib = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
+                                        
+                                        # クリック位置から最も近い壁を検出
+                                        nearest_wall, distance = _find_nearest_wall_from_click(
+                                            click_point[0], click_point[1],
+                                            walls_calib, scale_calib, margin_calib,
+                                            img_height_calib, min_x_calib, min_y_calib, max_x_calib, max_y_calib,
+                                            threshold=20
+                                        )
+                                        
+                                        if nearest_wall:
+                                            # 壁を選択
+                                            st.session_state.selected_wall_for_calibration = nearest_wall
+                                        else:
+                                            # 閾値外の場合は選択解除
+                                            st.session_state.selected_wall_for_calibration = None
+                                        
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"壁選択エラー: {e}")
                         else:
                             # その他のモード：2点選択
                             if len(st.session_state.rect_coords) < 2:
