@@ -3775,6 +3775,86 @@ def main():
                                 st.session_state.last_click = None
                                 st.rerun()
                     
+                    # 窓追加モード：窓パラメータ入力を画像の下の左側に表示
+                    if edit_mode == "窓を追加":
+                        num_selected = len(st.session_state.selected_walls_for_window)
+                        # 偶数本（2本、4本、6本...）選択時にパラメータ入力を表示
+                        if num_selected >= 2 and num_selected % 2 == 0:
+                            window_count = num_selected // 2
+                            
+                            st.markdown("---")
+                            st.markdown(f"### 🪟 窓のサイズを入力（{window_count}組）")
+                            
+                            # セッションステートに窓パラメータリストを初期化
+                            if 'window_click_params_list' not in st.session_state:
+                                st.session_state.window_click_params_list = []
+                            
+                            # 必要な数だけパラメータを確保
+                            while len(st.session_state.window_click_params_list) < window_count:
+                                st.session_state.window_click_params_list.append({
+                                    'model': 'J4415/JF4415',
+                                    'width_mm': 1200,
+                                    'height_mm': 1200,
+                                    'base_mm': 900
+                                })
+                            
+                            # 各窓ごとに入力欄を表示
+                            window_params_to_save = []
+                            for window_idx in range(window_count):
+                                st.markdown(f"#### 窓{window_idx + 1}")
+                                col1, col2, col3 = st.columns(3)
+                                
+                                with col1:
+                                    window_model = st.selectbox(
+                                        f"窓{window_idx + 1}の型番",
+                                        list(WINDOW_CATALOG.keys()),
+                                        index=list(WINDOW_CATALOG.keys()).index(st.session_state.window_click_params_list[window_idx].get('model', 'J4415/JF4415')) if st.session_state.window_click_params_list[window_idx].get('model') in WINDOW_CATALOG.keys() else 0,
+                                        help="窓の型番を選択してください",
+                                        key=f"window_model_click_{window_idx}"
+                                    )
+                                    window_width_mm = WINDOW_CATALOG[window_model]
+                                
+                                with col2:
+                                    window_height_mm = st.number_input(
+                                        f"窓長さ(高さ) (mm)",
+                                        min_value=50,
+                                        max_value=3000,
+                                        value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
+                                        step=1,
+                                        key=f"window_height_click_{window_idx}"
+                                    )
+                                
+                                with col3:
+                                    window_base_mm = st.number_input(
+                                        f"床から窓下端 (mm)",
+                                        min_value=0,
+                                        max_value=5000,
+                                        value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
+                                        step=1,
+                                        key=f"window_base_click_{window_idx}"
+                                    )
+                                
+                                # パラメータを保存
+                                window_params_to_save.append({
+                                    'model': window_model,
+                                    'width_mm': window_width_mm,
+                                    'height_mm': window_height_mm,
+                                    'base_mm': window_base_mm
+                                })
+                                
+                                # 現在のパラメータをセッションに保存
+                                st.session_state.window_click_params_list[window_idx] = window_params_to_save[window_idx]
+                            
+                            # 実行ボタンを表示
+                            if st.button("🪟 窓追加実行", type="primary", key="btn_window_exec_inline"):
+                                # 選択された壁とパラメータをセッションに保存してから選択リストをクリア
+                                st.session_state.window_walls_to_process = list(st.session_state.selected_walls_for_window)
+                                st.session_state.window_click_params_list_to_process = window_params_to_save
+                                st.session_state.selected_walls_for_window = []
+                                st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                                st.rerun()
+                    
                     # オブジェクト配置モード：家具のオプション選択を画像の下に表示
                     if edit_mode == "オブジェクトを配置" and len(st.session_state.rect_coords_list) > 0:
                         st.markdown("---")
@@ -4338,83 +4418,9 @@ def main():
                                     # 前回のrerunで保存された壁を処理
                                     should_execute = True
                             elif edit_mode == "窓を追加":
-                                num_selected = len(st.session_state.selected_walls_for_window)
-                                # 偶数本（2本、4本、6本...）選択時にパラメータ入力を表示
-                                if num_selected >= 2 and num_selected % 2 == 0:
-                                    window_count = num_selected // 2
-                                    
-                                    # 窓パラメータ入力フォーム（各窓ペアごと）
-                                    st.markdown(f"### 🪟 窓のサイズを入力（{window_count}組）")
-                                    
-                                    # セッションステートに窓パラメータリストを初期化
-                                    if 'window_click_params_list' not in st.session_state:
-                                        st.session_state.window_click_params_list = []
-                                    
-                                    # 必要な数だけパラメータを確保
-                                    while len(st.session_state.window_click_params_list) < window_count:
-                                        st.session_state.window_click_params_list.append({
-                                            'model': 'J4415/JF4415',
-                                            'width_mm': 1200,
-                                            'height_mm': 1200,
-                                            'base_mm': 900
-                                        })
-                                    
-                                    # 各窓ごとに入力欄を表示
-                                    window_params_to_save = []
-                                    for window_idx in range(window_count):
-                                        st.markdown(f"#### 窓{window_idx + 1}")
-                                        col1, col2, col3 = st.columns(3)
-                                        
-                                        with col1:
-                                            window_model = st.selectbox(
-                                                f"窓{window_idx + 1}の型番",
-                                                list(WINDOW_CATALOG.keys()),
-                                                index=list(WINDOW_CATALOG.keys()).index(st.session_state.window_click_params_list[window_idx].get('model', 'J4415/JF4415')) if st.session_state.window_click_params_list[window_idx].get('model') in WINDOW_CATALOG.keys() else 0,
-                                                help="窓の型番を選択してください",
-                                                key=f"window_model_click_{window_idx}"
-                                            )
-                                            window_width_mm = WINDOW_CATALOG[window_model]
-                                        
-                                        with col2:
-                                            window_height_mm = st.number_input(
-                                                f"窓長さ(高さ) (mm)",
-                                                min_value=50,
-                                                max_value=3000,
-                                                value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
-                                                step=1,
-                                                key=f"window_height_click_{window_idx}"
-                                            )
-                                        
-                                        with col3:
-                                            window_base_mm = st.number_input(
-                                                f"床から窓下端 (mm)",
-                                                min_value=0,
-                                                max_value=5000,
-                                                value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
-                                                step=1,
-                                                key=f"window_base_click_{window_idx}"
-                                            )
-                                        
-                                        # パラメータを保存
-                                        window_params_to_save.append({
-                                            'model': window_model,
-                                            'width_mm': window_width_mm,
-                                            'height_mm': window_height_mm,
-                                            'base_mm': window_base_mm
-                                        })
-                                        
-                                        # 現在のパラメータをセッションに保存
-                                        st.session_state.window_click_params_list[window_idx] = window_params_to_save[window_idx]
-                                    
-                                    if st.button(button_label, type="primary", key="btn_window_exec"):
-                                        # 選択された壁とパラメータをセッションに保存してから選択リストをクリア
-                                        st.session_state.window_walls_to_process = list(st.session_state.selected_walls_for_window)
-                                        st.session_state.window_click_params_list_to_process = window_params_to_save
-                                        st.session_state.selected_walls_for_window = []
-                                        st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                        # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                        st.rerun()
-                                elif st.session_state.get('window_walls_to_process'):
+                                # 窓追加モードは画像の下に入力フォームを表示済み
+                                # 処理トリガーのみをチェック
+                                if st.session_state.get('window_walls_to_process'):
                                     # 前回のrerunで保存された壁を処理
                                     should_execute = True
                             elif edit_mode == "線を削除":
