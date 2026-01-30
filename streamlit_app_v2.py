@@ -3358,9 +3358,6 @@ def main():
                                         key=f"window_model_click_{window_idx}"
                                     )
                                     
-                                    # デバッグ表示
-                                    st.caption(f"現在: {current_model} → 選択: {window_model}")
-                                    
                                     # 型番が変更された場合、カタログ値で更新してrerun
                                     if window_model != current_model:
                                         st.session_state.window_click_params_list[window_idx]['model'] = window_model
@@ -3369,11 +3366,19 @@ def main():
                                             if isinstance(catalog_entry, dict):
                                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = int(catalog_entry.get('height', 1200))
                                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = int(catalog_entry.get('base', 900))
-                                                st.caption(f"✅ カタログ値を設定: 高さ={catalog_entry.get('height')}mm, 下端={catalog_entry.get('base')}mm")
                                             else:
                                                 # 古い形式の場合（幅のみ）
                                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = 1200
                                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = 900
+                                        
+                                        # number_inputのウィジェット状態をクリア
+                                        height_key = f"window_height_click_{window_idx}"
+                                        base_key = f"window_base_click_{window_idx}"
+                                        if height_key in st.session_state:
+                                            del st.session_state[height_key]
+                                        if base_key in st.session_state:
+                                            del st.session_state[base_key]
+                                        
                                         st.rerun()
                                 
                                 with col2:
