@@ -2346,15 +2346,19 @@ def main():
                 # クリック受付（表示画像）
                 click = streamlit_image_coordinates(overlay, key="step3_calib_click")
 
-                # クリック処理（壁選択方式）
+                # クリック処理（壁選択方式 - Step 3と同じロジック）
                 if click:
                     cur = (click["x"], click["y"])
                     if st.session_state.scale_last_click != cur:
                         st.session_state.scale_last_click = cur
                         
-                        # クリック位置から最も近い壁を検出
+                        # 表示座標を元画像座標にスケール変換
+                        orig_click_x = int(click["x"] / scale_disp)
+                        orig_click_y = int(click["y"] / scale_disp)
+                        
+                        # クリック位置から最も近い壁を検出（元画像の座標系で）
                         nearest_wall, distance = _find_nearest_wall_from_click(
-                            click["x"], click["y"],
+                            orig_click_x, orig_click_y,
                             walls, scale_px, margin,
                             img_height_calc, min_x, min_y, max_x, max_y,
                             threshold=20
