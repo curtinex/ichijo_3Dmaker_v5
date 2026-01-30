@@ -3333,7 +3333,8 @@ def main():
                                 pass
                     
                     # クリック可能な画像を表示（キーを動的に変更して値をリセット）
-                    coord_key = f"image_coords_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}"
+                    # edit_modeを含めることで、モード切り替え時に座標がリセットされる
+                    coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}"
                     
                     st.markdown(
                         """
