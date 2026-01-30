@@ -2679,10 +2679,15 @@ def main():
                     display_img_array = np.array(viz_img.copy())
                     
                     # リセットボタンと追加ボタン（画像の前に配置）
-                    col_reset, col_add, col_exec = st.columns(3)
+                    col_reset, col_add, col_debug = st.columns(3)
                     with col_reset:
                         if st.button("🗑️ 選択リセット"):
                             _reset_selection_state()
+                            st.rerun()
+                    with col_debug:
+                        # デバッグモード切り替え
+                        if st.button("🔍 画像サイズデバッグ"):
+                            st.session_state['debug_image_size'] = not st.session_state.get('debug_image_size', False)
                             st.rerun()
                     
                     # 線を結合モード・窓追加モード・線削除モード：選択された壁をハイライト表示
@@ -3297,38 +3302,61 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # 画像を1200pxで生成し、CSSの width: 100% によりカラム幅に自動調整
-                    # 大きな画面では大きく、小さな画面では小さく表示される
-                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=1200)
+                    # ブラウザの画面幅を取得するJavaScript
+                    get_width_js = """
+                    <script>
+                    const width = window.innerWidth || document.documentElement.clientWidth;
+                    window.parent.postMessage({type: 'streamlit:setComponentValue', value: width}, '*');
+                    </script>
+                    """
                     
-                    # レスポンシブなカラムレイアウトのためのCSS
+                    # 画面幅を取得
+                    import streamlit.components.v1 as components
+                    browser_width = components.html(get_width_js, height=0)
+                    
+                    # セッションステートに保存
+                    if browser_width is not None and isinstance(browser_width, (int, float)) and browser_width > 0:
+                        st.session_state['browser_width'] = int(browser_width)
+                    
+                    # 現在の画面幅を取得（デフォルトは1920px）
+                    current_width = st.session_state.get('browser_width', 1920)
+                    
+                    # カラムが60%なので、画面幅 * 0.6 * 0.85（余白考慮）を画像の最大幅とする
+                    calculated_width = int(current_width * 0.6 * 0.85)
+                    # 最小500px、最大1200pxに制限
+                    target_width = max(500, min(calculated_width, 1200))
+                    
+                    # デバッグ情報を表示（開発時のみ）
+                    debug_mode = st.session_state.get('debug_image_size', False)
+                    if debug_mode:
+                        st.info(f"🔍 デバッグ: ブラウザ幅={current_width}px, 計算幅={calculated_width}px, 画像幅={target_width}px")
+                    
+                    # 計算された幅で画像をリサイズ
+                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=target_width)
+                    
+                    # レスポンシブなカラムレイアウトのためのCSS（シンプルで確実な方式）
                     st.markdown("""
                     <style>
-                    /* 左側カラム全体の幅制限 */
-                    [data-testid="column"]:first-child {
-                        overflow: visible !important;
-                    }
-                    /* 左側の画像カラムをレスポンシブ化 */
-                    [data-testid="column"]:first-child img {
-                        max-width: 100% !important;
-                        height: auto !important;
-                        width: 100% !important;
-                        object-fit: contain !important;
-                    }
-                    /* 画像コンテナ全体を制限 */
-                    [data-testid="column"]:first-child > div {
+                    /* すべてのカラムで最大幅を制限 */
+                    [data-testid="column"] {
                         max-width: 100% !important;
                         overflow: hidden !important;
                     }
-                    [data-testid="column"]:first-child iframe {
+                    /* すべての子要素も制限 */
+                    [data-testid="column"] * {
                         max-width: 100% !important;
                     }
-                    /* 右側のUIカラムが見切れないようにレスポンシブ化 */
-                    [data-testid="column"] {
-                        overflow-x: auto !important;
-                    }
-                    [data-testid="column"] > div {
+                    /* 画像を確実にカラム内に収める */
+                    [data-testid="column"] img {
                         max-width: 100% !important;
+                        height: auto !important;
+                        width: auto !important;
+                        display: block !important;
+                    }
+                    /* iframe（カスタムコンポーネント）も制限 */
+                    [data-testid="column"] iframe {
+                        max-width: 100% !important;
+                        width: 100% !important;
                     }
                     /* 数値入力欄とセレクトボックスを小さい画面でも収まるように */
                     [data-testid="stNumberInput"], [data-testid="stSelectbox"] {
@@ -3337,10 +3365,6 @@ def main():
                     [data-testid="stNumberInput"] input, [data-testid="stSelectbox"] select {
                         min-width: 60px !important;
                         width: 100% !important;
-                    }
-                    /* カラム内のコンテンツが折り返すように */
-                    [data-testid="column"] .row-widget {
-                        flex-wrap: wrap !important;
                     }
                     </style>
                     """, unsafe_allow_html=True)
