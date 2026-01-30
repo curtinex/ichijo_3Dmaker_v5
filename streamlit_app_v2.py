@@ -2742,13 +2742,15 @@ def main():
                                         cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
                                 except Exception:
                                     pass
-                            elif edit_mode == "窓を追加" and len(selected_walls_to_highlight) >= 2:
+                            elif edit_mode == "窓を追加" and len(selected_walls_to_highlight) >= 1:
                                 # 窓追加モード：2本ずつペアでギャップを表示し、番号を振る
+                                # 奇数本選択時は最後の1本を単独で表示
                                 window_pairs = []
                                 for i in range(0, len(selected_walls_to_highlight), 2):
                                     if i + 1 < len(selected_walls_to_highlight):
                                         window_pairs.append((selected_walls_to_highlight[i], selected_walls_to_highlight[i + 1]))
                                 
+                                # ペアになっている窓を表示
                                 for pair_idx, (wall1, wall2) in enumerate(window_pairs):
                                     try:
                                         # 2つの壁の4つの端点から最も近い組み合わせを見つける
@@ -2785,10 +2787,40 @@ def main():
                                                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
                                     except Exception:
                                         pass
-                            else:
-                                # その他のモード（線削除）または1本のみ選択時：従来通り
+                                
+                                # 奇数本選択時：最後の1本を単独で表示（次の窓の1本目）
+                                if len(selected_walls_to_highlight) % 2 == 1:
+                                    last_wall = selected_walls_to_highlight[-1]
+                                    next_window_num = len(window_pairs) + 1
+                                    
+                                    try:
+                                        start_m = last_wall['start']
+                                        end_m = last_wall['end']
+                                        
+                                        # メートル→ピクセル変換
+                                        start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
+                                        end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
+                                        
+                                        # 壁線を青色でハイライト表示（太さ6）
+                                        cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
+                                        
+                                        # 壁線の中心に「窓○:1」と表示
+                                        center_x = (start_px_x + end_px_x) // 2
+                                        center_y = (start_px_y + end_px_y) // 2
+                                        cv2.putText(display_img_array, f"{next_window_num}:1", (center_x - 25, center_y + 10),
+                                                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 3)
+                                        
+                                        # デバッグ：奇数本描画確認
+                                        print(f"[DEBUG] 奇数本描画: 窓{next_window_num}:1, 座標=({start_px_x},{start_px_y})-({end_px_x},{end_px_y})")
+                                    except Exception as e:
+                                        print(f"[ERROR] 奇数本描画エラー: {e}")
+                                        pass
+                            elif edit_mode != "窓を追加":
+                                # その他のモード（線削除、線を結合）のみ：従来通り
                                 # 線を削除：すべて赤
-                                # 線を結合・窓追加（1本のみ）：青色で表示
+                                # 線を結合：青→緑
                                 if edit_mode == "線を削除":
                                     colors = [(0, 0, 255)] * 20  # 赤色で統一（BGR形式）
                                 else:
@@ -2828,7 +2860,10 @@ def main():
                                     # 番号を描画（黒文字）
                                     cv2.putText(display_img_array, text, (text_x, text_y), 
                                               cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
-                        except Exception:
+                        except Exception as ex:
+                            print(f"[ERROR] ハイライト描画の外側エラー: {ex}")
+                            import traceback
+                            traceback.print_exc()
                             pass  # エラー時は無視
                     
                     # 確定済みの四角形を描画（異なる色で）
