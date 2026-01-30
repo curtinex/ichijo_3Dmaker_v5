@@ -3297,6 +3297,31 @@ def main():
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
+                    # レスポンシブなカラムレイアウトのためのCSS
+                    st.markdown("""
+                    <style>
+                    /* 右側のUIカラムが見切れないようにレスポンシブ化 */
+                    [data-testid="column"] {
+                        overflow-x: auto !important;
+                    }
+                    [data-testid="column"] > div {
+                        max-width: 100% !important;
+                    }
+                    /* 数値入力欄とセレクトボックスを小さい画面でも収まるように */
+                    [data-testid="stNumberInput"], [data-testid="stSelectbox"] {
+                        min-width: 0 !important;
+                    }
+                    [data-testid="stNumberInput"] input, [data-testid="stSelectbox"] select {
+                        min-width: 60px !important;
+                        width: 100% !important;
+                    }
+                    /* カラム内のコンテンツが折り返すように */
+                    [data-testid="column"] .row-widget {
+                        flex-wrap: wrap !important;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+                    
                     # 左右2カラムに分割：左に画像、右にUI
                     col_img, col_ui = st.columns([6, 4])
                     
