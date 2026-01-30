@@ -4431,8 +4431,8 @@ def main():
                                 import traceback
                                 st.code(traceback.format_exc())
                         
-                        elif edit_mode in ("線を結合", "窓を追加", "線を削除") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
-                            # 結合・窓追加・削除モードの実行ボタン
+                        elif edit_mode in ("線を結合", "窓を追加", "線を削除", "オブジェクトを配置") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
+                            # 結合・窓追加・削除・オブジェクト配置モードの実行ボタン
                             should_execute = False
                             
                             # 各モードで選択完了時のみボタンを有効化
@@ -4461,6 +4461,11 @@ def main():
                                 if len(st.session_state.selected_walls_for_delete) > 0:
                                     if st.button(button_label, type="primary", key="btn_delete_exec"):
                                         should_execute = True
+                            elif edit_mode == "オブジェクトを配置":
+                                # オブジェクト配置モード：execute_furniture_placementフラグをチェック
+                                if st.session_state.get('execute_furniture_placement'):
+                                    st.session_state.execute_furniture_placement = False
+                                    should_execute = True
                             elif edit_mode != "オブジェクトを配置":
                                 # オブジェクト配置モード以外（線を追加、床を追加など）
                                 if st.button(button_label, type="primary", key="btn_general_edit_exec"):
