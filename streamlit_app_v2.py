@@ -3648,19 +3648,19 @@ def main():
                                         
                                         st.rerun()
                             else:
-                            # その他のモード：2点選択
-                            if len(st.session_state.rect_coords) < 2:
-                                if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
-                                    st.session_state.rect_coords.append(new_point)
-                                    st.session_state.last_click = new_point
-                                    
-                                    # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
-                                    # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
-                                    # 注：線を結合モードは壁線クリック選択のため除外
-                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
-                                        try:
-                                            json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                            walls_auto = json_data_auto['walls']
+                                # その他のモード：2点選択
+                                if len(st.session_state.rect_coords) < 2:
+                                    if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
+                                        st.session_state.rect_coords.append(new_point)
+                                        st.session_state.last_click = new_point
+                                        
+                                        # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
+                                        # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
+                                        # 注：線を結合モードは壁線クリック選択のため除外
+                                        if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
+                                            try:
+                                                json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                                walls_auto = json_data_auto['walls']
                                             
                                             all_x_auto = [w['start'][0] for w in walls_auto] + [w['end'][0] for w in walls_auto]
                                             all_y_auto = [w['start'][1] for w in walls_auto] + [w['end'][1] for w in walls_auto]
