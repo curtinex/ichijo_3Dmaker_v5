@@ -4317,7 +4317,8 @@ def main():
                                             st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                             st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                            # 選択状態をクリア
+                                            # 選択状態をクリア（再選択を防ぐためskip_click_processingフラグを設定）
+                                            st.session_state.skip_click_processing = True
                                             st.session_state.rect_coords = []
                                             st.session_state.rect_coords_list = []
                                             st.session_state.last_click = None
@@ -4482,6 +4483,8 @@ def main():
                                                         'direction': 'クリック選択',
                                                         'deleted_walls': []
                                                     })
+                                                    # 選択状態をクリア（再選択を防ぐためskip_click_processingフラグを設定）
+                                                    st.session_state.skip_click_processing = True        # クリック処理をスキップ
                                                     st.session_state.rect_coords = []                    # 現在選択中の2点をクリア
                                                     st.session_state.rect_coords_list = []               # 確定済み選択範囲リストをクリア
                                                     st.session_state.reset_flag = True                   # リセットフラグを設定
@@ -5240,7 +5243,8 @@ def main():
                                             st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                             st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                            # 状態を完全にクリアして続行（選択リセットと同じ処理）
+                                            # 状態を完全にクリアして続行（選択リセットと同じ処理、再選択を防ぐためskip_click_processingフラグを設定）
+                                            st.session_state.skip_click_processing = True  # クリック処理をスキップ
                                             st.session_state.rect_coords = []
                                             st.session_state.rect_coords_list = []
                                             st.session_state.reset_flag = True  # リセットフラグを設定
