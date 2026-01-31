@@ -19,13 +19,25 @@ def install_ichijo_core():
     """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
     print("→ Checking ichijo_core installation...")
     
+    # 期待するコミットハッシュ（バージョンチェック用）
+    EXPECTED_COMMIT = "5a1aa97"
+    
     # 既にインストール済みで正常にインポートできるかチェック
     try:
         import ichijo_core
         print(f"✓ ichijo_core already installed and importable")
         print(f"  Location: {ichijo_core.__file__}")
-        print(f"  Version: {ichijo_core.__version__}")
-        return True, None
+        current_version = ichijo_core.__version__
+        print(f"  Version: {current_version}")
+        
+        # バージョンが期待するコミットハッシュを含んでいるかチェック
+        if EXPECTED_COMMIT in current_version:
+            print(f"✓ ichijo_core is up-to-date ({EXPECTED_COMMIT})")
+            return True, None
+        else:
+            print(f"⚠ ichijo_core version mismatch. Expected: {EXPECTED_COMMIT}, Got: {current_version}")
+            print("→ Forcing reinstallation...")
+            # 古いバージョンなので再インストール処理に進む
     except Exception as e:
         print(f"→ ichijo_core not available: {type(e).__name__}: {e}")
         print("→ Proceeding with installation...")
@@ -59,8 +71,8 @@ def install_ichijo_core():
             sys.path.insert(0, target_dir)
             print(f"✓ Added to sys.path: {target_dir}")
         
-        # コミットハッシュを使用（最新版 - 背景色赤変更版）
-        commit_hash = "6625f84"
+        # コミットハッシュを使用（最新版 - バージョンチェック機能追加版）
+        commit_hash = "5a1aa97"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
