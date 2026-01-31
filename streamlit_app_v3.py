@@ -76,8 +76,16 @@ def install_ichijo_core():
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
+        # 古いichijo_coreを明示的にアンインストール
+        print("→ Uninstalling old ichijo_core...")
+        subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
+            capture_output=True,
+            text=True
+        )
+        
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", install_url],
+            [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", "--upgrade", install_url],
             capture_output=True,
             text=True,
             timeout=300  # 5分タイムアウト
