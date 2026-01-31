@@ -4102,323 +4102,407 @@ def main():
                                             'width': abs(p2[0] - p1[0]),
                                             'height': abs(p2[1] - p1[1])
                                         }
-                                            try:
-                                                append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
-                                            except Exception:
-                                                pass
-                                        
-                                            # 選択範囲内の壁線を抽出
-                                            # スケール校正版と同様に「完全に含まれる」判定をまず試す（端点ベース）
-                                            walls_in_selection = _filter_walls_strictly_in_rect(
-                                                updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
-                                            )
-                                            # 端点ベースで何も見つからなければ、交差/近接ベースでフォールバック（これを無効にする場合は削除）
-                                            if len(walls_in_selection) == 0:
-                                                walls_in_selection = [
-                                                    wall for wall in updated_json['walls']
-                                                    if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
-                                                ]
-                                            try:
-                                                append_debug(f"walls_in_selection ids: {[w.get('id') for w in walls_in_selection]} (count={len(walls_in_selection)})")
-                                            except Exception:
-                                                pass
+                                        try:
+                                            append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
+                                        except Exception:
+                                            pass
+                                    
+                                        # 選択範囲内の壁線を抽出
+                                        # スケール校正版と同様に「完全に含まれる」判定をまず試す（端点ベース）
+                                        walls_in_selection = _filter_walls_strictly_in_rect(
+                                            updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
+                                        )
+                                        # 端点ベースで何も見つからなければ、交差/近接ベースでフォールバック（これを無効にする場合は削除）
+                                        if len(walls_in_selection) == 0:
+                                            walls_in_selection = [
+                                                wall for wall in updated_json['walls']
+                                                if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
+                                            ]
+                                        try:
+                                            append_debug(f"walls_in_selection ids: {[w.get('id') for w in walls_in_selection]} (count={len(walls_in_selection)})")
+                                        except Exception:
+                                            pass
 
-                                            # プレビューでフィルタ済みIDがセッションに保存されている場合、
-                                            # 四角形が一致すれば execution 側の検出集合をプレビューのフィルタ済み集合に合わせる。
-                                            try:
-                                                last_filtered = st.session_state.get('last_preview_filtered_ids')
-                                                last_rect = st.session_state.get('last_preview_rect')
-                                                if last_filtered and last_rect:
-                                                    if (abs(last_rect.get('left',0) - rect.get('left',0)) < 1 and
-                                                        abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
-                                                        abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
-                                                        abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
-                                                        # updated_json の walls から該当IDを抽出（四角形外でも preview が見ていたIDを優先）
-                                                        id_set = set(last_filtered)
-                                                        walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
-                                                        try:
-                                                            st.write(f"🔧 プレビューのフィルタ済みIDを優先して walls_in_selection を置換しました: {list(id_set)}")
-                                                        except Exception:
-                                                            pass
-                                                        try:
-                                                            append_debug(f"Applied preview filtered ids as walls_in_selection: {list(id_set)}")
-                                                        except Exception:
-                                                            pass
-                                            except Exception:
-                                                pass
-                                        
-                                            # まず、プレビューで選ばれたペアがあるかを確認し、四角形が一致すればそれを優先する
+                                        # プレビューでフィルタ済みIDがセッションに保存されている場合、
+                                        # 四角形が一致すれば execution 側の検出集合をプレビューのフィルタ済み集合に合わせる。
+                                        try:
+                                            last_filtered = st.session_state.get('last_preview_filtered_ids')
+                                            last_rect = st.session_state.get('last_preview_rect')
+                                            if last_filtered and last_rect:
+                                                if (abs(last_rect.get('left',0) - rect.get('left',0)) < 1 and
+                                                    abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
+                                                    abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
+                                                    abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
+                                                    # updated_json の walls から該当IDを抽出（四角形外でも preview が見ていたIDを優先）
+                                                    id_set = set(last_filtered)
+                                                    walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
+                                                    try:
+                                                        st.write(f"🔧 プレビューのフィルタ済みIDを優先して walls_in_selection を置換しました: {list(id_set)}")
+                                                    except Exception:
+                                                        pass
+                                                    try:
+                                                        append_debug(f"Applied preview filtered ids as walls_in_selection: {list(id_set)}")
+                                                    except Exception:
+                                                        pass
+                                        except Exception:
+                                            pass
+                                    
+                                        # まず、プレビューで選ばれたペアがあるかを確認し、四角形が一致すればそれを優先する
+                                        walls_to_use = None
+                                        try:
+                                            last_pair = st.session_state.get('last_preview_pair')
+                                            last_rect = st.session_state.get('last_preview_rect')
+                                            if last_pair and last_rect:
+                                                # rect と同じなら preview のペアを利用
+                                                if (abs(last_rect.get('left',0) - rect.get('left',0)) < 1 and
+                                                    abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
+                                                    abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
+                                                    abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
+                                                    # updated_json の walls から id を探して walls_to_use を構築
+                                                    id_set = set(last_pair)
+                                                    walls_to_use = [w for w in walls_in_selection if w.get('id') in id_set]
+                                                    if len(walls_to_use) != 2:
+                                                        walls_to_use = None
+                                        except Exception:
                                             walls_to_use = None
+
+                                        # プレビュー優先が使えない場合は従来通り角度フィルタを試す
+                                        if walls_to_use is None:
+                                            filtered_by_angle = None
                                             try:
-                                                last_pair = st.session_state.get('last_preview_pair')
-                                                last_rect = st.session_state.get('last_preview_rect')
-                                                if last_pair and last_rect:
-                                                    # rect と同じなら preview のペアを利用
-                                                    if (abs(last_rect.get('left',0) - rect.get('left',0)) < 1 and
-                                                        abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
-                                                        abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
-                                                        abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
-                                                        # updated_json の walls から id を探して walls_to_use を構築
-                                                        id_set = set(last_pair)
-                                                        walls_to_use = [w for w in walls_in_selection if w.get('id') in id_set]
-                                                        if len(walls_to_use) != 2:
-                                                            walls_to_use = None
-                                            except Exception:
-                                                walls_to_use = None
-
-                                            # プレビュー優先が使えない場合は従来通り角度フィルタを試す
-                                            if walls_to_use is None:
-                                                filtered_by_angle = None
-                                                try:
-                                                    angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_selection]
-                                                    sx = sum(math.cos(a) for a in angles)
-                                                    sy = sum(math.sin(a) for a in angles)
-                                                    if sx == 0 and sy == 0:
-                                                        avg_angle = 0.0
-                                                    else:
-                                                        avg_angle = math.degrees(math.atan2(sy, sx))
-
-                                                    angle_threshold = 30.0
-                                                    kept = [w for w in walls_in_selection if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold]
-                                                    if len(kept) >= 2:
-                                                        filtered_by_angle = kept
-                                                except Exception:
-                                                    filtered_by_angle = None
-
-                                                if filtered_by_angle is not None:
-                                                    walls_to_use = filtered_by_angle
+                                                angles = [math.radians(_wall_angle_deg(w)) for w in walls_in_selection]
+                                                sx = sum(math.cos(a) for a in angles)
+                                                sy = sum(math.sin(a) for a in angles)
+                                                if sx == 0 and sy == 0:
+                                                    avg_angle = 0.0
                                                 else:
-                                                    walls_to_use = walls_in_selection
+                                                    avg_angle = math.degrees(math.atan2(sy, sx))
 
-                                            try:
-                                                append_debug(f"walls_to_use ids: {[w.get('id') for w in walls_to_use]} (count={len(walls_to_use)})")
+                                                angle_threshold = 30.0
+                                                kept = [w for w in walls_in_selection if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold]
+                                                if len(kept) >= 2:
+                                                    filtered_by_angle = kept
                                             except Exception:
-                                                pass
+                                                filtered_by_angle = None
 
+                                            if filtered_by_angle is not None:
+                                                walls_to_use = filtered_by_angle
+                                            else:
+                                                walls_to_use = walls_in_selection
+
+                                        try:
+                                            append_debug(f"walls_to_use ids: {[w.get('id') for w in walls_to_use]} (count={len(walls_to_use)})")
+                                        except Exception:
+                                            pass
+
+                                        # デバッグログにも追加
+                                        try:
+                                            wall_info = f"選択範囲内の壁: {len(walls_to_use)}本"
+                                            st.write(f"**{wall_info}**")
+                                            append_debug(wall_info)
+                                            if walls_to_use:
+                                                wall_ids_in_selection = [w['id'] for w in walls_to_use]
+                                                wall_display = ", ".join([f"壁({wid})" for wid in wall_ids_in_selection])
+                                                wall_list_info = f"壁: {wall_display}"
+                                                st.write(wall_list_info)
+                                                append_debug(wall_list_info)
+                                        except Exception:
+                                            pass
+                                        
+                                        if len(walls_to_use) >= 2:
+                                            # 複数線が選択されている場合、方向を判定して最も離れた2本のペアのみを結合
+                                            # 四角形の幅と高さから方向を判定
+                                            rect_width = abs(p2[0] - p1[0])
+                                            rect_height = abs(p2[1] - p1[1])
+                                        
+                                            if rect_width > rect_height:
+                                                # X方向：x座標で最も離れた2本を選択
+                                                walls_by_x = sorted(walls_to_use, 
+                                                                    key=lambda w: min(w['start'][0], w['end'][0]))
+                                                leftmost_wall = walls_by_x[0]
+                                                rightmost_wall = walls_by_x[-1]
+                                            
+                                                # 2本だけを結合候補として抽出
+                                                selected_walls = [leftmost_wall, rightmost_wall]
+                                                direction = "X方向"
+                                            else:
+                                                # Y方向：y座標で最も離れた2本を選択
+                                                walls_by_y = sorted(walls_to_use,
+                                                                key=lambda w: min(w['start'][1], w['end'][1]))
+                                                bottom_wall = walls_by_y[0]
+                                                top_wall = walls_by_y[-1]
+                                            
+                                                # 2本だけを結合候補として抽出
+                                                selected_walls = [bottom_wall, top_wall]
+                                                direction = "Y方向"
+                                        
                                             # デバッグログにも追加
                                             try:
-                                                wall_info = f"選択範囲内の壁: {len(walls_to_use)}本"
-                                                st.write(f"**{wall_info}**")
-                                                append_debug(wall_info)
-                                                if walls_to_use:
-                                                    wall_ids_in_selection = [w['id'] for w in walls_to_use]
-                                                    wall_display = ", ".join([f"壁({wid})" for wid in wall_ids_in_selection])
-                                                    wall_list_info = f"壁: {wall_display}"
-                                                    st.write(wall_list_info)
-                                                    append_debug(wall_list_info)
+                                                direction_info = f"方向判定: {direction} (幅: {rect_width}px, 高さ: {rect_height}px)"
+                                                merge_target_info = f"結合対象: 壁({selected_walls[0]['id']}) ← → 壁({selected_walls[1]['id']})"
+                                                st.write(f"**{direction_info}**")
+                                                st.write(f"**{merge_target_info}**")
+                                                append_debug(direction_info)
+                                                append_debug(merge_target_info)
                                             except Exception:
                                                 pass
                                         
-                                            if len(walls_to_use) >= 2:
-                                                # 複数線が選択されている場合、方向を判定して最も離れた2本のペアのみを結合
-                                                # 四角形の幅と高さから方向を判定
-                                                rect_width = abs(p2[0] - p1[0])
-                                                rect_height = abs(p2[1] - p1[1])
-                                            
-                                                if rect_width > rect_height:
-                                                    # X方向：x座標で最も離れた2本を選択
-                                                    walls_by_x = sorted(walls_to_use, 
-                                                                        key=lambda w: min(w['start'][0], w['end'][0]))
-                                                    leftmost_wall = walls_by_x[0]
-                                                    rightmost_wall = walls_by_x[-1]
-                                                
-                                                    # 2本だけを結合候補として抽出
-                                                    selected_walls = [leftmost_wall, rightmost_wall]
-                                                    direction = "X方向"
-                                                else:
-                                                    # Y方向：y座標で最も離れた2本を選択
-                                                    walls_by_y = sorted(walls_to_use,
-                                                                    key=lambda w: min(w['start'][1], w['end'][1]))
-                                                    bottom_wall = walls_by_y[0]
-                                                    top_wall = walls_by_y[-1]
-                                                
-                                                    # 2本だけを結合候補として抽出
-                                                    selected_walls = [bottom_wall, top_wall]
-                                                    direction = "Y方向"
-                                            
-                                                # デバッグログにも追加
+                                            # 結合候補を探す（選択された2本だけ）
+                                            # 結合側の閾値はプレビューの角度フィルタと合わせて30度に緩和
+                                            merge_angle_threshold = 30
+                                            # 追加デバッグ: 選択集合内の全ペアについて最短端点距離と角度差を表示
+                                            try:
+                                                pair_debug = []
+                                                for i, wa in enumerate(walls_to_use):
+                                                    for j, wb in enumerate(walls_to_use):
+                                                        if i >= j:
+                                                            continue
+                                                        endpoints_a = [wa['start'], wa['end']]
+                                                        endpoints_b = [wb['start'], wb['end']]
+                                                        min_d = None
+                                                        for pa in endpoints_a:
+                                                            for pb in endpoints_b:
+                                                                d = _calc_distance(pa, pb)
+                                                                if min_d is None or d < min_d:
+                                                                    min_d = d
+                                                        ang = _calc_angle_diff(wa, wb)
+                                                        pair_debug.append({'wall1': wa.get('id'), 'wall2': wb.get('id'), 'min_endpoint_dist_m': round(min_d,4) if min_d is not None else None, 'angle_diff_deg': round(ang,2)})
+                                                pair_debug_str = str(pair_debug)
+                                                st.write('**デバッグ (全ペア距離/角度):**', pair_debug)
                                                 try:
-                                                    direction_info = f"方向判定: {direction} (幅: {rect_width}px, 高さ: {rect_height}px)"
-                                                    merge_target_info = f"結合対象: 壁({selected_walls[0]['id']}) ← → 壁({selected_walls[1]['id']})"
-                                                    st.write(f"**{direction_info}**")
-                                                    st.write(f"**{merge_target_info}**")
-                                                    append_debug(direction_info)
-                                                    append_debug(merge_target_info)
+                                                    append_debug(f"全ペア距離/角度: {pair_debug_str}")
                                                 except Exception:
                                                     pass
-                                            
-                                                # 結合候補を探す（選択された2本だけ）
-                                                # 結合側の閾値はプレビューの角度フィルタと合わせて30度に緩和
-                                                merge_angle_threshold = 30
-                                                # 追加デバッグ: 選択集合内の全ペアについて最短端点距離と角度差を表示
+                                            except Exception:
+                                                pass
+
+                                            # チェーン検出を含めるため、選択された2本のみではなく
+                                            # フィルタ済みの `walls_to_use` 全体を渡す。
+                                            candidates = _find_mergeable_walls(
+                                                walls_to_use,
+                                                distance_threshold=distance_threshold,
+                                                angle_threshold=merge_angle_threshold
+                                            )
+
+                                            # デバッグ情報: 選択した2本の角度差と最短端点距離を表示
+                                            try:
+                                                angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
+                                                # 最短端点距離を計算
+                                                endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
+                                                endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
+                                                min_dist = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
+                                                selected_wall_info = f"選択壁の角度差: {angle_diff_sel:.2f}度, 最短端点距離: {min_dist:.3f} m"
+                                                st.write(f"**{selected_wall_info}**")
                                                 try:
-                                                    pair_debug = []
-                                                    for i, wa in enumerate(walls_to_use):
-                                                        for j, wb in enumerate(walls_to_use):
-                                                            if i >= j:
-                                                                continue
-                                                            endpoints_a = [wa['start'], wa['end']]
-                                                            endpoints_b = [wb['start'], wb['end']]
-                                                            min_d = None
-                                                            for pa in endpoints_a:
-                                                                for pb in endpoints_b:
-                                                                    d = _calc_distance(pa, pb)
-                                                                    if min_d is None or d < min_d:
-                                                                        min_d = d
-                                                            ang = _calc_angle_diff(wa, wb)
-                                                            pair_debug.append({'wall1': wa.get('id'), 'wall2': wb.get('id'), 'min_endpoint_dist_m': round(min_d,4) if min_d is not None else None, 'angle_diff_deg': round(ang,2)})
-                                                    pair_debug_str = str(pair_debug)
-                                                    st.write('**デバッグ (全ペア距離/角度):**', pair_debug)
-                                                    try:
-                                                        append_debug(f"全ペア距離/角度: {pair_debug_str}")
-                                                    except Exception:
-                                                        pass
+                                                    append_debug(selected_wall_info)
                                                 except Exception:
                                                     pass
+                                            except Exception:
+                                                pass
 
-                                                # チェーン検出を含めるため、選択された2本のみではなく
-                                                # フィルタ済みの `walls_to_use` 全体を渡す。
-                                                candidates = _find_mergeable_walls(
-                                                    walls_to_use,
-                                                    distance_threshold=distance_threshold,
-                                                    angle_threshold=merge_angle_threshold
-                                                )
-
-                                                # デバッグ情報: 選択した2本の角度差と最短端点距離を表示
+                                            # 候補の詳細を常に表示（空でも明示）
+                                            try:
+                                                cand_list = []
+                                                for c in candidates:
+                                                    if c.get('is_chain'):
+                                                        cand_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
+                                                    else:
+                                                        cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
+                                                cand_list_str = str(cand_list)
+                                                st.write("**デバッグ (候補一覧):**", cand_list)
                                                 try:
-                                                    angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                    # 最短端点距離を計算
-                                                    endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                    endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                    min_dist = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
-                                                    selected_wall_info = f"選択壁の角度差: {angle_diff_sel:.2f}度, 最短端点距離: {min_dist:.3f} m"
-                                                    st.write(f"**{selected_wall_info}**")
-                                                    try:
-                                                        append_debug(selected_wall_info)
-                                                    except Exception:
-                                                        pass
+                                                    append_debug(f"候補一覧: {cand_list_str}")
                                                 except Exception:
                                                     pass
+                                            except Exception:
+                                                pass
 
-                                                # 候補の詳細を常に表示（空でも明示）
+                                            # フォールバック: 候補が見つからなければ閾値を緩めて再探索
+                                            if not candidates:
                                                 try:
-                                                    cand_list = []
-                                                    for c in candidates:
+                                                    fallback_dist = max(distance_threshold * 2, 0.5)
+                                                    fallback_angle = max(merge_angle_threshold * 2, 45)
+                                                    st.warning(f"候補が見つかりません。フォールバック閾値で再探索します (距離: {fallback_dist}m, 角度: {fallback_angle}°)")
+                                                    candidates_fb = _find_mergeable_walls(
+                                                        selected_walls,
+                                                        distance_threshold=fallback_dist,
+                                                        angle_threshold=fallback_angle
+                                                    )
+                                                    cand_fb_list = []
+                                                    for c in candidates_fb:
                                                         if c.get('is_chain'):
-                                                            cand_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
+                                                            cand_fb_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
                                                         else:
-                                                            cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                    cand_list_str = str(cand_list)
-                                                    st.write("**デバッグ (候補一覧):**", cand_list)
-                                                    try:
-                                                        append_debug(f"候補一覧: {cand_list_str}")
-                                                    except Exception:
-                                                        pass
+                                                            cand_fb_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
+                                                    st.write("**デバッグ (フォールバック候補一覧):**", cand_fb_list)
+                                                    if candidates_fb:
+                                                        candidates = candidates_fb
+                                                        st.info("フォールバックで候補が見つかりました。結合を実行します。")
+                                                        try:
+                                                            append_debug(f"Fallback candidates: {cand_fb_list}")
+                                                        except Exception:
+                                                            pass
+                                                    else:
+                                                        st.warning("フォールバックでも候補が見つかりませんでした。四角形選択や閾値を確認してください。")
                                                 except Exception:
                                                     pass
 
-                                                # フォールバック: 候補が見つからなければ閾値を緩めて再探索
-                                                if not candidates:
-                                                    try:
-                                                        fallback_dist = max(distance_threshold * 2, 0.5)
-                                                        fallback_angle = max(merge_angle_threshold * 2, 45)
-                                                        st.warning(f"候補が見つかりません。フォールバック閾値で再探索します (距離: {fallback_dist}m, 角度: {fallback_angle}°)")
-                                                        candidates_fb = _find_mergeable_walls(
-                                                            selected_walls,
-                                                            distance_threshold=fallback_dist,
-                                                            angle_threshold=fallback_angle
-                                                        )
-                                                        cand_fb_list = []
-                                                        for c in candidates_fb:
-                                                            if c.get('is_chain'):
-                                                                cand_fb_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                            else:
-                                                                cand_fb_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                        st.write("**デバッグ (フォールバック候補一覧):**", cand_fb_list)
-                                                        if candidates_fb:
-                                                            candidates = candidates_fb
-                                                            st.info("フォールバックで候補が見つかりました。結合を実行します。")
+                                            # 追加: 2点選択時に候補が見つからない場合、周辺の壁を含めたチェーン検索を試みる
+                                            if not candidates:
+                                                try:
+                                                    # selected_walls が存在し、2本選択されている場合にのみ実行
+                                                    if 'selected_walls' in locals() and len(selected_walls) == 2:
+                                                        # 参照角度と閾値
+                                                        ref_angle = _wall_angle_deg(selected_walls[0])
+                                                        angle_tol = merge_angle_threshold
+                                                        # 周辺壁を収集（角度が近く、端点距離が近いもの）
+                                                        neighborhood = []
+                                                        for w in updated_json.get('walls', []):
                                                             try:
-                                                                append_debug(f"Fallback candidates: {cand_fb_list}")
+                                                                if _angle_diff_deg(_wall_angle_deg(w), ref_angle) < angle_tol:
+                                                                    endpoints_sel = [selected_walls[0]['start'], selected_walls[0]['end'], selected_walls[1]['start'], selected_walls[1]['end']]
+                                                                    endpoints_w = [w['start'], w['end']]
+                                                                    min_d = min(_calc_distance(p1, p2) for p1 in endpoints_sel for p2 in endpoints_w)
+                                                                    # 距離閾値は少し広めに設定（既定閾値の2倍または0.5m）
+                                                                    if min_d <= max(distance_threshold * 2, 0.5):
+                                                                        neighborhood.append(w)
+                                                            except Exception:
+                                                                continue
+
+                                                        if len(neighborhood) >= 2:
+                                                            candidates_ext = _find_mergeable_walls(
+                                                                neighborhood,
+                                                                distance_threshold=distance_threshold,
+                                                                angle_threshold=merge_angle_threshold
+                                                            )
+                                                            if candidates_ext:
+                                                                candidates = candidates_ext
+                                                                st.info('周辺壁を含めた拡張チェーン検索で候補を検出しました。')
+                                                                try:
+                                                                    append_debug(f"Neighborhood-extended candidates found: count={len(candidates_ext)}")
+                                                                except Exception:
+                                                                    pass
+                                                except Exception:
+                                                    pass
+                                            # 追加フォールバック: 2点選択で角度が近いが距離が大きい場合、小さめの閾値で自動強制候補を作成する
+                                            if not candidates:
+                                                try:
+                                                    if 'selected_walls' in locals() and len(selected_walls) == 2:
+                                                        # 最短端点距離と角度差を計算
+                                                        endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
+                                                        endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
+                                                        min_dist_tmp = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
+                                                        angle_diff_tmp = _calc_angle_diff(selected_walls[0], selected_walls[1])
+                                                        # 許容距離：ほぼ無制限にする（既定閾値の100倍）
+                                                        extended_limit = distance_threshold * 100
+                                                        if angle_diff_tmp <= merge_angle_threshold and min_dist_tmp <= extended_limit:
+                                                            # 自動強制候補を作成
+                                                            w1 = selected_walls[0]
+                                                            w2 = selected_walls[1]
+                                                            # 最短端点組合せから接続タイプを決定
+                                                            min_pair = None
+                                                            md = None
+                                                            for p1 in endpoints1:
+                                                                for p2 in endpoints2:
+                                                                    d = _calc_distance(p1, p2)
+                                                                    if md is None or d < md:
+                                                                        md = d
+                                                                        min_pair = (p1, p2)
+                                                            p1p, p2p = min_pair
+                                                            conn = 'end-start'
+                                                            if p1p == w1.get('end') and p2p == w2.get('start'):
+                                                                conn = 'end-start'
+                                                            elif p1p == w1.get('end') and p2p == w2.get('end'):
+                                                                conn = 'end-end'
+                                                            elif p1p == w1.get('start') and p2p == w2.get('start'):
+                                                                conn = 'start-start'
+                                                            elif p1p == w1.get('start') and p2p == w2.get('end'):
+                                                                conn = 'start-end'
+                                                            # new_start/new_end を接続タイプに合わせて設定
+                                                            if conn == 'end-start':
+                                                                new_start = w1.get('start')
+                                                                new_end = w2.get('end')
+                                                            elif conn == 'end-end':
+                                                                new_start = w1.get('start')
+                                                                new_end = w2.get('start')
+                                                            elif conn == 'start-start':
+                                                                new_start = w1.get('end')
+                                                                new_end = w2.get('end')
+                                                            elif conn == 'start-end':
+                                                                new_start = w1.get('end')
+                                                                new_end = w2.get('start')
+                                                            else:
+                                                                new_start = None
+                                                                new_end = None
+                                                            forced_candidate_auto = {
+                                                                'wall1': w1,
+                                                                'wall2': w2,
+                                                                'is_chain': False,
+                                                                'distance': md,
+                                                                'angle_diff': angle_diff_tmp,
+                                                                'connection': conn,
+                                                                'new_start': new_start,
+                                                                'new_end': new_end,
+                                                                'confidence': 0.0
+                                                            }
+                                                            candidates = [forced_candidate_auto]
+                                                            st.info(f'自動フォールバックで強制候補を作成します（距離={md:.3f}m, 角度差={angle_diff_tmp:.2f}°）')
+                                                            try:
+                                                                append_debug(f"Auto-forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={md}, angle_diff={angle_diff_tmp}")
                                                             except Exception:
                                                                 pass
-                                                        else:
-                                                            st.warning("フォールバックでも候補が見つかりませんでした。四角形選択や閾値を確認してください。")
-                                                    except Exception:
-                                                        pass
+                                                except Exception:
+                                                    pass
 
-                                                # 追加: 2点選択時に候補が見つからない場合、周辺の壁を含めたチェーン検索を試みる
-                                                if not candidates:
-                                                    try:
-                                                        # selected_walls が存在し、2本選択されている場合にのみ実行
-                                                        if 'selected_walls' in locals() and len(selected_walls) == 2:
-                                                            # 参照角度と閾値
-                                                            ref_angle = _wall_angle_deg(selected_walls[0])
-                                                            angle_tol = merge_angle_threshold
-                                                            # 周辺壁を収集（角度が近く、端点距離が近いもの）
-                                                            neighborhood = []
-                                                            for w in updated_json.get('walls', []):
-                                                                try:
-                                                                    if _angle_diff_deg(_wall_angle_deg(w), ref_angle) < angle_tol:
-                                                                        endpoints_sel = [selected_walls[0]['start'], selected_walls[0]['end'], selected_walls[1]['start'], selected_walls[1]['end']]
-                                                                        endpoints_w = [w['start'], w['end']]
-                                                                        min_d = min(_calc_distance(p1, p2) for p1 in endpoints_sel for p2 in endpoints_w)
-                                                                        # 距離閾値は少し広めに設定（既定閾値の2倍または0.5m）
-                                                                        if min_d <= max(distance_threshold * 2, 0.5):
-                                                                            neighborhood.append(w)
-                                                                except Exception:
-                                                                    continue
-
-                                                            if len(neighborhood) >= 2:
-                                                                candidates_ext = _find_mergeable_walls(
-                                                                    neighborhood,
-                                                                    distance_threshold=distance_threshold,
-                                                                    angle_threshold=merge_angle_threshold
-                                                                )
-                                                                if candidates_ext:
-                                                                    candidates = candidates_ext
-                                                                    st.info('周辺壁を含めた拡張チェーン検索で候補を検出しました。')
+                                            # 強制適用: プレビューで選ばれたペアがある場合、四角形が一致すれば候補が空でも強制的にペアを作成して結合する
+                                            if not candidates:
+                                                try:
+                                                    last_pair = st.session_state.get('last_preview_pair')
+                                                    last_rect = st.session_state.get('last_preview_rect')
+                                                    if last_pair:
+                                                                # プレビューで指定されたペアが現在の選択と一致すれば
+                                                                # 四角形の完全一致に依存せず強制適用する（ユーザがプレビューで選択した意図を尊重）
+                                                                id_set = set(last_pair)
+                                                                sel_ids = {selected_walls[0]['id'], selected_walls[1]['id']}
+                                                                if id_set == sel_ids:
                                                                     try:
-                                                                        append_debug(f"Neighborhood-extended candidates found: count={len(candidates_ext)}")
+                                                                        append_debug(f"Preview pair matches selected_walls (ignoring rect): pair={list(id_set)}")
                                                                     except Exception:
                                                                         pass
-                                                    except Exception:
-                                                        pass
-                                                # 追加フォールバック: 2点選択で角度が近いが距離が大きい場合、小さめの閾値で自動強制候補を作成する
-                                                if not candidates:
-                                                    try:
-                                                        if 'selected_walls' in locals() and len(selected_walls) == 2:
-                                                            # 最短端点距離と角度差を計算
-                                                            endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                            endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                            min_dist_tmp = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
-                                                            angle_diff_tmp = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                            # 許容距離：ほぼ無制限にする（既定閾値の100倍）
-                                                            extended_limit = distance_threshold * 100
-                                                            if angle_diff_tmp <= merge_angle_threshold and min_dist_tmp <= extended_limit:
-                                                                # 自動強制候補を作成
-                                                                w1 = selected_walls[0]
-                                                                w2 = selected_walls[1]
-                                                                # 最短端点組合せから接続タイプを決定
+                                                                    # 最短端点距離と角度差を再計算
+                                                                    # （以下は従来の強制適用処理と同じ）
+                                                            
+                                                                # 最短端点距離と角度差を再計算
+                                                                endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
+                                                                endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
+                                                                min_dist = None
                                                                 min_pair = None
-                                                                md = None
                                                                 for p1 in endpoints1:
                                                                     for p2 in endpoints2:
                                                                         d = _calc_distance(p1, p2)
-                                                                        if md is None or d < md:
-                                                                            md = d
+                                                                        if min_dist is None or d < min_dist:
+                                                                            min_dist = d
                                                                             min_pair = (p1, p2)
-                                                                p1p, p2p = min_pair
-                                                                conn = 'end-start'
-                                                                if p1p == w1.get('end') and p2p == w2.get('start'):
+
+                                                                angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
+
+                                                                # 接続タイプを最短端点組合せから決定
+                                                                conn = None
+                                                                p1, p2 = min_pair
+                                                                if p1 == selected_walls[0]['end'] and p2 == selected_walls[1]['start']:
                                                                     conn = 'end-start'
-                                                                elif p1p == w1.get('end') and p2p == w2.get('end'):
+                                                                elif p1 == selected_walls[0]['end'] and p2 == selected_walls[1]['end']:
                                                                     conn = 'end-end'
-                                                                elif p1p == w1.get('start') and p2p == w2.get('start'):
+                                                                elif p1 == selected_walls[0]['start'] and p2 == selected_walls[1]['start']:
                                                                     conn = 'start-start'
-                                                                elif p1p == w1.get('start') and p2p == w2.get('end'):
+                                                                elif p1 == selected_walls[0]['start'] and p2 == selected_walls[1]['end']:
                                                                     conn = 'start-end'
+                                                                else:
+                                                                    conn = 'end-start'
+
                                                                 # new_start/new_end を接続タイプに合わせて設定
+                                                                w1 = selected_walls[0]
+                                                                w2 = selected_walls[1]
                                                                 if conn == 'end-start':
                                                                     new_start = w1.get('start')
                                                                     new_end = w2.get('end')
@@ -4434,206 +4518,122 @@ def main():
                                                                 else:
                                                                     new_start = None
                                                                     new_end = None
-                                                                forced_candidate_auto = {
+
+                                                                forced_candidate = {
                                                                     'wall1': w1,
                                                                     'wall2': w2,
                                                                     'is_chain': False,
-                                                                    'distance': md,
-                                                                    'angle_diff': angle_diff_tmp,
+                                                                    'distance': min_dist,
+                                                                    'angle_diff': angle_diff_sel,
                                                                     'connection': conn,
                                                                     'new_start': new_start,
                                                                     'new_end': new_end,
                                                                     'confidence': 0.0
                                                                 }
-                                                                candidates = [forced_candidate_auto]
-                                                                st.info(f'自動フォールバックで強制候補を作成します（距離={md:.3f}m, 角度差={angle_diff_tmp:.2f}°）')
+                                                                candidates = [forced_candidate]
+                                                                st.info('プレビュー選択ペアを強制適用して結合を試みます（距離閾値を超えています）。')
                                                                 try:
-                                                                    append_debug(f"Auto-forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={md}, angle_diff={angle_diff_tmp}")
+                                                                    append_debug(f"Forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={min_dist}, angle_diff={angle_diff_sel}")
                                                                 except Exception:
                                                                     pass
-                                                    except Exception:
-                                                        pass
-
-                                                # 強制適用: プレビューで選ばれたペアがある場合、四角形が一致すれば候補が空でも強制的にペアを作成して結合する
-                                                if not candidates:
-                                                    try:
-                                                        last_pair = st.session_state.get('last_preview_pair')
-                                                        last_rect = st.session_state.get('last_preview_rect')
-                                                        if last_pair:
-                                                                    # プレビューで指定されたペアが現在の選択と一致すれば
-                                                                    # 四角形の完全一致に依存せず強制適用する（ユーザがプレビューで選択した意図を尊重）
-                                                                    id_set = set(last_pair)
-                                                                    sel_ids = {selected_walls[0]['id'], selected_walls[1]['id']}
-                                                                    if id_set == sel_ids:
-                                                                        try:
-                                                                            append_debug(f"Preview pair matches selected_walls (ignoring rect): pair={list(id_set)}")
-                                                                        except Exception:
-                                                                            pass
-                                                                        # 最短端点距離と角度差を再計算
-                                                                        # （以下は従来の強制適用処理と同じ）
-                                                                
-                                                                    # 最短端点距離と角度差を再計算
-                                                                    endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                                    endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                                    min_dist = None
-                                                                    min_pair = None
-                                                                    for p1 in endpoints1:
-                                                                        for p2 in endpoints2:
-                                                                            d = _calc_distance(p1, p2)
-                                                                            if min_dist is None or d < min_dist:
-                                                                                min_dist = d
-                                                                                min_pair = (p1, p2)
-
-                                                                    angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-
-                                                                    # 接続タイプを最短端点組合せから決定
-                                                                    conn = None
-                                                                    p1, p2 = min_pair
-                                                                    if p1 == selected_walls[0]['end'] and p2 == selected_walls[1]['start']:
-                                                                        conn = 'end-start'
-                                                                    elif p1 == selected_walls[0]['end'] and p2 == selected_walls[1]['end']:
-                                                                        conn = 'end-end'
-                                                                    elif p1 == selected_walls[0]['start'] and p2 == selected_walls[1]['start']:
-                                                                        conn = 'start-start'
-                                                                    elif p1 == selected_walls[0]['start'] and p2 == selected_walls[1]['end']:
-                                                                        conn = 'start-end'
-                                                                    else:
-                                                                        conn = 'end-start'
-
-                                                                    # new_start/new_end を接続タイプに合わせて設定
-                                                                    w1 = selected_walls[0]
-                                                                    w2 = selected_walls[1]
-                                                                    if conn == 'end-start':
-                                                                        new_start = w1.get('start')
-                                                                        new_end = w2.get('end')
-                                                                    elif conn == 'end-end':
-                                                                        new_start = w1.get('start')
-                                                                        new_end = w2.get('start')
-                                                                    elif conn == 'start-start':
-                                                                        new_start = w1.get('end')
-                                                                        new_end = w2.get('end')
-                                                                    elif conn == 'start-end':
-                                                                        new_start = w1.get('end')
-                                                                        new_end = w2.get('start')
-                                                                    else:
-                                                                        new_start = None
-                                                                        new_end = None
-
-                                                                    forced_candidate = {
-                                                                        'wall1': w1,
-                                                                        'wall2': w2,
-                                                                        'is_chain': False,
-                                                                        'distance': min_dist,
-                                                                        'angle_diff': angle_diff_sel,
-                                                                        'connection': conn,
-                                                                        'new_start': new_start,
-                                                                        'new_end': new_end,
-                                                                        'confidence': 0.0
-                                                                    }
-                                                                    candidates = [forced_candidate]
-                                                                    st.info('プレビュー選択ペアを強制適用して結合を試みます（距離閾値を超えています）。')
-                                                                    try:
-                                                                        append_debug(f"Forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={min_dist}, angle_diff={angle_diff_sel}")
-                                                                    except Exception:
-                                                                        pass
-                                                    except Exception:
-                                                        pass
+                                                except Exception:
+                                                    pass
+                                        
+                                            if candidates:
+                                                # 最有力候補の詳細情報を表示（デバッグ用）
+                                                top_candidate = candidates[0]
+                                                st.write(f"**検出されたペア：**")
+                                                if top_candidate.get('is_chain', False):
+                                                    chain_wall_ids = [w['id'] for w in top_candidate['walls']]
+                                                    st.write(f"チェーン: {chain_wall_ids}")
+                                                else:
+                                                    st.write(f"ペア: 壁#{top_candidate['wall1']['id']} + 壁#{top_candidate['wall2']['id']}")
                                             
-                                                if candidates:
-                                                    # 最有力候補の詳細情報を表示（デバッグ用）
-                                                    top_candidate = candidates[0]
-                                                    st.write(f"**検出されたペア：**")
-                                                    if top_candidate.get('is_chain', False):
-                                                        chain_wall_ids = [w['id'] for w in top_candidate['walls']]
-                                                        st.write(f"チェーン: {chain_wall_ids}")
-                                                    else:
-                                                        st.write(f"ペア: 壁#{top_candidate['wall1']['id']} + 壁#{top_candidate['wall2']['id']}")
-                                                
-                                                    # 最有力候補で結合（エラー時は処理を中断して詳細を表示）
+                                                # 最有力候補で結合（エラー時は処理を中断して詳細を表示）
+                                                try:
+                                                    updated_json = _merge_walls_in_json(updated_json, candidates[:1])
+                                                    total_merged_count += 1
                                                     try:
-                                                        updated_json = _merge_walls_in_json(updated_json, candidates[:1])
-                                                        total_merged_count += 1
+                                                        if top_candidate.get('is_chain'):
+                                                            append_debug(f"Merged chain: walls={ [w['id'] for w in top_candidate.get('walls',[])] }")
+                                                        else:
+                                                            append_debug(f"Merged pair: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}, distance={top_candidate.get('distance')}, angle_diff={top_candidate.get('angle_diff')}")
+                                                    except Exception:
+                                                        pass
+                                                except Exception as e:
+                                                    try:
+                                                        import traceback
+                                                        tb = traceback.format_exc()
+                                                    except Exception:
+                                                        tb = str(e)
+                                                    st.error(f"結合実行中にエラーが発生しました: {e}")
+                                                    st.error(f"トレースバック:\n{tb}")
+                                                    # 確実に処理を中断する（SystemExit を投げて上位の broad except に捕まらないようにする）
+                                                    import sys
+                                                    sys.exit(1)
+                                            
+                                                # 四角形内の他の不要な線分（中間線）を削除
+                                                # 削除対象は、実際に選択・フィルタされた集合 `walls_to_use` を基準とする。
+                                                # ただし、窓追加などで自動生成された壁（source=='window_added'）は削除対象から除外する。
+                                                walls_to_delete = []
+                                                try:
+                                                    basis_list = walls_to_use if walls_to_use is not None else walls_in_selection
+                                                    # マージ候補がチェーンかペアかで残すIDを決定
+                                                    keep_ids = set()
+                                                    try:
+                                                        top_cand = candidates[0]
+                                                        if top_cand.get('is_chain'):
+                                                            # チェーンの最初の壁のみ残す（_merge_walls_in_json と整合）
+                                                            keep_ids.add(top_cand['walls'][0]['id'])
+                                                        else:
+                                                            keep_ids.add(top_cand['wall1']['id'])
+                                                    except Exception:
+                                                        # 候補情報が見つからない場合は選択2本を残す
+                                                        keep_ids.add(selected_walls[0]['id'])
+                                                        keep_ids.add(selected_walls[1]['id'])
+
+                                                    for wall in basis_list:
+                                                        # 窓追加で生成された壁は保護する
                                                         try:
-                                                            if top_candidate.get('is_chain'):
-                                                                append_debug(f"Merged chain: walls={ [w['id'] for w in top_candidate.get('walls',[])] }")
-                                                            else:
-                                                                append_debug(f"Merged pair: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}, distance={top_candidate.get('distance')}, angle_diff={top_candidate.get('angle_diff')}")
+                                                            if wall.get('source') == 'window_added':
+                                                                try:
+                                                                    append_debug(f"Protecting window-added wall from deletion: {wall.get('id')}")
+                                                                except Exception:
+                                                                    pass
+                                                                continue
                                                         except Exception:
                                                             pass
-                                                    except Exception as e:
+                                                        if wall['id'] not in keep_ids:
+                                                            walls_to_delete.append(wall['id'])
+                                                except Exception:
+                                                    # フォールバック: 以前の挙動に一致させるが、窓追加で生成された壁は削除しない
+                                                    for wall in walls_in_selection:
                                                         try:
-                                                            import traceback
-                                                            tb = traceback.format_exc()
+                                                            if wall.get('source') == 'window_added':
+                                                                continue
                                                         except Exception:
-                                                            tb = str(e)
-                                                        st.error(f"結合実行中にエラーが発生しました: {e}")
-                                                        st.error(f"トレースバック:\n{tb}")
-                                                        # 確実に処理を中断する（SystemExit を投げて上位の broad except に捕まらないようにする）
-                                                        import sys
-                                                        sys.exit(1)
-                                                
-                                                    # 四角形内の他の不要な線分（中間線）を削除
-                                                    # 削除対象は、実際に選択・フィルタされた集合 `walls_to_use` を基準とする。
-                                                    # ただし、窓追加などで自動生成された壁（source=='window_added'）は削除対象から除外する。
-                                                    walls_to_delete = []
-                                                    try:
-                                                        basis_list = walls_to_use if walls_to_use is not None else walls_in_selection
-                                                        # マージ候補がチェーンかペアかで残すIDを決定
-                                                        keep_ids = set()
-                                                        try:
-                                                            top_cand = candidates[0]
-                                                            if top_cand.get('is_chain'):
-                                                                # チェーンの最初の壁のみ残す（_merge_walls_in_json と整合）
-                                                                keep_ids.add(top_cand['walls'][0]['id'])
-                                                            else:
-                                                                keep_ids.add(top_cand['wall1']['id'])
-                                                        except Exception:
-                                                            # 候補情報が見つからない場合は選択2本を残す
-                                                            keep_ids.add(selected_walls[0]['id'])
-                                                            keep_ids.add(selected_walls[1]['id'])
-
-                                                        for wall in basis_list:
-                                                            # 窓追加で生成された壁は保護する
-                                                            try:
-                                                                if wall.get('source') == 'window_added':
-                                                                    try:
-                                                                        append_debug(f"Protecting window-added wall from deletion: {wall.get('id')}")
-                                                                    except Exception:
-                                                                        pass
-                                                                    continue
-                                                            except Exception:
-                                                                pass
-                                                            if wall['id'] not in keep_ids:
-                                                                walls_to_delete.append(wall['id'])
-                                                    except Exception:
-                                                        # フォールバック: 以前の挙動に一致させるが、窓追加で生成された壁は削除しない
-                                                        for wall in walls_in_selection:
-                                                            try:
-                                                                if wall.get('source') == 'window_added':
-                                                                    continue
-                                                            except Exception:
-                                                                pass
-                                                            if wall['id'] not in [selected_walls[0]['id'], selected_walls[1]['id']]:
-                                                                walls_to_delete.append(wall['id'])
-                                                
-                                                    if walls_to_delete:
-                                                        st.write(f"**削除対象の中間線:** 壁#{walls_to_delete}")
-                                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                                
-                                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                                
-                                                    # 結合詳細を記録
-                                                    merge_details.append({
-                                                        'rect_idx': rect_idx,
-                                                        'color_name': color_name,
-                                                        'is_chain': False,
-                                                        'walls': [selected_walls[0]['id'], selected_walls[1]['id']],
-                                                        'distance': top_candidate['distance'],
-                                                        'direction': direction,
-                                                        'deleted_walls': walls_to_delete
-                                                    })
-                                                else:
-                                                    st.warning(f"⚠️ 四角形内の壁が接続されていません")
+                                                            pass
+                                                        if wall['id'] not in [selected_walls[0]['id'], selected_walls[1]['id']]:
+                                                            walls_to_delete.append(wall['id'])
+                                            
+                                                if walls_to_delete:
+                                                    st.write(f"**削除対象の中間線:** 壁#{walls_to_delete}")
+                                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                            
+                                                color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                            
+                                                # 結合詳細を記録
+                                                merge_details.append({
+                                                    'rect_idx': rect_idx,
+                                                    'color_name': color_name,
+                                                    'is_chain': False,
+                                                    'walls': [selected_walls[0]['id'], selected_walls[1]['id']],
+                                                    'distance': top_candidate['distance'],
+                                                    'direction': direction,
+                                                    'deleted_walls': walls_to_delete
+                                                })
+                                            else:
+                                                st.warning(f"⚠️ 四角形内の壁が接続されていません")
                                     
                                         if total_merged_count > 0:
                                             # クリック選択の場合は組数を表示
