@@ -22,6 +22,8 @@ def install_ichijo_core():
     # 期待するコミットハッシュ（バージョンチェック用）
     EXPECTED_COMMIT = "5a1aa97"
     
+    needs_reinstall = False
+    
     # 既にインストール済みで正常にインポートできるかチェック
     try:
         import ichijo_core
@@ -37,10 +39,15 @@ def install_ichijo_core():
         else:
             print(f"⚠ ichijo_core version mismatch. Expected: {EXPECTED_COMMIT}, Got: {current_version}")
             print("→ Forcing reinstallation...")
-            # 古いバージョンなので再インストール処理に進む
+            needs_reinstall = True
     except Exception as e:
         print(f"→ ichijo_core not available: {type(e).__name__}: {e}")
         print("→ Proceeding with installation...")
+        needs_reinstall = True
+    
+    # 再インストールが不要な場合はここで終了
+    if not needs_reinstall:
+        return True, None
     
     # Streamlit Cloudのsecretsからトークンを取得
     try:
