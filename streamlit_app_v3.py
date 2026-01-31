@@ -16,120 +16,34 @@ import sys
 import os
 
 def install_ichijo_core():
-    """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
-    print("→ Checking ichijo_core installation...")
+    """ichijo_coreをインポート可能にする（ローカルのichijo_core_checkを使用）"""
+    print("→ Setting up ichijo_core from local ichijo_core_check directory...")
     
-    # 期待するコミットハッシュ（バージョンチェック用）
-    EXPECTED_COMMIT = "5a1aa97"
+    # ワークスペース内のichijo_core_checkディレクトリのパスを取得
+    import os
+    workspace_root = os.path.dirname(os.path.abspath(__file__))
+    ichijo_core_check_path = os.path.join(workspace_root, "ichijo_core_check")
     
-    needs_reinstall = False
-    
-    # 既にインストール済みで正常にインポートできるかチェック
-    try:
-        import ichijo_core
-        print(f"✓ ichijo_core already installed and importable")
-        print(f"  Location: {ichijo_core.__file__}")
-        current_version = ichijo_core.__version__
-        print(f"  Version: {current_version}")
-        
-        # バージョンが期待するコミットハッシュを含んでいるかチェック
-        if EXPECTED_COMMIT in current_version:
-            print(f"✓ ichijo_core is up-to-date ({EXPECTED_COMMIT})")
-            return True, None
-        else:
-            print(f"⚠ ichijo_core version mismatch. Expected: {EXPECTED_COMMIT}, Got: {current_version}")
-            print("→ Forcing reinstallation...")
-            needs_reinstall = True
-    except Exception as e:
-        print(f"→ ichijo_core not available: {type(e).__name__}: {e}")
-        print("→ Proceeding with installation...")
-        needs_reinstall = True
-    
-    # 再インストールが不要な場合はここで終了
-    if not needs_reinstall:
-        return True, None
-    
-    # Streamlit Cloudのsecretsからトークンを取得
-    try:
-        import streamlit as st_temp
-        print(f"→ Checking for GITHUB_TOKEN in secrets...")
-        
-        if not hasattr(st_temp, 'secrets'):
-            error_msg = "Streamlit secrets not available"
-            print(f"✗ {error_msg}")
-            return False, error_msg
-        
-        if 'GITHUB_TOKEN' not in st_temp.secrets:
-            error_msg = "GITHUB_TOKEN not found in Streamlit secrets"
-            print(f"✗ {error_msg}")
-            return False, error_msg
-        
-        token = st_temp.secrets['GITHUB_TOKEN']
-        token_preview = token[:8] + "..." if len(token) > 8 else "***"
-        print(f"✓ GITHUB_TOKEN found: {token_preview}")
-        
-        # 一時ディレクトリを作成（インストール先）
-        import tempfile
-        target_dir = tempfile.mkdtemp(prefix="ichijo_core_")
-        print(f"→ Created target directory: {target_dir}")
-        
-        # sys.pathに追加（パッケージをインポート可能にする）
-        if target_dir not in sys.path:
-            sys.path.insert(0, target_dir)
-            print(f"✓ Added to sys.path: {target_dir}")
-        
-        # コミットハッシュを使用（最新版 - バージョンチェック機能追加版）
-        commit_hash = "5a1aa97"
-        install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
-        print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
-        
-        # 古いichijo_coreを明示的にアンインストール
-        print("→ Uninstalling old ichijo_core...")
-        subprocess.run(
-            [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
-            capture_output=True,
-            text=True
-        )
-        
-        result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", "--upgrade", install_url],
-            capture_output=True,
-            text=True,
-            timeout=300  # 5分タイムアウト
-        )
-        
-        if result.returncode == 0:
-            print("✓ ichijo_core installed successfully")
-            print(f"STDOUT: {result.stdout[-500:]}")  # 最後の500文字
-            
-            # インポートキャッシュを無効化（新しいパスを認識させる）
-            import importlib
-            importlib.invalidate_caches()
-            print("✓ Import caches invalidated")
-            
-            # インストール後、実際にインポートできるか確認
-            try:
-                import ichijo_core
-                print(f"✓ ichijo_core successfully imported from: {ichijo_core.__file__}")
-                return True, None
-            except Exception as import_error:
-                error_msg = f"Installation succeeded but import failed: {type(import_error).__name__}: {str(import_error)}"
-                print(f"✗ {error_msg}")
-                import traceback
-                traceback.print_exc()
-                return False, error_msg
-        else:
-            error_msg = f"pip install failed (exit code {result.returncode})"
-            print(f"✗ {error_msg}")
-            print(f"STDERR: {result.stderr}")
-            print(f"STDOUT: {result.stdout}")
-            return False, f"{error_msg}\n\nSTDERR:\n{result.stderr[:1000]}"
-    except subprocess.TimeoutExpired:
-        error_msg = "Installation timed out after 5 minutes"
+    # ichijo_core_checkが存在するか確認
+    if not os.path.exists(ichijo_core_check_path):
+        error_msg = f"ichijo_core_check directory not found at: {ichijo_core_check_path}"
         print(f"✗ {error_msg}")
         return False, error_msg
+    
+    # sys.pathの先頭に追加（最優先で読み込まれるようにする）
+    if ichijo_core_check_path not in sys.path:
+        sys.path.insert(0, ichijo_core_check_path)
+        print(f"✓ Added to sys.path: {ichijo_core_check_path}")
+    
+    # インポートできるか確認
+    try:
+        import ichijo_core
+        print(f"✓ ichijo_core successfully imported")
+        print(f"  Location: {ichijo_core.__file__}")
+        print(f"  Version: {ichijo_core.__version__}")
+        return True, None
     except Exception as e:
-        error_msg = f"Unexpected error: {type(e).__name__}: {str(e)}"
+        error_msg = f"Failed to import ichijo_core: {type(e).__name__}: {str(e)}"
         print(f"✗ {error_msg}")
         import traceback
         traceback.print_exc()
