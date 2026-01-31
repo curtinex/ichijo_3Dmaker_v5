@@ -1462,15 +1462,6 @@ def main():
                         file_name=st.session_state.viewer_html_name,
                         mime="text/html"
                     )
-                    
-                    # 3Dビューアを表示
-                    st.subheader("🎨 3Dビューア")
-                    import streamlit.components.v1 as components
-                    components.html(
-                        st.session_state.viewer_html_bytes.decode('utf-8'),
-                        height=600,
-                        scrolling=True
-                    )
 
                 # ステップ1: 読み取り完了ボタン（左寄せ、押すとStep2へ遷移）
                 st.session_state.setdefault('debug_log', []).append("render: before creating step1_complete button")
@@ -2964,19 +2955,17 @@ def main():
                         </p>
                         <style>
                         /* 画像コンポーネント全体にスクロール機能を追加 */
-                        div[data-testid="stImage"],
-                        .stImage,
-                        iframe {
-                            max-width: 100% !important;
-                        }
-                        /* streamlit-image-coordinatesコンポーネントの親要素にスクロールを追加 */
-                        div.stVerticalBlock > div:has(iframe) {
+                        .element-container:has(iframe) {
                             overflow-x: auto !important;
                             overflow-y: hidden !important;
                             max-width: 100% !important;
                             border: 1px solid #ddd;
                             border-radius: 4px;
                             padding: 10px;
+                            background: white;
+                        }
+                        .element-container:has(iframe) iframe {
+                            display: block;
                         }
                         </style>
                         """,
