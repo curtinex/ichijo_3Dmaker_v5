@@ -4638,8 +4638,8 @@ def main():
                                                 st.write(result_text)
                                         else:
                                             st.warning("⚠️ 選択範囲内に結合可能な壁線が見つかりません")
-                                
-                                    elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                            
+                            elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                                         # ===== 窓を追加モード（クリック選択・複数窓対応） =====
                                         # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                                         walls_list = st.session_state.window_walls_to_process
@@ -4711,9 +4711,9 @@ def main():
                                         
                                         if total_windows_added > 0:
                                             st.success(f"🎉 合計{total_windows_added}組の窓を追加しました！")
-                                
-                                    elif edit_mode == "線を追加":
-                                        # ===== 線を追加モード =====
+                            
+                            elif edit_mode == "線を追加":
+                                # ===== 線を追加モード =====
                                         total_added_count = 0
                                         add_details = []
                                     
@@ -4740,9 +4740,9 @@ def main():
                                             updated_json, direction, new_wall = _add_line_to_json(
                                                 updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
                                             )
-                                    
-                                    elif edit_mode == "線を削除":
-                                        # ===== 線を削除モード =====
+                            
+                            elif edit_mode == "線を削除":
+                                # ===== 線を削除モード =====
                                         total_deleted_count = 0
                                         delete_details = []
                                         walls_to_delete = []  # 削除対象の壁IDリスト
@@ -4795,171 +4795,171 @@ def main():
                                             updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                         else:
                                             st.warning("⚠️ 削除対象の壁が見つかりません")
-                                
-                                    elif edit_mode == "床を追加":
-                                        # ===== 床を追加モード =====
-                                        total_floor_count = 0
-                                        floor_details = []
-                                        
-                                        # JSONに floors キーがなければ初期化
-                                        if 'floors' not in updated_json:
-                                            updated_json['floors'] = []
-                                        
-                                        for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            # 四角形範囲をメートル座標に変換
-                                            px_x1, px_y1 = p1
-                                            px_x2, px_y2 = p2
-                                            
-                                            # 画像座標からメートル座標に変換
-                                            def px_to_meter(px_x, px_y):
-                                                # 画像座標からメートル座標への変換
-                                                meter_x = min_x + (px_x - margin) / scale
-                                                meter_y = min_y + (img_height - px_y - margin) / scale
-                                                return meter_x, meter_y
-                                            
-                                            m_x1, m_y1 = px_to_meter(px_x1, px_y1)
-                                            m_x2, m_y2 = px_to_meter(px_x2, px_y2)
-                                            
-                                            # 座標を正規化（x1 < x2, y1 < y2）
-                                            floor_x1 = min(m_x1, m_x2)
-                                            floor_x2 = max(m_x1, m_x2)
-                                            floor_y1 = min(m_y1, m_y2)
-                                            floor_y2 = max(m_y1, m_y2)
-                                            
-                                            # 床データを追加
-                                            floor_data = {
-                                                'x1': floor_x1,
-                                                'y1': floor_y1,
-                                                'x2': floor_x2,
-                                                'y2': floor_y2
-                                            }
-                                            updated_json['floors'].append(floor_data)
-                                            total_floor_count += 1
-                                            
-                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                            floor_details.append({
-                                                'rect_idx': rect_idx,
-                                                'color_name': color_name,
-                                                'x1': floor_x1,
-                                                'y1': floor_y1,
-                                                'x2': floor_x2,
-                                                'y2': floor_y2,
-                                                'width': floor_x2 - floor_x1,
-                                                'depth': floor_y2 - floor_y1
-                                            })
-                                        
-                                        if total_floor_count > 0:
-                                            st.success(f"✅ 合計 {total_floor_count} 個の床を追加しました")
-                                            
-                                            # 追加詳細を表示
-                                            st.markdown("**追加結果:**")
-                                            for detail in floor_details:
-                                                st.write(
-                                                    f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
-                                                    f"幅 {detail['width']:.2f}m × 奥行き {detail['depth']:.2f}m"
-                                                )
-                                        else:
-                                            st.warning("⚠️ 床の追加に失敗しました")
-                                
-                                    # 一時ファイルに保存
-                                    temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
-                                    with open(temp_json_path, 'w', encoding='utf-8') as f:
-                                        json.dump(updated_json, f, indent=2, ensure_ascii=False)
-                                    
-                                    # 再可視化（元の変換と同じスケールを使用）
-                                    # 窓追加モードの場合は追加した壁を赤色で表示
-                                    temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
-                                    highlight_ids = added_wall_ids if edit_mode == "窓を追加" else None
-                                    visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=highlight_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
-                                
-                                    # 3Dビューア生成
-                                    temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
-                                    _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
-                                
-                                    # セッション状態を更新（スケール校正で最新図を使用するため）
-                                    st.session_state.json_bytes = temp_json_path.read_bytes()
-                                    st.session_state.viz_bytes = temp_viz_path.read_bytes()
-                                
-                                    # 編集後の画像を読み込み
-                                    edited_viz_bytes = temp_viz_path.read_bytes()
-                                    viewer_html_bytes = temp_viewer_path.read_bytes()
-                                
-                                    # オブジェクト配置モード、線を結合モード、線を追加モードでは、比較表示をせず即座にセッションへ反映して続行する
-                                    if edit_mode in ("オブジェクトを配置", "線を結合", "線を追加", "線を削除", "窓を追加"):
-                                        try:
-                                            # 更新済みJSON/可視化/ビューアは既に生成済みの場合がある
-                                            # ここでは最新の temp_* が存在すればそれをセッションへ反映する
-                                            st.session_state.json_bytes = temp_json_path.read_bytes()
-                                            st.session_state.json_name = temp_json_path.name
-                                            st.session_state.viz_bytes = temp_viz_path.read_bytes()
-                                            st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
-                                            st.session_state.viewer_html_name = temp_viewer_path.name
-
-                                            # 状態を完全にクリアして続行（統一関数を使用）
-                                            _reset_selection_state()
-                                            
-                                            if edit_mode == "線を結合":
-                                                try:
-                                                    st.session_state.last_edit_count = total_merged_count
-                                                    st.session_state.last_edit_details = merge_details
-                                                    st.success(f"✅ 線を結合しました（{total_merged_count} 件）。比較表示をせず保存しました。")
-                                                except Exception:
-                                                    st.success("✅ 線を結合しました。比較表示をせず保存しました。")
-                                            elif edit_mode == "窓を追加":
-                                                st.success("✅ 窓を追加しました。比較表示をせず保存しました。")
-                                            elif edit_mode == "線を削除":
-                                                st.success(f"✅ {total_deleted_count}本の壁を削除しました。比較表示をせず保存しました。")
-                                            else:
-                                                st.success("✅ オブジェクト配置を保存しました。編集結果を比較表示せず次へ進みます。")
-                                            time.sleep(0.3)
-                                            st.rerun()
-                                        except Exception as e:
-                                            st.error(f"オブジェクト配置の保存中にエラー: {e}")
-                                            import traceback
-                                            st.code(traceback.format_exc())
-                                    else:
-                                        # 編集結果をセッション状態に保存（比較表示用）
-                                        if edit_mode == "線を結合":
-                                            edit_count = total_merged_count
-                                            edit_details = merge_details
-                                        elif edit_mode == "線を追加":
-                                            edit_count = total_added_count
-                                            edit_details = add_details
-                                        elif edit_mode == "床を追加":
-                                            edit_count = total_floor_count
-                                            edit_details = floor_details
-                                        else:  # 線を削除
-                                            edit_count = total_deleted_count
-                                            edit_details = delete_details
-
-                                        # デバッグログを保存
-                                        debug_log = st.session_state.get('debug_log', [])
-                                        
-                                        st.session_state.merge_result = {
-                                            'original_viz_bytes': original_viz_bytes,
-                                            'edited_viz_bytes': edited_viz_bytes,
-                                            'json_data': original_json_data,
-                                            'updated_json': updated_json,
-                                            'temp_json_path': temp_json_path,
-                                            'temp_viz_path': temp_viz_path,
-                                            'temp_viewer_path': temp_viewer_path,
-                                            'viewer_html_bytes': viewer_html_bytes,
-                                            'edit_count': edit_count,
-                                            'edit_details': edit_details,
-                                            'debug_log': debug_log.copy()  # デバッグログをコピーして保存
-                                        }
-                                        # 編集状態をリセット
-                                        st.session_state.rect_coords = []
-                                        st.session_state.rect_coords_list = []
-                                        # 窓追加パラメータもクリア
-                                        if 'window_execution_params' in st.session_state:
-                                            del st.session_state.window_execution_params
-                                        st.rerun()
                             
+                            elif edit_mode == "床を追加":
+                                # ===== 床を追加モード =====
+                                total_floor_count = 0
+                                floor_details = []
+                                
+                                # JSONに floors キーがなければ初期化
+                                if 'floors' not in updated_json:
+                                    updated_json['floors'] = []
+                                
+                                for rect_idx, (p1, p2) in enumerate(target_rects):
+                                    # 四角形範囲をメートル座標に変換
+                                    px_x1, px_y1 = p1
+                                    px_x2, px_y2 = p2
+                                    
+                                    # 画像座標からメートル座標に変換
+                                    def px_to_meter(px_x, px_y):
+                                        # 画像座標からメートル座標への変換
+                                        meter_x = min_x + (px_x - margin) / scale
+                                        meter_y = min_y + (img_height - px_y - margin) / scale
+                                        return meter_x, meter_y
+                                    
+                                    m_x1, m_y1 = px_to_meter(px_x1, px_y1)
+                                    m_x2, m_y2 = px_to_meter(px_x2, px_y2)
+                                    
+                                    # 座標を正規化（x1 < x2, y1 < y2）
+                                    floor_x1 = min(m_x1, m_x2)
+                                    floor_x2 = max(m_x1, m_x2)
+                                    floor_y1 = min(m_y1, m_y2)
+                                    floor_y2 = max(m_y1, m_y2)
+                                    
+                                    # 床データを追加
+                                    floor_data = {
+                                        'x1': floor_x1,
+                                        'y1': floor_y1,
+                                        'x2': floor_x2,
+                                        'y2': floor_y2
+                                    }
+                                    updated_json['floors'].append(floor_data)
+                                    total_floor_count += 1
+                                    
+                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                    floor_details.append({
+                                        'rect_idx': rect_idx,
+                                        'color_name': color_name,
+                                        'x1': floor_x1,
+                                        'y1': floor_y1,
+                                        'x2': floor_x2,
+                                        'y2': floor_y2,
+                                        'width': floor_x2 - floor_x1,
+                                        'depth': floor_y2 - floor_y1
+                                    })
+                                
+                                if total_floor_count > 0:
+                                    st.success(f"✅ 合計 {total_floor_count} 個の床を追加しました")
+                                    
+                                    # 追加詳細を表示
+                                    st.markdown("**追加結果:**")
+                                    for detail in floor_details:
+                                        st.write(
+                                            f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
+                                            f"幅 {detail['width']:.2f}m × 奥行き {detail['depth']:.2f}m"
+                                        )
+                                else:
+                                    st.warning("⚠️ 床の追加に失敗しました")
+                            
+                            # 一時ファイルに保存
+                            temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
+                            with open(temp_json_path, 'w', encoding='utf-8') as f:
+                                json.dump(updated_json, f, indent=2, ensure_ascii=False)
+                            
+                            # 再可視化（元の変換と同じスケールを使用）
+                            # 窓追加モードの場合は追加した壁を赤色で表示
+                            temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
+                            highlight_ids = added_wall_ids if edit_mode == "窓を追加" else None
+                            visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=highlight_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                            
+                            # 3Dビューア生成
+                            temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
+                            _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
+                            
+                            # セッション状態を更新（スケール校正で最新図を使用するため）
+                            st.session_state.json_bytes = temp_json_path.read_bytes()
+                            st.session_state.viz_bytes = temp_viz_path.read_bytes()
+                            
+                            # 編集後の画像を読み込み
+                            edited_viz_bytes = temp_viz_path.read_bytes()
+                            viewer_html_bytes = temp_viewer_path.read_bytes()
+                            
+                            # オブジェクト配置モード、線を結合モード、線を追加モードでは、比較表示をせず即座にセッションへ反映して続行する
+                            if edit_mode in ("オブジェクトを配置", "線を結合", "線を追加", "線を削除", "窓を追加"):
+                                try:
+                                    # 更新済みJSON/可視化/ビューアは既に生成済みの場合がある
+                                    # ここでは最新の temp_* が存在すればそれをセッションへ反映する
+                                    st.session_state.json_bytes = temp_json_path.read_bytes()
+                                    st.session_state.json_name = temp_json_path.name
+                                    st.session_state.viz_bytes = temp_viz_path.read_bytes()
+                                    st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
+                                    st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                    # 状態を完全にクリアして続行（統一関数を使用）
+                                    _reset_selection_state()
+                                    
+                                    if edit_mode == "線を結合":
+                                        try:
+                                            st.session_state.last_edit_count = total_merged_count
+                                            st.session_state.last_edit_details = merge_details
+                                            st.success(f"✅ 線を結合しました（{total_merged_count} 件）。比較表示をせず保存しました。")
+                                        except Exception:
+                                            st.success("✅ 線を結合しました。比較表示をせず保存しました。")
+                                    elif edit_mode == "窓を追加":
+                                        st.success("✅ 窓を追加しました。比較表示をせず保存しました。")
+                                    elif edit_mode == "線を削除":
+                                        st.success(f"✅ {total_deleted_count}本の壁を削除しました。比較表示をせず保存しました。")
+                                    else:
+                                        st.success("✅ オブジェクト配置を保存しました。編集結果を比較表示せず次へ進みます。")
+                                    time.sleep(0.3)
+                                    st.rerun()
                                 except Exception as e:
-                                    st.error(f"エラーが発生しました: {e}")
+                                    st.error(f"オブジェクト配置の保存中にエラー: {e}")
                                     import traceback
                                     st.code(traceback.format_exc())
+                            else:
+                                # 編集結果をセッション状態に保存（比較表示用）
+                                if edit_mode == "線を結合":
+                                    edit_count = total_merged_count
+                                    edit_details = merge_details
+                                elif edit_mode == "線を追加":
+                                    edit_count = total_added_count
+                                    edit_details = add_details
+                                elif edit_mode == "床を追加":
+                                    edit_count = total_floor_count
+                                    edit_details = floor_details
+                                else:  # 線を削除
+                                    edit_count = total_deleted_count
+                                    edit_details = delete_details
+
+                                # デバッグログを保存
+                                debug_log = st.session_state.get('debug_log', [])
+                                
+                                st.session_state.merge_result = {
+                                    'original_viz_bytes': original_viz_bytes,
+                                    'edited_viz_bytes': edited_viz_bytes,
+                                    'json_data': original_json_data,
+                                    'updated_json': updated_json,
+                                    'temp_json_path': temp_json_path,
+                                    'temp_viz_path': temp_viz_path,
+                                    'temp_viewer_path': temp_viewer_path,
+                                    'viewer_html_bytes': viewer_html_bytes,
+                                    'edit_count': edit_count,
+                                    'edit_details': edit_details,
+                                    'debug_log': debug_log.copy()  # デバッグログをコピーして保存
+                                }
+                                # 編集状態をリセット
+                                st.session_state.rect_coords = []
+                                st.session_state.rect_coords_list = []
+                                # 窓追加パラメータもクリア
+                                if 'window_execution_params' in st.session_state:
+                                    del st.session_state.window_execution_params
+                                st.rerun()
+                        
+                        except Exception as e:
+                            st.error(f"エラーが発生しました: {e}")
+                            import traceback
+                            st.code(traceback.format_exc())
             
             # 手動編集モードの最後：編集済みhtmlと照明付きhtmlのダウンロードボタン
             st.divider()
