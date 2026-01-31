@@ -2689,6 +2689,10 @@ def main():
                             if st.button("🔗 結合実行", type="primary", key="btn_merge_exec_top"):
                                 # 選択された壁をセッションに保存してから選択リストをクリア
                                 st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
+                                try:
+                                    append_debug(f"Button clicked: merge_walls_to_process saved with {len(st.session_state.merge_walls_to_process)} walls")
+                                except Exception:
+                                    pass
                                 st.session_state.selected_walls_for_merge = []
                                 st.session_state.skip_click_processing = True  # クリック処理をスキップ
                                 # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
@@ -3822,6 +3826,10 @@ def main():
                     
                     if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
                         # 前回のrerunで保存された壁を処理
+                        try:
+                            append_debug(f"Should execute merge: found {len(st.session_state.merge_walls_to_process)} walls to process")
+                        except Exception:
+                            pass
                         should_execute = True
                     elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                         # 前回のrerunで保存された壁を処理
