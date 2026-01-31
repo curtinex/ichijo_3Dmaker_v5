@@ -2953,7 +2953,8 @@ def main():
                     st.markdown(
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                        💡 <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
+                        <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
+                        <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
                         </p>
                         """,
                         unsafe_allow_html=True
