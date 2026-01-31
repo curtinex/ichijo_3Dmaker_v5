@@ -1684,8 +1684,10 @@ def main():
                             import traceback
                             st.code(traceback.format_exc())
 
-                # クリック受付（表示画像）
-                click = streamlit_image_coordinates(overlay, key="step3_calib_click")
+                # クリック受付（表示画像を80%サイズで表示）
+                col1, col2 = st.columns([0.8, 0.2])
+                with col1:
+                    click = streamlit_image_coordinates(overlay, key="step3_calib_click")
 
                 # クリック処理（壁選択方式 - Step 3と同じロジック）
                 if click:
