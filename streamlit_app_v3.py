@@ -3838,26 +3838,26 @@ def main():
                             if edit_mode == "線を結合":
                                 target_rects = []  # 線を結合モードでは不使用
                             elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
-                                        target_rects = []  # 窓を追加モード（クリック選択）では不使用
-                                    else:
-                                        target_rects = list(st.session_state.rect_coords_list)
-                                        if len(st.session_state.rect_coords) == 2:
-                                            target_rects.append(tuple(st.session_state.rect_coords))
-                                
-                                    # JSONデータを読み込み
-                                    json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                                    walls = json_data['walls']
-                                
-                                    # 可視化画像のパラメータを取得
-                                    all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
-                                    all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
-                                    min_x, max_x = min(all_x), max(all_x)
-                                    min_y, max_y = min(all_y), max(all_y)
-                                
-                                    scale = int(viz_scale)
-                                    margin = 50
-                                    img_width = int((max_x - min_x) * scale) + 2 * margin
-                                    img_height = int((max_y - min_y) * scale) + 2 * margin
+                                target_rects = []  # 窓を追加モード（クリック選択）では不使用
+                            else:
+                                target_rects = list(st.session_state.rect_coords_list)
+                                if len(st.session_state.rect_coords) == 2:
+                                    target_rects.append(tuple(st.session_state.rect_coords))
+                            
+                            # JSONデータを読み込み
+                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            walls = json_data['walls']
+                            
+                            # 可視化画像のパラメータを取得
+                            all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
+                            all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
+                            min_x, max_x = min(all_x), max(all_x)
+                            min_y, max_y = min(all_y), max(all_y)
+                            
+                            scale = int(viz_scale)
+                            margin = 50
+                            img_width = int((max_x - min_x) * scale) + 2 * margin
+                            img_height = int((max_y - min_y) * scale) + 2 * margin
                                 
                                     # 編集前の画像を保存（比較用）
                                     original_viz_bytes = st.session_state.viz_bytes
