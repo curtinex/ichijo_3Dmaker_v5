@@ -3878,26 +3878,26 @@ def main():
                             total_deleted_count = 0
                             delete_details = []
                             total_floor_count = 0
-                                    floor_details = []
-                                    
-                                    if edit_mode == "オブジェクトを配置":
-                                        # ===== オブジェクトを配置モード =====
-                                        # セッションステートから家具パラメータを取得
-                                        furniture_params = st.session_state.get('furniture_params', {})
-                                        height_option = furniture_params.get('height_option', '30cm')
-                                        color_option = furniture_params.get('color_option', 'ダーク')
-                                        
-                                        # 高さオプションの取得
-                                        if height_option == "天井合わせ":
-                                            heights = [w.get('height', 2.4) for w in walls if 'height' in w]
-                                            furniture_height = max(heights) if heights else 2.4
-                                        else:
-                                            furniture_height = FURNITURE_HEIGHT_OPTIONS.get(height_option, 0.3)
-                                        
-                                        # 各四角形をループして処理
-                                        for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            # 四角形範囲をメートル座標に変換
-                                            x_start, y_start, width, depth = _snap_to_grid(
+                            floor_details = []
+                            
+                            if edit_mode == "オブジェクトを配置":
+                                # ===== オブジェクトを配置モード =====
+                                # セッションステートから家具パラメータを取得
+                                furniture_params = st.session_state.get('furniture_params', {})
+                                height_option = furniture_params.get('height_option', '30cm')
+                                color_option = furniture_params.get('color_option', 'ダーク')
+                                
+                                # 高さオプションの取得
+                                if height_option == "天井合わせ":
+                                    heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                                    furniture_height = max(heights) if heights else 2.4
+                                else:
+                                    furniture_height = FURNITURE_HEIGHT_OPTIONS.get(height_option, 0.3)
+                                
+                                # 各四角形をループして処理
+                                for rect_idx, (p1, p2) in enumerate(target_rects):
+                                    # 四角形範囲をメートル座標に変換
+                                    x_start, y_start, width, depth = _snap_to_grid(
                                                 (p1[0], p1[1], p2[0], p2[1]),
                                                 json_data,
                                                 scale
