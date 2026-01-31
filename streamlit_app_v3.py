@@ -3898,156 +3898,156 @@ def main():
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
                                     # 四角形範囲をメートル座標に変換
                                     x_start, y_start, width, depth = _snap_to_grid(
-                                                (p1[0], p1[1], p2[0], p2[1]),
-                                                json_data,
-                                                scale
-                                            )
-                                            
-                                            # 家具を追加
-                                            updated_json = _add_furniture_to_json(
-                                                updated_json,
-                                                furniture_height,
-                                                color_option,
-                                                x_start,
-                                                y_start,
-                                                width,
-                                                depth
-                                            )
+                                        (p1[0], p1[1], p2[0], p2[1]),
+                                        json_data,
+                                        scale
+                                    )
+                                    
+                                    # 家具を追加
+                                    updated_json = _add_furniture_to_json(
+                                        updated_json,
+                                        furniture_height,
+                                        color_option,
+                                        x_start,
+                                        y_start,
+                                        width,
+                                        depth
+                                    )
+                                
+                                # 自動保存: オブジェクト配置結果を JSON/可視化/3Dビューアに反映
+                                try:
+                                    temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
+                                    with open(temp_json_path, 'w', encoding='utf-8') as f:
+                                        json.dump(updated_json, f, ensure_ascii=False, indent=2)
+
+                                    temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
+                                    visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+
+                                    temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
+                                    _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
+
+                                    # セッションに保存して UI 上でダウンロード可能にする
+                                    st.session_state.json_bytes = temp_json_path.read_bytes()
+                                    st.session_state.json_name = temp_json_path.name
+                                    st.session_state.viz_bytes = temp_viz_path.read_bytes()
+                                    st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
+                                    st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                    # 選択状態をクリア（統一関数を使用）
+                                    _reset_selection_state()
+                                except Exception as e:
+                                    st.error(f"保存エラー: {e}")
+                                
+                            elif edit_mode == "線を結合":
+                                # ===== 線を結合モード（複数ペア一括対応） =====
+                                # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                                total_merged_count = 0
+                                merge_details = []
+                                
+                                if st.session_state.get('merge_walls_to_process'):
+                                    # セッションから壁リストを取得
+                                    walls_list = st.session_state.merge_walls_to_process
+                                    
+                                    # 処理完了後にセッションから削除
+                                    del st.session_state.merge_walls_to_process
+                                    
+                                    # 2本ずつペアにして処理
+                                    merge_count = len(walls_list) // 2
+                                    success_count = 0
+                                    
+                                    for pair_idx in range(merge_count):
+                                        wall1 = walls_list[pair_idx * 2]
+                                        wall2 = walls_list[pair_idx * 2 + 1]
                                         
-                                        # 自動保存: オブジェクト配置結果を JSON/可視化/3Dビューアに反映
                                         try:
-                                            temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
-                                            with open(temp_json_path, 'w', encoding='utf-8') as f:
-                                                json.dump(updated_json, f, ensure_ascii=False, indent=2)
-
-                                            temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
-                                            visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
-
-                                            temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
-                                            _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
-
-                                            # セッションに保存して UI 上でダウンロード可能にする
-                                            st.session_state.json_bytes = temp_json_path.read_bytes()
-                                            st.session_state.json_name = temp_json_path.name
-                                            st.session_state.viz_bytes = temp_viz_path.read_bytes()
-                                            st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
-                                            st.session_state.viewer_html_name = temp_viewer_path.name
-
-                                            # 選択状態をクリア（統一関数を使用）
-                                            _reset_selection_state()
-                                        except Exception as e:
-                                            st.error(f"保存エラー: {e}")
+                                            append_debug(f"Merge {pair_idx + 1} started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
+                                        except Exception:
+                                            pass
                                         
-                                    elif edit_mode == "線を結合":
-                                        # ===== 線を結合モード（複数ペア一括対応） =====
-                                        # セッションに保存された壁を使用（ボタンクリック時に保存済み）
-                                        total_merged_count = 0
-                                        merge_details = []
+                                        # クリック選択した2本の壁を直接結合処理
+                                        walls_to_use = [wall1, wall2]
+                                        selected_walls = [wall1, wall2]
                                         
-                                        if st.session_state.get('merge_walls_to_process'):
-                                            # セッションから壁リストを取得
-                                            walls_list = st.session_state.merge_walls_to_process
-                                            
-                                            # 処理完了後にセッションから削除
-                                            del st.session_state.merge_walls_to_process
-                                            
-                                            # 2本ずつペアにして処理
-                                            merge_count = len(walls_list) // 2
-                                            success_count = 0
-                                            
-                                            for pair_idx in range(merge_count):
-                                                wall1 = walls_list[pair_idx * 2]
-                                                wall2 = walls_list[pair_idx * 2 + 1]
-                                                
-                                                try:
-                                                    append_debug(f"Merge {pair_idx + 1} started (click selection): wall1_id={wall1.get('id')}, wall2_id={wall2.get('id')}")
-                                                except Exception:
-                                                    pass
-                                                
-                                                # クリック選択した2本の壁を直接結合処理
-                                                walls_to_use = [wall1, wall2]
-                                                selected_walls = [wall1, wall2]
-                                                
-                                                # 結合候補を探す
-                                                merge_angle_threshold = 30
+                                        # 結合候補を探す
+                                        merge_angle_threshold = 30
+                                        candidates = _find_mergeable_walls(
+                                            walls_to_use,
+                                            distance_threshold=distance_threshold,
+                                            angle_threshold=merge_angle_threshold
+                                        )
+                                        
+                                        # フォールバック: 候補が見つからなければ閾値を緩めて再探索
+                                        if not candidates:
+                                            try:
+                                                fallback_dist = max(distance_threshold * 2, 0.5)
+                                                fallback_angle = max(merge_angle_threshold * 2, 45)
                                                 candidates = _find_mergeable_walls(
                                                     walls_to_use,
-                                                    distance_threshold=distance_threshold,
-                                                    angle_threshold=merge_angle_threshold
+                                                    distance_threshold=fallback_dist,
+                                                    angle_threshold=fallback_angle
                                                 )
+                                                if candidates:
+                                                    append_debug(f"Merge {pair_idx + 1}: Fallback candidates found")
+                                            except Exception:
+                                                pass
+                                        
+                                        # 最終フォールバック: それでも見つからない場合、強制的に候補を作成
+                                        if not candidates:
+                                            try:
+                                                endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
+                                                endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
+                                                min_dist = None
+                                                min_pair = None
+                                                for p1 in endpoints1:
+                                                    for p2 in endpoints2:
+                                                        d = _calc_distance(p1, p2)
+                                                        if min_dist is None or d < min_dist:
+                                                            min_dist = d
+                                                            min_pair = (p1, p2)
                                                 
-                                                # フォールバック: 候補が見つからなければ閾値を緩めて再探索
-                                                if not candidates:
-                                                    try:
-                                                        fallback_dist = max(distance_threshold * 2, 0.5)
-                                                        fallback_angle = max(merge_angle_threshold * 2, 45)
-                                                        candidates = _find_mergeable_walls(
-                                                            walls_to_use,
-                                                            distance_threshold=fallback_dist,
-                                                            angle_threshold=fallback_angle
-                                                        )
-                                                        if candidates:
-                                                            append_debug(f"Merge {pair_idx + 1}: Fallback candidates found")
-                                                    except Exception:
-                                                        pass
+                                                angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
                                                 
-                                                # 最終フォールバック: それでも見つからない場合、強制的に候補を作成
-                                                if not candidates:
-                                                    try:
-                                                        endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
-                                                        endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
-                                                        min_dist = None
-                                                        min_pair = None
-                                                        for p1 in endpoints1:
-                                                            for p2 in endpoints2:
-                                                                d = _calc_distance(p1, p2)
-                                                                if min_dist is None or d < min_dist:
-                                                                    min_dist = d
-                                                                    min_pair = (p1, p2)
-                                                        
-                                                        angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                        
-                                                        # 接続タイプを決定
-                                                        p1, p2 = min_pair
-                                                        w1 = selected_walls[0]
-                                                        w2 = selected_walls[1]
-                                                        
-                                                        if p1 == w1['end'] and p2 == w2['start']:
-                                                            conn = 'end-start'
-                                                            new_start = w1['start']
-                                                            new_end = w2['end']
-                                                        elif p1 == w1['end'] and p2 == w2['end']:
-                                                            conn = 'end-end'
-                                                            new_start = w1['start']
-                                                            new_end = w2['start']
-                                                        elif p1 == w1['start'] and p2 == w2['start']:
-                                                            conn = 'start-start'
-                                                            new_start = w1['end']
-                                                            new_end = w2['end']
-                                                        elif p1 == w1['start'] and p2 == w2['end']:
-                                                            conn = 'start-end'
-                                                            new_start = w1['end']
-                                                            new_end = w2['start']
-                                                        else:
-                                                            conn = 'end-start'
-                                                            new_start = w1['start']
-                                                            new_end = w2['end']
-                                                        
-                                                        forced_candidate = {
-                                                            'wall1': w1,
-                                                            'wall2': w2,
-                                                            'is_chain': False,
-                                                            'distance': min_dist,
-                                                            'angle_diff': angle_diff_sel,
-                                                            'connection': conn,
-                                                            'new_start': new_start,
-                                                            'new_end': new_end,
-                                                            'confidence': 0.0
-                                                        }
-                                                        candidates = [forced_candidate]
-                                                        append_debug(f"Merge {pair_idx + 1}: Forced candidate created: {w1.get('id')} + {w2.get('id')}")
-                                                    except Exception as e:
-                                                        pass
+                                                # 接続タイプを決定
+                                                p1, p2 = min_pair
+                                                w1 = selected_walls[0]
+                                                w2 = selected_walls[1]
+                                                
+                                                if p1 == w1['end'] and p2 == w2['start']:
+                                                    conn = 'end-start'
+                                                    new_start = w1['start']
+                                                    new_end = w2['end']
+                                                elif p1 == w1['end'] and p2 == w2['end']:
+                                                    conn = 'end-end'
+                                                    new_start = w1['start']
+                                                    new_end = w2['start']
+                                                elif p1 == w1['start'] and p2 == w2['start']:
+                                                    conn = 'start-start'
+                                                    new_start = w1['end']
+                                                    new_end = w2['end']
+                                                elif p1 == w1['start'] and p2 == w2['end']:
+                                                    conn = 'start-end'
+                                                    new_start = w1['end']
+                                                    new_end = w2['start']
+                                                else:
+                                                    conn = 'end-start'
+                                                    new_start = w1['start']
+                                                    new_end = w2['end']
+                                                
+                                                forced_candidate = {
+                                                    'wall1': w1,
+                                                    'wall2': w2,
+                                                    'is_chain': False,
+                                                    'distance': min_dist,
+                                                    'angle_diff': angle_diff_sel,
+                                                    'connection': conn,
+                                                    'new_start': new_start,
+                                                    'new_end': new_end,
+                                                    'confidence': 0.0
+                                                }
+                                                candidates = [forced_candidate]
+                                                append_debug(f"Merge {pair_idx + 1}: Forced candidate created: {w1.get('id')} + {w2.get('id')}")
+                                            except Exception as e:
+                                                pass
                                                 
                                                 # 結合実行
                                                 if candidates:
