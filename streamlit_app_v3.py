@@ -2666,9 +2666,7 @@ def main():
                                 pass
                     
                     display_img = Image.fromarray(display_img_array)
-                    # 編集画面では元のサイズのまま表示してスクロール可能にする
-                    display_img_resized = display_img
-                    scale_ratio = 1.0  # リサイズしないのでスケール比は1.0
+                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=DISPLAY_IMAGE_WIDTH)
                     
                     # skip_click_processingフラグを画面描画時に無条件でクリア（フラグが残り続けるのを防ぐ）
                     if st.session_state.get('skip_click_processing'):
@@ -2949,96 +2947,21 @@ def main():
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
-                    # カスタムCSSとJavaScriptでスクロールバーを強制表示
-                    st.markdown(
-                        """
-                        <style>
-                        /* iframeの親コンテナにスクロールを適用 */
-                        div:has(> iframe[data-testid="stCustomComponentV1"]) {
-                            overflow-x: auto !important;
-                            overflow-y: hidden !important;
-                            max-width: 100% !important;
-                            display: block !important;
-                        }
-                        
-                        /* Webkitブラウザ用スクロールバーのスタイル */
-                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar {
-                            height: 16px !important;
-                        }
-                        
-                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-track {
-                            background: #e0e0e0 !important;
-                            border-radius: 8px !important;
-                            margin: 0 10px !important;
-                        }
-                        
-                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb {
-                            background: #888 !important;
-                            border-radius: 8px !important;
-                            border: 2px solid #e0e0e0 !important;
-                        }
-                        
-                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb:hover {
-                            background: #555 !important;
-                        }
-                        
-                        /* Firefox用スクロールバー */
-                        div:has(> iframe[data-testid="stCustomComponentV1"]) {
-                            scrollbar-width: auto !important;
-                            scrollbar-color: #888 #e0e0e0 !important;
-                        }
-                        </style>
-                        
-                        <script>
-                        // iframeのscrolling属性を変更してスクロールを有効化
-                        (function() {
-                            const checkAndModify = () => {
-                                const iframe = document.querySelector('iframe[data-testid="stCustomComponentV1"]');
-                                if (iframe) {
-                                    iframe.removeAttribute('scrolling');
-                                    iframe.style.overflow = 'auto';
-                                    const parent = iframe.parentElement;
-                                    if (parent) {
-                                        parent.style.overflowX = 'auto';
-                                        parent.style.overflowY = 'hidden';
-                                        parent.style.maxWidth = '100%';
-                                    }
-                                }
-                            };
-                            
-                            // 初回実行
-                            checkAndModify();
-                            
-                            // MutationObserverで動的に監視
-                            const observer = new MutationObserver(checkAndModify);
-                            observer.observe(document.body, { childList: true, subtree: true });
-                            
-                            // 一定時間後にも実行（確実に適用するため）
-                            setTimeout(checkAndModify, 500);
-                            setTimeout(checkAndModify, 1000);
-                            setTimeout(checkAndModify, 2000);
-                        })();
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    
                     st.markdown(
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が大きい場合は、下部のスクロールバーまたはマウスドラッグで左右にスクロールできます。
+                        <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
                         </p>
                         """,
                         unsafe_allow_html=True
                     )
                     
-                    # コンテナでラップしてスクロール可能にする
-                    with st.container():
-                        value = streamlit_image_coordinates(
-                            display_img_resized,
-                            key=coord_key
-                        )
+                    # 画像を元のサイズで表示（リサイズなし）
+                    value = streamlit_image_coordinates(
+                        display_img_resized,
+                        key=coord_key
+                    )
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
