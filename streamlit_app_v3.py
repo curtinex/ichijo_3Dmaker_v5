@@ -20,7 +20,7 @@ def install_ichijo_core():
     print("→ Checking ichijo_core installation...")
     
     # 期待するコミットハッシュ
-    EXPECTED_COMMIT = "8149be8"
+    EXPECTED_COMMIT = "1e09ee9"
     
     # 既存のインポートチェック（バージョン確認）
     try:
@@ -30,7 +30,7 @@ def install_ichijo_core():
         print(f"  Version: {ichijo_core.__version__}")
         
         # バージョンが期待値と一致するかチェック
-        if EXPECTED_COMMIT in str(ichijo_core.__version__) or ichijo_core.__version__ == "0.0.6":
+        if EXPECTED_COMMIT in str(ichijo_core.__version__) or ichijo_core.__version__ == "0.0.7":
             print(f"✓ ichijo_core is up-to-date")
             return True, None
         else:
@@ -59,8 +59,8 @@ def install_ichijo_core():
             sys.path.insert(0, target_dir)
             print(f"✓ Added to sys.path: {target_dir}")
         
-        # 最新コミット（8149be8）を指定
-        commit_hash = "8149be8"
+        # 最新コミット（1e09ee9）を指定
+        commit_hash = "1e09ee9"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from commit: {commit_hash}")
         
