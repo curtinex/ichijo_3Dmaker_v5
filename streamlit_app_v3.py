@@ -30,16 +30,24 @@ def install_ichijo_core():
         print(f"✗ {error_msg}")
         return False, error_msg
     
+    # sys.pathから古いichijo_coreのパス（/tmp/など）を削除
+    import importlib
+    paths_to_remove = [p for p in sys.path if 'ichijo_core' in p and p != ichijo_core_check_path]
+    if paths_to_remove:
+        print(f"→ Removing old paths from sys.path: {paths_to_remove}")
+        for old_path in paths_to_remove:
+            sys.path.remove(old_path)
+    
     # sys.pathの先頭に追加（最優先で読み込まれるようにする）
-    if ichijo_core_check_path not in sys.path:
-        sys.path.insert(0, ichijo_core_check_path)
-        print(f"✓ Added to sys.path: {ichijo_core_check_path}")
+    if ichijo_core_check_path in sys.path:
+        sys.path.remove(ichijo_core_check_path)  # 一度削除
+    sys.path.insert(0, ichijo_core_check_path)  # 最優先で追加
+    print(f"✓ Added to sys.path[0]: {ichijo_core_check_path}")
     
     # 既にインポートされている場合は削除（キャッシュクリア）
-    import importlib
     modules_to_reload = [key for key in sys.modules.keys() if key.startswith('ichijo_core')]
     if modules_to_reload:
-        print(f"→ Clearing cached modules: {modules_to_reload}")
+        print(f"→ Clearing cached modules: {len(modules_to_reload)} modules")
         for module_name in modules_to_reload:
             del sys.modules[module_name]
         importlib.invalidate_caches()
