@@ -180,6 +180,13 @@ try:
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
     
+    # デバッグ: どのファイルが読み込まれているか確認
+    import ichijo_core
+    print(f"[DEBUG] ichijo_core location: {ichijo_core.__file__}")
+    print(f"[DEBUG] ichijo_core version: {ichijo_core.__version__}")
+    import ichijo_core.ui_helpers
+    print(f"[DEBUG] ui_helpers location: {ichijo_core.ui_helpers.__file__}")
+    
     # window_utilsとwall_editingのインポート（古いバージョン対応）
     try:
         from ichijo_core.window_utils import add_window_walls
