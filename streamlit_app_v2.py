@@ -167,6 +167,8 @@ try:
         save_uploaded_file as _save_uploaded_file,
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
+    from ichijo_core.window_utils import add_window_walls
+    from ichijo_core.wall_editing import find_closest_wall_to_point
     
     # 関数の戻り値を検証（古いバージョンがロードされていないか確認）
     import io
@@ -1115,147 +1117,6 @@ def _delete_walls_in_json(json_data, wall_ids_to_delete):
     return updated_data
 
 
-def _add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None):
-    """
-    窓で分断された2本の壁の間に、床側と天井側の壁を追加
-    
-    Args:
-        json_data: 元のJSONデータ
-        wall1, wall2: 窓で分断された2本の壁
-        window_height: 窓の高さ（m）
-        base_height: 床から窓下端までの高さ（m）
-        room_height: 部屋の天井高さ（m）
-    
-    Returns:
-        更新されたJSONデータ、追加された壁のリスト
-    """
-    import copy
-    updated_data = copy.deepcopy(json_data)
-    walls = updated_data['walls']
-    
-    # 2本の壁の端点から窓の位置を計算
-    # wall1の端点とwall2の端点で最も近い組み合わせを見つける
-    endpoints = [
-        (wall1['start'], wall2['start']),
-        (wall1['start'], wall2['end']),
-        (wall1['end'], wall2['start']),
-        (wall1['end'], wall2['end']),
-    ]
-    
-    min_dist = float('inf')
-    window_start = None
-    window_end = None
-    
-    for p1, p2 in endpoints:
-        dist = math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
-        if dist < min_dist:
-            min_dist = dist
-            window_start = p1
-            window_end = p2
-    
-    # 既存の壁から平均厚さを取得
-    thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
-    default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
-    
-    # 新しい壁のIDを生成
-    try:
-        max_id = max([int(w['id']) for w in walls], default=0)
-    except (ValueError, TypeError):
-        max_id = 0
-    
-    added_walls = []
-    
-    # 床側の壁を追加（床〜窓下端）
-    floor_wall = {
-        'id': max_id + 1,
-        'start': [round(window_start[0], 3), round(window_start[1], 3)],
-        'end': [round(window_end[0], 3), round(window_end[1], 3)],
-        'height': round(base_height, 3),
-        'base_height': 0.0,  # 床から
-        'length': round(min_dist, 3),
-        'thickness': round(default_thickness, 3),
-        'source': 'window_added',
-        'window_model': window_model,
-        'window_height_mm': window_height_mm,
-        'window_base_m': round(base_height, 3),
-        'window_base_mm': int(round(base_height * 1000))
-    }
-    walls.append(floor_wall)
-    added_walls.append(floor_wall)
-    
-    # 天井側の壁を追加（窓上端〜天井）
-    ceiling_height = room_height - (base_height + window_height)
-    ceiling_wall = {
-        'id': max_id + 2,
-        'start': [round(window_start[0], 3), round(window_start[1], 3)],
-        'end': [round(window_end[0], 3), round(window_end[1], 3)],
-        'height': round(ceiling_height, 3),
-        'base_height': round(base_height + window_height, 3),  # 窓上端から
-        'length': round(min_dist, 3),
-        'thickness': round(default_thickness, 3),
-        'source': 'window_added',
-        'window_model': window_model,
-        'window_height_mm': window_height_mm,
-        'window_base_m': round(base_height + window_height, 3),
-        'window_base_mm': int(round((base_height + window_height) * 1000))
-    }
-    walls.append(ceiling_wall)
-    added_walls.append(ceiling_wall)
-    
-    # メタデータ更新
-    updated_data['metadata']['total_walls'] = len(walls)
-    
-    return updated_data, added_walls
-
-
-def _find_closest_wall_to_point(walls, point_px, scale, margin, img_height, min_x, min_y, max_x, max_y):
-    """ポイントから最も近い壁を見つける"""
-    min_distance = float('inf')
-    closest_wall = None
-    
-    # ポイントをメートル座標に変換
-    point_m = [
-        (point_px[0] - margin) / scale + min_x,
-        (img_height - point_px[1] - margin) / scale + min_y
-    ]
-    
-    for wall in walls:
-        # 壁の両端点を取得（安全にアンパック）
-        try:
-            start = wall.get('start')
-            end = wall.get('end')
-            
-            # 配列形式であることを確認
-            if not isinstance(start, (list, tuple)) or not isinstance(end, (list, tuple)):
-                continue
-            if len(start) < 2 or len(end) < 2:
-                continue
-            
-            x1, y1 = float(start[0]), float(start[1])
-            x2, y2 = float(end[0]), float(end[1])
-        except (TypeError, ValueError, KeyError):
-            continue
-        
-        # ポイントから線分までの最短距離を計算
-        # 線分上の最近点を見つける
-        dx = x2 - x1
-        dy = y2 - y1
-        
-        if dx == 0 and dy == 0:
-            # 点と点の距離
-            distance = math.sqrt((point_m[0] - x1)**2 + (point_m[1] - y1)**2)
-        else:
-            # 線分上での最近点を計算
-            t = max(0, min(1, ((point_m[0] - x1) * dx + (point_m[1] - y1) * dy) / (dx**2 + dy**2)))
-            closest_x = x1 + t * dx
-            closest_y = y1 + t * dy
-            distance = math.sqrt((point_m[0] - closest_x)**2 + (point_m[1] - closest_y)**2)
-        
-        if distance < min_distance:
-            min_distance = distance
-            closest_wall = wall
-    
-    return closest_wall, min_distance
 
 
 def main():
@@ -3986,7 +3847,7 @@ def main():
                                             st.success(f"✅ 2本の壁を検出、窓追加処理を実行します")
                                             st.write(f"**デバッグ:** window_height={window_height}m ({window_height_mm}mm), base_height={base_height}m ({base_height_mm}mm), room_height={room_height}m")
                                             st.write(f"**計算:** ceiling_height = {room_height} - ({base_height} + {window_height}) = {room_height - (base_height + window_height)}m")
-                                            updated_json, added_walls = _add_window_walls(
+                                            updated_json, added_walls = add_window_walls(
                                                 updated_json,
                                                 walls_in_rect[0],
                                                 walls_in_rect[1],
@@ -4964,7 +4825,7 @@ def main():
                                             
                                             # 選択された2本の壁の間に窓を追加
                                             try:
-                                                updated_json, added_walls = _add_window_walls(
+                                                updated_json, added_walls = add_window_walls(
                                                     updated_json,
                                                     wall1,
                                                     wall2,
