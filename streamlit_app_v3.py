@@ -1684,8 +1684,8 @@ def main():
                             import traceback
                             st.code(traceback.format_exc())
 
-                # クリック受付（表示画像を80%サイズで表示）
-                col1, col2 = st.columns([0.8, 0.2])
+                # クリック受付（表示画像を50%サイズで表示）
+                col1, col2 = st.columns([0.5, 0.5])
                 with col1:
                     click = streamlit_image_coordinates(overlay, key="step3_calib_click")
 
