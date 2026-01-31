@@ -24,7 +24,26 @@ def install_ichijo_core():
     workspace_root = os.path.dirname(os.path.abspath(__file__))
     ichijo_core_check_path = os.path.join(workspace_root, "ichijo_core_check")
     
-    # ichijo_core_checkが存在するか確認
+    print(f"[DEBUG] workspace_root: {workspace_root}")
+    print(f"[DEBUG] ichijo_core_check_path: {ichijo_core_check_path}")
+    print(f"[DEBUG] ichijo_core_check exists: {os.path.exists(ichijo_core_check_path)}")
+    
+    # ワークスペースのディレクトリ一覧を表示
+    if os.path.exists(workspace_root):
+        workspace_contents = os.listdir(workspace_root)
+        print(f"[DEBUG] workspace contents: {workspace_contents[:20]}")  # 最初の20個
+    
+    # ichijo_core_checkの中身を確認
+    if os.path.exists(ichijo_core_check_path):
+        ichijo_core_check_contents = os.listdir(ichijo_core_check_path)
+        print(f"[DEBUG] ichijo_core_check contents: {ichijo_core_check_contents}")
+        
+        # ichijo_coreディレクトリが存在するか確認
+        ichijo_core_path = os.path.join(ichijo_core_check_path, "ichijo_core")
+        print(f"[DEBUG] ichijo_core_path: {ichijo_core_path}")
+        print(f"[DEBUG] ichijo_core exists: {os.path.exists(ichijo_core_path)}")
+    
+    # ichijo_core_checkが存在しない場合のエラー
     if not os.path.exists(ichijo_core_check_path):
         error_msg = f"ichijo_core_check directory not found at: {ichijo_core_check_path}"
         print(f"✗ {error_msg}")
@@ -43,6 +62,7 @@ def install_ichijo_core():
         sys.path.remove(ichijo_core_check_path)  # 一度削除
     sys.path.insert(0, ichijo_core_check_path)  # 最優先で追加
     print(f"✓ Added to sys.path[0]: {ichijo_core_check_path}")
+    print(f"[DEBUG] sys.path[0:3]: {sys.path[0:3]}")
     
     # 既にインポートされている場合は削除（キャッシュクリア）
     modules_to_reload = [key for key in sys.modules.keys() if key.startswith('ichijo_core')]
