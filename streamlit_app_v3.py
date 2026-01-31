@@ -29,12 +29,13 @@ def install_ichijo_core():
         print(f"  Location: {ichijo_core.__file__}")
         print(f"  Version: {ichijo_core.__version__}")
         
-        # バージョンが期待値と一致するかチェック
-        if EXPECTED_COMMIT in str(ichijo_core.__version__) or ichijo_core.__version__ == "0.0.7":
-            print(f"✓ ichijo_core is up-to-date")
+        # バージョンが期待値と一致するかチェック（0.0.7のみ許可）
+        if ichijo_core.__version__ == "0.0.7":
+            print(f"✓ ichijo_core is up-to-date (v0.0.7)")
             return True, None
         else:
-            print(f"⚠ Version mismatch. Expected: {EXPECTED_COMMIT} or 0.0.6, Got: {ichijo_core.__version__}")
+            print(f"⚠ Version mismatch. Expected: 0.0.7, Got: {ichijo_core.__version__}")
+            print("→ Forcing reinstallation...")
             # 強制的に再インストール
     except Exception as e:
         print(f"→ ichijo_core not available: {e}")
