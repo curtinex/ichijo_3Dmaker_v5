@@ -2949,62 +2949,76 @@ def main():
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
-                    # カスタムCSSでスクロールバーを強制表示
+                    # カスタムCSSとJavaScriptでスクロールバーを強制表示
                     st.markdown(
                         """
                         <style>
-                        /* stCustomComponentV1のiframeを含む親要素にスクロールを適用 */
-                        div[data-testid="stCustomComponentV1"] {
-                            overflow-x: auto !important;
-                            overflow-y: hidden !important;
-                            max-width: 100% !important;
-                            display: block !important;
-                        }
-                        
-                        /* iframe自体のscrolling属性を上書き */
-                        iframe[data-testid="stCustomComponentV1"] {
-                            overflow: auto !important;
-                            display: block !important;
-                        }
-                        
-                        /* iframeの親コンテナにもスクロール設定 */
+                        /* iframeの親コンテナにスクロールを適用 */
                         div:has(> iframe[data-testid="stCustomComponentV1"]) {
                             overflow-x: auto !important;
                             overflow-y: hidden !important;
                             max-width: 100% !important;
+                            display: block !important;
                         }
                         
                         /* Webkitブラウザ用スクロールバーのスタイル */
-                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar,
                         div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar {
-                            height: 14px !important;
+                            height: 16px !important;
                         }
                         
-                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-track,
                         div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-track {
                             background: #e0e0e0 !important;
                             border-radius: 8px !important;
+                            margin: 0 10px !important;
                         }
                         
-                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-thumb,
                         div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb {
                             background: #888 !important;
                             border-radius: 8px !important;
                             border: 2px solid #e0e0e0 !important;
                         }
                         
-                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-thumb:hover,
                         div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb:hover {
                             background: #555 !important;
                         }
                         
                         /* Firefox用スクロールバー */
-                        div[data-testid="stCustomComponentV1"],
                         div:has(> iframe[data-testid="stCustomComponentV1"]) {
                             scrollbar-width: auto !important;
                             scrollbar-color: #888 #e0e0e0 !important;
                         }
                         </style>
+                        
+                        <script>
+                        // iframeのscrolling属性を変更してスクロールを有効化
+                        (function() {
+                            const checkAndModify = () => {
+                                const iframe = document.querySelector('iframe[data-testid="stCustomComponentV1"]');
+                                if (iframe) {
+                                    iframe.removeAttribute('scrolling');
+                                    iframe.style.overflow = 'auto';
+                                    const parent = iframe.parentElement;
+                                    if (parent) {
+                                        parent.style.overflowX = 'auto';
+                                        parent.style.overflowY = 'hidden';
+                                        parent.style.maxWidth = '100%';
+                                    }
+                                }
+                            };
+                            
+                            // 初回実行
+                            checkAndModify();
+                            
+                            // MutationObserverで動的に監視
+                            const observer = new MutationObserver(checkAndModify);
+                            observer.observe(document.body, { childList: true, subtree: true });
+                            
+                            // 一定時間後にも実行（確実に適用するため）
+                            setTimeout(checkAndModify, 500);
+                            setTimeout(checkAndModify, 1000);
+                            setTimeout(checkAndModify, 2000);
+                        })();
+                        </script>
                         """,
                         unsafe_allow_html=True
                     )
