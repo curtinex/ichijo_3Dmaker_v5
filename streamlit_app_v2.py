@@ -167,8 +167,112 @@ try:
         save_uploaded_file as _save_uploaded_file,
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
-    from ichijo_core.window_utils import add_window_walls
-    from ichijo_core.wall_editing import find_closest_wall_to_point
+    
+    # window_utilsとwall_editingのインポート（古いバージョン対応）
+    try:
+        from ichijo_core.window_utils import add_window_walls
+        from ichijo_core.wall_editing import find_closest_wall_to_point
+    except ImportError as e:
+        print(f"⚠️ Warning: Failed to import window_utils or wall_editing: {e}")
+        print("→ Using fallback functions...")
+        
+        # フォールバック関数を定義
+        import copy
+        def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None):
+            """窓で分断された2本の壁の間に、床側と天井側の壁を追加（フォールバック版）"""
+            updated_data = copy.deepcopy(json_data)
+            walls = updated_data['walls']
+            endpoints = [
+                (wall1['start'], wall2['start']),
+                (wall1['start'], wall2['end']),
+                (wall1['end'], wall2['start']),
+                (wall1['end'], wall2['end']),
+            ]
+            min_dist = float('inf')
+            window_start = None
+            window_end = None
+            for p1, p2 in endpoints:
+                dist = math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+                if dist < min_dist:
+                    min_dist = dist
+                    window_start = p1
+                    window_end = p2
+            thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
+            default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
+            try:
+                max_id = max([int(w['id']) for w in walls], default=0)
+            except (ValueError, TypeError):
+                max_id = 0
+            added_walls = []
+            floor_wall = {
+                'id': max_id + 1,
+                'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                'height': round(base_height, 3),
+                'base_height': 0.0,
+                'length': round(min_dist, 3),
+                'thickness': round(default_thickness, 3),
+                'source': 'window_added',
+                'window_model': window_model,
+                'window_height_mm': window_height_mm,
+                'window_base_m': round(base_height, 3),
+                'window_base_mm': int(round(base_height * 1000))
+            }
+            walls.append(floor_wall)
+            added_walls.append(floor_wall)
+            ceiling_height = room_height - (base_height + window_height)
+            ceiling_wall = {
+                'id': max_id + 2,
+                'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                'height': round(ceiling_height, 3),
+                'base_height': round(base_height + window_height, 3),
+                'length': round(min_dist, 3),
+                'thickness': round(default_thickness, 3),
+                'source': 'window_added',
+                'window_model': window_model,
+                'window_height_mm': window_height_mm,
+                'window_base_m': round(base_height + window_height, 3),
+                'window_base_mm': int(round((base_height + window_height) * 1000))
+            }
+            walls.append(ceiling_wall)
+            added_walls.append(ceiling_wall)
+            updated_data['metadata']['total_walls'] = len(walls)
+            return updated_data, added_walls
+        
+        def find_closest_wall_to_point(walls, point_px, scale, margin, img_height, min_x, min_y, max_x, max_y):
+            """ポイントから最も近い壁を見つける（フォールバック版）"""
+            min_distance = float('inf')
+            closest_wall = None
+            point_m = [
+                (point_px[0] - margin) / scale + min_x,
+                (img_height - point_px[1] - margin) / scale + min_y
+            ]
+            for wall in walls:
+                try:
+                    start = wall.get('start')
+                    end = wall.get('end')
+                    if not isinstance(start, (list, tuple)) or not isinstance(end, (list, tuple)):
+                        continue
+                    if len(start) < 2 or len(end) < 2:
+                        continue
+                    x1, y1 = float(start[0]), float(start[1])
+                    x2, y2 = float(end[0]), float(end[1])
+                except (TypeError, ValueError, KeyError):
+                    continue
+                dx = x2 - x1
+                dy = y2 - y1
+                if dx == 0 and dy == 0:
+                    distance = math.sqrt((point_m[0] - x1)**2 + (point_m[1] - y1)**2)
+                else:
+                    t = max(0, min(1, ((point_m[0] - x1) * dx + (point_m[1] - y1) * dy) / (dx**2 + dy**2)))
+                    closest_x = x1 + t * dx
+                    closest_y = y1 + t * dy
+                    distance = math.sqrt((point_m[0] - closest_x)**2 + (point_m[1] - closest_y)**2)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_wall = wall
+            return closest_wall, min_distance
     
     # 関数の戻り値を検証（古いバージョンがロードされていないか確認）
     import io
