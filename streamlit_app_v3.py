@@ -4061,42 +4061,47 @@ def main():
                                                 candidates = [forced_candidate]
                                                 append_debug(f"Merge {pair_idx + 1}: Forced candidate created: {w1.get('id')} + {w2.get('id')}")
                                             except Exception as e:
+                                                append_debug(f"Merge {pair_idx + 1}: Exception in forced candidate creation: {e}")
                                                 pass
+                                        
+                                        # 結合実行
+                                        if candidates:
+                                            top_candidate = candidates[0]
+                                            try:
+                                                updated_json = _merge_walls_in_json(updated_json, candidates[:1])
+                                                total_merged_count += 1
+                                                success_count += 1
+                                                append_debug(f"Merge {pair_idx + 1}: Successfully merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
                                                 
-                                                # 結合実行
-                                                if candidates:
-                                                    top_candidate = candidates[0]
-                                                    try:
-                                                        updated_json = _merge_walls_in_json(updated_json, candidates[:1])
-                                                        total_merged_count += 1
-                                                        success_count += 1
-                                                        append_debug(f"Merge {pair_idx + 1}: Successfully merged: {top_candidate.get('wall1',{}).get('id')} + {top_candidate.get('wall2',{}).get('id')}")
-                                                        
-                                                        merge_details.append({
-                                                            'rect_idx': pair_idx,
-                                                            'color_name': f'結合{pair_idx + 1}',
-                                                            'is_chain': False,
-                                                            'walls': [wall1['id'], wall2['id']],
-                                                            'distance': top_candidate['distance'],
-                                                            'direction': 'クリック選択',
-                                                            'deleted_walls': []
-                                                        })
-                                                    except Exception as e:
-                                                        append_debug(f"Merge {pair_idx + 1}: Error: {e}")
-                                                else:
-                                                    append_debug(f"Merge {pair_idx + 1}: No candidates found")
-                                            
-                                            # すべての結合が完了したら選択状態をクリア
-                                            _reset_selection_state()
+                                                merge_details.append({
+                                                    'rect_idx': pair_idx,
+                                                    'color_name': f'結合{pair_idx + 1}',
+                                                    'is_chain': False,
+                                                    'walls': [wall1['id'], wall2['id']],
+                                                    'distance': top_candidate['distance'],
+                                                    'direction': 'クリック選択',
+                                                    'deleted_walls': []
+                                                })
+                                            except Exception as e:
+                                                append_debug(f"Merge {pair_idx + 1}: Error: {e}")
+                                        else:
+                                            append_debug(f"Merge {pair_idx + 1}: No candidates found")
                                     
-                                        # 以下、既存の四角形ベース処理（削除予定 - 後方互換のため残す）
-                                        for rect_idx, (p1, p2) in enumerate(target_rects):
-                                            rect = {
-                                                'left': min(p1[0], p2[0]),
-                                                'top': min(p1[1], p2[1]),
-                                                'width': abs(p2[0] - p1[0]),
-                                                'height': abs(p2[1] - p1[1])
-                                            }
+                                    # すべての結合が完了したら選択状態をクリア
+                                    _reset_selection_state()
+                                    
+                                    # クリック選択処理を完了したので、四角形ベース処理はスキップ
+                                    # （クリック選択モードでは四角形ベース処理は不要）
+                                
+                                else:
+                                    # 以下、既存の四角形ベース処理（削除予定 - 後方互換のため残す）
+                                    for rect_idx, (p1, p2) in enumerate(target_rects):
+                                        rect = {
+                                            'left': min(p1[0], p2[0]),
+                                            'top': min(p1[1], p2[1]),
+                                            'width': abs(p2[0] - p1[0]),
+                                            'height': abs(p2[1] - p1[1])
+                                        }
                                             try:
                                                 append_debug(f"Merge started: rect_idx={rect_idx+1}, rect={rect}")
                                             except Exception:
