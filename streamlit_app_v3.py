@@ -17,28 +17,19 @@ import os
 
 def install_ichijo_core():
     """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
-    print("→ Checking ichijo_core installation...")
-    
-    # 期待するコミットハッシュ
-    EXPECTED_COMMIT = "1e09ee9"
     
     # 既存のインポートチェック（バージョン確認）
     try:
         import ichijo_core
-        print(f"✓ ichijo_core already installed")
-        print(f"  Location: {ichijo_core.__file__}")
-        print(f"  Version: {ichijo_core.__version__}")
         
-        # バージョンが期待値と一致するかチェック（0.0.9系を許可）
-        if ichijo_core.__version__.startswith("0.0.9"):
-            print(f"✓ ichijo_core is up-to-date (v{ichijo_core.__version__})")
+        # バージョンが期待値と一致するかチェック（0.0.10系を許可）
+        if ichijo_core.__version__.startswith("0.0.10"):
             return True, None
         else:
-            print(f"⚠ Version mismatch. Expected: 0.0.9, Got: {ichijo_core.__version__}")
-            print("→ Forcing reinstallation...")
             # 強制的に再インストール
+            pass
     except Exception as e:
-        print(f"→ ichijo_core not available: {e}")
+        pass
     
     # GitHubからインストール
     try:
@@ -46,11 +37,9 @@ def install_ichijo_core():
         
         if not hasattr(st_temp, 'secrets') or 'GITHUB_TOKEN' not in st_temp.secrets:
             error_msg = "GITHUB_TOKEN not found in Streamlit secrets"
-            print(f"✗ {error_msg}")
             return False, error_msg
         
         token = st_temp.secrets['GITHUB_TOKEN']
-        print(f"✓ GITHUB_TOKEN found")
         
         # インストール用の一時ディレクトリ
         import tempfile
@@ -58,12 +47,10 @@ def install_ichijo_core():
         
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
-            print(f"✓ Added to sys.path: {target_dir}")
         
-        # 最新コミット（8a7aab3）を指定
-        commit_hash = "8a7aab3"
+        # 最新コミット（8291ced）を指定
+        commit_hash = "8291ced"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
-        print(f"→ Installing from commit: {commit_hash}")
         
         # アンインストール
         subprocess.run(
@@ -81,27 +68,19 @@ def install_ichijo_core():
         )
         
         if result.returncode == 0:
-            print("✓ ichijo_core installed successfully")
-            
             # インポートキャッシュをクリア
             import importlib
             importlib.invalidate_caches()
             
             # インポート確認
             import ichijo_core
-            print(f"✓ ichijo_core imported: {ichijo_core.__file__}")
-            print(f"  Version: {ichijo_core.__version__}")
             return True, None
         else:
             error_msg = f"Installation failed: {result.stderr[:500]}"
-            print(f"✗ {error_msg}")
             return False, error_msg
             
     except Exception as e:
         error_msg = f"Error: {type(e).__name__}: {str(e)}"
-        print(f"✗ {error_msg}")
-        import traceback
-        traceback.print_exc()
         return False, error_msg
 
 # アプリ起動時に一度だけインストール
@@ -164,13 +143,6 @@ try:
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
     
-    # デバッグ: どのファイルが読み込まれているか確認
-    import ichijo_core
-    print(f"[DEBUG] ichijo_core location: {ichijo_core.__file__}")
-    print(f"[DEBUG] ichijo_core version: {ichijo_core.__version__}")
-    import ichijo_core.ui_helpers
-    print(f"[DEBUG] ui_helpers location: {ichijo_core.ui_helpers.__file__}")
-    
     # window_utilsとwall_editingのインポート（古いバージョン対応）
     try:
         from ichijo_core.window_utils import add_window_walls
@@ -185,9 +157,6 @@ try:
             find_closest_wall_to_point,
         )
     except ImportError as e:
-        print(f"⚠️ Warning: Failed to import window_utils or wall_editing: {e}")
-        print("→ Using fallback functions...")
-        
         # フォールバック関数を定義
         import copy
         def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None):
@@ -5148,10 +5117,16 @@ ui_helpers location: {ichijo_core.ui_helpers.__file__}
         """)
     
     # フッター情報
+    try:
+        import ichijo_core
+        version_info = f"v{ichijo_core.__version__}"
+    except:
+        version_info = ""
+    
     st.markdown(
-        """
+        f"""
         <div style='text-align: center; color: #888; padding: 20px; margin-top: 20px; border-top: 1px solid #ddd;'>
-            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 Ichijo 3D Maker</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 Ichijo 3D Maker {version_info}</p>
             <p style='margin: 5px 0; font-size: 0.9em;'>※ 本サービスは一条工務店の公式アプリではありません</p>
             <p style='margin: 5px 0; font-size: 0.8em;'>本サービスのご利用には、上記の利用規約への同意が必要です。</p>
         </div>
