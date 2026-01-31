@@ -59,8 +59,8 @@ def install_ichijo_core():
             sys.path.insert(0, target_dir)
             print(f"✓ Added to sys.path: {target_dir}")
         
-        # コミットハッシュを使用（最新版 - null bytes修正版）
-        commit_hash = "d18749b"
+        # コミットハッシュを使用（最新版 - ui_helpers更新版）
+        commit_hash = "33f835d"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from: git+https://***@github.com/curtinex/ichijo_core.git@{commit_hash}")
         
