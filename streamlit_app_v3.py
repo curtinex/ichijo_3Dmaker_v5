@@ -1462,6 +1462,15 @@ def main():
                         file_name=st.session_state.viewer_html_name,
                         mime="text/html"
                     )
+                    
+                    # 3Dビューアを表示
+                    st.subheader("🎨 3Dビューア")
+                    import streamlit.components.v1 as components
+                    components.html(
+                        st.session_state.viewer_html_bytes.decode('utf-8'),
+                        height=600,
+                        scrolling=True
+                    )
 
                 # ステップ1: 読み取り完了ボタン（左寄せ、押すとStep2へ遷移）
                 st.session_state.setdefault('debug_log', []).append("render: before creating step1_complete button")
@@ -4980,6 +4989,15 @@ def main():
                     type="primary",
                     file_name=st.session_state.viewer_html_name,
                     mime="text/html"
+                )
+                
+                # 編集済み3Dビューアを表示
+                st.subheader("🎨 編集済み3Dビューア")
+                import streamlit.components.v1 as components
+                components.html(
+                    st.session_state.viewer_html_bytes.decode('utf-8'),
+                    height=600,
+                    scrolling=True
                 )
             else:
                 # 可視化画像がない場合のエラーメッセージ
