@@ -1037,8 +1037,8 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
 
 
 def main():
-    st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ", layout="wide")
-    st.title("一条工務店 CAD図面3D化アプリ")
+    st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ (β)", layout="wide")
+    st.title("一条工務店 CAD図面3D化アプリ (β)")
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
     # 固定画像幅（自動結合と手動編集で統一）
@@ -5046,7 +5046,33 @@ def main():
                 if st.button("📄 Step 1に戻る", type="primary"):
                     st.session_state.workflow_step = 1
                     st.rerun()
+    
+    # フッター（利用規約）の追加
+    st.divider()
+    with st.expander("📋 利用規約", expanded=False):
+        try:
+            # 利用規約HTMLファイルを読み込む
+            terms_path = os.path.join(os.path.dirname(__file__), "terms_of_service.html")
+            with open(terms_path, "r", encoding="utf-8") as f:
+                terms_html = f.read()
             
+            # HTMLをiframe形式で埋め込み（スクロール可能）
+            st.components.v1.html(terms_html, height=600, scrolling=True)
+        except FileNotFoundError:
+            st.error("利用規約ファイルが見つかりません。")
+        except Exception as e:
+            st.error(f"利用規約の読み込み中にエラーが発生しました: {e}")
+    
+    # フッター情報
+    st.markdown(
+        """
+        <div style='text-align: center; color: #888; padding: 20px; margin-top: 20px; border-top: 1px solid #ddd;'>
+            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 図面3D変換ツール - All Rights Reserved</p>
+            <p style='margin: 5px 0; font-size: 0.8em;'>本サービスのご利用には、上記の利用規約への同意が必要です。</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 
