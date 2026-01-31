@@ -3858,26 +3858,26 @@ def main():
                             margin = 50
                             img_width = int((max_x - min_x) * scale) + 2 * margin
                             img_height = int((max_y - min_y) * scale) + 2 * margin
-                                
-                                    # 編集前の画像を保存（比較用）
-                                    original_viz_bytes = st.session_state.viz_bytes
-                                
-                                    # 元データを保護するためディープコピー
-                                    import copy
-                                    original_json_data = copy.deepcopy(json_data)
-                                    updated_json = json_data
-                                    
-                                    # 追加した壁のID（窓追加モードで使用）
-                                    added_wall_ids = []
-                                
-                                    # 各モード用の変数を事前初期化
-                                    total_merged_count = 0
-                                    merge_details = []
-                                    total_added_count = 0
-                                    add_details = []
-                                    total_deleted_count = 0
-                                    delete_details = []
-                                    total_floor_count = 0
+                            
+                            # 編集前の画像を保存（比較用）
+                            original_viz_bytes = st.session_state.viz_bytes
+                            
+                            # 元データを保護するためディープコピー
+                            import copy
+                            original_json_data = copy.deepcopy(json_data)
+                            updated_json = json_data
+                            
+                            # 追加した壁のID（窓追加モードで使用）
+                            added_wall_ids = []
+                            
+                            # 各モード用の変数を事前初期化
+                            total_merged_count = 0
+                            merge_details = []
+                            total_added_count = 0
+                            add_details = []
+                            total_deleted_count = 0
+                            delete_details = []
+                            total_floor_count = 0
                                     floor_details = []
                                     
                                     if edit_mode == "オブジェクトを配置":
