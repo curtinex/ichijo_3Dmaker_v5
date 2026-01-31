@@ -16,72 +16,88 @@ import sys
 import os
 
 def install_ichijo_core():
-    """ichijo_coreをインポート可能にする（ローカルのichijo_core_checkを使用）"""
-    print("→ Setting up ichijo_core from local ichijo_core_check directory...")
+    """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
+    print("→ Checking ichijo_core installation...")
     
-    # ワークスペース内のichijo_core_checkディレクトリのパスを取得
-    import os
-    workspace_root = os.path.dirname(os.path.abspath(__file__))
-    ichijo_core_check_path = os.path.join(workspace_root, "ichijo_core_check")
+    # 期待するコミットハッシュ
+    EXPECTED_COMMIT = "600b1fd"
     
-    print(f"[DEBUG] workspace_root: {workspace_root}")
-    print(f"[DEBUG] ichijo_core_check_path: {ichijo_core_check_path}")
-    print(f"[DEBUG] ichijo_core_check exists: {os.path.exists(ichijo_core_check_path)}")
-    
-    # ワークスペースのディレクトリ一覧を表示
-    if os.path.exists(workspace_root):
-        workspace_contents = os.listdir(workspace_root)
-        print(f"[DEBUG] workspace contents: {workspace_contents[:20]}")  # 最初の20個
-    
-    # ichijo_core_checkの中身を確認
-    if os.path.exists(ichijo_core_check_path):
-        ichijo_core_check_contents = os.listdir(ichijo_core_check_path)
-        print(f"[DEBUG] ichijo_core_check contents: {ichijo_core_check_contents}")
-        
-        # ichijo_coreディレクトリが存在するか確認
-        ichijo_core_path = os.path.join(ichijo_core_check_path, "ichijo_core")
-        print(f"[DEBUG] ichijo_core_path: {ichijo_core_path}")
-        print(f"[DEBUG] ichijo_core exists: {os.path.exists(ichijo_core_path)}")
-    
-    # ichijo_core_checkが存在しない場合のエラー
-    if not os.path.exists(ichijo_core_check_path):
-        error_msg = f"ichijo_core_check directory not found at: {ichijo_core_check_path}"
-        print(f"✗ {error_msg}")
-        return False, error_msg
-    
-    # sys.pathから古いichijo_coreのパス（/tmp/など）を削除
-    import importlib
-    paths_to_remove = [p for p in sys.path if 'ichijo_core' in p and p != ichijo_core_check_path]
-    if paths_to_remove:
-        print(f"→ Removing old paths from sys.path: {paths_to_remove}")
-        for old_path in paths_to_remove:
-            sys.path.remove(old_path)
-    
-    # sys.pathの先頭に追加（最優先で読み込まれるようにする）
-    if ichijo_core_check_path in sys.path:
-        sys.path.remove(ichijo_core_check_path)  # 一度削除
-    sys.path.insert(0, ichijo_core_check_path)  # 最優先で追加
-    print(f"✓ Added to sys.path[0]: {ichijo_core_check_path}")
-    print(f"[DEBUG] sys.path[0:3]: {sys.path[0:3]}")
-    
-    # 既にインポートされている場合は削除（キャッシュクリア）
-    modules_to_reload = [key for key in sys.modules.keys() if key.startswith('ichijo_core')]
-    if modules_to_reload:
-        print(f"→ Clearing cached modules: {len(modules_to_reload)} modules")
-        for module_name in modules_to_reload:
-            del sys.modules[module_name]
-        importlib.invalidate_caches()
-        print("✓ Import caches cleared")
-    
-    # インポートできるか確認
+    # 既存のインポートチェック（バージョン確認）
     try:
         import ichijo_core
-        print(f"✓ ichijo_core successfully imported")
+        print(f"✓ ichijo_core already installed")
         print(f"  Location: {ichijo_core.__file__}")
         print(f"  Version: {ichijo_core.__version__}")
-        return True, None
+        
+        # バージョンが期待値と一致するかチェック
+        if EXPECTED_COMMIT in str(ichijo_core.__version__) or ichijo_core.__version__ == "0.0.6":
+            print(f"✓ ichijo_core is up-to-date")
+            return True, None
+        else:
+            print(f"⚠ Version mismatch. Expected: {EXPECTED_COMMIT} or 0.0.6, Got: {ichijo_core.__version__}")
+            # 強制的に再インストール
     except Exception as e:
-        error_msg = f"Failed to import ichijo_core: {type(e).__name__}: {str(e)}"
+        print(f"→ ichijo_core not available: {e}")
+    
+    # GitHubからインストール
+    try:
+        import streamlit as st_temp
+        
+        if not hasattr(st_temp, 'secrets') or 'GITHUB_TOKEN' not in st_temp.secrets:
+            error_msg = "GITHUB_TOKEN not found in Streamlit secrets"
+            print(f"✗ {error_msg}")
+            return False, error_msg
+        
+        token = st_temp.secrets['GITHUB_TOKEN']
+        print(f"✓ GITHUB_TOKEN found")
+        
+        # インストール用の一時ディレクトリ
+        import tempfile
+        target_dir = tempfile.mkdtemp(prefix="ichijo_core_")
+        
+        if target_dir not in sys.path:
+            sys.path.insert(0, target_dir)
+            print(f"✓ Added to sys.path: {target_dir}")
+        
+        # 最新コミット（600b1fd）を指定
+        commit_hash = "600b1fd"
+        install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
+        print(f"→ Installing from commit: {commit_hash}")
+        
+        # アンインストール
+        subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
+            capture_output=True,
+            text=True
+        )
+        
+        # インストール
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", install_url],
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+        
+        if result.returncode == 0:
+            print("✓ ichijo_core installed successfully")
+            
+            # インポートキャッシュをクリア
+            import importlib
+            importlib.invalidate_caches()
+            
+            # インポート確認
+            import ichijo_core
+            print(f"✓ ichijo_core imported: {ichijo_core.__file__}")
+            print(f"  Version: {ichijo_core.__version__}")
+            return True, None
+        else:
+            error_msg = f"Installation failed: {result.stderr[:500]}"
+            print(f"✗ {error_msg}")
+            return False, error_msg
+            
+    except Exception as e:
+        error_msg = f"Error: {type(e).__name__}: {str(e)}"
         print(f"✗ {error_msg}")
         import traceback
         traceback.print_exc()
