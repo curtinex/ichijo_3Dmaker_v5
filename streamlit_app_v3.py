@@ -3529,66 +3529,66 @@ def main():
                     # 実行トリガーはメッセージ下のボタンのみ
                     
                     if edit_mode == "窓を追加":
-                            # 窓追加モード：右側に重複して表示していた入力は削除
-                            # 四角形が選択されている場合でも、画面上部のフォームで入力してください
-                            if len(st.session_state.rect_coords_list) > 0:
-                                # セッションから現在の窓高さを決定（mm->m 変換を優先）
-                                if st.session_state.get('window_execution_params'):
-                                    cur_wh_m = st.session_state['window_execution_params'].get('window_height', 1.2)
-                                elif st.session_state.get('window_height_input_mm'):
-                                    cur_wh_m = float(st.session_state['window_height_input_mm']) / 1000.0
-                                elif st.session_state.get('window_height_display_mm'):
-                                    cur_wh_m = float(st.session_state['window_height_display_mm']) / 1000.0
-                                else:
-                                    cur_wh_m = 1.2
-                                
-                                # 実行は画面上部のフォームで行うため、ここでは入力値の確認のみ表示
-                                params_preview = st.session_state.get('window_execution_params', None)
-                                if params_preview is not None:
-                                    wh = params_preview.get('window_height', cur_wh_m)
-                                    bh = params_preview.get('base_height', 0.9)
-                                    bh_mm = params_preview.get('base_height_mm', int(bh * 1000))
-                                    rh = params_preview.get('room_height', 2.4)
-                                    ceiling_height = rh - (bh + wh)
-                                    st.info(f"📐 床側の壁: {bh:.2f}m ({bh_mm}mm)、天井側の壁: {ceiling_height:.2f}m")
-                                    if ceiling_height < 0:
-                                        st.error("⚠️ 窓のサイズが部屋の高さを超えています")
+                        # 窓追加モード：右側に重複して表示していた入力は削除
+                        # 四角形が選択されている場合でも、画面上部のフォームで入力してください
+                        if len(st.session_state.rect_coords_list) > 0:
+                            # セッションから現在の窓高さを決定（mm->m 変換を優先）
+                            if st.session_state.get('window_execution_params'):
+                                cur_wh_m = st.session_state['window_execution_params'].get('window_height', 1.2)
+                            elif st.session_state.get('window_height_input_mm'):
+                                cur_wh_m = float(st.session_state['window_height_input_mm']) / 1000.0
+                            elif st.session_state.get('window_height_display_mm'):
+                                cur_wh_m = float(st.session_state['window_height_display_mm']) / 1000.0
+                            else:
+                                cur_wh_m = 1.2
+                            
+                            # 実行は画面上部のフォームで行うため、ここでは入力値の確認のみ表示
+                            params_preview = st.session_state.get('window_execution_params', None)
+                            if params_preview is not None:
+                                wh = params_preview.get('window_height', cur_wh_m)
+                                bh = params_preview.get('base_height', 0.9)
+                                bh_mm = params_preview.get('base_height_mm', int(bh * 1000))
+                                rh = params_preview.get('room_height', 2.4)
+                                ceiling_height = rh - (bh + wh)
+                                st.info(f"📐 床側の壁: {bh:.2f}m ({bh_mm}mm)、天井側の壁: {ceiling_height:.2f}m")
+                                if ceiling_height < 0:
+                                    st.error("⚠️ 窓のサイズが部屋の高さを超えています")
 
-                            # 追加: 現在の2点選択がある場合、実行前にデバッグ情報を表示
-                            if len(st.session_state.get('rect_coords', [])) == 2:
-                                # プレビュー時の詳細デバッグ表示は不要になったため非表示にします
-                                try:
-                                    p1, p2 = tuple(st.session_state['rect_coords'])
-                                    if st.session_state.get('json_bytes'):
-                                        json_data_preview = json.loads(st.session_state.json_bytes.decode('utf-8'))
-                                        walls_preview = json_data_preview.get('walls', [])
-                                        all_x = [w['start'][0] for w in walls_preview] + [w['end'][0] for w in walls_preview]
-                                        all_y = [w['start'][1] for w in walls_preview] + [w['end'][1] for w in walls_preview]
-                                        min_x, max_x = min(all_x), max(all_x)
-                                        min_y, max_y = min(all_y), max(all_y)
-                                        scale_preview = int(st.session_state.get('viz_scale', 100))
-                                        margin_preview = 50
-                                        img_height_preview = int((max_y - min_y) * scale_preview) + 2 * margin_preview
-                                        rect_preview = {
-                                            'left': min(p1[0], p2[0]),
-                                            'top': min(p1[1], p2[1]),
-                                            'width': abs(p2[0] - p1[0]),
-                                            'height': abs(p2[1] - p1[1])
-                                        }
-                                        # 内部検証は行うが表示は行わない（必要ならログに出す）
-                                        walls_hit, debug_info_preview = _filter_walls_by_endpoints_in_rect(
-                                            walls_preview, rect_preview, scale_preview, margin_preview, img_height_preview,
-                                            min_x, min_y, max_x, max_y, tolerance=0, debug=True
-                                        )
-                                        try:
-                                            append_debug(f"Window-add preview: detected_ids={[w.get('id') for w in walls_hit]}, total_checked={len(debug_info_preview)}")
-                                        except Exception:
-                                            pass
-                                except Exception:
-                                    pass
-                        
-                        # 窓追加モードで一括実行ボタンが押された場合の処理
-                        if edit_mode == "窓を追加" and (st.session_state.get('execute_window_now') or st.session_state.get('execute_window_batch')):
+                        # 追加: 現在の2点選択がある場合、実行前にデバッグ情報を表示
+                        if len(st.session_state.get('rect_coords', [])) == 2:
+                            # プレビュー時の詳細デバッグ表示は不要になったため非表示にします
+                            try:
+                                p1, p2 = tuple(st.session_state['rect_coords'])
+                                if st.session_state.get('json_bytes'):
+                                    json_data_preview = json.loads(st.session_state.json_bytes.decode('utf-8'))
+                                    walls_preview = json_data_preview.get('walls', [])
+                                    all_x = [w['start'][0] for w in walls_preview] + [w['end'][0] for w in walls_preview]
+                                    all_y = [w['start'][1] for w in walls_preview] + [w['end'][1] for w in walls_preview]
+                                    min_x, max_x = min(all_x), max(all_x)
+                                    min_y, max_y = min(all_y), max(all_y)
+                                    scale_preview = int(st.session_state.get('viz_scale', 100))
+                                    margin_preview = 50
+                                    img_height_preview = int((max_y - min_y) * scale_preview) + 2 * margin_preview
+                                    rect_preview = {
+                                        'left': min(p1[0], p2[0]),
+                                        'top': min(p1[1], p2[1]),
+                                        'width': abs(p2[0] - p1[0]),
+                                        'height': abs(p2[1] - p1[1])
+                                    }
+                                    # 内部検証は行うが表示は行わない（必要ならログに出す）
+                                    walls_hit, debug_info_preview = _filter_walls_by_endpoints_in_rect(
+                                        walls_preview, rect_preview, scale_preview, margin_preview, img_height_preview,
+                                        min_x, min_y, max_x, max_y, tolerance=0, debug=True
+                                    )
+                                    try:
+                                        append_debug(f"Window-add preview: detected_ids={[w.get('id') for w in walls_hit]}, total_checked={len(debug_info_preview)}")
+                                    except Exception:
+                                        pass
+                            except Exception:
+                                pass
+                    
+                    # 窓追加モードで一括実行ボタンが押された場合の処理
+                    if edit_mode == "窓を追加" and (st.session_state.get('execute_window_now') or st.session_state.get('execute_window_batch')):
                             # フラグをクリア
                             st.session_state.execute_window_now = False
                             st.session_state.execute_window_batch = False
