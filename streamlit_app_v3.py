@@ -5139,7 +5139,8 @@ def main():
     st.markdown(
         """
         <div style='text-align: center; color: #888; padding: 20px; margin-top: 20px; border-top: 1px solid #ddd;'>
-            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 Ichijo 3D Maker - All Rights Reserved</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 Ichijo 3D Maker</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>※ 本サービスは一条工務店の公式アプリではありません</p>
             <p style='margin: 5px 0; font-size: 0.8em;'>本サービスのご利用には、上記の利用規約への同意が必要です。</p>
         </div>
         """,
