@@ -22,8 +22,8 @@ def install_ichijo_core():
     try:
         import ichijo_core
         
-        # バージョンが期待値と一致するかチェック（0.0.10系を許可）
-        if ichijo_core.__version__.startswith("0.0.10"):
+        # バージョンが期待値と一致するかチェック（0.0.11系を許可）
+        if ichijo_core.__version__.startswith("0.0.11"):
             return True, None
         else:
             # 強制的に再インストール
@@ -48,8 +48,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（8291ced）を指定
-        commit_hash = "8291ced"
+        # 最新コミット（5015131）を指定
+        commit_hash = "5015131"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
@@ -1012,15 +1012,6 @@ def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ (β)", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ (β)")
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
-    
-    # デバッグ情報を画面上部に表示
-    import ichijo_core
-    with st.expander("🔧 デバッグ情報（開発用）", expanded=False):
-        st.code(f"""
-ichijo_core location: {ichijo_core.__file__}
-ichijo_core version: {ichijo_core.__version__}
-ui_helpers location: {ichijo_core.ui_helpers.__file__}
-        """)
     
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
