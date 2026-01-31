@@ -2953,50 +2953,54 @@ def main():
                     st.markdown(
                         """
                         <style>
-                        /* iframe要素を含む全ての親要素にスクロールを適用 */
-                        iframe[title] {
+                        /* stCustomComponentV1のiframeを含む親要素にスクロールを適用 */
+                        div[data-testid="stCustomComponentV1"] {
+                            overflow-x: auto !important;
+                            overflow-y: hidden !important;
+                            max-width: 100% !important;
                             display: block !important;
                         }
                         
-                        /* Streamlitのブロック要素にスクロール設定 */
-                        .element-container:has(iframe) {
+                        /* iframe自体のscrolling属性を上書き */
+                        iframe[data-testid="stCustomComponentV1"] {
+                            overflow: auto !important;
+                            display: block !important;
+                        }
+                        
+                        /* iframeの親コンテナにもスクロール設定 */
+                        div:has(> iframe[data-testid="stCustomComponentV1"]) {
                             overflow-x: auto !important;
                             overflow-y: hidden !important;
                             max-width: 100% !important;
                         }
                         
-                        .stverticalBlock:has(iframe) {
-                            overflow-x: auto !important;
-                            overflow-y: hidden !important;
-                        }
-                        
-                        /* Webkitブラウザ用スクロールバー */
-                        .element-container:has(iframe)::-webkit-scrollbar,
-                        .stVerticalBlock:has(iframe)::-webkit-scrollbar {
+                        /* Webkitブラウザ用スクロールバーのスタイル */
+                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar,
+                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar {
                             height: 14px !important;
                         }
                         
-                        .element-container:has(iframe)::-webkit-scrollbar-track,
-                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-track {
+                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-track,
+                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-track {
                             background: #e0e0e0 !important;
                             border-radius: 8px !important;
                         }
                         
-                        .element-container:has(iframe)::-webkit-scrollbar-thumb,
-                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-thumb {
+                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-thumb,
+                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb {
                             background: #888 !important;
                             border-radius: 8px !important;
                             border: 2px solid #e0e0e0 !important;
                         }
                         
-                        .element-container:has(iframe)::-webkit-scrollbar-thumb:hover,
-                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-thumb:hover {
+                        div[data-testid="stCustomComponentV1"]::-webkit-scrollbar-thumb:hover,
+                        div:has(> iframe[data-testid="stCustomComponentV1"])::-webkit-scrollbar-thumb:hover {
                             background: #555 !important;
                         }
                         
                         /* Firefox用スクロールバー */
-                        .element-container:has(iframe),
-                        .stVerticalBlock:has(iframe) {
+                        div[data-testid="stCustomComponentV1"],
+                        div:has(> iframe[data-testid="stCustomComponentV1"]) {
                             scrollbar-width: auto !important;
                             scrollbar-color: #888 #e0e0e0 !important;
                         }
