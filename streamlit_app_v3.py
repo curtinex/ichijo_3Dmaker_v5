@@ -2683,16 +2683,6 @@ def main():
                         else:
                             merge_count = num_selected // 2
                             st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
-                            
-                            # 結合実行ボタン（選択完了メッセージの直後、画像の前に表示）
-                            st.markdown("---")
-                            if st.button("🔗 結合実行", type="primary", key="btn_merge_exec_top"):
-                                # 選択された壁をセッションに保存してから選択リストをクリア
-                                st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
-                                st.session_state.selected_walls_for_merge = []
-                                st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                st.rerun()
                     elif edit_mode == "窓を追加":
                         # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
                         num_selected = len(st.session_state.selected_walls_for_window)
