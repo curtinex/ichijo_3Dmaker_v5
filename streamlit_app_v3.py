@@ -3816,28 +3816,28 @@ def main():
                                 st.error(f"エラーが発生しました: {e}")
                                 import traceback
                                 st.code(traceback.format_exc())
-                        
-                        # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
-                        should_execute = False
-                        
-                        if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
-                            # 前回のrerunで保存された壁を処理
-                            should_execute = True
-                        elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
-                            # 前回のrerunで保存された壁を処理
-                            should_execute = True
-                        elif edit_mode == "オブジェクトを配置" and st.session_state.get('execute_furniture_placement'):
-                            st.session_state.execute_furniture_placement = False
-                            should_execute = True
-                        
-                        if should_execute:
-                                try:
-                                    # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
-                                    # 線を結合モードの場合は使用しない
-                                    # 窓を追加モードでクリック選択の場合も使用しない
-                                    if edit_mode == "線を結合":
-                                        target_rects = []  # 線を結合モードでは不使用
-                                    elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                    
+                    # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
+                    should_execute = False
+                    
+                    if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
+                        # 前回のrerunで保存された壁を処理
+                        should_execute = True
+                    elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                        # 前回のrerunで保存された壁を処理
+                        should_execute = True
+                    elif edit_mode == "オブジェクトを配置" and st.session_state.get('execute_furniture_placement'):
+                        st.session_state.execute_furniture_placement = False
+                        should_execute = True
+                    
+                    if should_execute:
+                        try:
+                            # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
+                            # 線を結合モードの場合は使用しない
+                            # 窓を追加モードでクリック選択の場合も使用しない
+                            if edit_mode == "線を結合":
+                                target_rects = []  # 線を結合モードでは不使用
+                            elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                                         target_rects = []  # 窓を追加モード（クリック選択）では不使用
                                     else:
                                         target_rects = list(st.session_state.rect_coords_list)
