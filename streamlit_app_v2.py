@@ -282,6 +282,257 @@ try:
                     min_distance = distance
                     closest_wall = wall
             return closest_wall, min_distance
+        
+        # wall_editing関数のフォールバック（7つの関数）
+        def _point_to_line_segment_distance(px, py, x1, y1, x2, y2):
+            """点から線分までの最短距離を計算（フォールバック版）"""
+            dx = x2 - x1
+            dy = y2 - y1
+            len_sq = dx * dx + dy * dy
+            if len_sq == 0:
+                return math.sqrt((px - x1)**2 + (py - y1)**2)
+            t = max(0, min(1, ((px - x1) * dx + (py - y1) * dy) / len_sq))
+            nearest_x = x1 + t * dx
+            nearest_y = y1 + t * dy
+            return math.sqrt((px - nearest_x)**2 + (py - nearest_y)**2)
+        
+        def _find_nearest_wall_from_click(click_x, click_y, walls, scale, margin, img_height, min_x, min_y, max_x, max_y, threshold=20):
+            """クリック位置から最も近い壁を検出（フォールバック版）"""
+            min_distance = float('inf')
+            nearest_wall = None
+            for wall in walls:
+                start_m = wall['start']
+                end_m = wall['end']
+                start_px_x = int((start_m[0] - min_x) * scale) + margin
+                start_px_y = img_height - (int((start_m[1] - min_y) * scale) + margin)
+                end_px_x = int((end_m[0] - min_x) * scale) + margin
+                end_px_y = img_height - (int((end_m[1] - min_y) * scale) + margin)
+                distance = _point_to_line_segment_distance(click_x, click_y, start_px_x, start_px_y, end_px_x, end_px_y)
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_wall = wall
+            if min_distance <= threshold:
+                return nearest_wall, min_distance
+            else:
+                return None, None
+        
+        def _select_best_wall_pair_from_4(walls):
+            """4本の壁から結合すべき最適な2本を選択（フォールバック版）"""
+            if len(walls) < 2:
+                return None
+            vertical_walls = []
+            horizontal_walls = []
+            for wall in walls:
+                x1, y1 = wall['start']
+                x2, y2 = wall['end']
+                dx = abs(x2 - x1)
+                dy = abs(y2 - y1)
+                if dx < dy:
+                    vertical_walls.append(wall)
+                else:
+                    horizontal_walls.append(wall)
+            dX = float('inf')
+            if len(vertical_walls) >= 2:
+                wall1 = vertical_walls[0]
+                wall2 = vertical_walls[1]
+                avg_x1 = (wall1['start'][0] + wall1['end'][0]) / 2
+                avg_x2 = (wall2['start'][0] + wall2['end'][0]) / 2
+                dX = abs(avg_x1 - avg_x2)
+            dY = float('inf')
+            if len(horizontal_walls) >= 2:
+                wall1 = horizontal_walls[0]
+                wall2 = horizontal_walls[1]
+                avg_y1 = (wall1['start'][1] + wall1['end'][1]) / 2
+                avg_y2 = (wall2['start'][1] + wall2['end'][1]) / 2
+                dY = abs(avg_y1 - avg_y2)
+            if dX == float('inf') and dY == float('inf'):
+                return None
+            if dX < dY:
+                return vertical_walls[:2] if len(vertical_walls) >= 2 else None
+            else:
+                return horizontal_walls[:2] if len(horizontal_walls) >= 2 else None
+        
+        def _find_collinear_chains(walls_in_selection, distance_threshold=0.3, angle_threshold=15):
+            """一直線上に並んだ連結壁線のチェーンを検出（フォールバック版）"""
+            if len(walls_in_selection) < 2:
+                return []
+            connections = {}
+            for i, wall1 in enumerate(walls_in_selection):
+                wall1_id = wall1['id']
+                if wall1_id not in connections:
+                    connections[wall1_id] = []
+                for j, wall2 in enumerate(walls_in_selection):
+                    if i >= j:
+                        continue
+                    wall2_id = wall2['id']
+                    if wall2_id not in connections:
+                        connections[wall2_id] = []
+                    angle_diff = _calc_angle_diff(wall1, wall2)
+                    if angle_diff >= angle_threshold:
+                        continue
+                    endpoint_pairs = [
+                        (wall1['end'], wall2['start'], 'end-start'),
+                        (wall1['end'], wall2['end'], 'end-end'),
+                        (wall1['start'], wall2['start'], 'start-start'),
+                        (wall1['start'], wall2['end'], 'start-end'),
+                    ]
+                    for p1, p2, connection_type in endpoint_pairs:
+                        distance = _calc_distance(p1, p2)
+                        if distance < distance_threshold:
+                            connections[wall1_id].append((wall2_id, connection_type, distance))
+                            reverse_type = connection_type.split('-')[::-1]
+                            reverse_type = f"{reverse_type[0]}-{reverse_type[1]}"
+                            connections[wall2_id].append((wall1_id, reverse_type, distance))
+                            break
+            visited = set()
+            chains = []
+            def build_chain(start_wall_id, current_chain, visited_in_chain):
+                if start_wall_id in visited_in_chain:
+                    return
+                visited_in_chain.add(start_wall_id)
+                current_chain.append(start_wall_id)
+                if start_wall_id in connections:
+                    for connected_id, conn_type, dist in connections[start_wall_id]:
+                        if connected_id not in visited_in_chain:
+                            build_chain(connected_id, current_chain, visited_in_chain)
+            for wall in walls_in_selection:
+                wall_id = wall['id']
+                if wall_id not in visited:
+                    chain = []
+                    visited_in_chain = set()
+                    build_chain(wall_id, chain, visited_in_chain)
+                    if len(chain) >= 2:
+                        visited.update(chain)
+                        chain_walls = [w for w in walls_in_selection if w['id'] in chain]
+                        chains.append(chain_walls)
+            return chains
+        
+        def _find_mergeable_walls(walls_in_selection, distance_threshold=0.3, angle_threshold=15):
+            """選択範囲内で結合可能な壁線ペアまたはチェーンを探す（フォールバック版）"""
+            candidates = []
+            chains = _find_collinear_chains(walls_in_selection, distance_threshold, angle_threshold)
+            for chain in chains:
+                if len(chain) >= 2:
+                    first_wall = chain[0]
+                    last_wall = chain[-1]
+                    all_endpoints = [first_wall['start'], first_wall['end'], last_wall['start'], last_wall['end']]
+                    max_dist = 0
+                    chain_start = None
+                    chain_end = None
+                    for i, p1 in enumerate(all_endpoints):
+                        for j, p2 in enumerate(all_endpoints):
+                            if i >= j:
+                                continue
+                            dist = _calc_distance(p1, p2)
+                            if dist > max_dist:
+                                max_dist = dist
+                                chain_start = p1
+                                chain_end = p2
+                    total_angle_diff = 0
+                    for i in range(len(chain) - 1):
+                        total_angle_diff += _calc_angle_diff(chain[i], chain[i+1])
+                    avg_angle_diff = total_angle_diff / (len(chain) - 1) if len(chain) > 1 else 0
+                    candidates.append({
+                        'walls': chain,
+                        'is_chain': True,
+                        'chain_length': len(chain),
+                        'distance': max_dist,
+                        'angle_diff': avg_angle_diff,
+                        'new_start': chain_start,
+                        'new_end': chain_end,
+                        'confidence': 1.0
+                    })
+            for i, wall1 in enumerate(walls_in_selection):
+                for j, wall2 in enumerate(walls_in_selection):
+                    if i >= j:
+                        continue
+                    connections = [
+                        (wall1['end'], wall2['start'], 'end-start', wall1['end'], wall2['end']),
+                        (wall1['end'], wall2['end'], 'end-end', wall1['end'], wall2['start']),
+                        (wall1['start'], wall2['start'], 'start-start', wall1['end'], wall2['end']),
+                        (wall1['start'], wall2['end'], 'start-end', wall1['end'], wall2['start']),
+                    ]
+                    for p1, p2, connection_type, new_p1, new_p2 in connections:
+                        distance = _calc_distance(p1, p2)
+                        angle_diff = _calc_angle_diff(wall1, wall2)
+                        if distance < distance_threshold and angle_diff < angle_threshold:
+                            candidates.append({
+                                'wall1': wall1,
+                                'wall2': wall2,
+                                'is_chain': False,
+                                'distance': distance,
+                                'angle_diff': angle_diff,
+                                'connection': connection_type,
+                                'new_start': new_p1,
+                                'new_end': new_p2,
+                                'confidence': 1.0 - (distance / distance_threshold)
+                            })
+            candidates.sort(key=lambda x: x['confidence'], reverse=True)
+            return candidates
+        
+        def _merge_walls_in_json(json_data, merge_pairs):
+            """JSONデータ内の壁線を結合（フォールバック版）"""
+            updated_data = copy.deepcopy(json_data)
+            walls = updated_data['walls']
+            for pair in merge_pairs:
+                if pair.get('is_chain', False) and 'walls' in pair:
+                    chain_walls = pair['walls']
+                    if len(chain_walls) < 2:
+                        continue
+                    first_wall_id = chain_walls[0]['id']
+                    other_wall_ids = [w['id'] for w in chain_walls[1:]]
+                    for wall in walls:
+                        if wall['id'] == first_wall_id:
+                            wall['start'] = pair['new_start']
+                            wall['end'] = pair['new_end']
+                            dx = wall['end'][0] - wall['start'][0]
+                            dy = wall['end'][1] - wall['start'][1]
+                            wall['length'] = round(math.sqrt(dx**2 + dy**2), 3)
+                            break
+                    walls[:] = [w for w in walls if w['id'] not in other_wall_ids]
+                elif 'wall1' in pair and 'wall2' in pair:
+                    wall1_id = pair['wall1']['id']
+                    wall2_id = pair['wall2']['id']
+                    conn = pair.get('connection')
+                    w1 = pair['wall1']
+                    w2 = pair['wall2']
+                    if conn == 'end-start':
+                        new_start = w1.get('start')
+                        new_end = w2.get('end')
+                    elif conn == 'end-end':
+                        new_start = w1.get('start')
+                        new_end = w2.get('start')
+                    elif conn == 'start-start':
+                        new_start = w1.get('end')
+                        new_end = w2.get('end')
+                    elif conn == 'start-end':
+                        new_start = w1.get('end')
+                        new_end = w2.get('start')
+                    else:
+                        new_start = pair.get('new_start')
+                        new_end = pair.get('new_end')
+                    for wall in walls:
+                        if wall['id'] == wall1_id:
+                            if new_start is not None:
+                                wall['start'] = new_start
+                            if new_end is not None:
+                                wall['end'] = new_end
+                            dx = wall['end'][0] - wall['start'][0]
+                            dy = wall['end'][1] - wall['start'][1]
+                            wall['length'] = round(math.sqrt(dx**2 + dy**2), 3)
+                            break
+                    walls[:] = [w for w in walls if w['id'] != wall2_id]
+            updated_data['metadata']['total_walls'] = len(walls)
+            return updated_data
+        
+        def _delete_walls_in_json(json_data, wall_ids_to_delete):
+            """JSONデータ内の指定された壁線を削除（フォールバック版）"""
+            updated_data = copy.deepcopy(json_data)
+            walls = updated_data['walls']
+            delete_ids = set(wall_ids_to_delete)
+            walls[:] = [w for w in walls if w['id'] not in delete_ids]
+            updated_data['metadata']['total_walls'] = len(walls)
+            return updated_data
     
     # 関数の戻り値を検証（古いバージョンがロードされていないか確認）
     import io
