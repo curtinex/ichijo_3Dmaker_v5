@@ -2949,44 +2949,78 @@ def main():
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
+                    # カスタムCSSでスクロールバーを強制表示
                     st.markdown(
                         """
                         <style>
-                        /* streamlit_image_coordinatesコンポーネントを含む要素にスクロールバーを表示 */
-                        div[data-testid="stVerticalBlock"] > div:has(iframe[title]) {
+                        /* iframe要素を含む全ての親要素にスクロールを適用 */
+                        iframe[title] {
+                            display: block !important;
+                        }
+                        
+                        /* Streamlitのブロック要素にスクロール設定 */
+                        .element-container:has(iframe) {
+                            overflow-x: auto !important;
+                            overflow-y: hidden !important;
+                            max-width: 100% !important;
+                        }
+                        
+                        .stverticalBlock:has(iframe) {
                             overflow-x: auto !important;
                             overflow-y: hidden !important;
                         }
-                        /* スクロールバーを常に表示 */
-                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar {
-                            height: 12px !important;
-                            display: block !important;
+                        
+                        /* Webkitブラウザ用スクロールバー */
+                        .element-container:has(iframe)::-webkit-scrollbar,
+                        .stVerticalBlock:has(iframe)::-webkit-scrollbar {
+                            height: 14px !important;
                         }
-                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-track {
-                            background: #f1f1f1 !important;
-                            border-radius: 6px !important;
+                        
+                        .element-container:has(iframe)::-webkit-scrollbar-track,
+                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-track {
+                            background: #e0e0e0 !important;
+                            border-radius: 8px !important;
                         }
-                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-thumb {
+                        
+                        .element-container:has(iframe)::-webkit-scrollbar-thumb,
+                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-thumb {
                             background: #888 !important;
-                            border-radius: 6px !important;
+                            border-radius: 8px !important;
+                            border: 2px solid #e0e0e0 !important;
                         }
-                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-thumb:hover {
+                        
+                        .element-container:has(iframe)::-webkit-scrollbar-thumb:hover,
+                        .stVerticalBlock:has(iframe)::-webkit-scrollbar-thumb:hover {
                             background: #555 !important;
                         }
+                        
+                        /* Firefox用スクロールバー */
+                        .element-container:has(iframe),
+                        .stVerticalBlock:has(iframe) {
+                            scrollbar-width: auto !important;
+                            scrollbar-color: #888 #e0e0e0 !important;
+                        }
                         </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    
+                    st.markdown(
+                        """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が大きい場合は、下のスクロールバーで左右にスクロールできます。
+                        <b>注:</b> 画像が大きい場合は、下部のスクロールバーまたはマウスドラッグで左右にスクロールできます。
                         </p>
                         """,
                         unsafe_allow_html=True
                     )
                     
-                    # 元のサイズで画像を表示（streamlit_image_coordinatesが自動的にスクロール可能にする）
-                    value = streamlit_image_coordinates(
-                        display_img_resized,
-                        key=coord_key
-                    )
+                    # コンテナでラップしてスクロール可能にする
+                    with st.container():
+                        value = streamlit_image_coordinates(
+                            display_img_resized,
+                            key=coord_key
+                        )
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
