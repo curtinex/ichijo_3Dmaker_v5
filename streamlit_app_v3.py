@@ -3821,6 +3821,12 @@ def main():
                                 import traceback
                                 st.code(traceback.format_exc())
                     
+                    # デバッグログをリアルタイム表示
+                    if st.session_state.get('debug_log'):
+                        with st.expander("🔍 デバッグログ（リアルタイム）", expanded=False):
+                            for log_entry in st.session_state['debug_log'][-20:]:  # 最新20件のみ表示
+                                st.text(log_entry)
+                    
                     # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
                     should_execute = False
                     
