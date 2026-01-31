@@ -167,6 +167,41 @@ try:
         save_uploaded_file as _save_uploaded_file,
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
+    
+    # 関数の戻り値を検証（古いバージョンがロードされていないか確認）
+    import io
+    test_img = Image.new('RGB', (100, 100))
+    test_result = _prepare_display_from_pil(test_img, max_width=50)
+    if len(test_result) != 4:
+        # 古いバージョンがロードされている場合、フォールバック関数を定義
+        print(f"⚠️ Warning: ichijo_core.ui_helpers.prepare_display_from_pil returns {len(test_result)} values instead of 4. Using fallback.")
+        
+        def _prepare_display_from_pil_fallback(pil_img, max_width=800):
+            orig_w, orig_h = pil_img.size
+            target_w = max_width if orig_w > max_width else orig_w
+            scale = target_w / orig_w
+            target_h = int(orig_h * scale)
+            display_img = pil_img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+            return display_img, scale, orig_w, orig_h
+        
+        def _prepare_display_from_bytes_fallback(image_bytes, max_width=800):
+            img = Image.open(io.BytesIO(image_bytes))
+            return _prepare_display_from_pil_fallback(img, max_width=max_width)
+        
+        def _display_to_original_fallback(display_x, display_y, display_scale):
+            return int(display_x / display_scale), int(display_y / display_scale)
+        
+        def _display_to_meter_fallback(display_x, display_y, display_scale, orig_img_height, margin, scale_px, min_x, min_y):
+            orig_x, orig_y = _display_to_original_fallback(display_x, display_y, display_scale)
+            meter_x = (orig_x - margin) / scale_px + min_x
+            meter_y = (orig_img_height - orig_y - margin) / scale_px + min_y
+            return meter_x, meter_y, orig_x, orig_y
+        
+        # フォールバック関数に置き換え
+        _prepare_display_from_pil = _prepare_display_from_pil_fallback
+        _prepare_display_from_bytes = _prepare_display_from_bytes_fallback
+        _display_to_original = _display_to_original_fallback
+        _display_to_meter = _display_to_meter_fallback
 except ImportError as e:
     st.error(f"❌ ichijo_core パッケージが見つかりません: {e}")
     st.info("このアプリケーションを実行するには ichijo_core パッケージが必要です。")
