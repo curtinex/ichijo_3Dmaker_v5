@@ -1684,10 +1684,8 @@ def main():
                             import traceback
                             st.code(traceback.format_exc())
 
-                # クリック受付（表示画像を50%サイズで表示）
-                col1, col2 = st.columns([0.5, 0.5])
-                with col1:
-                    click = streamlit_image_coordinates(overlay, key="step3_calib_click")
+                # クリック受付（表示画像）
+                click = streamlit_image_coordinates(overlay, key="step3_calib_click")
 
                 # クリック処理（壁選択方式 - Step 3と同じロジック）
                 if click:
@@ -2959,13 +2957,11 @@ def main():
                         unsafe_allow_html=True
                     )
                     
-                    # 画像を元のサイズで表示（リサイズなし）- 50%幅に調整
-                    col1, col2 = st.columns([0.5, 0.5])
-                    with col1:
-                        value = streamlit_image_coordinates(
-                            display_img_resized,
-                            key=coord_key
-                        )
+                    # 画像を元のサイズで表示（リサイズなし）
+                    value = streamlit_image_coordinates(
+                        display_img_resized,
+                        key=coord_key
+                    )
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
