@@ -2962,23 +2962,23 @@ def main():
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
                         <b>注:</b> 画像が見切れる場合は、下のスクロールバーで右にスクロールできます。
                         </p>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    
-                    # 画像をスクロール可能なコンテナで囲む
-                    st.markdown(
-                        """
                         <style>
-                        .scrollable-image-container {
-                            overflow-x: auto;
-                            overflow-y: hidden;
-                            width: 100%;
+                        /* 画像コンポーネント全体にスクロール機能を追加 */
+                        div[data-testid="stImage"],
+                        .stImage,
+                        iframe {
+                            max-width: 100% !important;
+                        }
+                        /* streamlit-image-coordinatesコンポーネントの親要素にスクロールを追加 */
+                        div.stVerticalBlock > div:has(iframe) {
+                            overflow-x: auto !important;
+                            overflow-y: hidden !important;
+                            max-width: 100% !important;
                             border: 1px solid #ddd;
                             border-radius: 4px;
+                            padding: 10px;
                         }
                         </style>
-                        <div class="scrollable-image-container">
                         """,
                         unsafe_allow_html=True
                     )
@@ -2988,9 +2988,6 @@ def main():
                         display_img_resized,
                         key=coord_key
                     )
-                    
-                    # スクロール可能なコンテナを閉じる
-                    st.markdown("</div>", unsafe_allow_html=True)
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
