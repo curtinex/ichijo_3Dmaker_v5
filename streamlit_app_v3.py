@@ -1432,20 +1432,17 @@ def main():
                 st.session_state.setdefault('debug_log', []).append(
                     f"render: entering processed block (workflow_step={st.session_state.get('workflow_step')}, processed={st.session_state.get('processed')}, viewer_html={'yes' if st.session_state.get('viewer_html_bytes') else 'no'})"
                 )
-                # 画像を横並びで表示
-                col_refined, col_viz = st.columns(2)
+                # 3Dモデル用イメージを先に表示
+                st.subheader("📊 3Dモデル用イメージ")
+                if st.session_state.viz_bytes is not None:
+                    # 画面サイズに応じて自動調整（見切れないようにコンテナ幅に合わせる）
+                    st.image(st.session_state.viz_bytes, use_container_width=True)
 
-                with col_refined:
-                    st.subheader("🖼️ 壁線抽出結果（CAD図面参照）")
+                # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
+                with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
                     if st.session_state.refined_img is not None:
                         # 画面サイズに応じて自動調整（見切れないようにコンテナ幅に合わせる）
                         st.image(st.session_state.refined_img, clamp=True, use_container_width=True)
-
-                with col_viz:
-                    st.subheader("📊 3Dモデル用イメージ")
-                    if st.session_state.viz_bytes is not None:
-                        # 画面サイズに応じて自動調整（見切れないようにコンテナ幅に合わせる）
-                        st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 説明文を追加
                 st.success(
