@@ -2951,32 +2951,22 @@ def main():
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が見切れる場合は、下のスクロールバーで右にスクロールできます。
+                        <b>注:</b> 画像が見切れる場合は、ブラウザのズーム機能（Ctrl/Cmd + マイナスキー）で縮小表示してください。
                         </p>
-                        <style>
-                        /* 画像コンポーネント全体にスクロール機能を追加 */
-                        .element-container:has(iframe) {
-                            overflow-x: auto !important;
-                            overflow-y: hidden !important;
-                            max-width: 100% !important;
-                            border: 1px solid #ddd;
-                            border-radius: 4px;
-                            padding: 10px;
-                            background: white;
-                        }
-                        .element-container:has(iframe) iframe {
-                            display: block;
-                        }
-                        </style>
                         """,
                         unsafe_allow_html=True
                     )
                     
                     # 画像を元のサイズで表示（リサイズなし）
+                    # HTMLコンテナで囲んでスクロール可能にする
+                    st.markdown('<div style="overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">', unsafe_allow_html=True)
+                    
                     value = streamlit_image_coordinates(
                         display_img_resized,
                         key=coord_key
                     )
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
