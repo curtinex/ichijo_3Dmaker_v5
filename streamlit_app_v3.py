@@ -35,6 +35,16 @@ def install_ichijo_core():
         sys.path.insert(0, ichijo_core_check_path)
         print(f"✓ Added to sys.path: {ichijo_core_check_path}")
     
+    # 既にインポートされている場合は削除（キャッシュクリア）
+    import importlib
+    modules_to_reload = [key for key in sys.modules.keys() if key.startswith('ichijo_core')]
+    if modules_to_reload:
+        print(f"→ Clearing cached modules: {modules_to_reload}")
+        for module_name in modules_to_reload:
+            del sys.modules[module_name]
+        importlib.invalidate_caches()
+        print("✓ Import caches cleared")
+    
     # インポートできるか確認
     try:
         import ichijo_core
