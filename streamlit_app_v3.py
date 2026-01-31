@@ -1060,6 +1060,15 @@ def main():
     st.title("一条工務店 CAD図面3D化アプリ (β)")
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
+    # デバッグ情報を画面上部に表示
+    import ichijo_core
+    with st.expander("🔧 デバッグ情報（開発用）", expanded=False):
+        st.code(f"""
+ichijo_core location: {ichijo_core.__file__}
+ichijo_core version: {ichijo_core.__version__}
+ui_helpers location: {ichijo_core.ui_helpers.__file__}
+        """)
+    
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
 
