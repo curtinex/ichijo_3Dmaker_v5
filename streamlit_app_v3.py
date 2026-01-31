@@ -29,12 +29,12 @@ def install_ichijo_core():
         print(f"  Location: {ichijo_core.__file__}")
         print(f"  Version: {ichijo_core.__version__}")
         
-        # バージョンが期待値と一致するかチェック（0.0.7のみ許可）
-        if ichijo_core.__version__ == "0.0.7":
-            print(f"✓ ichijo_core is up-to-date (v0.0.7)")
+        # バージョンが期待値と一致するかチェック（0.0.8のみ許可）
+        if ichijo_core.__version__ == "0.0.8":
+            print(f"✓ ichijo_core is up-to-date (v0.0.8)")
             return True, None
         else:
-            print(f"⚠ Version mismatch. Expected: 0.0.7, Got: {ichijo_core.__version__}")
+            print(f"⚠ Version mismatch. Expected: 0.0.8, Got: {ichijo_core.__version__}")
             print("→ Forcing reinstallation...")
             # 強制的に再インストール
     except Exception as e:
@@ -60,8 +60,8 @@ def install_ichijo_core():
             sys.path.insert(0, target_dir)
             print(f"✓ Added to sys.path: {target_dir}")
         
-        # 最新コミット（1e09ee9）を指定
-        commit_hash = "1e09ee9"
+        # 最新コミット（6c2627e）を指定
+        commit_hash = "6c2627e"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         print(f"→ Installing from commit: {commit_hash}")
         
