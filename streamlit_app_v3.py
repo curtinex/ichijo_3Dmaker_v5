@@ -2959,11 +2959,13 @@ def main():
                         unsafe_allow_html=True
                     )
                     
-                    # 画像を元のサイズで表示（リサイズなし）
-                    value = streamlit_image_coordinates(
-                        display_img_resized,
-                        key=coord_key
-                    )
+                    # 画像を元のサイズで表示（リサイズなし）- 50%幅に調整
+                    col1, col2 = st.columns([0.5, 0.5])
+                    with col1:
+                        value = streamlit_image_coordinates(
+                            display_img_resized,
+                            key=coord_key
+                        )
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
