@@ -2960,8 +2960,25 @@ def main():
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
+                        <b>注:</b> 画像が見切れる場合は、下のスクロールバーで右にスクロールできます。
                         </p>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    
+                    # 画像をスクロール可能なコンテナで囲む
+                    st.markdown(
+                        """
+                        <style>
+                        .scrollable-image-container {
+                            overflow-x: auto;
+                            overflow-y: hidden;
+                            width: 100%;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                        }
+                        </style>
+                        <div class="scrollable-image-container">
                         """,
                         unsafe_allow_html=True
                     )
@@ -2971,6 +2988,9 @@ def main():
                         display_img_resized,
                         key=coord_key
                     )
+                    
+                    # スクロール可能なコンテナを閉じる
+                    st.markdown("</div>", unsafe_allow_html=True)
                     
                     # リサイズ時の座標変換
                     if value is not None and value.get("x") is not None and scale_ratio != 1.0:
