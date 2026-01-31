@@ -2666,7 +2666,9 @@ def main():
                                 pass
                     
                     display_img = Image.fromarray(display_img_array)
-                    display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=DISPLAY_IMAGE_WIDTH)
+                    # 編集画面では元のサイズのまま表示してスクロール可能にする
+                    display_img_resized = display_img
+                    scale_ratio = 1.0  # リサイズしないのでスケール比は1.0
                     
                     # skip_click_processingフラグを画面描画時に無条件でクリア（フラグが残り続けるのを防ぐ）
                     if st.session_state.get('skip_click_processing'):
@@ -2951,17 +2953,15 @@ def main():
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が大きい場合は、画像をドラッグしてスクロールできます。
+                        <b>注:</b> 画像が大きい場合は、画像の上で左右にスクロールできます。
                         </p>
                         """,
                         unsafe_allow_html=True
                     )
                     
-                    # 画像をスクロール可能なコンテナ内に表示
-                    # widthを指定することで、大きな画像でもスクロール可能になる
+                    # 元のサイズで画像を表示（streamlit_image_coordinatesが自動的にスクロール可能にする）
                     value = streamlit_image_coordinates(
                         display_img_resized,
-                        width=display_img_resized.width,
                         key=coord_key
                     )
                     
