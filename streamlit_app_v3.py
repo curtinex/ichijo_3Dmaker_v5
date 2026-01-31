@@ -2951,9 +2951,32 @@ def main():
                     
                     st.markdown(
                         """
+                        <style>
+                        /* streamlit_image_coordinatesコンポーネントを含む要素にスクロールバーを表示 */
+                        div[data-testid="stVerticalBlock"] > div:has(iframe[title]) {
+                            overflow-x: auto !important;
+                            overflow-y: hidden !important;
+                        }
+                        /* スクロールバーを常に表示 */
+                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar {
+                            height: 12px !important;
+                            display: block !important;
+                        }
+                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-track {
+                            background: #f1f1f1 !important;
+                            border-radius: 6px !important;
+                        }
+                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-thumb {
+                            background: #888 !important;
+                            border-radius: 6px !important;
+                        }
+                        div[data-testid="stVerticalBlock"] > div:has(iframe[title])::-webkit-scrollbar-thumb:hover {
+                            background: #555 !important;
+                        }
+                        </style>
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                         <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が大きい場合は、画像の上で左右にスクロールできます。
+                        <b>注:</b> 画像が大きい場合は、下のスクロールバーで左右にスクロールできます。
                         </p>
                         """,
                         unsafe_allow_html=True
