@@ -1435,14 +1435,18 @@ def main():
                 # 3Dモデル用イメージを先に表示
                 st.subheader("📊 3Dモデル用イメージ")
                 if st.session_state.viz_bytes is not None:
-                    # 画面サイズに応じて自動調整（見切れないようにコンテナ幅に合わせる）
-                    st.image(st.session_state.viz_bytes, use_container_width=True)
+                    # 画面サイズの60%に縮小表示（中央配置）
+                    col1, col2, col3 = st.columns([0.2, 0.6, 0.2])
+                    with col2:
+                        st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
                 with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
                     if st.session_state.refined_img is not None:
-                        # 画面サイズに応じて自動調整（見切れないようにコンテナ幅に合わせる）
-                        st.image(st.session_state.refined_img, clamp=True, use_container_width=True)
+                        # 画面サイズの60%に縮小表示（中央配置）
+                        col1, col2, col3 = st.columns([0.2, 0.6, 0.2])
+                        with col2:
+                            st.image(st.session_state.refined_img, clamp=True, use_container_width=True)
 
                 # 説明文を追加
                 st.success(
