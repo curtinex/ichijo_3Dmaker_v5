@@ -1962,7 +1962,7 @@ def main():
                     display_img_array = np.array(viz_img.copy())
                     
                     # リセットボタンと追加ボタン（画像の前に配置）
-                    col_reset, col_add, col_exec = st.columns(3)
+                    col_reset, col_add = st.columns(2)
                     with col_reset:
                         if st.button("🗑️ 選択リセット"):
                             _reset_selection_state()
@@ -2683,6 +2683,16 @@ def main():
                         else:
                             merge_count = num_selected // 2
                             st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
+                            
+                            # 結合実行ボタン（選択完了メッセージの直後、画像の前に表示）
+                            st.markdown("---")
+                            if st.button("🔗 結合実行", type="primary", key="btn_merge_exec_top"):
+                                # 選択された壁をセッションに保存してから選択リストをクリア
+                                st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
+                                st.session_state.selected_walls_for_merge = []
+                                st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                                st.rerun()
                     elif edit_mode == "窓を追加":
                         # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
                         num_selected = len(st.session_state.selected_walls_for_window)
@@ -3512,24 +3522,13 @@ def main():
                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][idx % 6]
                                 st.write(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
                 
-                    with col_exec:
-                        # モード別のボタン表示と処理
-                        # 永続デバッグログ表示（rerun しても残る）
-                        # 永続デバッグログのUI表示は不要になったため削除（ログはセッションに保持）
-                        if edit_mode == "線を結合":
-                            button_label = "🔗 結合実行"
-                        elif edit_mode == "窓を追加":
-                            button_label = "🪟 窓追加実行"
-                        elif edit_mode == "線を追加":
-                            button_label = "➕ 線追加実行"
-                        elif edit_mode == "オブジェクトを配置":
-                            button_label = "🪑 オブジェクト配置実行"
-                        elif edit_mode == "床を追加":
-                            button_label = "🟫 床追加実行"
-                        else:  # 線を削除
-                            button_label = "🗑️ 削除実行"
+                    # 永続デバッグログ表示（rerun しても残る）
+                    # 永続デバッグログのUI表示は不要になったため削除（ログはセッションに保持）
                     
-                        if edit_mode == "窓を追加":
+                    # 線を結合モードでクリック選択実行の処理（選択リセットの横のボタンは削除済み）
+                    # 実行トリガーはメッセージ下のボタンのみ
+                    
+                    if edit_mode == "窓を追加":
                             # 窓追加モード：右側に重複して表示していた入力は削除
                             # 四角形が選択されている場合でも、画面上部のフォームで入力してください
                             if len(st.session_state.rect_coords_list) > 0:
@@ -3818,47 +3817,20 @@ def main():
                                 import traceback
                                 st.code(traceback.format_exc())
                         
-                        elif edit_mode in ("線を結合", "窓を追加", "線を削除", "オブジェクトを配置") or (len(st.session_state.rect_coords_list) > 0 or len(st.session_state.rect_coords) == 2):
-                            # 結合・窓追加・削除・オブジェクト配置モードの実行ボタン
-                            should_execute = False
-                            
-                            # 各モードで選択完了時のみボタンを有効化
-                            if edit_mode == "線を結合":
-                                if len(st.session_state.selected_walls_for_merge) == 2:
-                                    if st.button(button_label, type="primary", key="btn_merge_exec"):
-                                        # 選択された壁をセッションに保存してから選択リストをクリア
-                                        st.session_state.merge_walls_to_process = [
-                                            st.session_state.selected_walls_for_merge[0],
-                                            st.session_state.selected_walls_for_merge[1]
-                                        ]
-                                        st.session_state.selected_walls_for_merge = []
-                                        st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                        # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                        st.rerun()
-                                elif st.session_state.get('merge_walls_to_process'):
-                                    # 前回のrerunで保存された壁を処理
-                                    should_execute = True
-                            elif edit_mode == "窓を追加":
-                                # 窓追加モードは画像の下に入力フォームを表示済み
-                                # 処理トリガーのみをチェック
-                                if st.session_state.get('window_walls_to_process'):
-                                    # 前回のrerunで保存された壁を処理
-                                    should_execute = True
-                            elif edit_mode == "線を削除":
-                                if len(st.session_state.selected_walls_for_delete) > 0:
-                                    if st.button(button_label, type="primary", key="btn_delete_exec"):
-                                        should_execute = True
-                            elif edit_mode == "オブジェクトを配置":
-                                # オブジェクト配置モード：execute_furniture_placementフラグをチェック
-                                if st.session_state.get('execute_furniture_placement'):
-                                    st.session_state.execute_furniture_placement = False
-                                    should_execute = True
-                            elif edit_mode != "オブジェクトを配置":
-                                # オブジェクト配置モード以外（線を追加、床を追加など）
-                                if st.button(button_label, type="primary", key="btn_general_edit_exec"):
-                                    should_execute = True
-                            
-                            if should_execute:
+                        # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
+                        should_execute = False
+                        
+                        if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
+                            # 前回のrerunで保存された壁を処理
+                            should_execute = True
+                        elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                            # 前回のrerunで保存された壁を処理
+                            should_execute = True
+                        elif edit_mode == "オブジェクトを配置" and st.session_state.get('execute_furniture_placement'):
+                            st.session_state.execute_furniture_placement = False
+                            should_execute = True
+                        
+                        if should_execute:
                                 try:
                                     # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
                                     # 線を結合モードの場合は使用しない
