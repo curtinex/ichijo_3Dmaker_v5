@@ -3245,8 +3245,7 @@ def main():
                                     # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
                                     # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
                                     # 注：線を結合モードは壁線クリック選択のため除外
-                                    # 注：線を追加モードは手動ボタンで追加するため除外
-                                    if (edit_mode in ("窓を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
+                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
                                         try:
                                             json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                             walls_auto = json_data_auto['walls']
@@ -3323,12 +3322,15 @@ def main():
                                                     except Exception:
                                                         pass
                                             else:
-                                                # オブジェクト配置モードでは四角形をそのまま追加（壁検出は不要）
+                                                # オブジェクト配置モードと線を追加モードでは四角形をそのまま追加（壁検出は不要）
                                                 st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                 st.session_state.rect_coords = []
                                                 st.session_state.last_click = None
                                                 try:
-                                                    append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
+                                                    if edit_mode == "線を追加":
+                                                        append_debug(f"Auto-added line-placement selection: rect=({p1_auto},{p2_auto})")
+                                                    else:
+                                                        append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
                                                 except Exception:
                                                     pass
                                                 st.rerun()
