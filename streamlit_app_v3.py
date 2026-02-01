@@ -1688,14 +1688,15 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
+                st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                
                 col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
-                st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                 with col_zoom1:
-                    if st.button("🔍ー", key="step2_zoom_out"):
+                    if st.button("🔍−", key="step2_zoom_out"):
                         st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                         st.rerun()
                 with col_zoom2:
-                    if st.button("🔍＋", key="step2_zoom_in"):
+                    if st.button("🔍+", key="step2_zoom_in"):
                         st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                         st.rerun()
                 
@@ -2997,14 +2998,15 @@ def main():
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
                     
+                    st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                    
                     col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
-                    st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                     with col_zoom1:
-                        if st.button("🔍ー", key="step3_zoom_out"):
+                        if st.button("🔍−", key="step3_zoom_out"):
                             st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
-                        if st.button("🔍＋", key="step3_zoom_in"):
+                        if st.button("🔍+", key="step3_zoom_in"):
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     
