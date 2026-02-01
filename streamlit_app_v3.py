@@ -2853,7 +2853,18 @@ def main():
                         elif len(st.session_state.rect_coords) == 2:
                             # 窓追加モードで自動追加される場合は、前のrerunでrect_coordsがクリアされるため、
                             # このブロックに到達しない。失敗時のみここに到達する
-                            if edit_mode != "窓を追加":
+                            if edit_mode == "線を追加":
+                                # 線を追加モード：2点選択完了時の処理
+                                num_rects = len(st.session_state.rect_coords_list)
+                                st.success(f"✅ **{num_rects}本の線を選択完了**\n\n→ さらに線を追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下の「➕ 線追加実行」ボタンをクリックしてください")
+                                
+                                # 線追加実行ボタン（選択完了メッセージの直後、画像の前に表示）
+                                st.markdown("---")
+                                if st.button("➕ 線追加実行", type="primary", key="btn_add_line_exec_top"):
+                                    # 実行フラグを立てて処理実行
+                                    st.session_state.add_line_execute = True
+                                    st.rerun()
+                            elif edit_mode != "窓を追加":
                                 p1, p2 = st.session_state.rect_coords
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
@@ -3890,6 +3901,10 @@ def main():
                         should_execute = True
                     elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                         # 前回のrerunで保存された壁を処理
+                        should_execute = True
+                    elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
+                        # 線を追加モードの実行
+                        st.session_state.add_line_execute = False
                         should_execute = True
                     elif edit_mode == "オブジェクトを配置" and st.session_state.get('execute_furniture_placement'):
                         st.session_state.execute_furniture_placement = False
