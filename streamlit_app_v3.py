@@ -4263,11 +4263,22 @@ def main():
                                 except:
                                     pass
 
+                                # 階段配置では壁を追加しないため、highlight_wall_idsは空リスト
                                 temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
-                                visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=[], wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+
+                                try:
+                                    append_debug(f"2D可視化画像生成完了: {temp_viz_path}")
+                                except:
+                                    pass
 
                                 temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                                 _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
+
+                                try:
+                                    append_debug(f"3Dビューア生成完了: {temp_viewer_path}")
+                                except:
+                                    pass
 
                                 # セッションに保存して UI 上でダウンロード可能にする
                                 st.session_state.json_bytes = temp_json_path.read_bytes()
