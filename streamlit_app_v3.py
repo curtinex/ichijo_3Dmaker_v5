@@ -4273,6 +4273,12 @@ def main():
                                 
                                 try:
                                     append_debug(f"JSON保存完了: {temp_json_path}")
+                                    # 階段データの検証
+                                    if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
+                                        first_stair = updated_json['stairs'][0]
+                                        append_debug(f"JSONに階段データ確認: stairs配列長={len(updated_json['stairs'])}, 最初のステップ={first_stair}")
+                                    else:
+                                        append_debug(f"警告: JSONにstairsキーが存在しないか空です")
                                 except:
                                     pass
 
@@ -4290,6 +4296,15 @@ def main():
 
                                 try:
                                     append_debug(f"3Dビューア生成完了: {temp_viewer_path}")
+                                    # HTMLファイルに階段コードが含まれているか確認
+                                    html_content = temp_viewer_path.read_text(encoding='utf-8')
+                                    if 'stairs' in html_content:
+                                        # stairsの出現回数をカウント
+                                        stairs_count = html_content.count('stairs')
+                                        stairs_foreach_exists = 'stairs.forEach' in html_content
+                                        append_debug(f"HTMLに'stairs'文字列: {stairs_count}回出現, forEach構文: {stairs_foreach_exists}")
+                                    else:
+                                        append_debug(f"警告: HTMLに'stairs'文字列が見つかりません")
                                 except:
                                     pass
 
