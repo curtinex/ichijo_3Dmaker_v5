@@ -1099,7 +1099,7 @@ def main():
     def append_debug(msg: str):
         try:
             ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            st.session_state.setdefault('debug_log', []).append(f"{ts} {msg}")
+            st.session_state.setdefault('debug_logs', []).append(f"{ts} {msg}")
         except Exception:
             # append に失敗しても処理継続
             pass
@@ -2947,6 +2947,15 @@ def main():
                         # 選択されたパターンの説明を表示
                         st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                         
+                        # デバッグログ表示（階段追加モードのみ）
+                        debug_logs = st.session_state.get('debug_logs', [])
+                        if len(debug_logs) > 0:
+                            with st.expander("🔍 デバッグログ（問題解決用）", expanded=True):
+                                for log in debug_logs[-20:]:  # 最新20件を表示
+                                    st.text(log)
+                        else:
+                            st.info("🔍 デバッグログ: まだログがありません。「🪜 階段配置実行」ボタンをクリックするとログが表示されます。")
+                        
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                             st.session_state.execute_stair_placement = True
@@ -3554,14 +3563,6 @@ def main():
                     if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
                         st.session_state.execute_furniture_placement = True
                         st.rerun()
-                
-                # デバッグログ表示（階段追加モードのみ）
-                if edit_mode == "階段を追加":
-                    debug_logs = st.session_state.get('debug_logs', [])
-                    if len(debug_logs) > 0:
-                        with st.expander("🔍 デバッグログ（問題解決用）", expanded=True):
-                            for log in debug_logs[-10:]:  # 最新10件のみ表示
-                                st.text(log)
                 
                 # 確定済み選択の表示
                 # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
