@@ -2735,7 +2735,7 @@ def main():
                     # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
                     num_selected = len(st.session_state.selected_walls_for_window)
                     if num_selected == 0:
-                        st.write("💡 **窓1つ目：繋ぎたい壁線を1本目クリックしてください**")
+                        st.write("💡 **繋ぎたい壁線を1本目クリックしてください**")
                     elif num_selected % 2 == 1:
                         window_num = (num_selected // 2) + 1
                         st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
@@ -3005,7 +3005,8 @@ def main():
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                     <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                    <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
+                    <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。<br>
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押すかページを再読み込みしてください。
                     </p>
                     """,
                     unsafe_allow_html=True
