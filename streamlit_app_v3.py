@@ -1723,6 +1723,17 @@ def main():
                     st.session_state.editor_zoom_level = 1.0
                     st.rerun()
                 
+                # 注釈を表示（ステップ3と同じ）
+                st.markdown(
+                    """
+                    <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                    <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押すかページを再読み込みしてください。
+                    </p>
+                    """,
+                    unsafe_allow_html=True
+                )
+                
                 # キーを動的に生成（ステップ3と同様に状態を反映）
                 if 'calibration_reset_counter' not in st.session_state:
                     st.session_state.calibration_reset_counter = 0
