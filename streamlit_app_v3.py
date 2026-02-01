@@ -2982,6 +2982,16 @@ def main():
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
+                    st.markdown(
+                        """
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                        <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
+                        <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
+                        </p>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    
                     # ズームコントロール（ステップ3）
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
@@ -2996,16 +3006,6 @@ def main():
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
-                    
-                    st.markdown(
-                        """
-                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                        <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                        <b>注:</b> 画像が見切れる場合は、ブラウザの画面スケール（Ctrl/Cmd + マイナスキー）を小さくしてください。
-                        </p>
-                        """,
-                        unsafe_allow_html=True
-                    )
                     
                     # 画像を元のサイズで表示（リサイズなし）
                     value = streamlit_image_coordinates(
