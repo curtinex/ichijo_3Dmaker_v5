@@ -1691,11 +1691,11 @@ def main():
                 col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
                 with col_zoom1:
                     if st.button("🔍−", key="step2_zoom_out"):
-                        st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
+                        st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                         st.rerun()
                 with col_zoom2:
                     if st.button("🔍+", key="step2_zoom_in"):
-                        st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                        st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                         st.rerun()
                 st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
                 
@@ -2989,11 +2989,11 @@ def main():
                     col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
                     with col_zoom1:
                         if st.button("🔍−", key="step3_zoom_out"):
-                            st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
+                            st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
                         if st.button("🔍+", key="step3_zoom_in"):
-                            st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                            st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
                     
