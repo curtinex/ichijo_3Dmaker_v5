@@ -1688,21 +1688,16 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
-                col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 2, 1])
-                with col_zoom1:
-                    if st.button("🔍− 縮小", key="step2_zoom_out"):
-                        st.session_state.editor_zoom_level = max(0.5, st.session_state.editor_zoom_level - 0.25)
-                        st.rerun()
-                with col_zoom2:
-                    st.markdown(f"<div style='text-align: center; padding: 8px;'>表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%</div>", unsafe_allow_html=True)
-                with col_zoom3:
-                    if st.button("🔍+ 拡大", key="step2_zoom_in"):
-                        st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
-                        st.rerun()
-
-                # 画像サイズをズームレベルに応じて調整
-                zoom_width = int(overlay.width * st.session_state.editor_zoom_level)
-                overlay_resized = overlay.resize((zoom_width, int(overlay.height * st.session_state.editor_zoom_level)), Image.Resampling.LANCZOS)
+                    col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
+                    with col_zoom1:
+                        if st.button("🔍−", key="step2_zoom_out"):
+                            st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
+                            st.rerun()
+                    with col_zoom2:
+                        if st.button("🔍+", key="step2_zoom_in"):
+                            st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                            st.rerun()
+                    st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
 
                 # クリック受付（表示画像）
                 click = streamlit_image_coordinates(overlay_resized, key="step3_calib_click")
@@ -2980,17 +2975,16 @@ def main():
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
                     
-                    col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 2, 1])
+                    col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
                     with col_zoom1:
-                        if st.button("🔍− 縮小", key="step3_zoom_out"):
-                            st.session_state.editor_zoom_level = max(0.5, st.session_state.editor_zoom_level - 0.25)
+                        if st.button("🔍−", key="step3_zoom_out"):
+                            st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
                             st.rerun()
                     with col_zoom2:
-                        st.markdown(f"<div style='text-align: center; padding: 8px;'>表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%</div>", unsafe_allow_html=True)
-                    with col_zoom3:
-                        if st.button("🔍+ 拡大", key="step3_zoom_in"):
+                        if st.button("🔍+", key="step3_zoom_in"):
                             st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
                             st.rerun()
+                    st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
                     
                     st.markdown(
                         """
