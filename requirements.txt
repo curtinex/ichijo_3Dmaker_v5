@@ -9,3 +9,6 @@ opencv-python-headless
 # Image processing
 scikit-image
 scipy
+
+# Custom modules (ichijo_core from GitHub)
+git+https://github.com/curtinex/ichijo_core.git@main
