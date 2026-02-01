@@ -3028,6 +3028,17 @@ def main():
                             st.rerun()
                     
                     
+                    # 画像データの検証（表示エラー対策）
+                    if display_img_resized is None:
+                        st.warning("⚠️ 画像データを再生成しています...")
+                        st.rerun()
+                    
+                    if display_img_resized.size[0] == 0 or display_img_resized.size[1] == 0:
+                        st.warning("⚠️ 画像サイズが不正です。再試行しています...")
+                        # ズームレベルをリセット
+                        st.session_state.editor_zoom_level = 1.0
+                        st.rerun()
+                    
                     # 画像を元のサイズで表示（リサイズなし）
                     value = streamlit_image_coordinates(
                         display_img_resized,
