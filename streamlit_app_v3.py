@@ -1688,7 +1688,7 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
-                st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                 
                 col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
                 with col_zoom1:
@@ -2998,7 +2998,7 @@ def main():
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
                     
-                    st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                    st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                     
                     col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
                     with col_zoom1:
