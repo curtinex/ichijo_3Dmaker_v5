@@ -1684,8 +1684,28 @@ def main():
                             import traceback
                             st.code(traceback.format_exc())
 
+                # ズームコントロール（ステップ2）
+                if 'editor_zoom_level' not in st.session_state:
+                    st.session_state.editor_zoom_level = 1.0
+                
+                col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 2, 1])
+                with col_zoom1:
+                    if st.button("🔍− 縮小", key="step2_zoom_out"):
+                        st.session_state.editor_zoom_level = max(0.5, st.session_state.editor_zoom_level - 0.25)
+                        st.rerun()
+                with col_zoom2:
+                    st.markdown(f"<div style='text-align: center; padding: 8px;'>表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%</div>", unsafe_allow_html=True)
+                with col_zoom3:
+                    if st.button("🔍+ 拡大", key="step2_zoom_in"):
+                        st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                        st.rerun()
+
+                # 画像サイズをズームレベルに応じて調整
+                zoom_width = int(overlay.width * st.session_state.editor_zoom_level)
+                overlay_resized = overlay.resize((zoom_width, int(overlay.height * st.session_state.editor_zoom_level)), Image.Resampling.LANCZOS)
+
                 # クリック受付（表示画像）
-                click = streamlit_image_coordinates(overlay, key="step3_calib_click")
+                click = streamlit_image_coordinates(overlay_resized, key="step3_calib_click")
 
                 # クリック処理（壁選択方式 - Step 3と同じロジック）
                 if click:
@@ -1693,9 +1713,9 @@ def main():
                     if st.session_state.scale_last_click != cur:
                         st.session_state.scale_last_click = cur
                         
-                        # 表示座標を元画像座標にスケール変換
-                        orig_click_x = int(click["x"] / scale_disp)
-                        orig_click_y = int(click["y"] / scale_disp)
+                        # ズームレベルを考慮して座標を元画像座標に変換
+                        orig_click_x = int(click["x"] / st.session_state.editor_zoom_level / scale_disp)
+                        orig_click_y = int(click["y"] / st.session_state.editor_zoom_level / scale_disp)
                         
                         # クリック位置から最も近い壁を検出（元画像の座標系で）
                         nearest_wall, distance = _find_nearest_wall_from_click(
@@ -2668,6 +2688,15 @@ def main():
                     display_img = Image.fromarray(display_img_array)
                     display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=DISPLAY_IMAGE_WIDTH)
                     
+                    # ズーム機能: 画像サイズを調整
+                    zoom_level = st.session_state.get('editor_zoom_level', 1.0)
+                    if zoom_level != 1.0:
+                        w, h = display_img_resized.size
+                        display_img_resized = display_img_resized.resize(
+                            (int(w * zoom_level), int(h * zoom_level)),
+                            Image.Resampling.LANCZOS
+                        )
+                    
                     # skip_click_processingフラグを画面描画時に無条件でクリア（フラグが残り続けるのを防ぐ）
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
@@ -2947,6 +2976,22 @@ def main():
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
+                    # ズームコントロール（ステップ3）
+                    if 'editor_zoom_level' not in st.session_state:
+                        st.session_state.editor_zoom_level = 1.0
+                    
+                    col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 2, 1])
+                    with col_zoom1:
+                        if st.button("🔍− 縮小", key="step3_zoom_out"):
+                            st.session_state.editor_zoom_level = max(0.5, st.session_state.editor_zoom_level - 0.25)
+                            st.rerun()
+                    with col_zoom2:
+                        st.markdown(f"<div style='text-align: center; padding: 8px;'>表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%</div>", unsafe_allow_html=True)
+                    with col_zoom3:
+                        if st.button("🔍+ 拡大", key="step3_zoom_in"):
+                            st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                            st.rerun()
+                    
                     st.markdown(
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
@@ -2963,12 +3008,21 @@ def main():
                         key=coord_key
                     )
                     
-                    # リサイズ時の座標変換
-                    if value is not None and value.get("x") is not None and scale_ratio != 1.0:
+                    # リサイズ時とズーム時の座標変換
+                    if value is not None and value.get("x") is not None:
+                        # ズーム補正を適用
+                        zoom_level = st.session_state.get('editor_zoom_level', 1.0)
+                        adjusted_x = value["x"] / zoom_level
+                        adjusted_y = value["y"] / zoom_level
+                        
                         # 元の座標に変換
-                        ox, oy = _display_to_original(value["x"], value["y"], scale_ratio)
-                        value["x"] = ox
-                        value["y"] = oy
+                        if scale_ratio != 1.0:
+                            ox, oy = _display_to_original(adjusted_x, adjusted_y, scale_ratio)
+                            value["x"] = ox
+                            value["y"] = oy
+                        else:
+                            value["x"] = adjusted_x
+                            value["y"] = adjusted_y
 
                     # デバッグ: クリック座標を表示
                     #if value is not None and value.get("x") is not None:
