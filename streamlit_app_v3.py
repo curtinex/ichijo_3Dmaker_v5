@@ -134,6 +134,35 @@ try:
         FURNITURE_HEIGHT_OPTIONS,
         FURNITURE_COLOR_OPTIONS,
     )
+    
+    # 階段パターンデータの定義
+    STAIR_PATTERNS = {
+        "コの字_時計回り_北スタート": {
+            "display_name": "コの字階段（時計回り・北スタート）",
+            "description": "1-5段目: 北→東、6-9段目: 踊り場+東→南、10-14段目: 南→西",
+            "steps": [
+                # 1-5段目: 北向き（Y+方向）
+                {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair2", "x": 0, "y": 0.25, "z": 0.386, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair3", "x": 0, "y": 0.5, "z": 0.579, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair4", "x": 0, "y": 0.75, "z": 0.772, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair5", "x": 0, "y": 1.0, "z": 0.965, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                
+                # 6-9段目: 踊り場+東向き（X+方向）
+                {"name": "stair6", "x": 0.25, "y": 1.25, "z": 1.158, "x_len": 0.25, "y_len": 1.1, "z_len": 0.05},
+                {"name": "stair7", "x": 0.5, "y": 1.25, "z": 1.351, "x_len": 0.25, "y_len": 1.1, "z_len": 0.05},
+                {"name": "stair8", "x": 0.75, "y": 1.25, "z": 1.544, "x_len": 0.25, "y_len": 1.1, "z_len": 0.05},
+                {"name": "stair9", "x": 1.0, "y": 1.25, "z": 1.737, "x_len": 0.25, "y_len": 1.1, "z_len": 0.05},
+                
+                # 10-14段目: 南向き（Y-方向）
+                {"name": "stair10", "x": 1.25, "y": 2.0, "z": 1.930, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair11", "x": 1.25, "y": 1.75, "z": 2.123, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair12", "x": 1.25, "y": 1.5, "z": 2.316, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair13", "x": 1.25, "y": 1.25, "z": 2.509, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+                {"name": "stair14", "x": 1.25, "y": 1.0, "z": 2.702, "x_len": 1.1, "y_len": 0.25, "z_len": 0.05},
+            ]
+        }
+    }
     from ichijo_core.ui_helpers import (
         prepare_display_from_pil as _prepare_display_from_pil,
         prepare_display_from_bytes as _prepare_display_from_bytes,
@@ -1813,11 +1842,11 @@ def main():
         # モード選択タブ
         edit_mode = st.radio(
             "編集モードを選択:",
-            #["線を結合", "線を追加", "線を削除", "窓を追加", "照明を配置", "オブジェクトを配置", "床を追加"],
-            ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置"],
+            #["線を結合", "線を追加", "線を削除", "窓を追加", "照明を配置", "オブジェクトを配置", "床を追加", "階段を追加"],
+            ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置", "階段を追加"],
             horizontal=True,
-            #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：四角形範囲を選択して床を追加"
-            help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置"
+            #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：四角形範囲を選択して床を追加\n\n階段を追加：コの字階段を配置"
+            help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n階段を追加：コの字階段を配置"
         )
         
         if edit_mode == "線を結合":
@@ -1840,6 +1869,11 @@ def main():
         elif edit_mode == "オブジェクトを配置":
             st.info(
                 "オブジェクトを配置したい範囲を2点クリックすると、その範囲に合わせて家具(オブジェクト)を配置します。"
+            )
+        elif edit_mode == "階段を追加":
+            st.info(
+                "階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んで配置します。\n\n"
+                "14段のコの字階段が生成されます（天井高240cm+30cm=270cmを14段で昇ります）。"
             )
         
         with st.expander("💡 使い方", expanded=False):
@@ -1892,6 +1926,16 @@ def main():
                     "1. 下の画像上で**2回クリック**してオブジェクトを配置したい領域を四角形で囲む\n\n"
                     "2. 配置するオブジェクト高さと色を選択\n\n"
                     "3. 「🪑 オブジェクト配置実行」で家具を配置\n\n"
+                    )
+            elif edit_mode == "階段を追加":
+                st.markdown(
+                    "**階段配置の手順:**\n\n"
+                    "1. 下の画像上で**2回クリック**して階段を配置したい領域を四角形で囲む（開始位置が左下になります）\n\n"
+                    "2. 階段パターンをプルダウンから選択\n\n"
+                    "3. 「🪜 階段配置実行」で階段を配置\n\n"
+                    "**注意:**\n\n"
+                    "- コの字階段は14段で固定（高さ270cm÷14段＝各段19.3cm）\n\n"
+                    "- 開始位置は選択範囲の左下隅になります"
                     )
         
         # セッションステートで四角形座標を管理
@@ -2883,6 +2927,33 @@ def main():
                         st.success(f"✅ 壁（ID: {wall_id}）を選択しました。下のマス数入力欄で実寸法を指定してください。")
                     else:
                         st.write("💡 **校正対象の壁線を1回クリックして選択してください**")
+                elif edit_mode == "階段を追加":
+                    # 階段追加モード：2点選択
+                    if len(st.session_state.rect_coords_list) > 0:
+                        st.success("✅ **配置範囲を選択完了**\n\n→ 下で階段パターンを選択して「🪜 階段配置実行」ボタンをクリックしてください")
+                        
+                        # 階段パターン選択
+                        st.markdown("---")
+                        st.markdown("### 🪜 階段パターンを選択")
+                        
+                        stair_pattern_key = st.selectbox(
+                            "階段の種類",
+                            list(STAIR_PATTERNS.keys()),
+                            format_func=lambda x: STAIR_PATTERNS[x]["display_name"],
+                            help="配置する階段のパターンを選択してください",
+                            key="stair_pattern_select"
+                        )
+                        
+                        # 選択されたパターンの説明を表示
+                        st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
+                        
+                        # 階段配置実行ボタン
+                        if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
+                            st.session_state.execute_stair_placement = True
+                            st.session_state.selected_stair_pattern = stair_pattern_key
+                            st.rerun()
+                    else:
+                        st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
                 else:
                     # 結合・追加モード：2点選択
                     
@@ -3294,7 +3365,7 @@ def main():
                                 # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
                                 # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
                                 # 注：線を結合モードは壁線クリック選択のため除外
-                                if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置")) and len(st.session_state.rect_coords) == 2:
+                                if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を追加")) and len(st.session_state.rect_coords) == 2:
                                     try:
                                         json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                         walls_auto = json_data_auto['walls']
@@ -3482,7 +3553,7 @@ def main():
                 
                 # 確定済み選択の表示
                 # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
-                if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加", "オブジェクトを配置"):
+                if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加", "オブジェクトを配置", "階段を追加"):
                     if edit_mode == "線を削除":
                         st.markdown("### 📋 追加済みの削除対象")
                         for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
@@ -3967,6 +4038,9 @@ def main():
                 elif edit_mode == "オブジェクトを配置" and st.session_state.get('execute_furniture_placement'):
                     st.session_state.execute_furniture_placement = False
                     should_execute = True
+                elif edit_mode == "階段を追加" and st.session_state.get('execute_stair_placement'):
+                    st.session_state.execute_stair_placement = False
+                    should_execute = True
                 
                 if should_execute:
                     try:
@@ -4070,6 +4144,73 @@ def main():
                                 st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                 st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                 st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                # 選択状態をクリア（統一関数を使用）
+                                _reset_selection_state()
+                            except Exception as e:
+                                st.error(f"保存エラー: {e}")
+                            
+                        elif edit_mode == "階段を追加":
+                            # ===== 階段を追加モード =====
+                            # セッションステートから階段パターンを取得
+                            stair_pattern_key = st.session_state.get('selected_stair_pattern', 'コの字_時計回り_北スタート')
+                            stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['コの字_時計回り_北スタート'])
+                            
+                            # 各四角形（階段配置範囲）をループして処理
+                            for rect_idx, (p1, p2) in enumerate(target_rects):
+                                # 開始位置（左下隅）を計算
+                                x_min = min(p1[0], p2[0])
+                                y_min = min(p1[1], p2[1])
+                                
+                                # ピクセル座標→メートル座標変換
+                                base_x = (x_min - margin) / scale + min_x
+                                base_y = (img_height - y_min - margin) / scale + min_y
+                                
+                                # JSONに階段データを追加
+                                if 'stairs' not in updated_json:
+                                    updated_json['stairs'] = []
+                                
+                                # 各ステップを追加
+                                for step in stair_pattern['steps']:
+                                    stair_data = {
+                                        'name': f"{step['name']}_rect{rect_idx+1}",
+                                        'position': [
+                                            round(base_x + step['x'], 3),
+                                            round(base_y + step['y'], 3),
+                                            round(step['z'], 3)
+                                        ],
+                                        'size': [
+                                            round(step['x_len'], 3),
+                                            round(step['y_len'], 3),
+                                            round(step['z_len'], 3)
+                                        ],
+                                        'color': 'Walnut',  # デフォルト色
+                                        'pattern': stair_pattern_key
+                                    }
+                                    updated_json['stairs'].append(stair_data)
+                            
+                            # 自動保存: 階段配置結果を JSON/可視化/3Dビューアに反映
+                            try:
+                                temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
+                                with open(temp_json_path, 'w', encoding='utf-8') as f:
+                                    json.dump(updated_json, f, ensure_ascii=False, indent=2)
+
+                                temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
+                                visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+
+                                temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
+                                _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
+
+                                # セッションに保存して UI 上でダウンロード可能にする
+                                st.session_state.json_bytes = temp_json_path.read_bytes()
+                                st.session_state.json_name = temp_json_path.name
+                                st.session_state.viz_bytes = temp_viz_path.read_bytes()
+                                st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
+                                st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                # 成功メッセージ
+                                stair_count = len(target_rects) * len(stair_pattern['steps'])
+                                st.success(f"✅ 階段を配置しました（{len(target_rects)}箇所、計{stair_count}ステップ）")
 
                                 # 選択状態をクリア（統一関数を使用）
                                 _reset_selection_state()
