@@ -4300,10 +4300,31 @@ def main():
                                 st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                 st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                # 選択状態をクリア（統一関数を使用）
-                                _reset_selection_state()
+                                try:
+                                    append_debug(f"セッションステート更新完了: json={len(st.session_state.json_bytes)}bytes, viz={len(st.session_state.viz_bytes)}bytes")
+                                except:
+                                    pass
+
+                                # 階段配置完了メッセージを表示
+                                st.success(f"✅ 階段を{len(target_rects)}箇所に配置しました（合計{stair_count}ステップ）")
+                                
+                                # 選択状態はクリアしない（階段エリアの青い矩形を表示し続ける）
+                                # rect_coords_listはそのまま保持
+                                st.session_state.rect_coords = []
+                                st.session_state.last_click = None
+                                st.session_state.execute_stair_placement = False
+                                st.session_state.selected_stair_pattern = None
+                                
+                                try:
+                                    append_debug(f"階段配置処理完了")
+                                except:
+                                    pass
                             except Exception as e:
                                 st.error(f"保存エラー: {e}")
+                                try:
+                                    append_debug(f"エラー発生: {e}")
+                                except:
+                                    pass
                             
                         elif edit_mode == "線を結合":
                             # ===== 線を結合モード（複数ペア一括対応） =====
