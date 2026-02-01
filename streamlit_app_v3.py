@@ -4305,9 +4305,6 @@ def main():
                                 except:
                                     pass
 
-                                # 階段配置完了メッセージを表示
-                                st.success(f"✅ 階段を{len(target_rects)}箇所に配置しました（合計{stair_count}ステップ）")
-                                
                                 # 選択状態はクリアしない（階段エリアの青い矩形を表示し続ける）
                                 # rect_coords_listはそのまま保持
                                 st.session_state.rect_coords = []
@@ -4319,6 +4316,9 @@ def main():
                                     append_debug(f"階段配置処理完了")
                                 except:
                                     pass
+                                
+                                # 画面を再描画して更新を反映
+                                st.rerun()
                             except Exception as e:
                                 st.error(f"保存エラー: {e}")
                                 try:
