@@ -2947,15 +2947,6 @@ def main():
                         # 選択されたパターンの説明を表示
                         st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                         
-                        # デバッグログ表示（階段追加モードのみ）
-                        debug_logs = st.session_state.get('debug_logs', [])
-                        if len(debug_logs) > 0:
-                            with st.expander("🔍 デバッグログ（問題解決用）", expanded=True):
-                                for log in debug_logs[-20:]:  # 最新20件を表示
-                                    st.text(log)
-                        else:
-                            st.info("🔍 デバッグログ: まだログがありません。「🪜 階段配置実行」ボタンをクリックするとログが表示されます。")
-                        
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                             st.session_state.execute_stair_placement = True
@@ -2967,6 +2958,19 @@ def main():
                             st.rerun()
                     else:
                         st.write("💡 画像をクリックして四角形の2点を指定してください（1点目→2点目）")
+                
+                # デバッグログ表示（階段追加モード - 画像の前に表示）
+                if edit_mode == "階段を追加":
+                    st.markdown("---")
+                    debug_logs = st.session_state.get('debug_logs', [])
+                    if len(debug_logs) > 0:
+                        with st.expander("🔍 デバッグログ（最新20件）", expanded=True):
+                            for log in debug_logs[-20:]:
+                                st.text(log)
+                    else:
+                        with st.expander("🔍 デバッグログ", expanded=False):
+                            st.info("まだログがありません。「🪜 階段配置実行」ボタンをクリックするとログが表示されます。")
+                
                 else:
                     # 結合・追加モード：2点選択
                     
