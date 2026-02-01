@@ -2569,6 +2569,19 @@ def main():
                             cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                             cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                             cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+                    elif edit_mode == "階段を追加":
+                        # 階段追加モード：青色の矩形で階段エリアを表示
+                        stair_color = (255, 0, 0)  # BGR形式で青色
+                        # 半透明の四角形を描画
+                        overlay = display_img_array.copy()
+                        cv2.rectangle(overlay, (x1, y1), (x2, y2), stair_color, -1)
+                        cv2.addWeighted(overlay, 0.3, display_img_array, 0.7, 0, display_img_array)
+                        # 四角形の枠線を描画（太めの青線）
+                        cv2.rectangle(display_img_array, (x1, y1), (x2, y2), stair_color, 5)
+                        # 番号と階段アイコンを描画
+                        text = f"🪜 {idx+1}"
+                        cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 3)
+                        cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, stair_color, 2)
                     else:
                         # 窓追加モード・線を結合モード以外は通常の四角形表示
                         # 半透明の四角形を描画
