@@ -1711,23 +1711,42 @@ def main():
                     )
                 else:
                     overlay_resized = overlay
+                
+                # 画像データの検証（表示エラー対策 - ステップ3と同じロジック）
+                if overlay_resized is None:
+                    st.warning("⚠️ 画像データを再生成しています...")
+                    st.rerun()
+                
+                if overlay_resized.size[0] == 0 or overlay_resized.size[1] == 0:
+                    st.warning("⚠️ 画像サイズが不正です。再試行しています...")
+                    # ズームレベルをリセット
+                    st.session_state.editor_zoom_level = 1.0
+                    st.rerun()
 
                 # クリック受付（表示画像）
                 click = streamlit_image_coordinates(overlay_resized, key="step3_calib_click")
 
-                # クリック処理（壁選択方式 - Step 3と同じロジック）
-                if click:
+                # クリック処理（壁選択方式 - ステップ3と同じ座標変換ロジック）
+                if click and click.get("x") is not None:
                     cur = (click["x"], click["y"])
                     if st.session_state.scale_last_click != cur:
                         st.session_state.scale_last_click = cur
                         
-                        # ズームレベルを考慮して座標を元画像座標に変換
-                        orig_click_x = int(click["x"] / st.session_state.editor_zoom_level / scale_disp)
-                        orig_click_y = int(click["y"] / st.session_state.editor_zoom_level / scale_disp)
+                        # ズーム補正を適用（ステップ3と同じロジック）
+                        zoom_level = st.session_state.get('editor_zoom_level', 1.0)
+                        adjusted_x = click["x"] / zoom_level
+                        adjusted_y = click["y"] / zoom_level
+                        
+                        # 元の座標に変換（ステップ3と同じ _display_to_original 関数を使用）
+                        if scale_disp != 1.0:
+                            orig_click_x, orig_click_y = _display_to_original(adjusted_x, adjusted_y, scale_disp)
+                        else:
+                            orig_click_x = adjusted_x
+                            orig_click_y = adjusted_y
                         
                         # クリック位置から最も近い壁を検出（元画像の座標系で）
                         nearest_wall, distance = _find_nearest_wall_from_click(
-                            orig_click_x, orig_click_y,
+                            int(orig_click_x), int(orig_click_y),
                             walls, scale_px, margin,
                             img_height_calc, min_x, min_y, max_x, max_y,
                             threshold=20
