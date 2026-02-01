@@ -1722,9 +1722,16 @@ def main():
                     # ズームレベルをリセット
                     st.session_state.editor_zoom_level = 1.0
                     st.rerun()
+                
+                # キーを動的に生成（ステップ3と同様に状態を反映）
+                if 'calibration_reset_counter' not in st.session_state:
+                    st.session_state.calibration_reset_counter = 0
+                
+                selected_wall_id = st.session_state.selected_wall_for_calibration.get('id', 'none') if st.session_state.selected_wall_for_calibration else 'none'
+                calib_key = f"step2_calib_click_{selected_wall_id}_{st.session_state.calibration_reset_counter}"
 
                 # クリック受付（表示画像）
-                click = streamlit_image_coordinates(overlay_resized, key="step3_calib_click")
+                click = streamlit_image_coordinates(overlay_resized, key=calib_key)
 
                 # クリック処理（壁選択方式 - ステップ3と同じ座標変換ロジック）
                 if click and click.get("x") is not None:
@@ -1766,6 +1773,7 @@ def main():
                     if st.button("🔄 選択をリセット", use_container_width=True, key="step3_calib_reset"):
                         st.session_state.selected_wall_for_calibration = None
                         st.session_state.scale_last_click = None
+                        st.session_state.calibration_reset_counter = st.session_state.get('calibration_reset_counter', 0) + 1
                         st.rerun()
 
                 # スケール適用済みの案内（遷移は適用時に実施済み）
