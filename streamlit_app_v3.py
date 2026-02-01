@@ -1688,16 +1688,27 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
-                    col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
-                    with col_zoom1:
-                        if st.button("🔍−", key="step2_zoom_out"):
-                            st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
-                            st.rerun()
-                    with col_zoom2:
-                        if st.button("🔍+", key="step2_zoom_in"):
-                            st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
-                            st.rerun()
-                    st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
+                with col_zoom1:
+                    if st.button("🔍−", key="step2_zoom_out"):
+                        st.session_state.editor_zoom_level = max(0.1, st.session_state.editor_zoom_level - 0.25)
+                        st.rerun()
+                with col_zoom2:
+                    if st.button("🔍+", key="step2_zoom_in"):
+                        st.session_state.editor_zoom_level = min(2.0, st.session_state.editor_zoom_level + 0.25)
+                        st.rerun()
+                st.markdown(f"表示サイズ: {st.session_state.editor_zoom_level*100:.0f}%")
+                
+                # ズーム適用
+                zoom_level = st.session_state.get('editor_zoom_level', 1.0)
+                if zoom_level != 1.0:
+                    w, h = overlay.size
+                    overlay_resized = overlay.resize(
+                        (int(w * zoom_level), int(h * zoom_level)),
+                        Image.Resampling.LANCZOS
+                    )
+                else:
+                    overlay_resized = overlay
 
                 # クリック受付（表示画像）
                 click = streamlit_image_coordinates(overlay_resized, key="step3_calib_click")
