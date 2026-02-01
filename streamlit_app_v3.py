@@ -2951,6 +2951,10 @@ def main():
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                             st.session_state.execute_stair_placement = True
                             st.session_state.selected_stair_pattern = stair_pattern_key
+                            try:
+                                append_debug(f"階段配置ボタンクリック: pattern={stair_pattern_key}, rect_count={len(st.session_state.rect_coords_list)}")
+                            except:
+                                pass
                             st.rerun()
                     else:
                         st.write("💡 画像をクリックして四角形の2点を指定してください（1点目→2点目）")
@@ -3551,6 +3555,14 @@ def main():
                         st.session_state.execute_furniture_placement = True
                         st.rerun()
                 
+                # デバッグログ表示（階段追加モードのみ）
+                if edit_mode == "階段を追加":
+                    debug_logs = st.session_state.get('debug_logs', [])
+                    if len(debug_logs) > 0:
+                        with st.expander("🔍 デバッグログ（問題解決用）", expanded=True):
+                            for log in debug_logs[-10:]:  # 最新10件のみ表示
+                                st.text(log)
+                
                 # 確定済み選択の表示
                 # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
                 if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加", "オブジェクトを配置", "階段を追加"):
@@ -4041,8 +4053,16 @@ def main():
                 elif edit_mode == "階段を追加" and st.session_state.get('execute_stair_placement'):
                     st.session_state.execute_stair_placement = False
                     should_execute = True
+                    try:
+                        append_debug(f"階段追加処理トリガー: edit_mode={edit_mode}, rect_list={len(st.session_state.rect_coords_list)}")
+                    except:
+                        pass
                 
                 if should_execute:
+                    try:
+                        append_debug(f"should_execute=True, edit_mode={edit_mode}")
+                    except:
+                        pass
                     try:
                         # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
                         # 線を結合モードの場合は使用しない
@@ -4055,6 +4075,11 @@ def main():
                             target_rects = list(st.session_state.rect_coords_list)
                             if len(st.session_state.rect_coords) == 2:
                                 target_rects.append(tuple(st.session_state.rect_coords))
+                        
+                        try:
+                            append_debug(f"target_rects生成完了: count={len(target_rects)}, edit_mode={edit_mode}")
+                        except:
+                            pass
                         
                         # JSONデータを読み込み
                         json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
@@ -4152,12 +4177,26 @@ def main():
                             
                         elif edit_mode == "階段を追加":
                             # ===== 階段を追加モード =====
+                            try:
+                                append_debug(f"階段追加処理開始: target_rects={len(target_rects)}")
+                            except:
+                                pass
+                            
                             # セッションステートから階段パターンを取得
                             stair_pattern_key = st.session_state.get('selected_stair_pattern', 'コの字_時計回り_北スタート')
                             stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['コの字_時計回り_北スタート'])
                             
+                            try:
+                                append_debug(f"階段パターン取得: {stair_pattern_key}, steps={len(stair_pattern.get('steps', []))}")
+                            except:
+                                pass
+                            
                             # 各四角形（階段配置範囲）をループして処理
                             for rect_idx, (p1, p2) in enumerate(target_rects):
+                                try:
+                                    append_debug(f"階段配置ループ {rect_idx+1}/{len(target_rects)}: p1={p1}, p2={p2}")
+                                except:
+                                    pass
                                 # 開始位置（左下隅）を計算
                                 x_min = min(p1[0], p2[0])
                                 y_min = min(p1[1], p2[1])
@@ -4169,9 +4208,22 @@ def main():
                                 # JSONに階段データを追加
                                 if 'stairs' not in updated_json:
                                     updated_json['stairs'] = []
+                                    try:
+                                        append_debug(f"JSON stairs配列を初期化")
+                                    except:
+                                        pass
+                                
+                                try:
+                                    append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}")
+                                except:
+                                    pass
                                 
                                 # 各ステップを追加
                                 for step in stair_pattern['steps']:
+                                    try:
+                                        append_debug(f"ステップ追加: {step['name']}")
+                                    except:
+                                        pass
                                     stair_data = {
                                         'name': f"{step['name']}_rect{rect_idx+1}",
                                         'position': [
@@ -4191,9 +4243,20 @@ def main():
                             
                             # 自動保存: 階段配置結果を JSON/可視化/3Dビューアに反映
                             try:
+                                try:
+                                    stair_count = len(updated_json.get('stairs', []))
+                                    append_debug(f"階段配置完了: 合計{stair_count}ステップをJSONに追加")
+                                except:
+                                    pass
+                                
                                 temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                                 with open(temp_json_path, 'w', encoding='utf-8') as f:
                                     json.dump(updated_json, f, ensure_ascii=False, indent=2)
+                                
+                                try:
+                                    append_debug(f"JSON保存完了: {temp_json_path}")
+                                except:
+                                    pass
 
                                 temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
                                 visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
