@@ -4280,22 +4280,34 @@ def main():
                                         except Exception as e:
                                             st.error(f"デバッグログエラー: {e}")
                                         
-                                        # サイズタイプに応じてサイズを計算
+                                        # サイズタイプに応じてサイズを計算（回転前の長軸と短軸）
                                         size_type = step.get('size_type', 'normal')
                                         if size_type == 'normal':  # 1-4, 11-14段: 長軸=X、短軸=X/4
-                                            width_m = X
-                                            depth_m = X / 4.0
+                                            long_axis = X
+                                            short_axis = X / 4.0
                                         elif size_type == 'landing':  # 5, 7-8, 10段: 長軸=X、短軸=X/3
-                                            width_m = X
-                                            depth_m = X / 3.0
+                                            long_axis = X
+                                            short_axis = X / 3.0
                                         elif size_type == 'diagonal':  # 6, 9段: 長軸=X*1.3、短軸=X/3
-                                            width_m = X * 1.3
-                                            depth_m = X / 3.0
+                                            long_axis = X * 1.3
+                                            short_axis = X / 3.0
                                         else:
-                                            width_m = X
-                                            depth_m = X / 4.0
+                                            long_axis = X
+                                            short_axis = X / 4.0
                                         
                                         height_m = step['z_len']
+                                        rotation = step.get('rotation', 0)
+                                        
+                                        # 回転角度に応じてwidth（X方向）とdepth（Y方向）を決定
+                                        # 0度/180度: 長軸がX方向、短軸がY方向
+                                        # 90度/270度: 短軸がX方向、長軸がY方向
+                                        # 45度/135度: 対角線なのでそのまま
+                                        if rotation in [90, 270]:
+                                            width_m = short_axis  # X方向は短軸
+                                            depth_m = long_axis   # Y方向は長軸
+                                        else:
+                                            width_m = long_axis   # X方向は長軸
+                                            depth_m = short_axis  # Y方向は短軸
                                         
                                         # 位置計算：パターンの相対座標（0-3範囲）を矩形サイズにマッピング
                                         # パターン座標の最大値3.0を矩形の幅/高さ(rect_width_m, rect_height_m)にマッピング
@@ -4315,7 +4327,7 @@ def main():
                                                 round(depth_m, 3),
                                                 round(height_m, 3)
                                             ],
-                                            'rotation': step.get('rotation', 0),  # 回転角度（度数法）
+                                            'rotation': rotation,  # 回転角度（度数法）
                                             'color': 'Walnut',
                                             'pattern': stair_pattern_key
                                         }
