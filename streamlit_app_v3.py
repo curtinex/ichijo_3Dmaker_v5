@@ -4224,172 +4224,188 @@ def main():
                         elif edit_mode == "階段を追加":
                             # ===== 階段を追加モード =====
                             try:
-                                append_debug(f"階段追加処理開始: target_rects={len(target_rects)}")
-                            except:
-                                pass
-                            
-                            # セッションステートから階段パターンを取得
-                            stair_pattern_key = st.session_state.get('selected_stair_pattern', 'コの字_時計回り_北スタート')
-                            stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['コの字_時計回り_北スタート'])
-                            
-                            try:
-                                append_debug(f"階段パターン取得: {stair_pattern_key}, steps={len(stair_pattern.get('steps', []))}")
-                            except:
-                                pass
-                            
-                            # 各四角形（階段配置範囲）をループして処理
-                            for rect_idx, (p1, p2) in enumerate(target_rects):
-                                try:
-                                    append_debug(f"階段配置ループ {rect_idx+1}/{len(target_rects)}: p1={p1}, p2={p2}")
-                                except:
-                                    pass
-                                # ピクセル座標→メートル座標変換（_snap_to_gridと同じロジック）
-                                x_min_px = min(p1[0], p2[0])
-                                x_max_px = max(p1[0], p2[0])
-                                y_min_px = min(p1[1], p2[1])
-                                y_max_px = max(p1[1], p2[1])
-                                
-                                # 左下隅の座標を計算（Y軸は反転するため、y_max_pxを使用）
-                                base_x = (x_min_px - margin) / scale + min_x
-                                base_y = (img_height - y_max_px - margin) / scale + min_y
-                                
-                                # 赤枠のサイズをメートル単位で計算
-                                rect_width_m = (x_max_px - x_min_px) / scale
-                                rect_height_m = (y_max_px - y_min_px) / scale
-                                
-                                # 階段パターンの元サイズを計算（全ステップの座標範囲）
-                                all_x = [s['x'] for s in stair_pattern['steps']] + [s['x'] + s['x_len'] for s in stair_pattern['steps']]
-                                all_y = [s['y'] for s in stair_pattern['steps']] + [s['y'] + s['y_len'] for s in stair_pattern['steps']]
-                                pattern_width = max(all_x) - min(all_x)
-                                pattern_height = max(all_y) - min(all_y)
-                                
-                                # スケール係数を計算（赤枠に収まるように）
-                                scale_x = rect_width_m / pattern_width if pattern_width > 0 else 1.0
-                                scale_y = rect_height_m / pattern_height if pattern_height > 0 else 1.0
-                                
-                                # JSONに階段データを追加
-                                if 'stairs' not in updated_json:
-                                    updated_json['stairs'] = []
-                                    try:
-                                        append_debug(f"JSON stairs配列を初期化")
-                                    except:
-                                        pass
-                                
-                                try:
-                                    append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}, スケール: {scale_x:.3f}x{scale_y:.3f}")
-                                except:
-                                    pass
-                                
-                                # 各ステップを追加（スケーリング適用）
-                                for step in stair_pattern['steps']:
-                                    try:
-                                        append_debug(f"ステップ追加: {step['name']}")
-                                    except:
-                                        pass
-                                    # サイズを先に計算
-                                    width_m = step['x_len'] * scale_x
-                                    depth_m = step['y_len'] * scale_y
-                                    height_m = step['z_len']
-                                    
-                                    # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
-                                    stair_data = {
-                                        'name': f"{step['name']}_rect{rect_idx+1}",
-                                        'position': [
-                                            round(base_x + step['x'] * scale_x + width_m / 2, 3),
-                                            round(base_y + step['y'] * scale_y + depth_m / 2, 3),
-                                            round(step['z'], 3)
-                                        ],
-                                        'size': [
-                                            round(width_m, 3),
-                                            round(depth_m, 3),
-                                            round(height_m, 3)
-                                        ],
-                                        'color': 'Walnut',
-                                        'pattern': stair_pattern_key
-                                    }
-                                    updated_json['stairs'].append(stair_data)
-                            
-                            # 自動保存: 階段配置結果を JSON/可視化/3Dビューアに反映
-                            try:
-                                try:
-                                    stair_count = len(updated_json.get('stairs', []))
-                                    append_debug(f"階段配置完了: 合計{stair_count}ステップをJSONに追加")
-                                except:
-                                    pass
-                                
-                                temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
-                                with open(temp_json_path, 'w', encoding='utf-8') as f:
-                                    json.dump(updated_json, f, ensure_ascii=False, indent=2)
-                                
-                                try:
-                                    append_debug(f"JSON保存完了: {temp_json_path}")
-                                    # 階段データの検証
-                                    if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
-                                        first_stair = updated_json['stairs'][0]
-                                        append_debug(f"JSONに階段データ確認: stairs配列長={len(updated_json['stairs'])}, 最初のステップ={first_stair}")
-                                    else:
-                                        append_debug(f"警告: JSONにstairsキーが存在しないか空です")
-                                except:
-                                    pass
-
-                                # 階段配置では壁を追加しないため、highlight_wall_idsは空リスト
-                                temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
-                                visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=[], wall_color=(0, 0, 0), bg_color=(255, 255, 255))
-
-                                try:
-                                    append_debug(f"2D可視化画像生成完了: {temp_viz_path}")
-                                except:
-                                    pass
-
-                                temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
-                                _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
-
-                                try:
-                                    append_debug(f"3Dビューア生成完了: {temp_viewer_path}")
-                                    # HTMLファイルに階段コードが含まれているか確認
-                                    html_content = temp_viewer_path.read_text(encoding='utf-8')
-                                    if 'stairs' in html_content:
-                                        # stairsの出現回数をカウント
-                                        stairs_count = html_content.count('stairs')
-                                        stairs_foreach_exists = 'stairs.forEach' in html_content
-                                        append_debug(f"HTMLに'stairs'文字列: {stairs_count}回出現, forEach構文: {stairs_foreach_exists}")
-                                    else:
-                                        append_debug(f"警告: HTMLに'stairs'文字列が見つかりません")
-                                except:
-                                    pass
-
-                                # セッションに保存して UI 上でダウンロード可能にする
-                                st.session_state.json_bytes = temp_json_path.read_bytes()
-                                st.session_state.json_name = temp_json_path.name
-                                st.session_state.viz_bytes = temp_viz_path.read_bytes()
-                                st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
-                                st.session_state.viewer_html_name = temp_viewer_path.name
-
-                                try:
-                                    append_debug(f"セッションステート更新完了: json={len(st.session_state.json_bytes)}bytes, viz={len(st.session_state.viz_bytes)}bytes")
-                                except:
-                                    pass
-
-                                # 選択状態はクリアしない（階段エリアの青い矩形を表示し続ける）
-                                # rect_coords_listはそのまま保持
-                                st.session_state.rect_coords = []
-                                st.session_state.last_click = None
-                                st.session_state.execute_stair_placement = False
-                                st.session_state.selected_stair_pattern = None
-                                
-                                try:
-                                    append_debug(f"階段配置処理完了")
-                                except:
-                                    pass
-                                
-                                # 画面を再描画して更新を反映
-                                st.rerun()
+                                append_debug(f"階段追加処理開始: target_rects={len(target_rects)}, rect_coords_list={len(st.session_state.rect_coords_list)}")
                             except Exception as e:
-                                st.error(f"保存エラー: {e}")
+                                st.error(f"デバッグログエラー: {e}")
+                            
+                            # 選択範囲がない場合のエラーチェック
+                            if len(target_rects) == 0:
+                                st.error("❌ 階段配置範囲が選択されていません。画像上で2点をクリックして範囲を指定してください。")
                                 try:
-                                    append_debug(f"エラー発生: {e}")
+                                    append_debug(f"エラー: target_rects が空です")
                                 except:
                                     pass
+                                # 処理を中断せず、エラー表示のみ
+                                st.session_state.execute_stair_placement = False
+                            else:
+                                # セッションステートから階段パターンを取得
+                                stair_pattern_key = st.session_state.get('selected_stair_pattern', 'コの字_時計回り_北スタート')
+                                stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['コの字_時計回り_北スタート'])
+                                
+                                try:
+                                    append_debug(f"階段パターン取得: {stair_pattern_key}, steps={len(stair_pattern.get('steps', []))}")
+                                except Exception as e:
+                                    st.error(f"デバッグログエラー: {e}")
+                                
+                                # 各四角形（階段配置範囲）をループして処理
+                                for rect_idx, (p1, p2) in enumerate(target_rects):
+                                    try:
+                                        append_debug(f"階段配置ループ {rect_idx+1}/{len(target_rects)}: p1={p1}, p2={p2}")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+                                    # ピクセル座標→メートル座標変換（_snap_to_gridと同じロジック）
+                                    x_min_px = min(p1[0], p2[0])
+                                    x_max_px = max(p1[0], p2[0])
+                                    y_min_px = min(p1[1], p2[1])
+                                    y_max_px = max(p1[1], p2[1])
+                                    
+                                    # 左下隅の座標を計算（Y軸は反転するため、y_max_pxを使用）
+                                    base_x = (x_min_px - margin) / scale + min_x
+                                    base_y = (img_height - y_max_px - margin) / scale + min_y
+                                    
+                                    # 赤枠のサイズをメートル単位で計算
+                                    rect_width_m = (x_max_px - x_min_px) / scale
+                                    rect_height_m = (y_max_px - y_min_px) / scale
+                                    
+                                    # 階段パターンの元サイズを計算（全ステップの座標範囲）
+                                    all_x = [s['x'] for s in stair_pattern['steps']] + [s['x'] + s['x_len'] for s in stair_pattern['steps']]
+                                    all_y = [s['y'] for s in stair_pattern['steps']] + [s['y'] + s['y_len'] for s in stair_pattern['steps']]
+                                    pattern_width = max(all_x) - min(all_x)
+                                    pattern_height = max(all_y) - min(all_y)
+                                    
+                                    # スケール係数を計算（赤枠に収まるように）
+                                    scale_x = rect_width_m / pattern_width if pattern_width > 0 else 1.0
+                                    scale_y = rect_height_m / pattern_height if pattern_height > 0 else 1.0
+                                    
+                                    # JSONに階段データを追加
+                                    if 'stairs' not in updated_json:
+                                        updated_json['stairs'] = []
+                                        try:
+                                            append_debug(f"JSON stairs配列を初期化")
+                                        except Exception as e:
+                                            st.error(f"デバッグログエラー: {e}")
+                                    
+                                    try:
+                                        append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}, スケール: {scale_x:.3f}x{scale_y:.3f}")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+                                    
+                                    # 各ステップを追加（スケーリング適用）
+                                    for step in stair_pattern['steps']:
+                                        try:
+                                            append_debug(f"ステップ追加: {step['name']}")
+                                        except Exception as e:
+                                            st.error(f"デバッグログエラー: {e}")
+                                        # サイズを先に計算
+                                        width_m = step['x_len'] * scale_x
+                                        depth_m = step['y_len'] * scale_y
+                                        height_m = step['z_len']
+                                        
+                                        # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
+                                        stair_data = {
+                                            'name': f"{step['name']}_rect{rect_idx+1}",
+                                            'position': [
+                                                round(base_x + step['x'] * scale_x + width_m / 2, 3),
+                                                round(base_y + step['y'] * scale_y + depth_m / 2, 3),
+                                                round(step['z'], 3)
+                                            ],
+                                            'size': [
+                                                round(width_m, 3),
+                                                round(depth_m, 3),
+                                                round(height_m, 3)
+                                            ],
+                                            'color': 'Walnut',
+                                            'pattern': stair_pattern_key
+                                        }
+                                        updated_json['stairs'].append(stair_data)
+                            
+                                # 自動保存: 階段配置結果を JSON/可視化/3Dビューアに反映
+                                try:
+                                    try:
+                                        stair_count = len(updated_json.get('stairs', []))
+                                        append_debug(f"階段配置完了: 合計{stair_count}ステップをJSONに追加")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+                                    
+                                    temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
+                                    with open(temp_json_path, 'w', encoding='utf-8') as f:
+                                        json.dump(updated_json, f, ensure_ascii=False, indent=2)
+                                    
+                                    try:
+                                        append_debug(f"JSON保存完了: {temp_json_path}")
+                                        # 階段データの検証
+                                        if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
+                                            first_stair = updated_json['stairs'][0]
+                                            append_debug(f"JSONに階段データ確認: stairs配列長={len(updated_json['stairs'])}, 最初のステップ={first_stair}")
+                                        else:
+                                            append_debug(f"警告: JSONにstairsキーが存在しないか空です")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+
+                                    # 階段配置では壁を追加しないため、highlight_wall_idsは空リスト
+                                    temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
+                                    visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=[], wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+
+                                    try:
+                                        append_debug(f"2D可視化画像生成完了: {temp_viz_path}")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+
+                                    temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
+                                    _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
+
+                                    try:
+                                        append_debug(f"3Dビューア生成完了: {temp_viewer_path}")
+                                        # HTMLファイルに階段コードが含まれているか確認
+                                        html_content = temp_viewer_path.read_text(encoding='utf-8')
+                                        if 'stairs' in html_content:
+                                            # stairsの出現回数をカウント
+                                            stairs_count = html_content.count('stairs')
+                                            stairs_foreach_exists = 'stairs.forEach' in html_content
+                                            append_debug(f"HTMLに'stairs'文字列: {stairs_count}回出現, forEach構文: {stairs_foreach_exists}")
+                                        else:
+                                            append_debug(f"警告: HTMLに'stairs'文字列が見つかりません")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+
+                                    # セッションに保存して UI 上でダウンロード可能にする
+                                    st.session_state.json_bytes = temp_json_path.read_bytes()
+                                    st.session_state.json_name = temp_json_path.name
+                                    st.session_state.viz_bytes = temp_viz_path.read_bytes()
+                                    st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
+                                    st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                    try:
+                                        append_debug(f"セッションステート更新完了: json={len(st.session_state.json_bytes)}bytes, viz={len(st.session_state.viz_bytes)}bytes")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+
+                                    # 選択状態はクリアしない（階段エリアの青い矩形を表示し続ける）
+                                    # rect_coords_listはそのまま保持
+                                    st.session_state.rect_coords = []
+                                    st.session_state.last_click = None
+                                    st.session_state.execute_stair_placement = False
+                                    st.session_state.selected_stair_pattern = None
+                                    
+                                    try:
+                                        append_debug(f"階段配置処理完了")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+                                    
+                                    # 成功メッセージ
+                                    st.success(f"✅ 階段を{stair_count}ステップ配置しました！")
+                                    
+                                    # 画面を再描画して更新を反映
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"❌ 階段配置エラー: {e}")
+                                    import traceback
+                                    st.error(traceback.format_exc())
+                                    try:
+                                        append_debug(f"エラー発生: {e}")
+                                        append_debug(f"トレースバック: {traceback.format_exc()}")
+                                    except:
+                                        pass
                             
                         elif edit_mode == "線を結合":
                             # ===== 線を結合モード（複数ペア一括対応） =====
