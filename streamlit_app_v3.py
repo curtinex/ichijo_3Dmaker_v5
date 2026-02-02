@@ -4217,11 +4217,27 @@ def main():
                                     pass
                                 # ピクセル座標→メートル座標変換（_snap_to_gridと同じロジック）
                                 x_min_px = min(p1[0], p2[0])
-                                y_max_px = max(p1[1], p2[1])  # Y座標の最大値（画面上部）
+                                x_max_px = max(p1[0], p2[0])
+                                y_min_px = min(p1[1], p2[1])
+                                y_max_px = max(p1[1], p2[1])
                                 
                                 # 左下隅の座標を計算（Y軸は反転するため、y_max_pxを使用）
                                 base_x = (x_min_px - margin) / scale + min_x
                                 base_y = (img_height - y_max_px - margin) / scale + min_y
+                                
+                                # 赤枠のサイズをメートル単位で計算
+                                rect_width_m = (x_max_px - x_min_px) / scale
+                                rect_height_m = (y_max_px - y_min_px) / scale
+                                
+                                # 階段パターンの元サイズを計算（全ステップの座標範囲）
+                                all_x = [s['x'] for s in stair_pattern['steps']] + [s['x'] + s['x_len'] for s in stair_pattern['steps']]
+                                all_y = [s['y'] for s in stair_pattern['steps']] + [s['y'] + s['y_len'] for s in stair_pattern['steps']]
+                                pattern_width = max(all_x) - min(all_x)
+                                pattern_height = max(all_y) - min(all_y)
+                                
+                                # スケール係数を計算（赤枠に収まるように）
+                                scale_x = rect_width_m / pattern_width if pattern_width > 0 else 1.0
+                                scale_y = rect_height_m / pattern_height if pattern_height > 0 else 1.0
                                 
                                 # JSONに階段データを追加
                                 if 'stairs' not in updated_json:
@@ -4232,11 +4248,11 @@ def main():
                                         pass
                                 
                                 try:
-                                    append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}")
+                                    append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}, スケール: {scale_x:.3f}x{scale_y:.3f}")
                                 except:
                                     pass
                                 
-                                # 各ステップを追加
+                                # 各ステップを追加（スケーリング適用）
                                 for step in stair_pattern['steps']:
                                     try:
                                         append_debug(f"ステップ追加: {step['name']}")
@@ -4245,13 +4261,13 @@ def main():
                                     stair_data = {
                                         'name': f"{step['name']}_rect{rect_idx+1}",
                                         'position': [
-                                            round(base_x + step['x'], 3),
-                                            round(base_y + step['y'], 3),
+                                            round(base_x + step['x'] * scale_x, 3),
+                                            round(base_y + step['y'] * scale_y, 3),
                                             round(step['z'], 3)
                                         ],
                                         'size': [
-                                            round(step['x_len'], 3),
-                                            round(step['y_len'], 3),
+                                            round(step['x_len'] * scale_x, 3),
+                                            round(step['y_len'] * scale_y, 3),
                                             round(step['z_len'], 3)
                                         ],
                                         'color': 'Walnut',
