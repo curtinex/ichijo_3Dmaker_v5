@@ -4273,7 +4273,7 @@ def main():
                                     except Exception as e:
                                         st.error(f"デバッグログエラー: {e}")
                                     
-                                    # 各ステップを追加（サイズはXベース、位置はスケール適用）
+                                    # 各ステップを追加（サイズと位置の両方をX基準で計算）
                                     for step in stair_pattern['steps']:
                                         try:
                                             append_debug(f"ステップ追加: {step['name']}, rotation={step.get('rotation', 0)}度")
@@ -4297,13 +4297,18 @@ def main():
                                         
                                         height_m = step['z_len']
                                         
+                                        # 位置計算：パターンの相対座標をX基準でスケール
+                                        # パターンは正規化座標（x_len=1.0, y_len=0.25等）で定義されているので、
+                                        # それを実際のX基準の座標に変換
+                                        pos_x = base_x + (step['x'] * X) + width_m / 2
+                                        pos_y = base_y + (step['y'] * X) + depth_m / 2
+                                        
                                         # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
-                                        # 位置はパターンの相対座標にスケールを適用
                                         stair_data = {
                                             'name': f"{step['name']}_rect{rect_idx+1}",
                                             'position': [
-                                                round(base_x + step['x'] * scale_x + (width_m * scale_x / step['x_len']) / 2, 3),
-                                                round(base_y + step['y'] * scale_y + (depth_m * scale_y / step['y_len']) / 2, 3),
+                                                round(pos_x, 3),
+                                                round(pos_y, 3),
                                                 round(step['z'], 3)
                                             ],
                                             'size': [
