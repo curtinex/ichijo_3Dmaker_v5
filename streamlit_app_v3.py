@@ -4329,7 +4329,8 @@ def main():
                                         st.error(f"デバッグログエラー: {e}")
                                     
                                     # 階段データの検証
-                                    if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
+                                    try:
+                                        if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
                                             first_stair = updated_json['stairs'][0]
                                             append_debug(f"JSONに階段データ確認: stairs配列長={len(updated_json['stairs'])}, 最初のステップ={first_stair}")
                                         else:
