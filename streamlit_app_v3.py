@@ -4326,7 +4326,7 @@ def main():
                                                 round(height_m, 3)
                                             ],
                                             'rotation': 0,  # 全て同じ方向
-                                            'color': 'Walnut',
+                                            'color': 'Tan',  # 床と同じ色
                                             'pattern': stair_pattern_key
                                         }
                                         updated_json['stairs'].append(stair_data)
