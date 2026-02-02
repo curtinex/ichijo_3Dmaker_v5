@@ -4274,15 +4274,15 @@ def main():
                                         
                                         # サイズタイプに応じてサイズを計算
                                         size_type = step.get('size_type', 'narrow')
-                                        if size_type == 'narrow':  # 1-4, 11-14段: 長軸=X、短軸=X/8
+                                        if size_type == 'narrow':  # 1-4, 11-14段: 長軸=X、短軸=X/4
                                             width_m = X
-                                            depth_m = X / 8.0
-                                        elif size_type == 'wide':  # 5-10段: 長軸=X、短軸=X/6
+                                            depth_m = X / 4.0
+                                        elif size_type == 'wide':  # 5-10段: 長軸=X、短軸=X/3
                                             width_m = X
-                                            depth_m = X / 6.0
+                                            depth_m = X / 3.0
                                         else:
                                             width_m = X
-                                            depth_m = X / 8.0
+                                            depth_m = X / 4.0
                                         
                                         height_m = step['z_len']
                                         rotation = 0  # 全て同じ方向
