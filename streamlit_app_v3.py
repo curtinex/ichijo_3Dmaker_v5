@@ -2934,7 +2934,17 @@ def main():
                     if num_selected == 0:
                         st.write("💡 **削除したい壁線をクリックしてください（複数選択可能）**")
                     else:
-                        st.info(f"✅ **{num_selected}本選択中** → さらに追加する場合はクリック、削除する場合は右側の「🗑️ 削除実行」ボタンをクリックしてください")
+                        st.success(f"✅ **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「🗑️ 削除実行」ボタンをクリックしてください")
+                        
+                        # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
+                        st.markdown("---")
+                        if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
+                            # 選択された壁をセッションに保存してから選択リストをクリア
+                            st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
+                            st.session_state.selected_walls_for_delete = []
+                            st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                            # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
+                            st.rerun()
                 elif edit_mode == "スケール校正":
                     # スケール校正モード：壁を1クリックで選択
                     if st.session_state.selected_wall_for_calibration:
@@ -2986,8 +2996,9 @@ def main():
                         with st.expander("🔍 デバッグログ", expanded=False):
                             st.info("まだログがありません。「🪜 階段配置実行」ボタンをクリックするとログが表示されます。")
                 
-                else:
-                    # 結合・追加モード：2点選択
+                # 線を結合・窓を追加・線を削除モードは壁線クリック選択なので、ここでのメッセージ表示は不要
+                elif edit_mode not in ("線を結合", "窓を追加", "線を削除"):
+                    # その他のモード：2点選択
                     
                     # 線を追加モード：rect_coords_listに選択がある場合は実行ボタンを表示
                     if edit_mode == "線を追加" and len(st.session_state.rect_coords_list) > 0:
@@ -4061,6 +4072,9 @@ def main():
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
                 elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
+                    # 前回のrerunで保存された壁を処理
+                    should_execute = True
+                elif edit_mode == "線を削除" and st.session_state.get('delete_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
                 elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
@@ -5228,8 +5242,31 @@ def main():
                                     delete_details = []
                                     walls_to_delete = []  # 削除対象の壁IDリスト
                                     
-                                    # クリック選択された壁を削除
-                                    if len(st.session_state.selected_walls_for_delete) > 0:
+                                    # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                                    if st.session_state.get('delete_walls_to_process'):
+                                        # セッションから壁リストを取得
+                                        walls_list = st.session_state.delete_walls_to_process
+                                        
+                                        # 処理完了後にセッションから削除
+                                        del st.session_state.delete_walls_to_process
+                                        
+                                        # クリック選択された壁を削除
+                                        for wall in walls_list:
+                                            walls_to_delete.append(wall['id'])
+                                            delete_details.append({
+                                                'method': 'クリック選択',
+                                                'wall_id': wall['id']
+                                            })
+                                        total_deleted_count = len(walls_to_delete)
+                                        
+                                        # 壁を削除
+                                        if len(walls_to_delete) > 0:
+                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                        
+                                        # 全体のリセットは後の共通処理で実行される
+                                    
+                                    # クリック選択された壁を削除（後方互換性のため残す）
+                                    elif len(st.session_state.selected_walls_for_delete) > 0:
                                         for wall in st.session_state.selected_walls_for_delete:
                                             walls_to_delete.append(wall['id'])
                                             delete_details.append({
