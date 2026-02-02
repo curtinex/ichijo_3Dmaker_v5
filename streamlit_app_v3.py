@@ -4300,11 +4300,16 @@ def main():
                                                 round(depth_m, 3),
                                                 round(height_m, 3)
                                             ],
-                                            'rotation': rotation,  # 回転角度（度数法）
+                                            'rotation': 0,  # 全て同じ方向
                                             'color': 'Walnut',
                                             'pattern': stair_pattern_key
                                         }
                                         updated_json['stairs'].append(stair_data)
+                                        
+                                        try:
+                                            append_debug(f"  → 位置: ({pos_x:.3f}, {pos_y:.3f}), サイズ: {width_m:.3f}×{depth_m:.3f}m")
+                                        except Exception as e:
+                                            st.error(f"デバッグログエラー: {e}")
                             
                                 # 自動保存: 階段配置結果を JSON/可視化/3Dビューアに反映
                                 try:
@@ -4315,18 +4320,16 @@ def main():
                                         st.error(f"デバッグログエラー: {e}")
                                     
                                     temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
-                                    with open(temp_json_0,  # 全て同じ方向
-                                            'color': 'Walnut',
-                                            'pattern': stair_pattern_key
-                                        }
-                                        updated_json['stairs'].append(stair_data)
-                                        
-                                        try:
-                                            append_debug(f"  → 位置: ({pos_x:.3f}, {pos_y:.3f}), サイズ: {width_m:.3f}×{depth_m:.3f}m")
-                                        except Exception as e:
-                                            st.error(f"デバッグログエラー: {e}"}")
-                                        # 階段データの検証
-                                        if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
+                                    with open(temp_json_path, 'w', encoding='utf-8') as f:
+                                        json.dump(updated_json, f, ensure_ascii=False, indent=2)
+                                    
+                                    try:
+                                        append_debug(f"JSONファイル保存完了: {temp_json_path}")
+                                    except Exception as e:
+                                        st.error(f"デバッグログエラー: {e}")
+                                    
+                                    # 階段データの検証
+                                    if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
                                             first_stair = updated_json['stairs'][0]
                                             append_debug(f"JSONに階段データ確認: stairs配列長={len(updated_json['stairs'])}, 最初のステップ={first_stair}")
                                         else:
