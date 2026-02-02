@@ -22,8 +22,8 @@ def install_ichijo_core():
     try:
         import ichijo_core
         
-        # バージョンが期待値と一致するかチェック（0.0.11系を許可）
-        if ichijo_core.__version__.startswith("0.0.11"):
+        # バージョンが期待値と一致するかチェック（0.0.13系を許可）
+        if ichijo_core.__version__.startswith("0.0.13"):
             return True, None
         else:
             # 強制的に再インストール
@@ -48,8 +48,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（5015131）を指定
-        commit_hash = "5015131"
+        # 最新コミット（56fc4b5: v0.0.13 階段機能含む）を指定
+        commit_hash = "56fc4b5"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
