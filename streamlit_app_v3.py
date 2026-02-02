@@ -139,35 +139,29 @@ try:
     STAIR_PATTERNS = {
         "コの字_時計回り_北スタート": {
             "display_name": "コの字階段（時計回り・北スタート）",
-            "description": "1-14段: 全て長方形1つで表現、角度で回転制御。サイズは矩形選択のX（x長さの半分）を基準に動的計算",
+            "description": "1-14段: 全て同じ方向の長方形。長軸=X（矩形幅の半分）、短軸=X/8（1-4,11-14段）またはX/6（5-10段）",
             "steps": [
-                # 1-4段目: 左下の矩形（回転なし: 0度）- 長軸=X、短軸=X/4
-                {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 0, "size_type": "normal"},
-                {"name": "stair2", "x": 0, "y": 0.25, "z": 0.386, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 0, "size_type": "normal"},
-                {"name": "stair3", "x": 0, "y": 0.5, "z": 0.579, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 0, "size_type": "normal"},
-                {"name": "stair4", "x": 0, "y": 0.75, "z": 0.772, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 0, "size_type": "normal"},
+                # 1-4段目: 左側の列（下から上）- 長軸=X、短軸=X/8
+                {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0, "y": 0.125, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0, "y": 0.25, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0, "y": 0.375, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 
-                # 5段目: 1-4段と同じ方向（0度）- 長軸=X、短軸=X/3
-                {"name": "stair5", "x": 0.25, "y": 1.25, "z": 0.965, "x_len": 1.0, "y_len": 0.333, "z_len": 0.05, "rotation": 0, "size_type": "landing"},
+                # 5段目: 左上の横 - 長軸=X、短軸=X/6
+                {"name": "stair5", "x": 0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 
-                # 6段目: 5段目から時計回りに45度回転 - 長軸=X*1.3、短軸=X/3
-                {"name": "stair6", "x": 1.0, "y": 1.5, "z": 1.158, "x_len": 1.3, "y_len": 0.333, "z_len": 0.05, "rotation": 45, "size_type": "diagonal"},
+                # 6-10段目: 上側の行（左から右）- 長軸=X、短軸=X/6
+                {"name": "stair6", "x": 0, "y": 0.667, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0, "y": 0.833, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0, "y": 1.0, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0, "y": 1.167, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0, "y": 1.333, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 
-                # 7-8段目: 1段目から90度回転 - 長軸=X、短軸=X/3
-                {"name": "stair7", "x": 1.333, "y": 1.5, "z": 1.351, "x_len": 1.0, "y_len": 0.333, "z_len": 0.05, "rotation": 90, "size_type": "landing"},
-                {"name": "stair8", "x": 1.666, "y": 1.5, "z": 1.544, "x_len": 1.0, "y_len": 0.333, "z_len": 0.05, "rotation": 90, "size_type": "landing"},
-                
-                # 9段目: 10段目から反時計回りに45度回転（135度）- 長軸=X*1.3、短軸=X/3
-                {"name": "stair9", "x": 2.0, "y": 1.5, "z": 1.737, "x_len": 1.3, "y_len": 0.333, "z_len": 0.05, "rotation": 135, "size_type": "diagonal"},
-                
-                # 10段目: 11-14段と同じ方向（180度）- 長軸=X、短軸=X/3
-                {"name": "stair10", "x": 2.25, "y": 1.25, "z": 1.930, "x_len": 1.0, "y_len": 0.333, "z_len": 0.05, "rotation": 180, "size_type": "landing"},
-                
-                # 11-14段目: 右側の矩形（1-4段から180度回転）- 長軸=X、短軸=X/4
-                {"name": "stair11", "x": 2.0, "y": 0.75, "z": 2.123, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 180, "size_type": "normal"},
-                {"name": "stair12", "x": 2.0, "y": 0.5, "z": 2.316, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 180, "size_type": "normal"},
-                {"name": "stair13", "x": 2.0, "y": 0.25, "z": 2.509, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 180, "size_type": "normal"},
-                {"name": "stair14", "x": 2.0, "y": 0, "z": 2.702, "x_len": 1.0, "y_len": 0.25, "z_len": 0.05, "rotation": 180, "size_type": "normal"},
+                # 11-14段目: 右側の列（上から下）- 長軸=X、短軸=X/8
+                {"name": "stair11", "x": 0, "y": 1.5, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0, "y": 1.625, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0, "y": 1.75, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 0, "y": 1.875, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
             ]
         }
     }
@@ -4250,15 +4244,9 @@ def main():
                                     # 基準サイズX = 矩形選択のx長さの半分
                                     X = rect_width_m / 2.0
                                     
-                                    # 階段パターンの元サイズを計算（全ステップの座標範囲）- スケール計算用
-                                    all_x = [s['x'] for s in stair_pattern['steps']] + [s['x'] + s['x_len'] for s in stair_pattern['steps']]
-                                    all_y = [s['y'] for s in stair_pattern['steps']] + [s['y'] + s['y_len'] for s in stair_pattern['steps']]
-                                    pattern_width = max(all_x) - min(all_x)
-                                    pattern_height = max(all_y) - min(all_y)
-                                    
-                                    # 位置計算用のスケール係数（赤枠に収まるように）
-                                    scale_x = rect_width_m / pattern_width if pattern_width > 0 else 1.0
-                                    scale_y = rect_height_m / pattern_height if pattern_height > 0 else 1.0
+                                    # パターンの最大Y座標を取得（位置スケール用）
+                                    all_y = [s['y'] + s['y_len'] for s in stair_pattern['steps']]
+                                    pattern_max_y = max(all_y) if all_y else 2.0
                                     
                                     # JSONに階段データを追加
                                     if 'stairs' not in updated_json:
@@ -4276,43 +4264,28 @@ def main():
                                     # 各ステップを追加（サイズと位置の両方をX基準で計算）
                                     for step in stair_pattern['steps']:
                                         try:
-                                            append_debug(f"ステップ追加: {step['name']}, rotation={step.get('rotation', 0)}度")
+                                            append_debug(f"ステップ追加: {step['name']}")
                                         except Exception as e:
                                             st.error(f"デバッグログエラー: {e}")
                                         
-                                        # サイズタイプに応じてサイズを計算（回転前の長軸と短軸）
-                                        size_type = step.get('size_type', 'normal')
-                                        if size_type == 'normal':  # 1-4, 11-14段: 長軸=X、短軸=X/4
-                                            long_axis = X
-                                            short_axis = X / 4.0
-                                        elif size_type == 'landing':  # 5, 7-8, 10段: 長軸=X、短軸=X/3
-                                            long_axis = X
-                                            short_axis = X / 3.0
-                                        elif size_type == 'diagonal':  # 6, 9段: 長軸=X*1.3、短軸=X/3
-                                            long_axis = X * 1.3
-                                            short_axis = X / 3.0
+                                        # サイズタイプに応じてサイズを計算
+                                        size_type = step.get('size_type', 'narrow')
+                                        if size_type == 'narrow':  # 1-4, 11-14段: 長軸=X、短軸=X/8
+                                            width_m = X
+                                            depth_m = X / 8.0
+                                        elif size_type == 'wide':  # 5-10段: 長軸=X、短軸=X/6
+                                            width_m = X
+                                            depth_m = X / 6.0
                                         else:
-                                            long_axis = X
-                                            short_axis = X / 4.0
+                                            width_m = X
+                                            depth_m = X / 8.0
                                         
                                         height_m = step['z_len']
-                                        rotation = step.get('rotation', 0)
+                                        rotation = 0  # 全て同じ方向
                                         
-                                        # 回転角度に応じてwidth（X方向）とdepth（Y方向）を決定
-                                        # 0度/180度: 長軸がX方向、短軸がY方向
-                                        # 90度/270度: 短軸がX方向、長軸がY方向
-                                        # 45度/135度: 対角線なのでそのまま
-                                        if rotation in [90, 270]:
-                                            width_m = short_axis  # X方向は短軸
-                                            depth_m = long_axis   # Y方向は長軸
-                                        else:
-                                            width_m = long_axis   # X方向は長軸
-                                            depth_m = short_axis  # Y方向は短軸
-                                        
-                                        # 位置計算：パターンの相対座標（0-3範囲）を矩形サイズにマッピング
-                                        # パターン座標の最大値3.0を矩形の幅/高さ(rect_width_m, rect_height_m)にマッピング
-                                        pos_x = base_x + (step['x'] * rect_width_m / 3.0) + width_m / 2
-                                        pos_y = base_y + (step['y'] * rect_height_m / 3.0) + depth_m / 2
+                                        # 位置計算：パターンのY座標を矩形の高さにマッピング
+                                        pos_x = base_x + X  # X方向は中央
+                                        pos_y = base_y + (step['y'] * rect_height_m / pattern_max_y) + depth_m / 2
                                         
                                         # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
                                         stair_data = {
@@ -4342,11 +4315,16 @@ def main():
                                         st.error(f"デバッグログエラー: {e}")
                                     
                                     temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
-                                    with open(temp_json_path, 'w', encoding='utf-8') as f:
-                                        json.dump(updated_json, f, ensure_ascii=False, indent=2)
-                                    
-                                    try:
-                                        append_debug(f"JSON保存完了: {temp_json_path}")
+                                    with open(temp_json_0,  # 全て同じ方向
+                                            'color': 'Walnut',
+                                            'pattern': stair_pattern_key
+                                        }
+                                        updated_json['stairs'].append(stair_data)
+                                        
+                                        try:
+                                            append_debug(f"  → 位置: ({pos_x:.3f}, {pos_y:.3f}), サイズ: {width_m:.3f}×{depth_m:.3f}m")
+                                        except Exception as e:
+                                            st.error(f"デバッグログエラー: {e}"}")
                                         # 階段データの検証
                                         if 'stairs' in updated_json and len(updated_json['stairs']) > 0:
                                             first_stair = updated_json['stairs'][0]
