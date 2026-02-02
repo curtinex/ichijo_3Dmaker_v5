@@ -4297,11 +4297,10 @@ def main():
                                         
                                         height_m = step['z_len']
                                         
-                                        # 位置計算：パターンの相対座標をX基準でスケール
-                                        # パターンは正規化座標（x_len=1.0, y_len=0.25等）で定義されているので、
-                                        # それを実際のX基準の座標に変換
-                                        pos_x = base_x + (step['x'] * X) + width_m / 2
-                                        pos_y = base_y + (step['y'] * X) + depth_m / 2
+                                        # 位置計算：パターンの相対座標（0-3範囲）を矩形サイズにマッピング
+                                        # パターン座標の最大値3.0を矩形の幅/高さ(rect_width_m, rect_height_m)にマッピング
+                                        pos_x = base_x + (step['x'] * rect_width_m / 3.0) + width_m / 2
+                                        pos_y = base_y + (step['y'] * rect_height_m / 3.0) + depth_m / 2
                                         
                                         # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
                                         stair_data = {
