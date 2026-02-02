@@ -4215,13 +4215,13 @@ def main():
                                     append_debug(f"階段配置ループ {rect_idx+1}/{len(target_rects)}: p1={p1}, p2={p2}")
                                 except:
                                     pass
-                                # 開始位置（左下隅）を計算
-                                x_min = min(p1[0], p2[0])
-                                y_min = min(p1[1], p2[1])
+                                # ピクセル座標→メートル座標変換（_snap_to_gridと同じロジック）
+                                x_min_px = min(p1[0], p2[0])
+                                y_max_px = max(p1[1], p2[1])  # Y座標の最大値（画面上部）
                                 
-                                # ピクセル座標→メートル座標変換
-                                base_x = (x_min - margin) / scale + min_x
-                                base_y = (img_height - y_min - margin) / scale + min_y
+                                # 左下隅の座標を計算（Y軸は反転するため、y_max_pxを使用）
+                                base_x = (x_min_px - margin) / scale + min_x
+                                base_y = (img_height - y_max_px - margin) / scale + min_y
                                 
                                 # JSONに階段データを追加
                                 if 'stairs' not in updated_json:
