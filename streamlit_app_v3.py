@@ -4258,17 +4258,23 @@ def main():
                                         append_debug(f"ステップ追加: {step['name']}")
                                     except:
                                         pass
+                                    # サイズを先に計算
+                                    width_m = step['x_len'] * scale_x
+                                    depth_m = step['y_len'] * scale_y
+                                    height_m = step['z_len']
+                                    
+                                    # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
                                     stair_data = {
                                         'name': f"{step['name']}_rect{rect_idx+1}",
                                         'position': [
-                                            round(base_x + step['x'] * scale_x, 3),
-                                            round(base_y + step['y'] * scale_y, 3),
+                                            round(base_x + step['x'] * scale_x + width_m / 2, 3),
+                                            round(base_y + step['y'] * scale_y + depth_m / 2, 3),
                                             round(step['z'], 3)
                                         ],
                                         'size': [
-                                            round(step['x_len'] * scale_x, 3),
-                                            round(step['y_len'] * scale_y, 3),
-                                            round(step['z_len'], 3)
+                                            round(width_m, 3),
+                                            round(depth_m, 3),
+                                            round(height_m, 3)
                                         ],
                                         'color': 'Walnut',
                                         'pattern': stair_pattern_key
