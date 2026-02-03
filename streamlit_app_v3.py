@@ -175,22 +175,19 @@ try:
     def _rotate_pattern(steps, degrees):
         """中心(0.5, 0.5)を軸に反時計回りに回転
         
-        180度回転時は、階段の昇り方向を保つためステップを逆順にして高さを再計算
+        180度回転時は、x,y座標を回転し、z座標はペアで入れ替え
+        (1,14), (2,13), (3,12), (4,11), (5,10), (6,9), (7,8)
         """
         import copy
         rotated = []
         
-        # 180度回転の場合：ステップを逆順にして高さを再計算
+        # 180度回転の場合：座標回転 + Z座標のペア入れ替え
         if degrees == 180:
-            # 元のZ座標を保存
-            z_values = [step['z'] for step in steps]
-            
-            # 逆順にしたステップを作成
-            for idx, step in enumerate(reversed(steps)):
+            for idx, step in enumerate(steps):
                 s = copy.deepcopy(step)
                 x, y = s['x'], s['y']
                 
-                # 座標を180度回転
+                # 座標を180度回転（中心対称）
                 x_centered = x - 0.5
                 y_centered = y - 0.5
                 x_rotated = -x_centered
@@ -198,9 +195,9 @@ try:
                 s['x'] = x_rotated + 0.5
                 s['y'] = y_rotated + 0.5
                 
-                # 高さは元の順序を保持（逆順にしたので元の高さ配列を順に適用）
-                s['z'] = z_values[idx]
-                s['name'] = f"stair{idx+1}"
+                # Z座標をペアで入れ替え: stair(i) ↔ stair(14-i+1)
+                pair_idx = len(steps) - 1 - idx  # 13, 12, 11, ..., 0
+                s['z'] = steps[pair_idx]['z']
                 
                 rotated.append(s)
             return rotated
