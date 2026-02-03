@@ -4452,24 +4452,17 @@ def main():
                                     except Exception as e:
                                         st.error(f"デバッグログエラー: {e}")
                                     
-                                    # 各ステップを追加（サイズと位置の両方をX基準で計算）
+                                    # 各ステップを追加（パターン定義のx_len/y_lenを使用）
                                     for step in stair_pattern['steps']:
                                         try:
                                             append_debug(f"ステップ追加: {step['name']}")
                                         except Exception as e:
                                             st.error(f"デバッグログエラー: {e}")
                                         
-                                        # サイズタイプに応じてサイズを計算
-                                        size_type = step.get('size_type', 'narrow')
-                                        if size_type == 'narrow':  # 1-4, 11-14段: 長軸=X、短軸=X/4
-                                            width_m = X
-                                            depth_m = X / 4.0
-                                        elif size_type == 'wide':  # 5-10段: 長軸=X、短軸=X/3
-                                            width_m = X
-                                            depth_m = X / 3.0
-                                        else:
-                                            width_m = X
-                                            depth_m = X / 4.0
+                                        # パターン定義のx_len, y_lenを基準Xでスケール
+                                        # x_len=1.0の部分をXmに、それ以外の部分は比率で計算
+                                        width_m = step['x_len'] * X
+                                        depth_m = step['y_len'] * X
                                         
                                         height_m = step['z_len']
                                         rotation = 0  # 全て同じ方向
@@ -4477,9 +4470,9 @@ def main():
                                         # 位置計算：2列レイアウトに対応
                                         # X方向: pattern_max_xで正規化して矩形幅の半分の範囲に配置
                                         if pattern_max_x > 0:
-                                            pos_x = base_x + (step['x'] / pattern_max_x) * X + X / 2
+                                            pos_x = base_x + (step['x'] / pattern_max_x) * X + width_m / 2
                                         else:
-                                            pos_x = base_x + X
+                                            pos_x = base_x + width_m / 2
                                         
                                         # Y方向: pattern_max_yで正規化して矩形高さに配置
                                         pos_y = base_y + (step['y'] * rect_height_m / pattern_max_y) + depth_m / 2
