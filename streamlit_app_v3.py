@@ -1044,6 +1044,32 @@ def main():
     st.title("一条工務店 CAD図面3D化アプリ (β)")
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
     
+    # デバッグ: ichijo_coreバージョン表示（右上に小さく表示）
+    try:
+        import ichijo_core
+        col1, col2 = st.columns([10, 1])
+        with col2:
+            with st.expander("🔧"):
+                st.caption(f"ichijo_core: v{ichijo_core.__version__}")
+                # コミットハッシュも表示（デバッグ用）
+                try:
+                    import subprocess
+                    import os
+                    core_path = os.path.dirname(ichijo_core.__file__)
+                    result = subprocess.run(
+                        ["git", "rev-parse", "--short", "HEAD"],
+                        cwd=core_path,
+                        capture_output=True,
+                        text=True,
+                        timeout=2
+                    )
+                    if result.returncode == 0:
+                        st.caption(f"commit: {result.stdout.strip()}")
+                except:
+                    pass
+    except:
+        pass
+    
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
 
