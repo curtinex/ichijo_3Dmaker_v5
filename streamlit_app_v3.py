@@ -4428,13 +4428,13 @@ def main():
                                     rect_width_m = (x_max_px - x_min_px) / scale
                                     rect_height_m = (y_max_px - y_min_px) / scale
                                     
-                                    # 基準サイズXの計算：矩形全体のサイズを使用
-                                    # 東西方向（東スタート・西スタート）: 矩形の高さ全体
-                                    # 北南方向（北スタート・南スタート）: 矩形の幅全体
+                                    # 基準サイズXの計算：矩形の半分のサイズを使用
+                                    # 東西方向（東スタート・西スタート）: 矩形の高さの半分
+                                    # 北南方向（北スタート・南スタート）: 矩形の幅の半分
                                     if '東スタート' in stair_pattern_key or '西スタート' in stair_pattern_key:
-                                        X = rect_height_m  # 東西方向: 高さ全体を基準
+                                        X = rect_height_m / 2.0  # 東西方向: 高さ半分を基準
                                     else:
-                                        X = rect_width_m   # 北南方向: 幅全体を基準
+                                        X = rect_width_m / 2.0   # 北南方向: 幅半分を基準
                                     
                                     # パターンの最大Y座標を取得（位置スケール用）
                                     all_y = [s['y'] + s['y_len'] for s in stair_pattern['steps']]
@@ -4473,9 +4473,9 @@ def main():
                                         rotation = 0  # 全て同じ方向
                                         
                                         # 位置計算：pattern定義の座標をXでスケールして配置
-                                        # X方向: pattern座標[0,pattern_max_x]を実座標[0,X/2]にマッピング
+                                        # X方向: pattern座標[0,pattern_max_x]を実座標[0,X]にマッピング
                                         if pattern_max_x > 0:
-                                            pos_x = base_x + (step['x'] / pattern_max_x) * (X / 2.0) + width_m / 2
+                                            pos_x = base_x + (step['x'] / pattern_max_x) * X + width_m / 2
                                         else:
                                             pos_x = base_x + width_m / 2
                                         
