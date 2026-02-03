@@ -135,33 +135,174 @@ try:
         FURNITURE_COLOR_OPTIONS,
     )
     
-    # 階段パターンデータの定義
+    # 階段パターンデータの定義（8パターン: 時計回り・反時計回り × 4方向）
     STAIR_PATTERNS = {
         "コの字_時計回り_北スタート": {
-            "display_name": "コの字階段（時計回り・北スタート）",
-            "description": "1-14段: 7段で折り返し。長軸=X（矩形幅の半分）、短軸=X/8（1-4,11-14段）またはX/6（5-10段）",
+            "display_name": "⬇️↶↖️ コの字（時計回り・北→）",
+            "visual": "┌──┐\n│⬆️│\n└─┘",
+            "description": "下から上へ→右折→上へ",
             "steps": [
-                # 1-4段目: 左列下側（下から上）- 長軸=X、短軸=X/8
                 {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair2", "x": 0, "y": 0.125, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair3", "x": 0, "y": 0.25, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair4", "x": 0, "y": 0.375, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-                
-                # 5-7段目: 左列上側 - 長軸=X、短軸=X/6
                 {"name": "stair5", "x": 0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 {"name": "stair6", "x": 0, "y": 0.667, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 {"name": "stair7", "x": 0, "y": 0.833, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-                
-                # 8-10段目: 右列上側 - 長軸=X、短軸=X/6
                 {"name": "stair8", "x": 1.0, "y": 0.833, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 {"name": "stair9", "x": 1.0, "y": 0.667, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
                 {"name": "stair10", "x": 1.0, "y": 0.5, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-                
-                # 11-14段目: 右列下側（上から下）- 長軸=X、短軸=X/8
                 {"name": "stair11", "x": 1.0, "y": 0.375, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair12", "x": 1.0, "y": 0.25, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair13", "x": 1.0, "y": 0.125, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
                 {"name": "stair14", "x": 1.0, "y": 0, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_時計回り_東スタート": {
+            "display_name": "⬅️↶↙️ コの字（時計回り・東→）",
+            "visual": "┌─\n│⬅️\n└──┐",
+            "description": "右から左へ→下折→左へ",
+            "steps": [
+                {"name": "stair1", "x": 1.0, "y": 1.0, "z": 0.193, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0.875, "y": 1.0, "z": 0.386, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0.75, "y": 1.0, "z": 0.579, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0.625, "y": 1.0, "z": 0.772, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 0.5, "y": 1.0, "z": 0.965, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 0.333, "y": 1.0, "z": 1.158, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0.167, "y": 1.0, "z": 1.351, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0.167, "y": 0, "z": 1.544, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0.333, "y": 0, "z": 1.737, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0.5, "y": 0, "z": 1.930, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0.625, "y": 0, "z": 2.123, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0.75, "y": 0, "z": 2.316, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0.875, "y": 0, "z": 2.509, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 1.0, "y": 0, "z": 2.702, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_時計回り_南スタート": {
+            "display_name": "⬆️↶↗️ コの字（時計回り・南→）",
+            "visual": "  ┌─┘\n  │⬇️\n  └──┐",
+            "description": "上から下へ→左折→下へ",
+            "steps": [
+                {"name": "stair1", "x": 1.0, "y": 1.0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 1.0, "y": 0.875, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 1.0, "y": 0.75, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 1.0, "y": 0.625, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 1.0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 1.0, "y": 0.333, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 1.0, "y": 0.167, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0, "y": 0.167, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0, "y": 0.333, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0, "y": 0.5, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0, "y": 0.625, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0, "y": 0.75, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0, "y": 0.875, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 0, "y": 1.0, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_時計回り_西スタート": {
+            "display_name": "➡️↶↘️ コの字（時計回り・西→）",
+            "visual": "  ─┐\n  ➡️│\n┌──┘",
+            "description": "左から右へ→上折→右へ",
+            "steps": [
+                {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0.125, "y": 0, "z": 0.386, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0.25, "y": 0, "z": 0.579, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0.375, "y": 0, "z": 0.772, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 0.5, "y": 0, "z": 0.965, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 0.667, "y": 0, "z": 1.158, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0.833, "y": 0, "z": 1.351, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0.833, "y": 1.0, "z": 1.544, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0.667, "y": 1.0, "z": 1.737, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0.5, "y": 1.0, "z": 1.930, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0.375, "y": 1.0, "z": 2.123, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0.25, "y": 1.0, "z": 2.316, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0.125, "y": 1.0, "z": 2.509, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 0, "y": 1.0, "z": 2.702, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_反時計回り_北スタート": {
+            "display_name": "⬇️↷↗️ コの字（反時計回り・北→）",
+            "visual": "┌──┐\n│⬆️ │\n└─┘",
+            "description": "下から上へ→左折→上へ",
+            "steps": [
+                {"name": "stair1", "x": 1.0, "y": 0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 1.0, "y": 0.125, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 1.0, "y": 0.25, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 1.0, "y": 0.375, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 1.0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 1.0, "y": 0.667, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 1.0, "y": 0.833, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0, "y": 0.833, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0, "y": 0.667, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0, "y": 0.5, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0, "y": 0.375, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0, "y": 0.25, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0, "y": 0.125, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 0, "y": 0, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_反時計回り_東スタート": {
+            "display_name": "⬅️↷↖️ コの字（反時計回り・東→）",
+            "visual": " ─┐\n⬅️ │\n──┘",
+            "description": "右から左へ→上折→左へ",
+            "steps": [
+                {"name": "stair1", "x": 1.0, "y": 0, "z": 0.193, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0.875, "y": 0, "z": 0.386, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0.75, "y": 0, "z": 0.579, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0.625, "y": 0, "z": 0.772, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 0.5, "y": 0, "z": 0.965, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 0.333, "y": 0, "z": 1.158, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0.167, "y": 0, "z": 1.351, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0.167, "y": 1.0, "z": 1.544, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0.333, "y": 1.0, "z": 1.737, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0.5, "y": 1.0, "z": 1.930, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0.625, "y": 1.0, "z": 2.123, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0.75, "y": 1.0, "z": 2.316, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0.875, "y": 1.0, "z": 2.509, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 1.0, "y": 1.0, "z": 2.702, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_反時計回り_南スタート": {
+            "display_name": "⬆️↷↙️ コの字（反時計回り・南→）",
+            "visual": "┌──\n│⬇️\n└─┘",
+            "description": "上から下へ→右折→下へ",
+            "steps": [
+                {"name": "stair1", "x": 0, "y": 1.0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0, "y": 0.875, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0, "y": 0.75, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0, "y": 0.625, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 0, "y": 0.333, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0, "y": 0.167, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 1.0, "y": 0.167, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 1.0, "y": 0.333, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 1.0, "y": 0.5, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 1.0, "y": 0.625, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 1.0, "y": 0.75, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 1.0, "y": 0.875, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 1.0, "y": 1.0, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            ]
+        },
+        "コの字_反時計回り_西スタート": {
+            "display_name": "➡️↷➡️ コの字（反時計回り・西→）",
+            "visual": "┌─\n│➡️\n└──┐",
+            "description": "左から右へ→下折→右へ",
+            "steps": [
+                {"name": "stair1", "x": 0, "y": 1.0, "z": 0.193, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair2", "x": 0.125, "y": 1.0, "z": 0.386, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair3", "x": 0.25, "y": 1.0, "z": 0.579, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair4", "x": 0.375, "y": 1.0, "z": 0.772, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair5", "x": 0.5, "y": 1.0, "z": 0.965, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair6", "x": 0.667, "y": 1.0, "z": 1.158, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair7", "x": 0.833, "y": 1.0, "z": 1.351, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair8", "x": 0.833, "y": 0, "z": 1.544, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair9", "x": 0.667, "y": 0, "z": 1.737, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair10", "x": 0.5, "y": 0, "z": 1.930, "x_len": 0.167, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+                {"name": "stair11", "x": 0.375, "y": 0, "z": 2.123, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair12", "x": 0.25, "y": 0, "z": 2.316, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair13", "x": 0.125, "y": 0, "z": 2.509, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+                {"name": "stair14", "x": 0, "y": 0, "z": 2.702, "x_len": 0.125, "y_len": 1.0, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
             ]
         }
     }
