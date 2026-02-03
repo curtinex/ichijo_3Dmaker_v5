@@ -173,9 +173,39 @@ try:
         return mirrored
     
     def _rotate_pattern(steps, degrees):
-        """中心(0.5, 0.5)を軸に反時計回りに回転"""
+        """中心(0.5, 0.5)を軸に反時計回りに回転
+        
+        180度回転時は、階段の昇り方向を保つためステップを逆順にして高さを再計算
+        """
         import copy
         rotated = []
+        
+        # 180度回転の場合：ステップを逆順にして高さを再計算
+        if degrees == 180:
+            # 元のZ座標を保存
+            z_values = [step['z'] for step in steps]
+            
+            # 逆順にしたステップを作成
+            for idx, step in enumerate(reversed(steps)):
+                s = copy.deepcopy(step)
+                x, y = s['x'], s['y']
+                
+                # 座標を180度回転
+                x_centered = x - 0.5
+                y_centered = y - 0.5
+                x_rotated = -x_centered
+                y_rotated = -y_centered
+                s['x'] = x_rotated + 0.5
+                s['y'] = y_rotated + 0.5
+                
+                # 高さは元の順序を保持（逆順にしたので元の高さ配列を順に適用）
+                s['z'] = z_values[idx]
+                s['name'] = f"stair{idx+1}"
+                
+                rotated.append(s)
+            return rotated
+        
+        # 90度/270度回転の場合：通常の回転処理
         for step in steps:
             s = copy.deepcopy(step)
             x, y = s['x'], s['y']
@@ -193,13 +223,6 @@ try:
                 s['y'] = y_rotated + 0.5
                 s['x_len'] = y_len  # サイズも回転
                 s['y_len'] = x_len
-            elif degrees == 180:  # 南向き（反時計回りに180度）
-                # 回転: (x, y) → (-x, -y)
-                x_rotated = -x_centered
-                y_rotated = -y_centered
-                s['x'] = x_rotated + 0.5
-                s['y'] = y_rotated + 0.5
-                # サイズはそのまま
             elif degrees == 270:  # 西向き（反時計回りに270度）
                 # 回転: (x, y) → (y, -x)
                 x_rotated = y_centered
