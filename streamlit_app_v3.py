@@ -4428,8 +4428,13 @@ def main():
                                     rect_width_m = (x_max_px - x_min_px) / scale
                                     rect_height_m = (y_max_px - y_min_px) / scale
                                     
-                                    # 基準サイズX = 矩形選択のx長さの半分
-                                    X = rect_width_m / 2.0
+                                    # 基準サイズXの計算：方向によって矩形の幅か高さを使用
+                                    # 東西方向（東スタート・西スタート）: 矩形の高さの半分
+                                    # 北南方向（北スタート・南スタート）: 矩形の幅の半分
+                                    if '東スタート' in stair_pattern_key or '西スタート' in stair_pattern_key:
+                                        X = rect_height_m / 2.0  # 東西方向: 高さを基準
+                                    else:
+                                        X = rect_width_m / 2.0   # 北南方向: 幅を基準
                                     
                                     # パターンの最大Y座標を取得（位置スケール用）
                                     all_y = [s['y'] + s['y_len'] for s in stair_pattern['steps']]
