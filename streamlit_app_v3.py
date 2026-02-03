@@ -173,36 +173,10 @@ try:
         return mirrored
     
     def _rotate_pattern(steps, degrees):
-        """中心(0.5, 0.5)を軸に反時計回りに回転
-        
-        180度回転時は、x,y座標を回転し、z座標はペアで入れ替え
-        (1,14), (2,13), (3,12), (4,11), (5,10), (6,9), (7,8)
-        """
+        """中心(0.5, 0.5)を軸に反時計回りに回転（点対称変換）"""
         import copy
         rotated = []
         
-        # 180度回転の場合：座標回転 + Z座標のペア入れ替え
-        if degrees == 180:
-            for idx, step in enumerate(steps):
-                s = copy.deepcopy(step)
-                x, y = s['x'], s['y']
-                
-                # 座標を180度回転（中心対称）
-                x_centered = x - 0.5
-                y_centered = y - 0.5
-                x_rotated = -x_centered
-                y_rotated = -y_centered
-                s['x'] = x_rotated + 0.5
-                s['y'] = y_rotated + 0.5
-                
-                # Z座標をペアで入れ替え: stair(i) ↔ stair(14-i+1)
-                pair_idx = len(steps) - 1 - idx  # 13, 12, 11, ..., 0
-                s['z'] = steps[pair_idx]['z']
-                
-                rotated.append(s)
-            return rotated
-        
-        # 90度/270度回転の場合：通常の回転処理
         for step in steps:
             s = copy.deepcopy(step)
             x, y = s['x'], s['y']
@@ -220,6 +194,13 @@ try:
                 s['y'] = y_rotated + 0.5
                 s['x_len'] = y_len  # サイズも回転
                 s['y_len'] = x_len
+            elif degrees == 180:  # 南向き（180度回転 = 点対称）
+                # 回転: (x, y) → (-x, -y)
+                x_rotated = -x_centered
+                y_rotated = -y_centered
+                s['x'] = x_rotated + 0.5
+                s['y'] = y_rotated + 0.5
+                # サイズはそのまま
             elif degrees == 270:  # 西向き（反時計回りに270度）
                 # 回転: (x, y) → (y, -x)
                 x_rotated = y_centered
