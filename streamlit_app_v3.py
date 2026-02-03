@@ -252,14 +252,48 @@ try:
             mirrored.append(s)
         return mirrored
     
-    def _generate_8_stair_patterns():
-        """4方向の基本パターンから8パターンを生成"""
-        north_cw = _create_north_pattern()
-        south_cw = _create_south_pattern()
-        east_cw = _create_east_pattern()
-        west_cw = _create_west_pattern()
-    def _generate_8_stair_patterns():
-        """4方向の基本パターンから8パターンを生成"""
+    def _create_straight_north_pattern():
+        """直線階段・北向き（下から上へY方向に昇る）"""
+        step_height = 1.0 / 14  # 14段で矩形を均等分割
+        z_step = 0.193  # 高さの増分
+        return [
+            {"name": f"stair{i+1}", "x": 0, "y": i * step_height, "z": (i+1) * z_step, 
+             "x_len": 1.0, "y_len": step_height, "z_len": 0.05, "rotation": 0}
+            for i in range(14)
+        ]
+    
+    def _create_straight_south_pattern():
+        """直線階段・南向き（上から下へY方向に昇る）"""
+        step_height = 1.0 / 14
+        z_step = 0.193
+        return [
+            {"name": f"stair{i+1}", "x": 0, "y": (13-i) * step_height, "z": (i+1) * z_step, 
+             "x_len": 1.0, "y_len": step_height, "z_len": 0.05, "rotation": 0}
+            for i in range(14)
+        ]
+    
+    def _create_straight_east_pattern():
+        """直線階段・東向き（左から右へX方向に昇る）"""
+        step_width = 1.0 / 14
+        z_step = 0.193
+        return [
+            {"name": f"stair{i+1}", "x": i * step_width, "y": 0, "z": (i+1) * z_step, 
+             "x_len": step_width, "y_len": 1.0, "z_len": 0.05, "rotation": 0}
+            for i in range(14)
+        ]
+    
+    def _create_straight_west_pattern():
+        """直線階段・西向き（右から左へX方向に昇る）"""
+        step_width = 1.0 / 14
+        z_step = 0.193
+        return [
+            {"name": f"stair{i+1}", "x": (13-i) * step_width, "y": 0, "z": (i+1) * z_step, 
+             "x_len": step_width, "y_len": 1.0, "z_len": 0.05, "rotation": 0}
+            for i in range(14)
+        ]
+    
+    def _generate_all_stair_patterns():
+        """コの字8パターン + 直線4パターン = 計12パターンを生成"""
         north_cw = _create_north_pattern()
         south_cw = _create_south_pattern()
         east_cw = _create_east_pattern()
@@ -305,12 +339,32 @@ try:
                 "display_name": "コの字階段（反時計回り・西←）",
                 "description": "下から昇り、左で左折、上列を右へ",
                 "steps": _mirror_y_for_east_west(west_cw)
+            },
+            "直線_北": {
+                "display_name": "直線階段（北↑）",
+                "description": "下から上へ一直線に14段",
+                "steps": _create_straight_north_pattern()
+            },
+            "直線_南": {
+                "display_name": "直線階段（南↓）",
+                "description": "上から下へ一直線に14段",
+                "steps": _create_straight_south_pattern()
+            },
+            "直線_東": {
+                "display_name": "直線階段（東→）",
+                "description": "左から右へ一直線に14段",
+                "steps": _create_straight_east_pattern()
+            },
+            "直線_西": {
+                "display_name": "直線階段（西←）",
+                "description": "右から左へ一直線に14段",
+                "steps": _create_straight_west_pattern()
             }
         }
         return patterns
     
-    # 階段パターンデータの定義（8パターン自動生成）
-    STAIR_PATTERNS = _generate_8_stair_patterns()
+    # 階段パターンデータの定義（コの字8パターン + 直線4パターン = 計12パターン）
+    STAIR_PATTERNS = _generate_all_stair_patterns()
     from ichijo_core.ui_helpers import (
         prepare_display_from_pil as _prepare_display_from_pil,
         prepare_display_from_bytes as _prepare_display_from_bytes,
