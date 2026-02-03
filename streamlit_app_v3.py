@@ -1051,22 +1051,28 @@ def main():
         with col2:
             with st.expander("🔧"):
                 st.caption(f"ichijo_core: v{ichijo_core.__version__}")
-                # コミットハッシュも表示（デバッグ用）
+                
+                # ui_helpers.pyの階段色コードを確認（最新版かチェック）
                 try:
-                    import subprocess
-                    import os
-                    core_path = os.path.dirname(ichijo_core.__file__)
-                    result = subprocess.run(
-                        ["git", "rev-parse", "--short", "HEAD"],
-                        cwd=core_path,
-                        capture_output=True,
-                        text=True,
-                        timeout=2
-                    )
-                    if result.returncode == 0:
-                        st.caption(f"commit: {result.stdout.strip()}")
-                except:
-                    pass
+                    from ichijo_core import ui_helpers
+                    import inspect
+                    source = inspect.getsource(ui_helpers.generate_3d_viewer_html)
+                    
+                    # colorMapの存在確認（新バージョン）
+                    if "'Tan': 0xd2b48c" in source and "colorMap" in source:
+                        st.success("✅ 最新版（色マップ対応）")
+                        st.caption("階段色: JSONから読み取り")
+                    # 古い固定色コード（旧バージョン）
+                    elif "stairColor = 0xd2b48c" in source and "colorMap" not in source:
+                        st.warning("⚠️ 中間版（固定色）")
+                        st.caption("階段色: 0xd2b48c固定")
+                    elif "stairColor = 0x8B4513" in source:
+                        st.error("❌ 旧版（ウォルナット色）")
+                        st.caption("階段色: 0x8B4513固定")
+                    else:
+                        st.info("❓ バージョン不明")
+                except Exception as e:
+                    st.caption(f"確認エラー: {str(e)[:50]}")
     except:
         pass
     
