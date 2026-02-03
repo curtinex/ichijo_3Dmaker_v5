@@ -173,7 +173,7 @@ try:
         return mirrored
     
     def _rotate_pattern(steps, degrees):
-        """中心(0.5, 0.5)を軸に回転"""
+        """中心(0.5, 0.5)を軸に反時計回りに回転"""
         import copy
         rotated = []
         for step in steps:
@@ -181,22 +181,31 @@ try:
             x, y = s['x'], s['y']
             x_len, y_len = s['x_len'], s['y_len']
             
-            # 中心を原点に移動
-            x -= 0.5
-            y -= 0.5
+            # 中心(0.5, 0.5)を原点に移動
+            x_centered = x - 0.5
+            y_centered = y - 0.5
             
-            if degrees == 90:  # 東向き
-                s['x'] = 0.5 - y
-                s['y'] = 0.5 + x
+            if degrees == 90:  # 東向き（反時計回りに90度）
+                # 回転: (x, y) → (-y, x)
+                x_rotated = -y_centered
+                y_rotated = x_centered
+                s['x'] = x_rotated + 0.5
+                s['y'] = y_rotated + 0.5
                 s['x_len'] = y_len  # サイズも回転
                 s['y_len'] = x_len
-            elif degrees == 180:  # 南向き
-                s['x'] = 0.5 - x
-                s['y'] = 0.5 - y
+            elif degrees == 180:  # 南向き（反時計回りに180度）
+                # 回転: (x, y) → (-x, -y)
+                x_rotated = -x_centered
+                y_rotated = -y_centered
+                s['x'] = x_rotated + 0.5
+                s['y'] = y_rotated + 0.5
                 # サイズはそのまま
-            elif degrees == 270:  # 西向き
-                s['x'] = 0.5 + y
-                s['y'] = 0.5 - x
+            elif degrees == 270:  # 西向き（反時計回りに270度）
+                # 回転: (x, y) → (y, -x)
+                x_rotated = y_centered
+                y_rotated = -x_centered
+                s['x'] = x_rotated + 0.5
+                s['y'] = y_rotated + 0.5
                 s['x_len'] = y_len  # サイズも回転
                 s['y_len'] = x_len
             
