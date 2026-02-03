@@ -48,8 +48,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（ab8f767: 2D表示の階段位置修正）を指定
-        commit_hash = "ab8f767"
+        # 最新コミット（4b0f713: 階段の色をJSONから読み取る機能追加）を指定
+        commit_hash = "4b0f713"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
