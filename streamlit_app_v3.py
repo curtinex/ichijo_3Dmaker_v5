@@ -4433,17 +4433,6 @@ def main():
                                     rect_width_m = (x_max_px - x_min_px) / scale
                                     rect_height_m = (y_max_px - y_min_px) / scale
                                     
-                                    # 基準サイズX = 矩形選択のx長さの半分
-                                    X = rect_width_m / 2.0
-                                    
-                                    # パターンの最大Y座標を取得（位置スケール用）
-                                    all_y = [s['y'] + s['y_len'] for s in stair_pattern['steps']]
-                                    pattern_max_y = max(all_y) if all_y else 2.0
-                                    
-                                    # パターンの最大X座標を取得（2列レイアウト用）
-                                    all_x = [s['x'] for s in stair_pattern['steps']]
-                                    pattern_max_x = max(all_x) if all_x else 1.0
-                                    
                                     # JSONに階段データを追加
                                     if 'stairs' not in updated_json:
                                         updated_json['stairs'] = []
@@ -4453,41 +4442,29 @@ def main():
                                             st.error(f"デバッグログエラー: {e}")
                                     
                                     try:
-                                        append_debug(f"階段配置位置: base_x={base_x:.3f}, base_y={base_y:.3f}, 基準X={X:.3f}m, 位置スケール: {scale_x:.3f}x{scale_y:.3f}")
+                                        append_debug(f"階段配置: base=({base_x:.3f}, {base_y:.3f}), 矩形サイズ={rect_width_m:.3f}x{rect_height_m:.3f}m")
                                     except Exception as e:
                                         st.error(f"デバッグログエラー: {e}")
                                     
-                                    # 各ステップを追加（サイズと位置の両方をX基準で計算）
+                                    # 各ステップを追加（パターン定義のx_len, y_lenを直接使用）
                                     for step in stair_pattern['steps']:
                                         try:
                                             append_debug(f"ステップ追加: {step['name']}")
                                         except Exception as e:
                                             st.error(f"デバッグログエラー: {e}")
                                         
-                                        # サイズタイプに応じてサイズを計算
-                                        size_type = step.get('size_type', 'narrow')
-                                        if size_type == 'narrow':  # 1-4, 11-14段: 長軸=X、短軸=X/4
-                                            width_m = X
-                                            depth_m = X / 4.0
-                                        elif size_type == 'wide':  # 5-10段: 長軸=X、短軸=X/3
-                                            width_m = X
-                                            depth_m = X / 3.0
-                                        else:
-                                            width_m = X
-                                            depth_m = X / 4.0
-                                        
+                                        # パターン定義のx_len, y_lenを使用してサイズを計算
+                                        # x_len, y_lenは0-1の正規化座標なので、実際の矩形サイズで掛け算
+                                        width_m = rect_width_m * step['x_len']
+                                        depth_m = rect_height_m * step['y_len']
                                         height_m = step['z_len']
                                         rotation = 0  # 全て同じ方向
                                         
-                                        # 位置計算：2列レイアウトに対応
-                                        # X方向: pattern_max_xで正規化して矩形幅の半分の範囲に配置
-                                        if pattern_max_x > 0:
-                                            pos_x = base_x + (step['x'] / pattern_max_x) * X + X / 2
-                                        else:
-                                            pos_x = base_x + X
-                                        
-                                        # Y方向: pattern_max_yで正規化して矩形高さに配置
-                                        pos_y = base_y + (step['y'] * rect_height_m / pattern_max_y) + depth_m / 2
+                                        # 位置計算：パターン定義のx, yをそのまま使用
+                                        # x, yは矩形内の正規化座標（0-1）なので、実際の矩形サイズで掛け算
+                                        # 階段の中心座標を計算（Three.jsのBoxGeometryは中心基準）
+                                        pos_x = base_x + step['x'] * rect_width_m + width_m / 2
+                                        pos_y = base_y + step['y'] * rect_height_m + depth_m / 2
 
                                         
                                         # positionを中心座標として設定（Three.jsのBoxGeometryは中心基準）
