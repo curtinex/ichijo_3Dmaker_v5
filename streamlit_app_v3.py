@@ -140,26 +140,26 @@ try:
         """基本パターン（時計回り・北スタート）を生成"""
         return [
             # 1-4段目: 左列下側（下から上）- 長軸=X、短軸=X/8
-            {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair2", "x": 0, "y": 0.125, "z": 0.386, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair3", "x": 0, "y": 0.25, "z": 0.579, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair4", "x": 0, "y": 0.375, "z": 0.772, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair1", "x": 0, "y": 0, "z": 0.193, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair2", "x": 0, "y": 0.125, "z": 0.386, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair3", "x": 0, "y": 0.25, "z": 0.579, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair4", "x": 0, "y": 0.375, "z": 0.772, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
             
             # 5-7段目: 左列上側 - 長軸=X、短軸=X/6
-            {"name": "stair5", "x": 0, "y": 0.5, "z": 0.965, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-            {"name": "stair6", "x": 0, "y": 0.667, "z": 1.158, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-            {"name": "stair7", "x": 0, "y": 0.833, "z": 1.351, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair5", "x": 0, "y": 0.5, "z": 0.965, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair6", "x": 0, "y": 0.667, "z": 1.158, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair7", "x": 0, "y": 0.833, "z": 1.351, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
             
             # 8-10段目: 右列上側 - 長軸=X、短軸=X/6
-            {"name": "stair8", "x": 1.0, "y": 0.833, "z": 1.544, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-            {"name": "stair9", "x": 1.0, "y": 0.667, "z": 1.737, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
-            {"name": "stair10", "x": 1.0, "y": 0.5, "z": 1.930, "x_len": 1.0, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair8", "x": 0.5, "y": 0.833, "z": 1.544, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair9", "x": 0.5, "y": 0.667, "z": 1.737, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
+            {"name": "stair10", "x": 0.5, "y": 0.5, "z": 1.930, "x_len": 0.5, "y_len": 0.167, "z_len": 0.05, "rotation": 0, "size_type": "wide"},
             
             # 11-14段目: 右列下側（上から下）- 長軸=X、短軸=X/8
-            {"name": "stair11", "x": 1.0, "y": 0.375, "z": 2.123, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair12", "x": 1.0, "y": 0.25, "z": 2.316, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair13", "x": 1.0, "y": 0.125, "z": 2.509, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
-            {"name": "stair14", "x": 1.0, "y": 0, "z": 2.702, "x_len": 1.0, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair11", "x": 0.5, "y": 0.375, "z": 2.123, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair12", "x": 0.5, "y": 0.25, "z": 2.316, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair13", "x": 0.5, "y": 0.125, "z": 2.509, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
+            {"name": "stair14", "x": 0.5, "y": 0, "z": 2.702, "x_len": 0.5, "y_len": 0.125, "z_len": 0.05, "rotation": 0, "size_type": "narrow"},
         ]
     
     def _mirror_y_pattern(steps):
@@ -173,7 +173,7 @@ try:
         return mirrored
     
     def _rotate_pattern(steps, degrees):
-        """中心(0.5, 0.5)を軸に反時計回りに回転（点対称変換）"""
+        """中心(0.5, 0.5)を軸に反時計回りに回転（矩形全体を点対称移動）"""
         import copy
         rotated = []
         
@@ -182,33 +182,41 @@ try:
             x, y = s['x'], s['y']
             x_len, y_len = s['x_len'], s['y_len']
             
-            # 中心(0.5, 0.5)を原点に移動
-            x_centered = x - 0.5
-            y_centered = y - 0.5
+            # 矩形の中心を計算
+            center_x = x + x_len / 2
+            center_y = y + y_len / 2
             
             if degrees == 90:  # 東向き（反時計回りに90度）
-                # 回転: (x, y) → (-y, x)
-                x_rotated = -y_centered
-                y_rotated = x_centered
-                s['x'] = x_rotated + 0.5
-                s['y'] = y_rotated + 0.5
-                s['x_len'] = y_len  # サイズも回転
-                s['y_len'] = x_len
+                # 中心を回転: (cx, cy) → (0.5 - (cy - 0.5), 0.5 + (cx - 0.5))
+                new_center_x = 0.5 - (center_y - 0.5)
+                new_center_y = 0.5 + (center_x - 0.5)
+                # サイズも回転（X↔Y）
+                new_x_len = y_len
+                new_y_len = x_len
+                # 新しい左下座標
+                s['x'] = new_center_x - new_x_len / 2
+                s['y'] = new_center_y - new_y_len / 2
+                s['x_len'] = new_x_len
+                s['y_len'] = new_y_len
             elif degrees == 180:  # 南向き（180度回転 = 点対称）
-                # 回転: (x, y) → (-x, -y)
-                x_rotated = -x_centered
-                y_rotated = -y_centered
-                s['x'] = x_rotated + 0.5
-                s['y'] = y_rotated + 0.5
-                # サイズはそのまま
+                # 中心を点対称: (cx, cy) → (1.0 - cx, 1.0 - cy)
+                new_center_x = 1.0 - center_x
+                new_center_y = 1.0 - center_y
+                # サイズは変わらない
+                s['x'] = new_center_x - x_len / 2
+                s['y'] = new_center_y - y_len / 2
             elif degrees == 270:  # 西向き（反時計回りに270度）
-                # 回転: (x, y) → (y, -x)
-                x_rotated = y_centered
-                y_rotated = -x_centered
-                s['x'] = x_rotated + 0.5
-                s['y'] = y_rotated + 0.5
-                s['x_len'] = y_len  # サイズも回転
-                s['y_len'] = x_len
+                # 中心を回転: (cx, cy) → (0.5 + (cy - 0.5), 0.5 - (cx - 0.5))
+                new_center_x = 0.5 + (center_y - 0.5)
+                new_center_y = 0.5 - (center_x - 0.5)
+                # サイズも回転（X↔Y）
+                new_x_len = y_len
+                new_y_len = x_len
+                # 新しい左下座標
+                s['x'] = new_center_x - new_x_len / 2
+                s['y'] = new_center_y - new_y_len / 2
+                s['x_len'] = new_x_len
+                s['y_len'] = new_y_len
             
             rotated.append(s)
         return rotated
