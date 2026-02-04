@@ -3103,17 +3103,23 @@ def main():
                         # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
                         st.warning("⚠️ 削除ボタンを表示します")
-                        delete_button_clicked = st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top")
-                        if delete_button_clicked:
+                        
+                        # フォームで囲んでボタンクリックを確実に処理
+                        with st.form(key="delete_form"):
+                            st.write(f"選択された壁: {num_selected}本")
+                            delete_submitted = st.form_submit_button("🗑️ 削除実行", type="primary")
+                            
+                        if delete_submitted:
                             # まずセッション変数を設定（rerunの前に確実に保存）
                             st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
                             st.session_state.execute_delete = True
                             st.session_state.selected_walls_for_delete = []
                             st.session_state.skip_click_processing = True
-                            # その後デバッグ表示（これはrerun前なので表示されない）
+                            # デバッグ表示（これはrerun前なので表示されない）
                             st.info(f"🔍 デバッグ：削除ボタンがクリックされました。壁数={len(st.session_state.delete_walls_to_process)}")
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
                             st.rerun()
+                            
                         st.info("🔍 デバッグ：ボタンの後のコードが実行されました（クリックされていない場合）")
                 elif edit_mode == "階段を配置":
                     # 階段追加モード：2点選択
