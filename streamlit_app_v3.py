@@ -321,22 +321,22 @@ try:
                 "steps": _mirror_x_for_north_south(south_cw)
             },
             "コの字_時計回り_東": {
-                "display_name": "コの字階段（時計回り・東→）",
+                "display_name": "コの字階段（反時計回り・東→）",
                 "description": "下から昇り、右で右折、上列を左へ",
                 "steps": east_cw
             },
             "コの字_反時計回り_東": {
-                "display_name": "コの字階段（反時計回り・東→）",
+                "display_name": "コの字階段（時計回り・東→）",
                 "description": "上から昇り、右で左折、下列を左へ",
                 "steps": _mirror_y_for_east_west(east_cw)
             },
             "コの字_時計回り_西": {
-                "display_name": "コの字階段（時計回り・西←）",
+                "display_name": "コの字階段（反時計回り・西←）",
                 "description": "上から昇り、左で右折、下列を右へ",
                 "steps": west_cw
             },
             "コの字_反時計回り_西": {
-                "display_name": "コの字階段（反時計回り・西←）",
+                "display_name": "コの字階段（時計回り・西←）",
                 "description": "下から昇り、左で左折、上列を右へ",
                 "steps": _mirror_y_for_east_west(west_cw)
             },
