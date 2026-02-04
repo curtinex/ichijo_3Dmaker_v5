@@ -3559,6 +3559,10 @@ def main():
                                 )
                                 
                                 if nearest_wall is not None:
+                                    # 窓追加で作成された壁は削除不可
+                                    if nearest_wall.get('source') == 'window_added':
+                                        st.warning("窓を追加したことで生成された壁は削除できません。窓の削除から行ってください。")
+                                        st.rerun()
                                     # 既に選択されている場合は選択解除
                                     if nearest_wall in st.session_state.selected_walls_for_delete:
                                         st.session_state.selected_walls_for_delete.remove(nearest_wall)
@@ -5308,6 +5312,9 @@ def main():
                                         
                                         # クリック選択された壁を削除
                                         for wall in walls_list:
+                                            # 窓追加で作成された壁はスキップ
+                                            if wall.get('source') == 'window_added':
+                                                continue
                                             walls_to_delete.append(wall['id'])
                                             delete_details.append({
                                                 'method': 'クリック選択',
@@ -5324,6 +5331,9 @@ def main():
                                     # クリック選択された壁を削除（後方互換性のため残す）
                                     elif len(st.session_state.selected_walls_for_delete) > 0:
                                         for wall in st.session_state.selected_walls_for_delete:
+                                            # 窓追加で作成された壁はスキップ
+                                            if wall.get('source') == 'window_added':
+                                                continue
                                             walls_to_delete.append(wall['id'])
                                             delete_details.append({
                                                 'method': 'クリック選択',
