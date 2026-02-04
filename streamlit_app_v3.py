@@ -411,10 +411,16 @@ try:
                     window_end = p2
             thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
             default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
-            try:
-                max_id = max([int(w['id']) for w in walls], default=0)
-            except (ValueError, TypeError):
-                max_id = 0
+            
+            # 既存のIDを全て取得して、最大値を確実に取得（重複回避）
+            existing_ids = []
+            for w in walls:
+                try:
+                    existing_ids.append(int(w['id']))
+                except (ValueError, TypeError):
+                    pass
+            max_id = max(existing_ids) if existing_ids else 0
+            
             added_walls = []
             floor_wall = {
                 'id': max_id + 1,
@@ -992,11 +998,14 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     dy = end_pt[1] - start_pt[1]
     length = round(math.sqrt(dx**2 + dy**2), 3)
     
-    # 新しい壁のIDを生成（IDが文字列の場合も対応）
-    try:
-        max_id = max([int(w['id']) for w in walls], default=0)
-    except (ValueError, TypeError):
-        max_id = 0
+    # 新しい壁のIDを生成（IDが文字列の場合も対応、重複回避）
+    existing_ids = []
+    for w in walls:
+        try:
+            existing_ids.append(int(w['id']))
+        except (ValueError, TypeError):
+            pass
+    max_id = max(existing_ids) if existing_ids else 0
     new_id = max_id + 1
     
     # 新しい壁オブジェクトを作成（既存の壁と同じ構造）
@@ -2063,6 +2072,13 @@ def main():
                 json_data_debug = json.loads(st.session_state.json_bytes.decode("utf-8"))
                 all_walls_debug = json_data_debug.get('walls', [])
                 st.write(f"**JSON内の全壁数:** {len(all_walls_debug)}本")
+                
+                # ID重複チェック
+                wall_ids = [w['id'] for w in all_walls_debug]
+                duplicate_ids = [id for id in set(wall_ids) if wall_ids.count(id) > 1]
+                if duplicate_ids:
+                    st.error(f"⚠️ **ID重複検出！** 以下のIDが重複しています: {duplicate_ids}")
+                    st.write("これは削除時に意図しない壁が削除される原因になります。")
                 
                 # source='added' または 'window_added' の壁のみ表示
                 added_walls = [w for w in all_walls_debug if w.get('source') in ['added', 'window_added']]
