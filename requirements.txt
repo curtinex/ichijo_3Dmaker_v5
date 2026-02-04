@@ -9,3 +9,6 @@ opencv-python-headless
 # Image processing
 scikit-image
 scipy
+
+# Local module
+./ichijo_core_check
