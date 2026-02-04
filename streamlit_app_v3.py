@@ -5310,117 +5310,117 @@ def main():
                         
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
-                                    total_deleted_count = 0
-                                    delete_details = []
-                                    walls_to_delete = []  # 削除対象の壁IDリスト
-                                    
-                                    # デバッグ：窓追加で作成された壁を確認
-                                    window_added_walls = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
-                                    if window_added_walls:
-                                        st.info(f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）")
-                                    
-                                    # セッションに保存された壁を使用（ボタンクリック時に保存済み）
-                                    if st.session_state.get('delete_walls_to_process'):
-                                        # セッションから壁リストを取得
-                                        walls_list = st.session_state.delete_walls_to_process
-                                        
-                                        # 処理完了後にセッションから削除
-                                        del st.session_state.delete_walls_to_process
-                                        
-                                        # デバッグ：選択された壁を確認
-                                        st.info(f"🔍 デバッグ：クリック選択された壁は{len(walls_list)}本（ID: {[w['id'] for w in walls_list]}）")
-                                        
-                                        # クリック選択された壁を削除
-                                        skipped_count = 0
-                                        for wall in walls_list:
-                                            # 窓追加で作成された壁はスキップ
-                                            if wall.get('source') == 'window_added':
-                                                skipped_count += 1
-                                                st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
-                                                continue
-                                            walls_to_delete.append(wall['id'])
-                                            delete_details.append({
-                                                'method': 'クリック選択',
-                                                'wall_id': wall['id']
-                                            })
-                                        
-                                        if skipped_count > 0:
-                                            st.info(f"ℹ️ {skipped_count}本の窓追加壁を保護しました")
-                                        
-                                        total_deleted_count = len(walls_to_delete)
-                                        
-                                        # 壁を削除
-                                        if len(walls_to_delete) > 0:
-                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                        
-                                        # 全体のリセットは後の共通処理で実行される
-                                    
-                                    # クリック選択された壁を削除（後方互換性のため残す）
-                                    elif len(st.session_state.selected_walls_for_delete) > 0:
-                                        for wall in st.session_state.selected_walls_for_delete:
-                                            # 窓追加で作成された壁はスキップ
-                                            if wall.get('source') == 'window_added':
-                                                continue
-                                            walls_to_delete.append(wall['id'])
-                                            delete_details.append({
-                                                'method': 'クリック選択',
-                                                'wall_id': wall['id']
-                                            })
-                                        total_deleted_count = len(walls_to_delete)
-                                        
-                                        # 壁を削除
-                                        if len(walls_to_delete) > 0:
-                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                            # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
-                                            st.session_state.selected_walls_for_delete = []
-                                    
-                                    # 四角形ベースの削除（後方互換性のため残す）
-                                    for rect_idx, (p1, p2) in enumerate(target_rects):
-                                        rect = {
-                                            'left': min(p1[0], p2[0]),
-                                            'top': min(p1[1], p2[1]),
-                                            'width': abs(p2[0] - p1[0]),
-                                            'height': abs(p2[1] - p1[1])
-                                        }
-                                    
-                                        # 四角形内に完全に含まれる壁線を抽出
-                                        walls_in_rect = _filter_walls_strictly_in_rect(
-                                            updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
-                                        )
-                                    
-                                        if walls_in_rect:
-                                            # デバッグ：四角形内の壁を確認
-                                            st.info(f"🔍 デバッグ：四角形#{rect_idx}内に{len(walls_in_rect)}本の壁があります（ID: {[w['id'] for w in walls_in_rect]}）")
-                                            window_walls_in_rect = [w for w in walls_in_rect if w.get('source') == 'window_added']
-                                            if window_walls_in_rect:
-                                                st.info(f"🔍 デバッグ：うち窓追加壁は{len(window_walls_in_rect)}本（ID: {[w['id'] for w in window_walls_in_rect]}）")
-                                            
-                                            # 四角形内の壁をすべて削除対象に追加
-                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                            skipped_in_rect = 0
-                                            for wall in walls_in_rect:
-                                                # 窓追加で作成された壁はスキップ
-                                                if wall.get('source') == 'window_added':
-                                                    skipped_in_rect += 1
-                                                    st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
-                                                    continue
-                                                if wall['id'] not in walls_to_delete:  # 重複を避ける
-                                                    walls_to_delete.append(wall['id'])
-                                                    delete_details.append({
-                                                        'rect_idx': rect_idx,
-                                                        'color_name': color_name,
-                                                        'wall_id': wall['id']
-                                                    })
-                                                    total_deleted_count += 1
-                                            
-                                            if skipped_in_rect > 0:
-                                                st.info(f"ℹ️ 四角形#{rect_idx}で{skipped_in_rect}本の窓追加壁を保護しました")
+                            total_deleted_count = 0
+                            delete_details = []
+                            walls_to_delete = []  # 削除対象の壁IDリスト
+                            
+                            # デバッグ：窓追加で作成された壁を確認
+                            window_added_walls = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
+                            if window_added_walls:
+                                st.info(f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）")
+                            
+                            # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                            if st.session_state.get('delete_walls_to_process'):
+                                # セッションから壁リストを取得
+                                walls_list = st.session_state.delete_walls_to_process
                                 
-                                    if len(walls_to_delete) > 0:
-                                        # 壁を削除
-                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                    else:
-                                        st.warning("⚠️ 削除対象の壁が見つかりません")
+                                # 処理完了後にセッションから削除
+                                del st.session_state.delete_walls_to_process
+                                
+                                # デバッグ：選択された壁を確認
+                                st.info(f"🔍 デバッグ：クリック選択された壁は{len(walls_list)}本（ID: {[w['id'] for w in walls_list]}）")
+                                
+                                # クリック選択された壁を削除
+                                skipped_count = 0
+                                for wall in walls_list:
+                                    # 窓追加で作成された壁はスキップ
+                                    if wall.get('source') == 'window_added':
+                                        skipped_count += 1
+                                        st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
+                                        continue
+                                    walls_to_delete.append(wall['id'])
+                                    delete_details.append({
+                                        'method': 'クリック選択',
+                                        'wall_id': wall['id']
+                                    })
+                                
+                                if skipped_count > 0:
+                                    st.info(f"ℹ️ {skipped_count}本の窓追加壁を保護しました")
+                                
+                                total_deleted_count = len(walls_to_delete)
+                                
+                                # 壁を削除
+                                if len(walls_to_delete) > 0:
+                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                
+                                # 全体のリセットは後の共通処理で実行される
+                            
+                            # クリック選択された壁を削除（後方互換性のため残す）
+                            elif len(st.session_state.selected_walls_for_delete) > 0:
+                                for wall in st.session_state.selected_walls_for_delete:
+                                    # 窓追加で作成された壁はスキップ
+                                    if wall.get('source') == 'window_added':
+                                        continue
+                                    walls_to_delete.append(wall['id'])
+                                    delete_details.append({
+                                        'method': 'クリック選択',
+                                        'wall_id': wall['id']
+                                    })
+                                total_deleted_count = len(walls_to_delete)
+                                
+                                # 壁を削除
+                                if len(walls_to_delete) > 0:
+                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                    # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
+                                    st.session_state.selected_walls_for_delete = []
+                            
+                            # 四角形ベースの削除（後方互換性のため残す）
+                            for rect_idx, (p1, p2) in enumerate(target_rects):
+                                rect = {
+                                    'left': min(p1[0], p2[0]),
+                                    'top': min(p1[1], p2[1]),
+                                    'width': abs(p2[0] - p1[0]),
+                                    'height': abs(p2[1] - p1[1])
+                                }
+                            
+                                # 四角形内に完全に含まれる壁線を抽出
+                                walls_in_rect = _filter_walls_strictly_in_rect(
+                                    updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
+                                )
+                            
+                                if walls_in_rect:
+                                    # デバッグ：四角形内の壁を確認
+                                    st.info(f"🔍 デバッグ：四角形#{rect_idx}内に{len(walls_in_rect)}本の壁があります（ID: {[w['id'] for w in walls_in_rect]}）")
+                                    window_walls_in_rect = [w for w in walls_in_rect if w.get('source') == 'window_added']
+                                    if window_walls_in_rect:
+                                        st.info(f"🔍 デバッグ：うち窓追加壁は{len(window_walls_in_rect)}本（ID: {[w['id'] for w in window_walls_in_rect]}）")
+                                    
+                                    # 四角形内の壁をすべて削除対象に追加
+                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                    skipped_in_rect = 0
+                                    for wall in walls_in_rect:
+                                        # 窓追加で作成された壁はスキップ
+                                        if wall.get('source') == 'window_added':
+                                            skipped_in_rect += 1
+                                            st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
+                                            continue
+                                        if wall['id'] not in walls_to_delete:  # 重複を避ける
+                                            walls_to_delete.append(wall['id'])
+                                            delete_details.append({
+                                                'rect_idx': rect_idx,
+                                                'color_name': color_name,
+                                                'wall_id': wall['id']
+                                            })
+                                            total_deleted_count += 1
+                                    
+                                    if skipped_in_rect > 0:
+                                        st.info(f"ℹ️ 四角形#{rect_idx}で{skipped_in_rect}本の窓追加壁を保護しました")
+                            
+                            if len(walls_to_delete) > 0:
+                                # 壁を削除
+                                updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                            else:
+                                st.warning("⚠️ 削除対象の壁が見つかりません")
                         
                         elif edit_mode == "床を追加":
                             # ===== 床を追加モード =====
