@@ -3119,13 +3119,6 @@ def main():
                             st.session_state.skip_click_processing = True  # クリック処理をスキップ
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
                             st.rerun()
-                elif edit_mode == "スケール校正":
-                    # スケール校正モード：壁を1クリックで選択
-                    if st.session_state.selected_wall_for_calibration:
-                        wall_id = st.session_state.selected_wall_for_calibration.get('id', '?')
-                        st.success(f"✅ 壁（ID: {wall_id}）を選択しました。下のマス数入力欄で実寸法を指定してください。")
-                    else:
-                        st.write("💡 **校正対象の壁線を1回クリックして選択してください**")
                 elif edit_mode == "階段を追加":
                     # 階段追加モード：2点選択
                     if len(st.session_state.rect_coords_list) > 0:
@@ -3161,7 +3154,7 @@ def main():
                             st.session_state.selected_stair_pattern = stair_pattern_key
                             st.rerun()
                     else:
-                        st.write("💡 画像をクリックして四角形の2点を指定してください（1点目→2点目）")
+                        st.write("💡 画像をクリックして四角形の対角線上の2点を指定してください")
                 
                 # 線を結合・窓を追加・線を削除モードは壁線クリック選択なので、ここでのメッセージ表示は不要
                 elif edit_mode not in ("線を結合", "窓を追加", "線を削除"):
@@ -3195,7 +3188,12 @@ def main():
                             x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                             color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
                             #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
-                    st.write("画像をクリックして四角形の2点を指定してください（1点目→2点目）")
+                    
+                    # モード別の説明メッセージ
+                    if edit_mode == "線を追加":
+                        st.write("💡 追加したい壁の端点2点を指定してください")
+                    else:
+                        st.write("💡 画像をクリックして四角形の対角線上の2点を指定してください")
                     
                     # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示（線を結合モードは除外）
                     if edit_mode == "窓を追加" and len(st.session_state.rect_coords) == 2:
