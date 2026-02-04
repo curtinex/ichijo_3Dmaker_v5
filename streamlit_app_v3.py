@@ -5252,26 +5252,45 @@ def main():
                         
                         elif edit_mode == "線を追加":
                             # ===== 線を追加モード =====
-                                    total_added_count = 0
-                                    add_details = []
+                            total_added_count = 0
+                            add_details = []
+                        
+                            for rect_idx, (p1, p2) in enumerate(target_rects):
+                                rect = {
+                                    'left': min(p1[0], p2[0]),
+                                    'top': min(p1[1], p2[1]),
+                                    'width': abs(p2[0] - p1[0]),
+                                    'height': abs(p2[1] - p1[1])
+                                }
+                            
+                                # 選択範囲内の壁線を抽出
+                                walls_in_selection = [
+                                    wall for wall in updated_json['walls']
+                                    if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
+                                ]
+                            
+                                # 既存の全ての壁から平均高さを取得（デフォルト2.4m）
+                                all_heights = [w.get('height', 2.4) for w in updated_json['walls'] if 'height' in w]
+                                wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
+                            
+                                # 線を追加（スケールをセッション状態から取得）
+                                updated_json, direction, new_wall = _add_line_to_json(
+                                    updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
+                                )
                                 
-                                    for rect_idx, (p1, p2) in enumerate(target_rects):
-                                        rect = {
-                                            'left': min(p1[0], p2[0]),
-                                            'top': min(p1[1], p2[1]),
-                                            'width': abs(p2[0] - p1[0]),
-                                            'height': abs(p2[1] - p1[1])
-                                        }
-                                    
-                                        # 選択範囲内の壁線を抽出
-                                        walls_in_selection = [
-                                            wall for wall in updated_json['walls']
-                                            if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
-                                        ]
-                                    
-                                    # 既存の全ての壁から平均高さを取得（デフォルト2.4m）
-                                    all_heights = [w.get('height', 2.4) for w in updated_json['walls'] if 'height' in w]
-                                    wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
+                                total_added_count += 1
+                                add_details.append({
+                                    'rect_idx': rect_idx,
+                                    'direction': direction,
+                                    'wall_id': new_wall['id'],
+                                    'length': new_wall['length']
+                                })
+                            
+                            if total_added_count > 0:
+                                st.success(f"🎉 合計{total_added_count}本の壁を追加しました！")
+                                for detail in add_details:
+                                    st.write(f"  壁ID#{detail['wall_id']}: 方向={detail['direction']}, 長さ={detail['length']:.2f}m")
+                        
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
                                     total_deleted_count = 0
