@@ -3051,25 +3051,11 @@ def main():
                                     max_value=3000,
                                     value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
                                     step=1,
-                                    key=f"window_height_click_{window_idx}_{window_model}"
-                                )
-                                st.session_state.window_click_params_list[window_idx]['height_mm'] = window_height_mm
-                            
-                            with col3:
-                                window_base_mm = st.number_input(
-                                    f"床から窓下端 (mm)",
-                                    min_value=0,
+                                key=f"window_height_click_{window_idx}"
                                     max_value=5000,
                                     value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
                                     step=1,
-                                    key=f"window_base_click_{window_idx}_{window_model}"
-                                )
-                                st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
-                            
-                            # パラメータを保存
-                            window_params_to_save.append({
-                                'model': window_model,
-                                'width_mm': WINDOW_CATALOG.get(window_model, {}).get("width", 0) if isinstance(WINDOW_CATALOG.get(window_model), dict) else 0,
+                                key=f"window_base_click_{window_idx}"
                                 'height_mm': window_height_mm,
                                 'base_mm': window_base_mm
                             })
@@ -5270,16 +5256,9 @@ def main():
                                             if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
                                         ]
                                     
-                                        # 最初の壁（wall1）の高さを取得、なければデフォルト高さを使用
-                                        wall_height_to_use = None
-                                        if len(walls_in_selection) > 0:
-                                            wall_height_to_use = walls_in_selection[0].get('height', None)
-                                    
-                                        # 線を追加（スケールをセッション状態から取得）
-                                        updated_json, direction, new_wall = _add_line_to_json(
-                                            updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
-                                        )
-                        
+                                    # 既存の全ての壁から平均高さを取得（デフォルト2.4m）
+                                    all_heights = [w.get('height', 2.4) for w in updated_json['walls'] if 'height' in w]
+                                    wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
                                     total_deleted_count = 0
