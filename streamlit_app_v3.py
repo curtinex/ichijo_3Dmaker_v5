@@ -5365,6 +5365,9 @@ def main():
                                             # 四角形内の壁をすべて削除対象に追加
                                             color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
                                             for wall in walls_in_rect:
+                                                # 窓追加で作成された壁はスキップ
+                                                if wall.get('source') == 'window_added':
+                                                    continue
                                                 if wall['id'] not in walls_to_delete:  # 重複を避ける
                                                     walls_to_delete.append(wall['id'])
                                                     delete_details.append({
