@@ -3575,15 +3575,17 @@ def main():
                                     # 窓追加で作成された壁は削除不可
                                     if nearest_wall.get('source') == 'window_added':
                                         st.warning("窓を追加したことで生成された壁は削除できません。窓の削除から行ってください。")
-                                        st.rerun()
+                                        # rerunしない（ボタンクリックを妨げないため）
                                     # 既に選択されている場合は選択解除
-                                    if nearest_wall in st.session_state.selected_walls_for_delete:
+                                    elif nearest_wall in st.session_state.selected_walls_for_delete:
                                         st.session_state.selected_walls_for_delete.remove(nearest_wall)
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
                                     else:
                                         # 複数本選択可能
                                         st.session_state.selected_walls_for_delete.append(nearest_wall)
-                                    st.session_state.last_click = new_point
-                                    st.rerun()
+                                        st.session_state.last_click = new_point
+                                        st.rerun()
                             except Exception as e:
                                 st.error(f"壁選択エラー: {e}")
                     elif edit_mode == "スケール校正":
