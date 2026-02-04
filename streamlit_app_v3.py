@@ -374,19 +374,10 @@ try:
         generate_3d_viewer_html as _generate_3d_viewer_html,
     )
     
-    # window_utilsとwall_editingのインポート（古いバージョン対応）
+    # window_utilsとwall_editingのインポート（ichijo_coreは使わずフォールバック版のみ使用）
     try:
-        from ichijo_core.window_utils import add_window_walls
-        from ichijo_core.wall_editing import (
-            point_to_line_segment_distance as _point_to_line_segment_distance,
-            find_nearest_wall_from_click as _find_nearest_wall_from_click,
-            select_best_wall_pair_from_4 as _select_best_wall_pair_from_4,
-            find_collinear_chains as _find_collinear_chains,
-            find_mergeable_walls as _find_mergeable_walls,
-            merge_walls_in_json as _merge_walls_in_json,
-            delete_walls_in_json as _delete_walls_in_json,
-            find_closest_wall_to_point,
-        )
+        # ichijo_coreがあってもフォールバック版を使う（ID生成の修正を確実に適用）
+        raise ImportError("Force use of fallback functions")
     except ImportError as e:
         # フォールバック関数を定義
         import copy
