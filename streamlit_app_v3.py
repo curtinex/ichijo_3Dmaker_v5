@@ -1935,7 +1935,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -3365,7 +3365,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -5297,86 +5297,86 @@ def main():
                         
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
-                                    total_deleted_count = 0
-                                    delete_details = []
-                                    walls_to_delete = []  # 削除対象の壁IDリスト
-                                    
-                                    # セッションに保存された壁を使用（ボタンクリック時に保存済み）
-                                    if st.session_state.get('delete_walls_to_process'):
-                                        # セッションから壁リストを取得
-                                        walls_list = st.session_state.delete_walls_to_process
-                                        
-                                        # デバッグ：削除対象の壁情報を表示
-                                        st.write(f"🐛 DEBUG: 削除対象の壁 = {len(walls_list)}本")
-                                        for i, wall in enumerate(walls_list):
-                                            st.write(f"  壁{i+1}: ID={wall['id']} (型={type(wall['id']).__name__}), start={wall['start']}, end={wall['end']}")
-                                        
-                                        # 処理完了後にセッションから削除
-                                        del st.session_state.delete_walls_to_process
-                                        
-                                        # クリック選択された壁を削除
-                                        for wall in walls_list:
+                            total_deleted_count = 0
+                            delete_details = []
+                            walls_to_delete = []  # 削除対象の壁IDリスト
+                            
+                            # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                            if st.session_state.get('delete_walls_to_process'):
+                                # セッションから壁リストを取得
+                                walls_list = st.session_state.delete_walls_to_process
+                                
+                                # デバッグ：削除対象の壁情報を表示
+                                st.write(f"🐛 DEBUG: 削除対象の壁 = {len(walls_list)}本")
+                                for i, wall in enumerate(walls_list):
+                                    st.write(f"  壁{i+1}: ID={wall['id']} (型={type(wall['id']).__name__}), start={wall['start']}, end={wall['end']}")
+                                
+                                # 処理完了後にセッションから削除
+                                del st.session_state.delete_walls_to_process
+                                
+                                # クリック選択された壁を削除
+                                for wall in walls_list:
+                                    walls_to_delete.append(wall['id'])
+                                    delete_details.append({
+                                        'method': 'クリック選択',
+                                        'wall_id': wall['id']
+                                    })
+                                total_deleted_count = len(walls_to_delete)
+                                
+                                # デバッグ：削除前の全壁ID
+                                st.write(f"🐛 DEBUG: 削除前の全壁ID = {[w['id'] for w in updated_json['walls']]}")
+                                st.write(f"🐛 DEBUG: 削除対象ID = {walls_to_delete}")
+                                
+                                # 壁を削除
+                                if len(walls_to_delete) > 0:
+                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                    # デバッグ：削除後の全壁ID
+                                    st.write(f"🐛 DEBUG: 削除後の全壁ID = {[w['id'] for w in updated_json['walls']]}")
+                                
+                                # 全体のリセットは後の共通処理で実行される
+                            
+                            # クリック選択された壁を削除（後方互換性のため残す）
+                            elif len(st.session_state.selected_walls_for_delete) > 0:
+                                for wall in st.session_state.selected_walls_for_delete:
+                                    walls_to_delete.append(wall['id'])
+                                    delete_details.append({
+                                        'method': 'クリック選択',
+                                        'wall_id': wall['id']
+                                    })
+                                total_deleted_count = len(walls_to_delete)
+                                
+                                # 壁を削除
+                                if len(walls_to_delete) > 0:
+                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                    # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
+                                    st.session_state.selected_walls_for_delete = []
+                            
+                            # 四角形ベースの削除（後方互換性のため残す）
+                            for rect_idx, (p1, p2) in enumerate(target_rects):
+                                rect = {
+                                    'left': min(p1[0], p2[0]),
+                                    'top': min(p1[1], p2[1]),
+                                    'width': abs(p2[0] - p1[0]),
+                                    'height': abs(p2[1] - p1[1])
+                                }
+                            
+                                # 四角形内に完全に含まれる壁線を抽出
+                                walls_in_rect = _filter_walls_strictly_in_rect(
+                                    updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
+                                )
+                            
+                                if walls_in_rect:
+                                    # 四角形内の壁をすべて削除対象に追加
+                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                    for wall in walls_in_rect:
+                                        if wall['id'] not in walls_to_delete:  # 重複を避ける
                                             walls_to_delete.append(wall['id'])
                                             delete_details.append({
-                                                'method': 'クリック選択',
+                                                'rect_idx': rect_idx,
+                                                'color_name': color_name,
                                                 'wall_id': wall['id']
                                             })
-                                        total_deleted_count = len(walls_to_delete)
-                                        
-                                        # デバッグ：削除前の全壁ID
-                                        st.write(f"🐛 DEBUG: 削除前の全壁ID = {[w['id'] for w in updated_json['walls']]}")
-                                        st.write(f"🐛 DEBUG: 削除対象ID = {walls_to_delete}")
-                                        
-                                        # 壁を削除
-                                        if len(walls_to_delete) > 0:
-                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                            # デバッグ：削除後の全壁ID
-                                            st.write(f"🐛 DEBUG: 削除後の全壁ID = {[w['id'] for w in updated_json['walls']]}")
-                                        
-                                        # 全体のリセットは後の共通処理で実行される
-                                    
-                                    # クリック選択された壁を削除（後方互換性のため残す）
-                                    elif len(st.session_state.selected_walls_for_delete) > 0:
-                                        for wall in st.session_state.selected_walls_for_delete:
-                                            walls_to_delete.append(wall['id'])
-                                            delete_details.append({
-                                                'method': 'クリック選択',
-                                                'wall_id': wall['id']
-                                            })
-                                        total_deleted_count = len(walls_to_delete)
-                                        
-                                        # 壁を削除
-                                        if len(walls_to_delete) > 0:
-                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                            # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
-                                            st.session_state.selected_walls_for_delete = []
-                                    
-                                    # 四角形ベースの削除（後方互換性のため残す）
-                                    for rect_idx, (p1, p2) in enumerate(target_rects):
-                                        rect = {
-                                            'left': min(p1[0], p2[0]),
-                                            'top': min(p1[1], p2[1]),
-                                            'width': abs(p2[0] - p1[0]),
-                                            'height': abs(p2[1] - p1[1])
-                                        }
-                                    
-                                        # 四角形内に完全に含まれる壁線を抽出
-                                        walls_in_rect = _filter_walls_strictly_in_rect(
-                                            updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
-                                        )
-                                    
-                                        if walls_in_rect:
-                                            # 四角形内の壁をすべて削除対象に追加
-                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                            for wall in walls_in_rect:
-                                                if wall['id'] not in walls_to_delete:  # 重複を避ける
-                                                    walls_to_delete.append(wall['id'])
-                                                    delete_details.append({
-                                                        'rect_idx': rect_idx,
-                                                        'color_name': color_name,
-                                                        'wall_id': wall['id']
-                                                    })
-                                                    total_deleted_count += 1
+                                            total_deleted_count += 1
                                 
                                     if len(walls_to_delete) > 0:
                                         # 壁を削除
