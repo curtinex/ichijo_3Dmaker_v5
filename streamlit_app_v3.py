@@ -2037,6 +2037,45 @@ def main():
             st.write("💡 追加したい壁の端点2点を指定してください。（複数選択可能）")
         elif edit_mode == "線を削除":
             st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
+            
+            # 🐛 デバッグ情報を常に表示
+            st.markdown("---")
+            st.markdown("### 🐛 デバッグ情報")
+            
+            # セッション状態の確認
+            if st.session_state.get('selected_walls_for_delete'):
+                st.write(f"**選択中の壁:** {len(st.session_state.selected_walls_for_delete)}本")
+                for i, wall in enumerate(st.session_state.selected_walls_for_delete):
+                    st.write(f"  {i+1}. ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source', 'N/A')}")
+                    st.write(f"     start={wall['start']}, end={wall['end']}")
+            else:
+                st.write("**選択中の壁:** なし")
+            
+            if st.session_state.get('delete_walls_to_process'):
+                st.write(f"**削除待機中の壁:** {len(st.session_state.delete_walls_to_process)}本")
+                for i, wall in enumerate(st.session_state.delete_walls_to_process):
+                    st.write(f"  {i+1}. ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source', 'N/A')}")
+            else:
+                st.write("**削除待機中の壁:** なし")
+            
+            # 現在のJSON内の全壁情報
+            try:
+                json_data_debug = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                all_walls_debug = json_data_debug.get('walls', [])
+                st.write(f"**JSON内の全壁数:** {len(all_walls_debug)}本")
+                
+                # source='added' または 'window_added' の壁のみ表示
+                added_walls = [w for w in all_walls_debug if w.get('source') in ['added', 'window_added']]
+                if added_walls:
+                    st.write(f"**追加された壁:** {len(added_walls)}本")
+                    for wall in added_walls:
+                        st.write(f"  ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source')}, start={wall['start']}, end={wall['end']}")
+                else:
+                    st.write("**追加された壁:** なし")
+            except:
+                st.write("**JSON解析エラー**")
+            
+            st.markdown("---")
         elif edit_mode == "オブジェクトを配置":
             st.write("💡 オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
         elif edit_mode == "階段を配置":
@@ -3561,20 +3600,12 @@ def main():
                                 )
                                 
                                 if nearest_wall is not None:
-                                    # デバッグ：選択された壁の情報
-                                    st.write(f"🐛 DEBUG: 壁をクリック - ID={nearest_wall['id']}, source={nearest_wall.get('source', 'N/A')}, start={nearest_wall['start']}, end={nearest_wall['end']}")
-                                    
                                     # 既に選択されている場合は選択解除
                                     if nearest_wall in st.session_state.selected_walls_for_delete:
                                         st.session_state.selected_walls_for_delete.remove(nearest_wall)
-                                        st.write(f"🐛 DEBUG: 選択解除 - 現在の選択数={len(st.session_state.selected_walls_for_delete)}")
                                     else:
                                         # 複数本選択可能
                                         st.session_state.selected_walls_for_delete.append(nearest_wall)
-                                        st.write(f"🐛 DEBUG: 選択追加 - 現在の選択数={len(st.session_state.selected_walls_for_delete)}")
-                                        # 選択されている壁のID一覧
-                                        selected_ids = [w['id'] for w in st.session_state.selected_walls_for_delete]
-                                        st.write(f"🐛 DEBUG: 選択中のID = {selected_ids}")
                                     st.session_state.last_click = new_point
                                     st.rerun()
                             except Exception as e:
@@ -5316,11 +5347,6 @@ def main():
                                 # セッションから壁リストを取得
                                 walls_list = st.session_state.delete_walls_to_process
                                 
-                                # デバッグ：削除対象の壁情報を表示
-                                st.write(f"🐛 DEBUG: 削除対象の壁 = {len(walls_list)}本")
-                                for i, wall in enumerate(walls_list):
-                                    st.write(f"  壁{i+1}: ID={wall['id']} (型={type(wall['id']).__name__}), start={wall['start']}, end={wall['end']}")
-                                
                                 # 処理完了後にセッションから削除
                                 del st.session_state.delete_walls_to_process
                                 
@@ -5333,15 +5359,9 @@ def main():
                                     })
                                 total_deleted_count = len(walls_to_delete)
                                 
-                                # デバッグ：削除前の全壁ID
-                                st.write(f"🐛 DEBUG: 削除前の全壁ID = {[w['id'] for w in updated_json['walls']]}")
-                                st.write(f"🐛 DEBUG: 削除対象ID = {walls_to_delete}")
-                                
                                 # 壁を削除
                                 if len(walls_to_delete) > 0:
                                     updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                    # デバッグ：削除後の全壁ID
-                                    st.write(f"🐛 DEBUG: 削除後の全壁ID = {[w['id'] for w in updated_json['walls']]}")
                                 
                                 # 全体のリセットは後の共通処理で実行される
                             
