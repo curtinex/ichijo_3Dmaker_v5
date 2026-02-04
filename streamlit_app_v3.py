@@ -500,7 +500,9 @@ try:
             return math.sqrt((px - nearest_x)**2 + (py - nearest_y)**2)
         
         def _find_nearest_wall_from_click(click_x, click_y, walls, scale, margin, img_height, min_x, min_y, max_x, max_y, threshold=20):
-            """クリック位置から最も近い壁を検出（フォールバック版）"""
+            """クリック位置から最も近い壁を検出（フォールバック版）
+            同じ座標の壁が複数ある場合は最初に見つかった壁のみを返す（窓の壁の重複選択を防ぐ）
+            """
             min_distance = float('inf')
             nearest_wall = None
             for wall in walls:
@@ -3559,12 +3561,20 @@ def main():
                                 )
                                 
                                 if nearest_wall is not None:
+                                    # デバッグ：選択された壁の情報
+                                    st.write(f"🐛 DEBUG: 壁をクリック - ID={nearest_wall['id']}, source={nearest_wall.get('source', 'N/A')}, start={nearest_wall['start']}, end={nearest_wall['end']}")
+                                    
                                     # 既に選択されている場合は選択解除
                                     if nearest_wall in st.session_state.selected_walls_for_delete:
                                         st.session_state.selected_walls_for_delete.remove(nearest_wall)
+                                        st.write(f"🐛 DEBUG: 選択解除 - 現在の選択数={len(st.session_state.selected_walls_for_delete)}")
                                     else:
                                         # 複数本選択可能
                                         st.session_state.selected_walls_for_delete.append(nearest_wall)
+                                        st.write(f"🐛 DEBUG: 選択追加 - 現在の選択数={len(st.session_state.selected_walls_for_delete)}")
+                                        # 選択されている壁のID一覧
+                                        selected_ids = [w['id'] for w in st.session_state.selected_walls_for_delete]
+                                        st.write(f"🐛 DEBUG: 選択中のID = {selected_ids}")
                                     st.session_state.last_click = new_point
                                     st.rerun()
                             except Exception as e:
