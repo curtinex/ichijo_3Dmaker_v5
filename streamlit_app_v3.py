@@ -4276,7 +4276,16 @@ def main():
                     should_execute = True
                 
                 if should_execute:
+                    st.markdown("---")
+                    st.markdown("### 🔧 処理実行中...")
                     st.info(f"🔍 デバッグ：should_execute=True, edit_mode={edit_mode}")
+                    
+                    # 削除デバッグログを表示用に保持
+                    if edit_mode == "線を削除" and st.session_state.get('delete_debug_log'):
+                        st.markdown("#### 📋 削除処理のログ（リアルタイム）")
+                        for log in st.session_state.delete_debug_log:
+                            st.write(log)
+                    
                     try:
                         append_debug(f"should_execute=True, edit_mode={edit_mode}")
                     except:
@@ -5365,8 +5374,11 @@ def main():
                             
                             # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                             if st.session_state.get('delete_walls_to_process'):
+                                st.write("🔍 ステップ1: delete_walls_to_processが存在します")
+                                
                                 # セッションから壁リストを取得
                                 walls_list = st.session_state.delete_walls_to_process
+                                st.write(f"🔍 ステップ2: 壁リストを取得しました。壁数={len(walls_list)}")
                                 
                                 # 処理完了後にセッションから削除
                                 del st.session_state.delete_walls_to_process
