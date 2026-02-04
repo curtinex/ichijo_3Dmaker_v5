@@ -1663,8 +1663,7 @@ def main():
 
                 # 説明文を追加
                 st.success(
-                    "変換が完了しました！\n\n"
-                    "壁の分断や過不足がある場合はパラメータを手動調整して再変換するか、手動編集で修正可能です。\n\n"
+                    "変換完了！ 壁の分断や過不足がある場合はパラメータを手動調整して再変換するか、手動編集で修正可能です。\n\n"
                     "窓は手動編集で追加できます。"
                 )
 
@@ -1936,7 +1935,7 @@ def main():
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                     <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                    <b>注:</b> 編集画面が表示されないときは選択リセットを押すかページを再読み込みしてください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -2017,10 +2016,6 @@ def main():
         cur_merge_angle = 15
         merged_flag = st.session_state.get('merged_processed', False)
         # st.write("壁線を手動で編集・調整します。")
-        
-        # 壁線手動編集モード
-        # st.divider()
-        #st.subheader("🔧 壁線手動編集")
         
         # モード選択タブ
         edit_mode = st.radio(
@@ -2987,10 +2982,10 @@ def main():
                         st.write("💡 結合したい壁線を1本目クリックしてください")
                     elif num_selected % 2 == 1:
                         merge_num = (num_selected // 2) + 1
-                        st.info(f"✅ **結合{merge_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                        #st.info(f"✅ **結合{merge_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
                     else:
                         merge_count = num_selected // 2
-                        st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
+                        #st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
                         
                         # 結合実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
@@ -3008,7 +3003,7 @@ def main():
                         st.write("💡 窓を追加したい壁線(2本)をクリックしてください")
                     elif num_selected % 2 == 1:
                         window_num = (num_selected // 2) + 1
-                        st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                        #st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
                     else:
                         window_count = num_selected // 2
                         st.success(f"✅ **{window_count}組の窓を選択完了**\n\n→ さらに窓を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下で窓パラメータを入力して「🪟 窓追加実行」ボタンをクリックしてください")
@@ -3107,7 +3102,7 @@ def main():
                     if num_selected == 0:
                         st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
                     else:
-                        st.success(f"✅ **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「🗑️ 削除実行」ボタンをクリックしてください")
+                        #st.success(f"✅ **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「🗑️ 削除実行」ボタンをクリックしてください")
                         
                         # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
@@ -3162,7 +3157,7 @@ def main():
                     # 線を追加モード：rect_coords_listに選択がある場合は実行ボタンを表示
                     if edit_mode == "線を追加" and len(st.session_state.rect_coords_list) > 0:
                         num_rects = len(st.session_state.rect_coords_list)
-                        st.success(f"✅ **{num_rects}本の線を選択完了**\n\n→ さらに線を追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下の「➕ 線追加実行」ボタンをクリックしてください")
+                        #st.success(f"✅ **{num_rects}本の線を選択完了**\n\n→ さらに線を追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下の「➕ 線追加実行」ボタンをクリックしてください")
                         
                         # 線追加実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
@@ -3187,6 +3182,66 @@ def main():
                             x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                             color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
                             #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
+                    
+                    # オブジェクト配置モード：家具のオプション選択を画像の前に表示
+                    if edit_mode == "オブジェクトを配置" and len(st.session_state.rect_coords_list) > 0:
+                        st.markdown("---")
+                        st.markdown("### 🪑 家具のオプションを選択")
+                        
+                        col_height, col_color = st.columns(2)
+                        
+                        with col_height:
+                            height_option = st.selectbox(
+                                "高さ",
+                                list(FURNITURE_HEIGHT_OPTIONS.keys()),
+                                help="家具の高さを選択してください",
+                                key="furniture_height_option"
+                            )
+                        
+                        with col_color:
+                            color_option = st.selectbox(
+                                "配色",
+                                list(FURNITURE_COLOR_OPTIONS.keys()),
+                                help="家具の色を選択してください",
+                                key="furniture_color_option"
+                            )
+                        
+                        # 選択された高さを取得（天井合わせの場合は壁の高さ）
+                        if height_option == "天井合わせ":
+                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            walls = json_data['walls']
+                            heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                            selected_height = max(heights) if heights else 2.4
+                            height_display = f"天井合わせ（{selected_height*100:.0f}cm）"
+                        else:
+                            selected_height = FURNITURE_HEIGHT_OPTIONS[height_option]
+                            height_display = height_option
+                        
+                        # セッションステートに保存
+                        st.session_state.furniture_params = {
+                            'height_option': height_option,
+                            'color_option': color_option,
+                            'selected_height': selected_height
+                        }
+                        
+                        # 選択された家具の情報を表示
+                        #st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
+                        
+                        # 配置範囲のサイズを予測表示
+                        if len(st.session_state.rect_coords_list) > 0:
+                            rect = st.session_state.rect_coords_list[0]
+                            p1, p2 = rect
+                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            x_start, y_start, width, depth = _snap_to_grid(
+                                (p1[0], p1[1], p2[0], p2[1]), 
+                                json_data, 
+                                st.session_state.viz_scale
+                            )
+                            #st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
+                        
+                        if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
+                            st.session_state.execute_furniture_placement = True
+                            st.rerun()
                     
                     # モード別の説明メッセージ
                     if edit_mode == "線を追加":
@@ -3321,7 +3376,7 @@ def main():
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
                     <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
-                    <b>注:</b> 編集画面が表示されないときは選択リセットを押すかページを再読み込みしてください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -3704,66 +3759,6 @@ def main():
                             st.session_state.rect_coords = []
                             st.session_state.last_click = None
                             st.rerun()
-                
-                # オブジェクト配置モード：家具のオプション選択を画像の下に表示
-                if edit_mode == "オブジェクトを配置" and len(st.session_state.rect_coords_list) > 0:
-                    st.markdown("---")
-                    st.markdown("### 🪑 家具のオプションを選択")
-                    
-                    col_height, col_color = st.columns(2)
-                    
-                    with col_height:
-                        height_option = st.selectbox(
-                            "高さ",
-                            list(FURNITURE_HEIGHT_OPTIONS.keys()),
-                            help="家具の高さを選択してください",
-                            key="furniture_height_option"
-                        )
-                    
-                    with col_color:
-                        color_option = st.selectbox(
-                            "配色",
-                            list(FURNITURE_COLOR_OPTIONS.keys()),
-                            help="家具の色を選択してください",
-                            key="furniture_color_option"
-                        )
-                    
-                    # 選択された高さを取得（天井合わせの場合は壁の高さ）
-                    if height_option == "天井合わせ":
-                        json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                        walls = json_data['walls']
-                        heights = [w.get('height', 2.4) for w in walls if 'height' in w]
-                        selected_height = max(heights) if heights else 2.4
-                        height_display = f"天井合わせ（{selected_height*100:.0f}cm）"
-                    else:
-                        selected_height = FURNITURE_HEIGHT_OPTIONS[height_option]
-                        height_display = height_option
-                    
-                    # セッションステートに保存
-                    st.session_state.furniture_params = {
-                        'height_option': height_option,
-                        'color_option': color_option,
-                        'selected_height': selected_height
-                    }
-                    
-                    # 選択された家具の情報を表示
-                    #st.info(f"**{color_option}の家具**\n\n高さ: {height_display}")
-                    
-                    # 配置範囲のサイズを予測表示
-                    if len(st.session_state.rect_coords_list) > 0:
-                        rect = st.session_state.rect_coords_list[0]
-                        p1, p2 = rect
-                        json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                        x_start, y_start, width, depth = _snap_to_grid(
-                            (p1[0], p1[1], p2[0], p2[1]), 
-                            json_data, 
-                            st.session_state.viz_scale
-                        )
-                        #st.success(f"📐 配置サイズ: 幅{width*100:.0f}cm × 奥行き{depth*100:.0f}cm × 高さ{selected_height*100:.0f}cm")
-                    
-                    if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
-                        st.session_state.execute_furniture_placement = True
-                        st.rerun()
                 
                 # 確定済み選択の表示
                 # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
