@@ -5306,6 +5306,11 @@ def main():
                                         # セッションから壁リストを取得
                                         walls_list = st.session_state.delete_walls_to_process
                                         
+                                        # デバッグ：削除対象の壁情報を表示
+                                        st.write(f"🐛 DEBUG: 削除対象の壁 = {len(walls_list)}本")
+                                        for i, wall in enumerate(walls_list):
+                                            st.write(f"  壁{i+1}: ID={wall['id']} (型={type(wall['id']).__name__}), start={wall['start']}, end={wall['end']}")
+                                        
                                         # 処理完了後にセッションから削除
                                         del st.session_state.delete_walls_to_process
                                         
@@ -5318,9 +5323,15 @@ def main():
                                             })
                                         total_deleted_count = len(walls_to_delete)
                                         
+                                        # デバッグ：削除前の全壁ID
+                                        st.write(f"🐛 DEBUG: 削除前の全壁ID = {[w['id'] for w in updated_json['walls']]}")
+                                        st.write(f"🐛 DEBUG: 削除対象ID = {walls_to_delete}")
+                                        
                                         # 壁を削除
                                         if len(walls_to_delete) > 0:
                                             updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                            # デバッグ：削除後の全壁ID
+                                            st.write(f"🐛 DEBUG: 削除後の全壁ID = {[w['id'] for w in updated_json['walls']]}")
                                         
                                         # 全体のリセットは後の共通処理で実行される
                                     
