@@ -3204,6 +3204,15 @@ def main():
                         # 選択されたパターンの説明を表示
                         st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                         
+                        # 階段パターンの参照図を折りたたみで表示
+                        with st.expander("📐 階段パターンの参照図を表示"):
+                            import os
+                            stair_img_path = os.path.join(os.path.dirname(__file__), "stair_pattern_images", "stair_patterns_reference.png")
+                            if os.path.exists(stair_img_path):
+                                st.image(stair_img_path, caption="階段パターン一覧（番号は各パターンの識別番号）", use_container_width=True)
+                            else:
+                                st.warning(f"⚠️ 参照画像が見つかりません: {stair_img_path}")
+                        
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                             st.session_state.execute_stair_placement = True
