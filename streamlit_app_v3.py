@@ -1279,12 +1279,6 @@ def main():
     # 2D可視化スケールを固定値に設定
     viz_scale = 100
 
-    # ============= ステップバー表示 =============
-    st.markdown("### 📍 作業フロー")
-    col_steps = st.columns(3, gap="small")
-    step_names = ["① 画像読み込み", "② スケール校正", "③ 手動編集"]
-    step_status = []
-
     # 永続デバッグログ初期化とヘルパー
     if 'debug_log' not in st.session_state:
         st.session_state['debug_log'] = []
@@ -1305,18 +1299,6 @@ def main():
         except Exception:
             # append に失敗しても処理継続
             pass
-    
-    for i in range(3):
-        if i + 1 < st.session_state.workflow_step:
-            step_status.append("✅")
-        elif i + 1 == st.session_state.workflow_step:
-            step_status.append("▶️")
-        else:
-            step_status.append("")
-    
-    for col, status, name in zip(col_steps, step_status, step_names):
-        with col:
-            st.write(f"{status} {name}")
     
     st.divider()
 
