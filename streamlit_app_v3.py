@@ -3123,7 +3123,6 @@ def main():
                         
                         # 階段パターンの参照図を折りたたみで表示
                         with st.expander("📐 階段パターンの参照図を表示"):
-                            from PIL import Image
                             stair_img_path = "stair_pattern_images/stair_patterns_reference.png"
                             try:
                                 img = Image.open(stair_img_path)
