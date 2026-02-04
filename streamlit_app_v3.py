@@ -3051,11 +3051,25 @@ def main():
                                     max_value=3000,
                                     value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
                                     step=1,
-                                key=f"window_height_click_{window_idx}"
+                                    key=f"window_height_click_{window_idx}"
+                                )
+                                st.session_state.window_click_params_list[window_idx]['height_mm'] = window_height_mm
+                            
+                            with col3:
+                                window_base_mm = st.number_input(
+                                    f"床から窓下端 (mm)",
+                                    min_value=0,
                                     max_value=5000,
                                     value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
                                     step=1,
-                                key=f"window_base_click_{window_idx}"
+                                    key=f"window_base_click_{window_idx}"
+                                )
+                                st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
+                            
+                            # パラメータを保存
+                            window_params_to_save.append({
+                                'model': window_model,
+                                'width_mm': WINDOW_CATALOG.get(window_model, {}).get("width", 0) if isinstance(WINDOW_CATALOG.get(window_model), dict) else 0,
                                 'height_mm': window_height_mm,
                                 'base_mm': window_base_mm
                             })
