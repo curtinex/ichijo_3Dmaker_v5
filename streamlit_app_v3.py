@@ -2084,11 +2084,13 @@ def main():
                     "- 壁線を直接クリックするだけで選択できます\n\n"
                     "- 間違えた場合は同じ壁をもう一度クリックで選択解除"
                 )
-                # 前回の削除ログを表示
+                # 削除ログを常に表示（セッションに保存されている場合）
                 if st.session_state.get('delete_debug_log'):
-                    with st.expander("📋 前回の削除処理ログ", expanded=True):
-                        for log_msg in st.session_state.delete_debug_log:
-                            st.write(log_msg)
+                    st.markdown("---")
+                    st.markdown("### 📋 最後の削除処理ログ")
+                    for log_msg in st.session_state.delete_debug_log:
+                        st.write(log_msg)
+                    st.markdown("---")
             elif edit_mode == "オブジェクトを配置":
                 st.markdown(
                     "**オブジェクト配置の手順:**\n\n"
@@ -5469,18 +5471,9 @@ def main():
                                 updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                 msg = f"✅ {len(walls_to_delete)}本の壁を削除しました"
                                 st.session_state.delete_debug_log.append(msg)
-                                st.success(msg)
                             else:
                                 msg = "⚠️ 削除対象の壁が見つかりません"
                                 st.session_state.delete_debug_log.append(msg)
-                                st.warning(msg)
-                            
-                            # デバッグログの概要を表示
-                            if st.session_state.delete_debug_log:
-                                st.markdown("---")
-                                st.markdown("### 📋 削除処理のデバッグログ")
-                                for log_msg in st.session_state.delete_debug_log:
-                                    st.write(log_msg)
                         
                         elif edit_mode == "床を追加":
                             # ===== 床を追加モード =====
