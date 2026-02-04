@@ -3098,15 +3098,15 @@ def main():
                         # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
                         st.warning("⚠️ 削除ボタンを表示します")
-                        if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
-                            st.info(f"🔍 デバッグ：削除ボタンがクリックされました。選択壁数={len(st.session_state.selected_walls_for_delete)}")
-                            # 選択された壁をセッションに保存
+                        delete_button_clicked = st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top")
+                        if delete_button_clicked:
+                            # まずセッション変数を設定（rerunの前に確実に保存）
                             st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
-                            st.info(f"🔍 デバッグ：delete_walls_to_processに保存しました。壁数={len(st.session_state.delete_walls_to_process)}")
-                            # 削除実行フラグを設定（rerun後に処理される）
                             st.session_state.execute_delete = True
                             st.session_state.selected_walls_for_delete = []
-                            st.session_state.skip_click_processing = True  # クリック処理をスキップ
+                            st.session_state.skip_click_processing = True
+                            # その後デバッグ表示（これはrerun前なので表示されない）
+                            st.info(f"🔍 デバッグ：削除ボタンがクリックされました。壁数={len(st.session_state.delete_walls_to_process)}")
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
                             st.rerun()
                         st.info("🔍 デバッグ：ボタンの後のコードが実行されました（クリックされていない場合）")
