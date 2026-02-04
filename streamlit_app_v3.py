@@ -3097,9 +3097,11 @@ def main():
                         st.markdown("---")
                         if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
                             st.info(f"🔍 デバッグ：削除ボタンがクリックされました。選択壁数={len(st.session_state.selected_walls_for_delete)}")
-                            # 選択された壁をセッションに保存してから選択リストをクリア
+                            # 選択された壁をセッションに保存
                             st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
                             st.info(f"🔍 デバッグ：delete_walls_to_processに保存しました。壁数={len(st.session_state.delete_walls_to_process)}")
+                            # 削除実行フラグを設定（rerun後に処理される）
+                            st.session_state.execute_delete = True
                             st.session_state.selected_walls_for_delete = []
                             st.session_state.skip_click_processing = True  # クリック処理をスキップ
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
@@ -4231,7 +4233,7 @@ def main():
                 
                 # デバッグ：セッション状態を確認
                 if edit_mode == "線を削除":
-                    st.info(f"🔍 デバッグ：線削除モード、delete_walls_to_process={st.session_state.get('delete_walls_to_process', 'なし')}")
+                    st.info(f"🔍 デバッグ：線削除モード、delete_walls_to_process存在={st.session_state.get('delete_walls_to_process') is not None}, execute_delete={st.session_state.get('execute_delete', False)}")
                 
                 if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
@@ -4239,8 +4241,8 @@ def main():
                 elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
-                elif edit_mode == "線を削除" and st.session_state.get('delete_walls_to_process'):
-                    # 前回のrerunで保存された壁を処理
+                elif edit_mode == "線を削除" and (st.session_state.get('delete_walls_to_process') or st.session_state.get('execute_delete')):
+                    # 前回のrerunで保存された壁を処理、またはexecute_deleteフラグ
                     st.info(f"🔍 デバッグ：線削除の条件を満たしました。should_execute=True")
                     should_execute = True
                 elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
@@ -5321,6 +5323,10 @@ def main():
                             total_deleted_count = 0
                             delete_details = []
                             walls_to_delete = []  # 削除対象の壁IDリスト
+                            
+                            # 実行フラグをクリア
+                            if 'execute_delete' in st.session_state:
+                                del st.session_state.execute_delete
                             
                             # デバッグ：窓追加で作成された壁を確認
                             window_added_walls = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
