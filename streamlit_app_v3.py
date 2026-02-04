@@ -1304,11 +1304,11 @@ def main():
 
     # ============= ステップ1: 画像読み込み =============
     with st.expander("Step 1：画像読み込み", expanded=(st.session_state.workflow_step == 1)):
-        st.markdown("## ステップ ① 画像読み込み")
+        st.markdown("## ステップ ①  画像読み込み")
 
         # 最初のステップの説明
         st.info(
-            "**ステップ①** 間取り図のPDF（またはJPG/PNG）をアップロードしてください。\n\n"
+            "間取り図のPDF（またはJPG/PNG）をアップロードしてください。\n\n"
             # "• **PDF**: 図面アプリから出力したPDFファイル\n\n"
             # "• **JPG/PNG**: スキャン画像やスクリーンショット"
         )
@@ -1326,7 +1326,7 @@ def main():
                 doc.close()
                 
                 if total_pages > 1:
-                    st.info(f"📄 このPDFは {total_pages} ページあります。処理するページを選択してください。")
+                    # st.info(f"📄 このPDFは {total_pages} ページあります。処理するページを選択してください。")
                     page_number = st.selectbox(
                         "処理するページを選択",
                         options=list(range(total_pages)),
@@ -1638,7 +1638,7 @@ def main():
                 st.session_state.zip_bytes = None
                 st.session_state.zip_name = None
             st.session_state.processed = True
-            st.success("変換が完了しました！")
+            # st.success("変換が完了しました！")
 
             # セッションに結果があれば常に表示（ダウンロードでの再実行でも消えない）
             if st.session_state.processed:
@@ -1663,7 +1663,8 @@ def main():
 
                 # 説明文を追加
                 st.success(
-                    "壁の分断や過不足がある場合はパラメータを再設定して再度変換するか、手動編集で修正可能です。\n\n"
+                    "変換が完了しました！\n\n"
+                    "壁の分断や過不足がある場合はパラメータを手動調整して再変換するか、手動編集で修正可能です。\n\n"
                     "窓は手動編集で追加できます。"
                 )
 
@@ -1686,17 +1687,17 @@ def main():
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
         if st.session_state.workflow_step >= 2 and st.session_state.processed:
             st.divider()
-            st.markdown("## ステップ ② スケール校正")
+            st.markdown("## ステップ ②  スケール校正")
         st.info(
             "基準となる壁を選択して、修正スケール値を入力して実行してください。(一条CAD図面 1マス = 編集画面 2マス推奨)\n\n"
             "変更ない場合は「スキップして次へ」を選択してください"
         )
         
         col_skip_calib = st.container()
-        with col_skip_calib:
-            if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
-                st.session_state.workflow_step = 3
-                st.rerun()
+        #with col_skip_calib:
+            #if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
+                #st.session_state.workflow_step = 3
+                #st.rerun()
 
         # 壁選択用の簡易編集エリアを即時表示
         #st.caption("壁線を1回クリックすると赤色にハイライトします。選択しない場合はスキップで次へ進めます。")
@@ -1901,9 +1902,9 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
-                st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
-                
-                col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
+                col_zoom_label, col_zoom1, col_zoom2, col_zoom_space = st.columns([3, 1, 1, 7])
+                with col_zoom_label:
+                    st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                 with col_zoom1:
                     if st.button("🔍−", key="step2_zoom_out"):
                         st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
@@ -2005,7 +2006,10 @@ def main():
                     st.success("スケールを適用しました。手動編集に進んでください。")
             except Exception as e:
                 st.error(f"スケール校正ビュー表示エラー: {e}")
-
+        with col_skip_calib:
+            if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
+                st.session_state.workflow_step = 3
+                st.rerun()
     # ============= ステップ3: 手動編集 =============
     with st.expander("Step 3：手動編集", expanded=(st.session_state.workflow_step == 3)):
         if st.session_state.workflow_step >= 3 and st.session_state.processed:
@@ -3342,9 +3346,9 @@ def main():
                 if 'editor_zoom_level' not in st.session_state:
                     st.session_state.editor_zoom_level = 1.0
                 
-                st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
-                
-                col_zoom1, col_zoom2, col_zoom3 = st.columns([1, 1, 10])
+                col_zoom_label, col_zoom1, col_zoom2, col_zoom_space = st.columns([3, 1, 1, 7])
+                with col_zoom_label:
+                    st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                 with col_zoom1:
                     if st.button("🔍−", key="step3_zoom_out"):
                         st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
