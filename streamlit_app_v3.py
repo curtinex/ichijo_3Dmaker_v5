@@ -2965,6 +2965,7 @@ def main():
                     # 線を結合モード：壁線クリック選択（2本ずつペアで複数結合可能）
                     num_selected = len(st.session_state.selected_walls_for_merge)
                     if num_selected == 0:
+                        pass
                         #st.write("💡 結合したい壁線を1本目クリックしてください")
                     elif num_selected % 2 == 1:
                         merge_num = (num_selected // 2) + 1
