@@ -1692,12 +1692,6 @@ def main():
             "基準となる壁を選択して、修正スケール値を入力して実行してください。(一条CAD図面 1マス = 編集画面 2マス推奨)\n\n"
             "変更ない場合は「スキップして次へ」を選択してください"
         )
-        
-        col_skip_calib = st.container()
-        #with col_skip_calib:
-            #if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
-                #st.session_state.workflow_step = 3
-                #st.rerun()
 
         # 壁選択用の簡易編集エリアを即時表示
         #st.caption("壁線を1回クリックすると赤色にハイライトします。選択しない場合はスキップで次へ進めます。")
@@ -2006,7 +2000,8 @@ def main():
                     st.success("スケールを適用しました。手動編集に進んでください。")
             except Exception as e:
                 st.error(f"スケール校正ビュー表示エラー: {e}")
-        with col_skip_calib:
+            
+            # スキップして次へボタンを最後に配置
             if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
                 st.session_state.workflow_step = 3
                 st.rerun()
