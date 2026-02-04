@@ -2084,6 +2084,11 @@ def main():
                     "- 壁線を直接クリックするだけで選択できます\n\n"
                     "- 間違えた場合は同じ壁をもう一度クリックで選択解除"
                 )
+                # 前回の削除ログを表示
+                if st.session_state.get('delete_debug_log'):
+                    with st.expander("📋 前回の削除処理ログ", expanded=True):
+                        for log_msg in st.session_state.delete_debug_log:
+                            st.write(log_msg)
             elif edit_mode == "オブジェクトを配置":
                 st.markdown(
                     "**オブジェクト配置の手順:**\n\n"
@@ -5328,6 +5333,11 @@ def main():
                             delete_details = []
                             walls_to_delete = []  # 削除対象の壁IDリスト
                             
+                            # デバッグログを初期化
+                            if 'delete_debug_log' not in st.session_state:
+                                st.session_state.delete_debug_log = []
+                            st.session_state.delete_debug_log = []  # クリア
+                            
                             # 実行フラグをクリア
                             if 'execute_delete' in st.session_state:
                                 del st.session_state.execute_delete
@@ -5335,7 +5345,9 @@ def main():
                             # デバッグ：窓追加で作成された壁を確認
                             window_added_walls = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
                             if window_added_walls:
-                                st.info(f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）")
+                                msg = f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）"
+                                st.session_state.delete_debug_log.append(msg)
+                                st.info(msg)
                             
                             # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                             if st.session_state.get('delete_walls_to_process'):
@@ -5346,7 +5358,9 @@ def main():
                                 del st.session_state.delete_walls_to_process
                                 
                                 # デバッグ：選択された壁を確認
-                                st.info(f"🔍 デバッグ：クリック選択された壁は{len(walls_list)}本（ID: {[w['id'] for w in walls_list]}）")
+                                msg = f"🔍 デバッグ：クリック選択された壁は{len(walls_list)}本（ID: {[w['id'] for w in walls_list]}）"
+                                st.session_state.delete_debug_log.append(msg)
+                                st.info(msg)
                                 
                                 # クリック選択された壁を削除
                                 skipped_count = 0
@@ -5354,7 +5368,9 @@ def main():
                                     # 窓追加で作成された壁はスキップ
                                     if wall.get('source') == 'window_added':
                                         skipped_count += 1
-                                        st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
+                                        msg = f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました（base_height={wall.get('base_height')}）"
+                                        st.session_state.delete_debug_log.append(msg)
+                                        st.warning(msg)
                                         continue
                                     walls_to_delete.append(wall['id'])
                                     delete_details.append({
@@ -5363,7 +5379,13 @@ def main():
                                     })
                                 
                                 if skipped_count > 0:
-                                    st.info(f"ℹ️ {skipped_count}本の窓追加壁を保護しました")
+                                    msg = f"ℹ️ {skipped_count}本の窓追加壁を保護しました"
+                                    st.session_state.delete_debug_log.append(msg)
+                                    st.info(msg)
+                                else:
+                                    msg = "⚠️ 保護された窓追加壁はありません（選択された壁に窓追加壁が含まれていない）"
+                                    st.session_state.delete_debug_log.append(msg)
+                                    st.warning(msg)
                                 
                                 total_deleted_count = len(walls_to_delete)
                                 
@@ -5437,8 +5459,20 @@ def main():
                             if len(walls_to_delete) > 0:
                                 # 壁を削除
                                 updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                msg = f"✅ {len(walls_to_delete)}本の壁を削除しました"
+                                st.session_state.delete_debug_log.append(msg)
+                                st.success(msg)
                             else:
-                                st.warning("⚠️ 削除対象の壁が見つかりません")
+                                msg = "⚠️ 削除対象の壁が見つかりません"
+                                st.session_state.delete_debug_log.append(msg)
+                                st.warning(msg)
+                            
+                            # デバッグログの概要を表示
+                            if st.session_state.delete_debug_log:
+                                st.markdown("---")
+                                st.markdown("### 📋 削除処理のデバッグログ")
+                                for log_msg in st.session_state.delete_debug_log:
+                                    st.write(log_msg)
                         
                         elif edit_mode == "床を追加":
                             # ===== 床を追加モード =====
