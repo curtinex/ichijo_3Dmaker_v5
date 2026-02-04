@@ -3051,7 +3051,7 @@ def main():
                                     max_value=3000,
                                     value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
                                     step=1,
-                                    key=f"window_height_click_{window_idx}"
+                                key=f"window_height_click_{window_idx}_{window_model}"
                                 )
                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = window_height_mm
                             
@@ -3062,7 +3062,7 @@ def main():
                                     max_value=5000,
                                     value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
                                     step=1,
-                                    key=f"window_base_click_{window_idx}"
+                                key=f"window_base_click_{window_idx}_{window_model}"
                                 )
                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
                             
