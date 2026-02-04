@@ -3096,8 +3096,10 @@ def main():
                         # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
                         if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
+                            st.info(f"🔍 デバッグ：削除ボタンがクリックされました。選択壁数={len(st.session_state.selected_walls_for_delete)}")
                             # 選択された壁をセッションに保存してから選択リストをクリア
                             st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
+                            st.info(f"🔍 デバッグ：delete_walls_to_processに保存しました。壁数={len(st.session_state.delete_walls_to_process)}")
                             st.session_state.selected_walls_for_delete = []
                             st.session_state.skip_click_processing = True  # クリック処理をスキップ
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
@@ -4227,6 +4229,10 @@ def main():
                 # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
                 should_execute = False
                 
+                # デバッグ：セッション状態を確認
+                if edit_mode == "線を削除":
+                    st.info(f"🔍 デバッグ：線削除モード、delete_walls_to_process={st.session_state.get('delete_walls_to_process', 'なし')}")
+                
                 if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
@@ -4235,6 +4241,7 @@ def main():
                     should_execute = True
                 elif edit_mode == "線を削除" and st.session_state.get('delete_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
+                    st.info(f"🔍 デバッグ：線削除の条件を満たしました。should_execute=True")
                     should_execute = True
                 elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
                     # 線を追加モードの実行
@@ -4248,6 +4255,7 @@ def main():
                     should_execute = True
                 
                 if should_execute:
+                    st.info(f"🔍 デバッグ：should_execute=True, edit_mode={edit_mode}")
                     try:
                         append_debug(f"should_execute=True, edit_mode={edit_mode}")
                     except:
