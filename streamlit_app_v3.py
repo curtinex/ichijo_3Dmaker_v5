@@ -5358,6 +5358,10 @@ def main():
                                 msg = f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）"
                                 st.session_state.delete_debug_log.append(msg)
                                 st.info(msg)
+                            else:
+                                msg = "🔍 デバッグ：窓追加壁は存在しません"
+                                st.session_state.delete_debug_log.append(msg)
+                                st.info(msg)
                             
                             # セッションに保存された壁を使用（ボタンクリック時に保存済み）
                             if st.session_state.get('delete_walls_to_process'):
