@@ -3209,7 +3209,7 @@ def main():
                             import os
                             stair_img_path = os.path.join(os.path.dirname(__file__), "stair_pattern_images", "stair_patterns_reference.png")
                             if os.path.exists(stair_img_path):
-                                st.image(stair_img_path, caption="階段パターン一覧（番号は各パターンの識別番号）", use_container_width=True)
+                                st.image(stair_img_path, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
                             else:
                                 st.warning(f"⚠️ 参照画像が見つかりません: {stair_img_path}")
                         
