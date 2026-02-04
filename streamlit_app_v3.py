@@ -5471,6 +5471,14 @@ def main():
                                 updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                 msg = f"✅ {len(walls_to_delete)}本の壁を削除しました"
                                 st.session_state.delete_debug_log.append(msg)
+                                
+                                # ログをファイルにも保存
+                                log_path = Path(st.session_state.out_dir) / "delete_debug_log.txt"
+                                with open(log_path, 'w', encoding='utf-8') as f:
+                                    f.write("=== 削除処理デバッグログ ===\n\n")
+                                    for log_msg in st.session_state.delete_debug_log:
+                                        f.write(log_msg + "\n")
+                                st.success(f"✅ 削除完了！ログは {log_path} に保存されました")
                             else:
                                 msg = "⚠️ 削除対象の壁が見つかりません"
                                 st.session_state.delete_debug_log.append(msg)
