@@ -1935,7 +1935,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -2084,13 +2084,6 @@ def main():
                     "- 壁線を直接クリックするだけで選択できます\n\n"
                     "- 間違えた場合は同じ壁をもう一度クリックで選択解除"
                 )
-                # 削除ログを常に表示（セッションに保存されている場合）
-                if st.session_state.get('delete_debug_log'):
-                    st.markdown("---")
-                    st.markdown("### 📋 最後の削除処理ログ")
-                    for log_msg in st.session_state.delete_debug_log:
-                        st.write(log_msg)
-                    st.markdown("---")
             elif edit_mode == "オブジェクトを配置":
                 st.markdown(
                     "**オブジェクト配置の手順:**\n\n"
@@ -3094,35 +3087,21 @@ def main():
                 elif edit_mode == "線を削除":
                     # 線削除モード：壁線クリック選択（複数本可能）
                     num_selected = len(st.session_state.selected_walls_for_delete)
-                    st.info(f"🔍 デバッグ：線削除モード、選択壁数={num_selected}")
                     if num_selected == 0:
                         pass
                         #st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
                     else:
-                        st.success(f"✅ **{num_selected}本選択中** - 下の「🗑️ 削除実行」ボタンをクリックして削除してください")
                         #st.success(f"✅ **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「🗑️ 削除実行」ボタンをクリックしてください")
                         
                         # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                         st.markdown("---")
-                        st.warning("⚠️ 削除ボタンを表示します")
-                        
-                        # フォームで囲んでボタンクリックを確実に処理
-                        with st.form(key="delete_form"):
-                            st.write(f"選択された壁: {num_selected}本")
-                            delete_submitted = st.form_submit_button("🗑️ 削除実行", type="primary")
-                            
-                        if delete_submitted:
-                            # まずセッション変数を設定（rerunの前に確実に保存）
+                        if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
+                            # 選択された壁をセッションに保存してから選択リストをクリア
                             st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
-                            st.session_state.execute_delete = True
                             st.session_state.selected_walls_for_delete = []
-                            st.session_state.skip_click_processing = True
-                            # デバッグ表示（これはrerun前なので表示されない）
-                            st.info(f"🔍 デバッグ：削除ボタンがクリックされました。壁数={len(st.session_state.delete_walls_to_process)}")
+                            st.session_state.skip_click_processing = True  # クリック処理をスキップ
                             # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
                             st.rerun()
-                            
-                        st.info("🔍 デバッグ：ボタンの後のコードが実行されました（クリックされていない場合）")
                 elif edit_mode == "階段を配置":
                     # 階段追加モード：2点選択
                     if len(st.session_state.rect_coords_list) > 0:
@@ -3386,7 +3365,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -3580,20 +3559,14 @@ def main():
                                 )
                                 
                                 if nearest_wall is not None:
-                                    # 窓追加で作成された壁は削除不可
-                                    if nearest_wall.get('source') == 'window_added':
-                                        st.warning("窓を追加したことで生成された壁は削除できません。窓の削除から行ってください。")
-                                        # rerunしない（ボタンクリックを妨げないため）
                                     # 既に選択されている場合は選択解除
-                                    elif nearest_wall in st.session_state.selected_walls_for_delete:
+                                    if nearest_wall in st.session_state.selected_walls_for_delete:
                                         st.session_state.selected_walls_for_delete.remove(nearest_wall)
-                                        st.session_state.last_click = new_point
-                                        st.rerun()
                                     else:
                                         # 複数本選択可能
                                         st.session_state.selected_walls_for_delete.append(nearest_wall)
-                                        st.session_state.last_click = new_point
-                                        st.rerun()
+                                    st.session_state.last_click = new_point
+                                    st.rerun()
                             except Exception as e:
                                 st.error(f"壁選択エラー: {e}")
                     elif edit_mode == "スケール校正":
@@ -4250,19 +4223,14 @@ def main():
                 # 処理トリガーのチェック（ボタン表示なし、実行フラグのみ）
                 should_execute = False
                 
-                # デバッグ：セッション状態を確認
-                if edit_mode == "線を削除":
-                    st.info(f"🔍 デバッグ：線削除モード、delete_walls_to_process存在={st.session_state.get('delete_walls_to_process') is not None}, execute_delete={st.session_state.get('execute_delete', False)}")
-                
                 if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
                 elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                     # 前回のrerunで保存された壁を処理
                     should_execute = True
-                elif edit_mode == "線を削除" and (st.session_state.get('delete_walls_to_process') or st.session_state.get('execute_delete')):
-                    # 前回のrerunで保存された壁を処理、またはexecute_deleteフラグ
-                    st.info(f"🔍 デバッグ：線削除の条件を満たしました。should_execute=True")
+                elif edit_mode == "線を削除" and st.session_state.get('delete_walls_to_process'):
+                    # 前回のrerunで保存された壁を処理
                     should_execute = True
                 elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
                     # 線を追加モードの実行
@@ -4276,16 +4244,6 @@ def main():
                     should_execute = True
                 
                 if should_execute:
-                    st.markdown("---")
-                    st.markdown("### 🔧 処理実行中...")
-                    st.info(f"🔍 デバッグ：should_execute=True, edit_mode={edit_mode}")
-                    
-                    # 削除デバッグログを表示用に保持
-                    if edit_mode == "線を削除" and st.session_state.get('delete_debug_log'):
-                        st.markdown("#### 📋 削除処理のログ（リアルタイム）")
-                        for log in st.session_state.delete_debug_log:
-                            st.write(log)
-                    
                     try:
                         append_debug(f"should_execute=True, edit_mode={edit_mode}")
                     except:
@@ -4294,8 +4252,11 @@ def main():
                         # 処理対象の四角形リストを作成（確定済み選択 + 現在選択中の2点）
                         # 線を結合モードの場合は使用しない
                         # 窓を追加モードでクリック選択の場合も使用しない
+                        # 線を削除モードもクリック選択なので使用しない
                         if edit_mode == "線を結合":
                             target_rects = []  # 線を結合モードでは不使用
+                        elif edit_mode == "線を削除":
+                            target_rects = []  # 線を削除モードでは不使用（クリック選択）
                         elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                             target_rects = []  # 窓を追加モード（クリック選択）では不使用
                         else:
@@ -5297,11 +5258,6 @@ def main():
                             # ===== 線を追加モード =====
                             total_added_count = 0
                             add_details = []
-                            
-                            # デバッグ：線追加前の窓追加壁を確認
-                            window_added_walls_before = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
-                            if window_added_walls_before:
-                                st.info(f"🔍 デバッグ（線追加前）：窓追加壁が{len(window_added_walls_before)}本存在します（ID: {[w['id'] for w in window_added_walls_before]}）")
                         
                             for rect_idx, (p1, p2) in enumerate(target_rects):
                                 rect = {
@@ -5334,13 +5290,6 @@ def main():
                                     'length': new_wall['length']
                                 })
                             
-                            # デバッグ：線追加後の窓追加壁を確認
-                            window_added_walls_after = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
-                            if window_added_walls_after:
-                                st.info(f"🔍 デバッグ（線追加後）：窓追加壁が{len(window_added_walls_after)}本存在します（ID: {[w['id'] for w in window_added_walls_after]}）")
-                            elif window_added_walls_before:
-                                st.error(f"❌ 警告：線追加後に窓追加壁が消失しました！")
-                            
                             if total_added_count > 0:
                                 st.success(f"🎉 合計{total_added_count}本の壁を追加しました！")
                                 for detail in add_details:
@@ -5348,156 +5297,81 @@ def main():
                         
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
-                            total_deleted_count = 0
-                            delete_details = []
-                            walls_to_delete = []  # 削除対象の壁IDリスト
-                            
-                            # デバッグログを初期化
-                            if 'delete_debug_log' not in st.session_state:
-                                st.session_state.delete_debug_log = []
-                            st.session_state.delete_debug_log = []  # クリア
-                            
-                            # 実行フラグをクリア
-                            if 'execute_delete' in st.session_state:
-                                del st.session_state.execute_delete
-                            
-                            # デバッグ：窓追加で作成された壁を確認
-                            window_added_walls = [w for w in updated_json['walls'] if w.get('source') == 'window_added']
-                            if window_added_walls:
-                                msg = f"🔍 デバッグ：窓追加壁が{len(window_added_walls)}本存在します（ID: {[w['id'] for w in window_added_walls]}）"
-                                st.session_state.delete_debug_log.append(msg)
-                                st.info(msg)
-                            else:
-                                msg = "🔍 デバッグ：窓追加壁は存在しません"
-                                st.session_state.delete_debug_log.append(msg)
-                                st.info(msg)
-                            
-                            # セッションに保存された壁を使用（ボタンクリック時に保存済み）
-                            if st.session_state.get('delete_walls_to_process'):
-                                st.write("🔍 ステップ1: delete_walls_to_processが存在します")
-                                
-                                # セッションから壁リストを取得
-                                walls_list = st.session_state.delete_walls_to_process
-                                st.write(f"🔍 ステップ2: 壁リストを取得しました。壁数={len(walls_list)}")
-                                
-                                # 処理完了後にセッションから削除
-                                del st.session_state.delete_walls_to_process
-                                
-                                # デバッグ：選択された壁を確認
-                                msg = f"🔍 デバッグ：クリック選択された壁は{len(walls_list)}本（ID: {[w['id'] for w in walls_list]}）"
-                                st.session_state.delete_debug_log.append(msg)
-                                st.info(msg)
-                                
-                                # クリック選択された壁を削除
-                                skipped_count = 0
-                                for wall in walls_list:
-                                    # 窓追加で作成された壁はスキップ
-                                    if wall.get('source') == 'window_added':
-                                        skipped_count += 1
-                                        msg = f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました（base_height={wall.get('base_height')}）"
-                                        st.session_state.delete_debug_log.append(msg)
-                                        st.warning(msg)
-                                        continue
-                                    walls_to_delete.append(wall['id'])
-                                    delete_details.append({
-                                        'method': 'クリック選択',
-                                        'wall_id': wall['id']
-                                    })
-                                
-                                if skipped_count > 0:
-                                    msg = f"ℹ️ {skipped_count}本の窓追加壁を保護しました"
-                                    st.session_state.delete_debug_log.append(msg)
-                                    st.info(msg)
-                                else:
-                                    msg = "⚠️ 保護された窓追加壁はありません（選択された壁に窓追加壁が含まれていない）"
-                                    st.session_state.delete_debug_log.append(msg)
-                                    st.warning(msg)
-                                
-                                total_deleted_count = len(walls_to_delete)
-                                
-                                # 壁を削除
-                                if len(walls_to_delete) > 0:
-                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                
-                                # 全体のリセットは後の共通処理で実行される
-                            
-                            # クリック選択された壁を削除（後方互換性のため残す）
-                            elif len(st.session_state.selected_walls_for_delete) > 0:
-                                for wall in st.session_state.selected_walls_for_delete:
-                                    # 窓追加で作成された壁はスキップ
-                                    if wall.get('source') == 'window_added':
-                                        continue
-                                    walls_to_delete.append(wall['id'])
-                                    delete_details.append({
-                                        'method': 'クリック選択',
-                                        'wall_id': wall['id']
-                                    })
-                                total_deleted_count = len(walls_to_delete)
-                                
-                                # 壁を削除
-                                if len(walls_to_delete) > 0:
-                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                    # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
-                                    st.session_state.selected_walls_for_delete = []
-                            
-                            # 四角形ベースの削除（後方互換性のため残す）
-                            for rect_idx, (p1, p2) in enumerate(target_rects):
-                                rect = {
-                                    'left': min(p1[0], p2[0]),
-                                    'top': min(p1[1], p2[1]),
-                                    'width': abs(p2[0] - p1[0]),
-                                    'height': abs(p2[1] - p1[1])
-                                }
-                            
-                                # 四角形内に完全に含まれる壁線を抽出
-                                walls_in_rect = _filter_walls_strictly_in_rect(
-                                    updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
-                                )
-                            
-                                if walls_in_rect:
-                                    # デバッグ：四角形内の壁を確認
-                                    st.info(f"🔍 デバッグ：四角形#{rect_idx}内に{len(walls_in_rect)}本の壁があります（ID: {[w['id'] for w in walls_in_rect]}）")
-                                    window_walls_in_rect = [w for w in walls_in_rect if w.get('source') == 'window_added']
-                                    if window_walls_in_rect:
-                                        st.info(f"🔍 デバッグ：うち窓追加壁は{len(window_walls_in_rect)}本（ID: {[w['id'] for w in window_walls_in_rect]}）")
+                                    total_deleted_count = 0
+                                    delete_details = []
+                                    walls_to_delete = []  # 削除対象の壁IDリスト
                                     
-                                    # 四角形内の壁をすべて削除対象に追加
-                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
-                                    skipped_in_rect = 0
-                                    for wall in walls_in_rect:
-                                        # 窓追加で作成された壁はスキップ
-                                        if wall.get('source') == 'window_added':
-                                            skipped_in_rect += 1
-                                            st.warning(f"⚠️ 壁ID#{wall['id']}は窓追加で作成された壁のため削除をスキップしました")
-                                            continue
-                                        if wall['id'] not in walls_to_delete:  # 重複を避ける
+                                    # セッションに保存された壁を使用（ボタンクリック時に保存済み）
+                                    if st.session_state.get('delete_walls_to_process'):
+                                        # セッションから壁リストを取得
+                                        walls_list = st.session_state.delete_walls_to_process
+                                        
+                                        # 処理完了後にセッションから削除
+                                        del st.session_state.delete_walls_to_process
+                                        
+                                        # クリック選択された壁を削除
+                                        for wall in walls_list:
                                             walls_to_delete.append(wall['id'])
                                             delete_details.append({
-                                                'rect_idx': rect_idx,
-                                                'color_name': color_name,
+                                                'method': 'クリック選択',
                                                 'wall_id': wall['id']
                                             })
-                                            total_deleted_count += 1
+                                        total_deleted_count = len(walls_to_delete)
+                                        
+                                        # 壁を削除
+                                        if len(walls_to_delete) > 0:
+                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                        
+                                        # 全体のリセットは後の共通処理で実行される
                                     
-                                    if skipped_in_rect > 0:
-                                        st.info(f"ℹ️ 四角形#{rect_idx}で{skipped_in_rect}本の窓追加壁を保護しました")
-                            
-                            if len(walls_to_delete) > 0:
-                                # 壁を削除
-                                updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                msg = f"✅ {len(walls_to_delete)}本の壁を削除しました"
-                                st.session_state.delete_debug_log.append(msg)
+                                    # クリック選択された壁を削除（後方互換性のため残す）
+                                    elif len(st.session_state.selected_walls_for_delete) > 0:
+                                        for wall in st.session_state.selected_walls_for_delete:
+                                            walls_to_delete.append(wall['id'])
+                                            delete_details.append({
+                                                'method': 'クリック選択',
+                                                'wall_id': wall['id']
+                                            })
+                                        total_deleted_count = len(walls_to_delete)
+                                        
+                                        # 壁を削除
+                                        if len(walls_to_delete) > 0:
+                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                            # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
+                                            st.session_state.selected_walls_for_delete = []
+                                    
+                                    # 四角形ベースの削除（後方互換性のため残す）
+                                    for rect_idx, (p1, p2) in enumerate(target_rects):
+                                        rect = {
+                                            'left': min(p1[0], p2[0]),
+                                            'top': min(p1[1], p2[1]),
+                                            'width': abs(p2[0] - p1[0]),
+                                            'height': abs(p2[1] - p1[1])
+                                        }
+                                    
+                                        # 四角形内に完全に含まれる壁線を抽出
+                                        walls_in_rect = _filter_walls_strictly_in_rect(
+                                            updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
+                                        )
+                                    
+                                        if walls_in_rect:
+                                            # 四角形内の壁をすべて削除対象に追加
+                                            color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                            for wall in walls_in_rect:
+                                                if wall['id'] not in walls_to_delete:  # 重複を避ける
+                                                    walls_to_delete.append(wall['id'])
+                                                    delete_details.append({
+                                                        'rect_idx': rect_idx,
+                                                        'color_name': color_name,
+                                                        'wall_id': wall['id']
+                                                    })
+                                                    total_deleted_count += 1
                                 
-                                # ログをファイルにも保存
-                                log_path = Path(st.session_state.out_dir) / "delete_debug_log.txt"
-                                with open(log_path, 'w', encoding='utf-8') as f:
-                                    f.write("=== 削除処理デバッグログ ===\n\n")
-                                    for log_msg in st.session_state.delete_debug_log:
-                                        f.write(log_msg + "\n")
-                                st.success(f"✅ 削除完了！ログは {log_path} に保存されました")
-                            else:
-                                msg = "⚠️ 削除対象の壁が見つかりません"
-                                st.session_state.delete_debug_log.append(msg)
+                                    if len(walls_to_delete) > 0:
+                                        # 壁を削除
+                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                    else:
+                                        st.warning("⚠️ 削除対象の壁が見つかりません")
                         
                         elif edit_mode == "床を追加":
                             # ===== 床を追加モード =====
