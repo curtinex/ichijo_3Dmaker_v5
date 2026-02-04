@@ -1934,7 +1934,6 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
                     <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
@@ -2036,9 +2035,9 @@ def main():
         elif edit_mode == "線を削除":
             st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
         elif edit_mode == "オブジェクトを配置":
-            st.write("オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
+            st.write("💡 オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
         elif edit_mode == "階段を配置":
-            st.write("階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
+            st.write("💡 階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
         
         with st.expander("💡 使い方", expanded=False):
             if edit_mode == "線を結合":
@@ -3124,12 +3123,11 @@ def main():
                         
                         # 階段パターンの参照図を折りたたみで表示
                         with st.expander("📐 階段パターンの参照図を表示"):
-                            import os
-                            stair_img_path = os.path.join(os.path.dirname(__file__), "stair_pattern_images", "stair_patterns_reference.png")
-                            if os.path.exists(stair_img_path):
+                            stair_img_path = "stair_pattern_images/stair_patterns_reference.png"
+                            try:
                                 st.image(stair_img_path, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
-                            else:
-                                st.warning(f"⚠️ 参照画像が見つかりません: {stair_img_path}")
+                            except Exception as e:
+                                st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path}")
                         
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
@@ -3365,7 +3363,6 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 1クリック目がうまく読み込みされない場合があります。その場合はもう一度クリックしてください。<br>
                     <b>注:</b> 編集画面が表示されないときは選択リセットを押してください。
                     </p>
                     """,
