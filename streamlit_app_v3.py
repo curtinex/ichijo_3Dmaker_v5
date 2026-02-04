@@ -300,6 +300,26 @@ try:
         west_cw = _create_west_pattern()
         
         patterns = {
+            "直線_北": {
+                "display_name": "直線階段（北↑）",
+                "description": "下から上へ一直線に14段",
+                "steps": _create_straight_north_pattern()
+            },
+            "直線_南": {
+                "display_name": "直線階段（南↓）",
+                "description": "上から下へ一直線に14段",
+                "steps": _create_straight_south_pattern()
+            },
+            "直線_東": {
+                "display_name": "直線階段（東→）",
+                "description": "左から右へ一直線に14段",
+                "steps": _create_straight_east_pattern()
+            },
+            "直線_西": {
+                "display_name": "直線階段（西←）",
+                "description": "右から左へ一直線に14段",
+                "steps": _create_straight_west_pattern()
+            },
             "コの字_時計回り_北": {
                 "display_name": "コの字階段（時計回り・北↑）",
                 "description": "左から昇り、上で右折、右列を降りる",
@@ -320,46 +340,26 @@ try:
                 "description": "左から昇り、下で左折、右列を上る",
                 "steps": _mirror_x_for_north_south(south_cw)
             },
-            "コの字_時計回り_東": {
-                "display_name": "コの字階段（反時計回り・東→）",
-                "description": "下から昇り、右で右折、上列を左へ",
-                "steps": east_cw
-            },
             "コの字_反時計回り_東": {
                 "display_name": "コの字階段（時計回り・東→）",
                 "description": "上から昇り、右で左折、下列を左へ",
                 "steps": _mirror_y_for_east_west(east_cw)
             },
-            "コの字_時計回り_西": {
-                "display_name": "コの字階段（反時計回り・西←）",
-                "description": "上から昇り、左で右折、下列を右へ",
-                "steps": west_cw
+            "コの字_時計回り_東": {
+                "display_name": "コの字階段（反時計回り・東→）",
+                "description": "下から昇り、右で右折、上列を左へ",
+                "steps": east_cw
             },
             "コの字_反時計回り_西": {
                 "display_name": "コの字階段（時計回り・西←）",
                 "description": "下から昇り、左で左折、上列を右へ",
                 "steps": _mirror_y_for_east_west(west_cw)
             },
-            "直線_北": {
-                "display_name": "直線階段（北↑）",
-                "description": "下から上へ一直線に14段",
-                "steps": _create_straight_north_pattern()
+            "コの字_時計回り_西": {
+                "display_name": "コの字階段（反時計回り・西←）",
+                "description": "上から昇り、左で右折、下列を右へ",
+                "steps": west_cw
             },
-            "直線_南": {
-                "display_name": "直線階段（南↓）",
-                "description": "上から下へ一直線に14段",
-                "steps": _create_straight_south_pattern()
-            },
-            "直線_東": {
-                "display_name": "直線階段（東→）",
-                "description": "左から右へ一直線に14段",
-                "steps": _create_straight_east_pattern()
-            },
-            "直線_西": {
-                "display_name": "直線階段（西←）",
-                "description": "右から左へ一直線に14段",
-                "steps": _create_straight_west_pattern()
-            }
         }
         return patterns
     
