@@ -2037,52 +2037,6 @@ def main():
             st.write("💡 追加したい壁の端点2点を指定してください。（複数選択可能）")
         elif edit_mode == "線を削除":
             st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
-            
-            # 🐛 デバッグ情報を常に表示
-            st.markdown("---")
-            st.markdown("### 🐛 デバッグ情報")
-            
-            # セッション状態の確認
-            if st.session_state.get('selected_walls_for_delete'):
-                st.write(f"**選択中の壁:** {len(st.session_state.selected_walls_for_delete)}本")
-                for i, wall in enumerate(st.session_state.selected_walls_for_delete):
-                    st.write(f"  {i+1}. ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source', 'N/A')}")
-                    st.write(f"     start={wall['start']}, end={wall['end']}")
-            else:
-                st.write("**選択中の壁:** なし")
-            
-            if st.session_state.get('delete_walls_to_process'):
-                st.write(f"**削除待機中の壁:** {len(st.session_state.delete_walls_to_process)}本")
-                for i, wall in enumerate(st.session_state.delete_walls_to_process):
-                    st.write(f"  {i+1}. ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source', 'N/A')}")
-            else:
-                st.write("**削除待機中の壁:** なし")
-            
-            # 現在のJSON内の全壁情報
-            try:
-                json_data_debug = json.loads(st.session_state.json_bytes.decode("utf-8"))
-                all_walls_debug = json_data_debug.get('walls', [])
-                st.write(f"**JSON内の全壁数:** {len(all_walls_debug)}本")
-                
-                # ID重複チェック
-                wall_ids = [w['id'] for w in all_walls_debug]
-                duplicate_ids = [id for id in set(wall_ids) if wall_ids.count(id) > 1]
-                if duplicate_ids:
-                    st.error(f"⚠️ **ID重複検出！** 以下のIDが重複しています: {duplicate_ids}")
-                    st.write("これは削除時に意図しない壁が削除される原因になります。")
-                
-                # source='added' または 'window_added' の壁のみ表示
-                added_walls = [w for w in all_walls_debug if w.get('source') in ['added', 'window_added']]
-                if added_walls:
-                    st.write(f"**追加された壁:** {len(added_walls)}本")
-                    for wall in added_walls:
-                        st.write(f"  ID={wall['id']} (型={type(wall['id']).__name__}), source={wall.get('source')}, start={wall['start']}, end={wall['end']}")
-                else:
-                    st.write("**追加された壁:** なし")
-            except:
-                st.write("**JSON解析エラー**")
-            
-            st.markdown("---")
         elif edit_mode == "オブジェクトを配置":
             st.write("💡 オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
         elif edit_mode == "階段を配置":
