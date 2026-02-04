@@ -831,8 +831,9 @@ def _reset_selection_state():
         del st.session_state.window_execution_params
     if 'window_click_params' in st.session_state:
         del st.session_state.window_click_params
-    if 'window_click_params_list' in st.session_state:
-        del st.session_state.window_click_params_list
+    # window_click_params_listは削除しない（ユーザーが設定した窓パラメータを保持）
+    # if 'window_click_params_list' in st.session_state:
+    #     del st.session_state.window_click_params_list
     if 'window_click_params_list_to_process' in st.session_state:
         del st.session_state.window_click_params_list_to_process
 
