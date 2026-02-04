@@ -3123,11 +3123,13 @@ def main():
                         
                         # 階段パターンの参照図を折りたたみで表示
                         with st.expander("📐 階段パターンの参照図を表示"):
+                            from PIL import Image
                             stair_img_path = "stair_pattern_images/stair_patterns_reference.png"
                             try:
-                                st.image(stair_img_path, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
+                                img = Image.open(stair_img_path)
+                                st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
                             except Exception as e:
-                                st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path}")
+                                st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path} (エラー: {str(e)})")
                         
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
