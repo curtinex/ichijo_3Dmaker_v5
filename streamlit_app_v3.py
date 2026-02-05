@@ -5477,21 +5477,6 @@ def main():
                                 # 状態を完全にクリアして続行（統一関数を使用）
                                 _reset_selection_state()
                                 
-                                if edit_mode == "線を結合":
-                                    try:
-                                        st.session_state.last_edit_count = total_merged_count
-                                        st.session_state.last_edit_details = merge_details
-                                        st.success(f"✅ 線を結合しました（{total_merged_count} 件）。比較表示をせず保存しました。")
-                                    except Exception:
-                                        st.success("✅ 線を結合しました。比較表示をせず保存しました。")
-                                elif edit_mode == "窓を追加":
-                                    st.success("✅ 窓を追加しました。比較表示をせず保存しました。")
-                                elif edit_mode == "線を削除":
-                                    st.success(f"✅ {total_deleted_count}本の壁を削除しました。比較表示をせず保存しました。")
-                                elif edit_mode == "階段を配置":
-                                    st.success("✅ 階段を配置しました。")
-                                else:
-                                    st.success("✅ オブジェクト配置を保存しました。編集結果を比較表示せず次へ進みます。")
                                 time.sleep(0.3)
                                 st.rerun()
                             except Exception as e:
