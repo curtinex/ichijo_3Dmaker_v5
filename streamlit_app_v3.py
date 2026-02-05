@@ -83,8 +83,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（5c802a4: 2D平面図の階段色も床色に変更）を指定
-        commit_hash = "5c802a4"
+        # 最新コミット（d160de1: 家具の色解析バグ修正 + ホワイトを純白に変更）を指定
+        commit_hash = "d160de1"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
@@ -1302,21 +1302,6 @@ def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ (β)", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ (β)")
     st.caption("アップロードした図面は一時的な処理にのみ使用し、データベースに保存されることはありません。")
-    
-    # デバッグ情報（開発用）
-    with st.expander("🔍 デバッグ情報（開発用）"):
-        try:
-            import ichijo_core
-            ichijo_core_path = getattr(ichijo_core, '__file__', 'unknown')
-            st.success(f"✅ ichijo_core loaded from: `{ichijo_core_path}`")
-            
-            # FURNITURE_COLOR_OPTIONSの確認
-            from ichijo_core.furniture_utils import FURNITURE_COLOR_OPTIONS
-            st.write("**FURNITURE_COLOR_OPTIONS:**")
-            for color_name, color_info in FURNITURE_COLOR_OPTIONS.items():
-                st.write(f"- {color_name}: `{color_info['three_js']}`")
-        except Exception as e:
-            st.error(f"❌ ichijo_core import error: {e}")
     
     # 固定画像幅（自動結合と手動編集で統一）
     DISPLAY_IMAGE_WIDTH = 800
