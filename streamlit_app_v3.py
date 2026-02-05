@@ -22,16 +22,6 @@ def install_ichijo_core():
     # 現在のファイルの親ディレクトリにichijo_core_checkが存在するか確認
     current_dir = os.path.dirname(os.path.abspath(__file__))
     local_ichijo_path = os.path.join(current_dir, "ichijo_core_check")
-    ichijo_core_module_path = os.path.join(local_ichijo_path, "ichijo_core")
-    
-    # サブモジュールが正しく初期化されているか確認（ichijo_coreディレクトリの中身があるか）
-    if os.path.exists(ichijo_core_module_path) and os.path.isdir(ichijo_core_module_path):
-        # ichijo_core内にファイルが存在するか確認
-        ichijo_core_files = os.listdir(ichijo_core_module_path) if os.path.exists(ichijo_core_module_path) else []
-        if len(ichijo_core_files) > 0:
-            print(f"✅ ichijo_core_check found with {len(ichijo_core_files)} files")
-        else:
-            print(f"⚠️ ichijo_core_check directory exists but is empty (submodule not initialized)")
     
     if os.path.exists(local_ichijo_path) and os.path.isdir(local_ichijo_path):
         # ローカルのichijo_core_checkをsys.pathに追加
@@ -41,16 +31,10 @@ def install_ichijo_core():
         try:
             import ichijo_core
             # ローカル版のインポート成功
-            # デバッグ: ichijo_coreのパスを確認
-            ichijo_core_path = getattr(ichijo_core, '__file__', 'unknown')
-            print(f"✅ ichijo_core loaded from: {ichijo_core_path}")
             return True, None
         except Exception as e:
             # ローカル版のインポート失敗 → GitHubからインストールを試みる
-            print(f"⚠️ Failed to load local ichijo_core: {e}")
             pass
-    else:
-        print(f"⚠️ ichijo_core_check directory not found at: {local_ichijo_path}")
     
     # **フォールバック: GitHubからインストール**
     # 既存のインポートチェック（バージョン確認）
@@ -126,25 +110,6 @@ if not success:
     if error_detail:
         with st.expander("🔍 エラー詳細を表示"):
             st.code(error_detail)
-    
-    # デバッグ情報を表示
-    st.warning("🔍 **デバッグ情報**")
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    local_ichijo_path = os.path.join(current_dir, "ichijo_core_check")
-    ichijo_core_module_path = os.path.join(local_ichijo_path, "ichijo_core")
-    
-    st.write(f"- 現在のディレクトリ: `{current_dir}`")
-    st.write(f"- ichijo_core_checkパス: `{local_ichijo_path}`")
-    st.write(f"- 存在するか: {os.path.exists(local_ichijo_path)}")
-    
-    if os.path.exists(ichijo_core_module_path):
-        files = os.listdir(ichijo_core_module_path)
-        st.write(f"- ichijo_core内のファイル数: {len(files)}")
-        if len(files) > 0:
-            st.write(f"- ファイル例: {files[:5]}")
-    else:
-        st.write("- ichijo_core ディレクトリが見つかりません")
-    
     st.info("""
     **トラブルシューティング:**
     
@@ -152,8 +117,6 @@ if not success:
     2. トークンの形式: `GITHUB_TOKEN = "ghp_xxxxxxxxxxxx"`
     3. トークンの権限: Contents (Read-only), ichijo_core リポジトリへのアクセス権
     4. アプリを再起動してみてください
-    
-    **または**: サブモジュールの初期化が必要な可能性があります
     """)
     st.stop()
 
