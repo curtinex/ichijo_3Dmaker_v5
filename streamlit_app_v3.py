@@ -67,8 +67,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（d160de1: 家具の色解析バグ修正 + ホワイトを純白に変更）を指定
-        commit_hash = "d160de1"
+        # 最新コミット（aaed720: 階段パターン生成関数をstair_utilsに移行）を指定
+        commit_hash = "aaed720"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
