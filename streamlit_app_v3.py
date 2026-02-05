@@ -16,8 +16,27 @@ import sys
 import os
 
 def install_ichijo_core():
-    """Streamlit Cloud用: ichijo_coreをGitHubからインストール"""
+    """Streamlit Cloud用: ローカルのichijo_core_checkまたはGitHubからichijo_coreをロード"""
     
+    # **優先: ローカルのichijo_core_checkディレクトリを使用**
+    # 現在のファイルの親ディレクトリにichijo_core_checkが存在するか確認
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    local_ichijo_path = os.path.join(current_dir, "ichijo_core_check")
+    
+    if os.path.exists(local_ichijo_path) and os.path.isdir(local_ichijo_path):
+        # ローカルのichijo_core_checkをsys.pathに追加
+        if local_ichijo_path not in sys.path:
+            sys.path.insert(0, local_ichijo_path)
+        
+        try:
+            import ichijo_core
+            # ローカル版のインポート成功
+            return True, None
+        except Exception as e:
+            # ローカル版のインポート失敗 → GitHubからインストールを試みる
+            pass
+    
+    # **フォールバック: GitHubからインストール**
     # 既存のインポートチェック（バージョン確認）
     try:
         import ichijo_core
