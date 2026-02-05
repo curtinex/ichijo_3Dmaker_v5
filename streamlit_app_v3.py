@@ -1937,7 +1937,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ調整を押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -3367,7 +3367,7 @@ def main():
                 st.markdown(
                     """
                     <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ変更を押してください。
+                    <b>注:</b> 編集画面が表示されないときは選択リセットか表示サイズ調整を押してください。
                     </p>
                     """,
                     unsafe_allow_html=True
@@ -4141,12 +4141,12 @@ def main():
                                             window_height_mm
                                         )
                                         total_added_count += len(added_walls)
-                                        st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
+                                        #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
                                         
                                         # 追加した壁の詳細を表示
-                                        for aw in added_walls:
-                                            st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
-                                                    f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
+                                        #for aw in added_walls:
+                                        #    st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
+                                        #            f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
                                         
                                         # 追加した壁のIDを記録（赤色表示用）
                                         added_wall_ids.extend([w['id'] for w in added_walls])
@@ -4171,19 +4171,19 @@ def main():
                                     else:
                                         st.warning(f"⚠️ 四角形#{rect_idx+1}: 2本の壁を選択してください（{len(walls_in_rect)}本選択されています）")
                 
-                                if total_added_count > 0:
-                                    st.success(f"✅✅ 合計 {total_added_count} 本の壁を追加しました（窓{len(window_details)}箇所）")
+                                #if total_added_count > 0:
+                                #    st.success(f"✅✅ 合計 {total_added_count} 本の壁を追加しました（窓{len(window_details)}箇所）")
                                 
-                                    # 追加詳細を表示
-                                    st.markdown("**窓追加結果:**")
-                                    for detail in window_details:
-                                        st.write(
-                                            f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
-                                            f"壁({detail['wall_ids'][0]}, {detail['wall_ids'][1]}) を追加 - "
-                                            f"窓高さ: {detail['window_height']}m ({detail.get('window_height_mm', int(detail['window_height']*1000))}mm), 床から: {detail['base_height']}m ({int(detail.get('base_height_mm', detail['base_height']*1000))}mm)"
-                                        )
-                                else:
-                                    st.warning("⚠️ 追加可能な窓が見つかりません")
+                                #    # 追加詳細を表示
+                                #    st.markdown("**窓追加結果:**")
+                                #    for detail in window_details:
+                                #        st.write(
+                                #            f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
+                                #            f"壁({detail['wall_ids'][0]}, {detail['wall_ids'][1]}) を追加 - "
+                                #            f"窓高さ: {detail['window_height']}m ({detail.get('window_height_mm', int(detail['window_height']*1000))}mm), 床から: {detail['base_height']}m ({int(detail.get('base_height_mm', detail['base_height']*1000))}mm)"
+                                #        )
+                                #else:
+                                #    st.warning("⚠️ 追加可能な窓が見つかりません")
                             
                             # 一時ファイルに保存
                             temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
@@ -4455,9 +4455,8 @@ def main():
                                     st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                     st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                    # 選択状態はクリアしない（階段エリアの青い矩形を表示し続ける）
-                                    # rect_coords_listはそのまま保持
-                                    st.session_state.rect_coords = []
+                                    # 選択状態をクリア（統一関数を使用）
+                                    _reset_selection_state()
                                     st.session_state.last_click = None
                                     st.session_state.execute_stair_placement = False
                                     st.session_state.selected_stair_pattern = None
@@ -5232,12 +5231,12 @@ def main():
                                             )
                                             
                                             added_wall_ids.extend([w['id'] for w in added_walls])
-                                            st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
+                                            #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
                                             
                                             # 追加した壁の詳細を表示
-                                            for aw in added_walls:
-                                                st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
-                                                        f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
+                                            #for aw in added_walls:
+                                            #    st.write(f"  追加壁ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
+                                            #            f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
                                             
                                             total_windows_added += 1
                                         except Exception as e:
@@ -5292,10 +5291,10 @@ def main():
                                     'length': new_wall['length']
                                 })
                             
-                            if total_added_count > 0:
-                                st.success(f"🎉 合計{total_added_count}本の壁を追加しました！")
-                                for detail in add_details:
-                                    st.write(f"  壁ID#{detail['wall_id']}: 方向={detail['direction']}, 長さ={detail['length']:.2f}m")
+                            #if total_added_count > 0:
+                            #    st.success(f"🎉 合計{total_added_count}本の壁を追加しました！")
+                            #    for detail in add_details:
+                            #        st.write(f"  壁ID#{detail['wall_id']}: 方向={detail['direction']}, 長さ={detail['length']:.2f}m")
                         
                         elif edit_mode == "線を削除":
                             # ===== 線を削除モード =====
