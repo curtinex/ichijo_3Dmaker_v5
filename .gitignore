@@ -219,7 +219,9 @@ data/
 
 # Keep example files (if needed)
 !example.pdf
-!README.md
+
+# Ignore README.md (contains technical information)
+README.md
 
 # Streamlit secrets
 .streamlit/secrets.toml
