@@ -2817,10 +2817,10 @@ def main():
                                 current_model = st.session_state.window_click_params_list[window_idx].get('model', 'J4415/JF4415')
                                 
                                 window_model = st.selectbox(
-                                    f"窓{window_idx + 1}の型番",
+                                    f"窓{window_idx + 1}の型番(数字4桁)",
                                     list(WINDOW_CATALOG.keys()),
                                     index=list(WINDOW_CATALOG.keys()).index(current_model) if current_model in WINDOW_CATALOG.keys() else 0,
-                                    help="窓の型番を選択してください",
+                                    help="窓の型番(数字4桁)を選択してください",
                                     key=f"window_model_click_{window_idx}"
                                 )
                                 
