@@ -1606,11 +1606,6 @@ def main():
                                 # 新しいpixel_to_meterを計算
                                 new_pixel_to_meter = old_pixel_to_meter * scale_ratio
                                 
-                                st.info(
-                                    f"実測 {actual_distance_m:.2f}m / 現在 {current_length_m:.2f}m → 倍率 {scale_ratio:.3f}\n\n"
-                                    f"旧pixel_to_meter: {old_pixel_to_meter:.6f} → 新: {new_pixel_to_meter:.6f}"
-                                )
-                                
                                 # 各壁の座標をスケール変換
                                 calibrated_json = copy.deepcopy(json_data)
                                 for wall in calibrated_json.get("walls", []):
@@ -1650,11 +1645,6 @@ def main():
                                     min_y_after, max_y_after = min(all_y_after), max(all_y_after)
                                     width_after = max_x_after - min_x_after
                                     height_after = max_y_after - min_y_after
-                                    st.info(
-                                        f"📐 校正後の座標範囲:\n\n"
-                                        f"X: {min_x_after:.3f}m ～ {max_x_after:.3f}m（幅 {width_after:.3f}m = {width_after/0.9:.1f}マス）\n\n"
-                                        f"Y: {min_y_after:.3f}m ～ {max_y_after:.3f}m（奥行 {height_after:.3f}m = {height_after/0.9:.1f}マス）"
-                                    )
                                 
                                 # 保存と再可視化
                                 json_path.write_text(json.dumps(calibrated_json, indent=2, ensure_ascii=False))
@@ -1677,8 +1667,6 @@ def main():
                                 st.session_state.step3_grid_input_val = grid_count
                                 # 手動編集へ遷移
                                 st.session_state.workflow_step = 3
-                                st.success(f"✅ スケールを更新しました。pixel_to_meter = {new_pixel_to_meter:.6f}")
-                                st.info(f"📝 編集済みの壁構成を維持したまま、スケールのみを調整しました")
                                 st.rerun()
                         except Exception as e:
                             st.error(f"❌ スケール更新でエラーが発生しました: {e}")
