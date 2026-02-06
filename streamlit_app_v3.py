@@ -1,13 +1,8 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Streamlitアプリ: 図面(PDF/JPG/PNG) → 壁線抽出 → 3D(JSON) → Blender用スクリプト生成
+Streamlitアプリ: 一条工務店CAD図面3D化アプリ
 
-使い方:
-  1) 下のコマンドで起動
-     streamlit run streamlit_app.py
-  2) PDF/画像をアップロード → パラメータを調整 → [変換を実行]
-  3) 生成されたJSON/Blenderスクリプト/可視化をダウンロード
 """
 
 # ichijo_coreのインストールチェックと自動インストール
@@ -1212,7 +1207,7 @@ def main():
                         help="小さい = 細い線も拾う。大きい = 太い線のみ。DPI高い時は大きく。"
                     )
                 
-                # 列3: Blender出力スケール(壁高さ)
+                # 列3: 出力スケール(壁高さ)
                 with col3:
                     st.subheader("🏗️ 出力スケール")
                     wall_height = st.number_input(
