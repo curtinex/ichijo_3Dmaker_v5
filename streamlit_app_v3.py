@@ -2915,17 +2915,17 @@ def main():
                         # 選択されたパターンの説明を表示
                         st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                         
-                        # 階段パターンの参照図を折りたたみで表示（現在無効化）
-                        # with st.expander("📐 階段パターンの参照図を表示"):
-                        #     stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
-                        #     try:
-                        #         if stair_img_path.exists():
-                        #             img = Image.open(stair_img_path)
-                        #             st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
-                        #         else:
-                        #             st.info(f"📋 参照画像が見つかりません: {stair_img_path.name}")
-                        #     except Exception as e:
-                        #         st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
+                        # 階段パターンの参照図を折りたたみで表示
+                        with st.expander("📐 階段パターンの参照図を表示"):
+                            stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
+                            try:
+                                if stair_img_path.exists():
+                                    img = Image.open(stair_img_path)
+                                    st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
+                                else:
+                                    st.info(f"📋 参照画像が見つかりません: {stair_img_path.name}")
+                            except Exception as e:
+                                st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
                         
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
