@@ -1887,7 +1887,7 @@ def main():
             elif edit_mode == "階段を配置":
                 st.markdown(
                     "**階段配置の手順:**\n\n"
-                    "1. 下の画像上で**2回クリック**して階段を配置したい領域を四角形で囲む（開始位置が左下になります）\n\n"
+                    "1. 下の画像上で**2回クリック**して階段を配置したい領域を四角形で囲む\n\n"
                     "2. 階段パターンをプルダウンから選択\n\n"
                     "3. 「🪜 階段配置実行」で階段を配置\n\n"
                     "**注意:**\n\n"
@@ -2915,17 +2915,17 @@ def main():
                         # 選択されたパターンの説明を表示
                         st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                         
-                        # 階段パターンの参照図を折りたたみで表示
-                        with st.expander("📐 階段パターンの参照図を表示"):
-                            stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
-                            try:
-                                if stair_img_path.exists():
-                                    img = Image.open(stair_img_path)
-                                    st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
-                                else:
-                                    st.info(f"📋 参照画像が見つかりません: {stair_img_path.name}")
-                            except Exception as e:
-                                st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
+                        # 階段パターンの参照図を折りたたみで表示（現在無効化）
+                        # with st.expander("📐 階段パターンの参照図を表示"):
+                        #     stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
+                        #     try:
+                        #         if stair_img_path.exists():
+                        #             img = Image.open(stair_img_path)
+                        #             st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
+                        #         else:
+                        #             st.info(f"📋 参照画像が見つかりません: {stair_img_path.name}")
+                        #     except Exception as e:
+                        #         st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
                         
                         # 階段配置実行ボタン
                         if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
