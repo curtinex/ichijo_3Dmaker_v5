@@ -19,13 +19,14 @@ jobs:
         echo "🔄 Pinging Streamlit app to keep it alive..."
         echo "Current time: $(date)"
         
-        # アプリのURLにアクセス
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://ichijo-3dmaker.streamlit.app/ --max-time 30)
+        # アプリのURLにアクセス（リダイレクトを追従）
+        response=$(curl -L -s -o /dev/null -w "%{http_code}" https://ichijo-3dmaker.streamlit.app/ --max-time 30)
         
-        if [ $response -eq 200 ]; then
+        # 2xxステータスコードを成功とみなす
+        if [ $response -ge 200 ] && [ $response -lt 300 ]; then
           echo "✅ Successfully pinged app (HTTP $response)"
         else
-          echo "⚠️ Received HTTP code: $response"
+          echo "⚠️ Received HTTP code: $response (リダイレクトやエラーの可能性)"
         fi
         
         echo "Completed at $(date)"
