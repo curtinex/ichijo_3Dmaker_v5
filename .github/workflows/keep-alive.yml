@@ -1,0 +1,31 @@
+name: Keep Streamlit App Alive
+
+on:
+  schedule:
+    # 3時間ごとに実行（UTC時間で指定）
+    # 例: 0時、3時、6時、9時、12時、15時、18時、21時（UTC）
+    - cron: '0 */3 * * *'
+  
+  # 手動実行を可能にする
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Ping Streamlit App
+      run: |
+        echo "🔄 Pinging Streamlit app to keep it alive..."
+        echo "Current time: $(date)"
+        
+        # アプリのURLにアクセス
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://ichijo-3dmaker.streamlit.app/ --max-time 30)
+        
+        if [ $response -eq 200 ]; then
+          echo "✅ Successfully pinged app (HTTP $response)"
+        else
+          echo "⚠️ Received HTTP code: $response"
+        fi
+        
+        echo "Completed at $(date)"
