@@ -5319,8 +5319,8 @@ def main():
                         st.code(traceback.format_exc())
             
             # 手動編集モードの最後：編集済みhtmlと照明付きhtmlのダウンロードボタン
-            st.divider()
-            st.subheader(" 編集済みファイルのダウンロード")
+            #st.divider()
+            #st.subheader(" 編集済みファイルのダウンロード")
             
             # 編集済み3DビューアHTML（viewer_html_bytesを常に表示）
             if st.session_state.viewer_html_bytes:
