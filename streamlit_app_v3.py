@@ -1073,10 +1073,16 @@ def main():
         st.session_state['debug_log'] = []
     # (internal debug_log retained in session_state; no UI display)
 
+    # 3D表示用expanderの開閉状態を管理
+    if 'open_3d_expander' not in st.session_state:
+        st.session_state['open_3d_expander'] = False
+
     # --- debug helper: callback to set workflow step reliably ---
-    def _set_workflow_step(n: int):
+    def _set_workflow_step(n: int, open_3d: bool = False):
         st.session_state.setdefault('debug_log', []).append(f"callback: set_workflow {n} (was {st.session_state.get('workflow_step')})")
         st.session_state.workflow_step = n
+        if open_3d:
+            st.session_state.open_3d_expander = True
         st.session_state.setdefault('debug_log', []).append(f"callback: workflow_step now {st.session_state.get('workflow_step')}")
 
     # manual debug button removed
@@ -1435,12 +1441,12 @@ def main():
                     f"render: entering processed block (workflow_step={st.session_state.get('workflow_step')}, processed={st.session_state.get('processed')}, viewer_html={'yes' if st.session_state.get('viewer_html_bytes') else 'no'})"
                 )
                 # 3Dモデル用イメージを先に表示
-                st.subheader("📊 3Dモデル用イメージ")
-                if st.session_state.viz_bytes is not None:
-                    # 画面サイズの50%に縮小表示（左寄せ）
-                    col1, col2 = st.columns([0.5, 0.5])
-                    with col1:
-                        st.image(st.session_state.viz_bytes, use_container_width=True)
+                #st.subheader("📊 3Dモデル用イメージ")
+                #if st.session_state.viz_bytes is not None:
+                #    # 画面サイズの50%に縮小表示（左寄せ）
+                #    col1, col2 = st.columns([0.5, 0.5])
+                #    with col1:
+                #        st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
                 with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
@@ -1457,20 +1463,23 @@ def main():
                 )
 
                 # 3DビューアHTMLダウンロードボタン
-                if st.session_state.viewer_html_bytes:
-                    st.download_button(
-                        label="3Dモデルをダウンロード",
-                        data=st.session_state.viewer_html_bytes,
-                        file_name=st.session_state.viewer_html_name,
-                        mime="text/html"
-                    )
+                #if st.session_state.viewer_html_bytes:
+                #    st.download_button(
+                #        label="3Dモデルをダウンロード",
+                #        data=st.session_state.viewer_html_bytes,
+                #        file_name=st.session_state.viewer_html_name,
+                #        mime="text/html"
+                #    )
 
                 # ステップ1: 読み取り完了ボタン（左寄せ、押すとStep2へ遷移）
+                # ステップ1: 読み取り完了ボタン（左寄せ、押すとStep2へ遷移し3D表示を開く）
                 st.session_state.setdefault('debug_log', []).append("render: before creating step1_complete button")
                 # ボタン列幅を広げ、ボタンをコンテナ幅いっぱいに表示して折返しを防止
                 col_btn, col_rest = st.columns([3, 7])
                 with col_btn:
-                    st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
+                    #st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
+                    st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2, True), use_container_width=True)
+
 
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
         if st.session_state.workflow_step >= 2 and st.session_state.processed:
@@ -1660,6 +1669,8 @@ def main():
                                 st.session_state.selected_wall_for_calibration = None
                                 st.session_state.scale_last_click = None
                                 st.session_state.step3_grid_input_val = grid_count
+                                # 3D表示を開く
+                                st.session_state.open_3d_expander = True
                                 # 手動編集へ遷移
                                 st.session_state.workflow_step = 3
                                 st.rerun()
@@ -1779,6 +1790,7 @@ def main():
             # スキップして次へボタンを最後に配置
             if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
                 st.session_state.workflow_step = 3
+                st.session_state.open_3d_expander = True
                 st.rerun()
     # ============= ステップ3: 手動編集 =============
     with st.expander("Step 3：手動編集", expanded=(st.session_state.workflow_step == 3)):
@@ -1966,7 +1978,10 @@ def main():
                     # 3DビューアHTMLも更新
                     st.session_state.viewer_html_bytes = result['viewer_html_bytes']
                     st.session_state.viewer_html_name = result['temp_viewer_path'].name
-                    
+
+                    # 3D表示を開く
+                    st.session_state.open_3d_expander = True
+
                     # 状態を完全にクリア
                     st.session_state.rect_coords = []
                     st.session_state.rect_coords_list = []
@@ -5331,6 +5346,41 @@ def main():
                 if st.button("📄 Step 1に戻る", type="primary"):
                     st.session_state.workflow_step = 1
                     st.rerun()
+
+    # ============= 3Dビュー表示（Step3の下） =============
+    with st.expander("🔭 3Dビュー", expanded=st.session_state.get('open_3d_expander', False)):
+        if st.session_state.get('processed', False) and st.session_state.get('viz_bytes'):
+            st.markdown("### 📊 3Dモデル用イメージ")
+            if st.session_state.viz_bytes is not None:
+                # 画面サイズの50%に縮小表示（左寄せ）
+                col1, col2 = st.columns([0.5, 0.5])
+                with col1:
+                    st.image(st.session_state.viz_bytes, use_container_width=True)
+            
+            st.divider()
+            
+            # 3Dビューア埋め込み表示
+            if st.session_state.get('viewer_html_bytes'):
+                st.markdown("### 🎨 3Dビューア（インタラクティブ）")
+                import streamlit.components.v1 as components
+                components.html(
+                    st.session_state.viewer_html_bytes.decode('utf-8'),
+                    height=600,
+                    scrolling=True
+                )
+                
+                st.divider()
+                
+                # ダウンロードボタン
+                st.download_button(
+                    label="📥 3Dモデルをダウンロード",
+                    data=st.session_state.viewer_html_bytes,
+                    file_name=st.session_state.viewer_html_name,
+                    mime="text/html",
+                    use_container_width=True
+                )
+        else:
+            st.info("💡 Step 1で図面を変換すると、ここに3Dビューが表示されます。")
     
     # ============= フッター（全ステップ共通） =============
     st.divider()
