@@ -1441,12 +1441,12 @@ def main():
                     f"render: entering processed block (workflow_step={st.session_state.get('workflow_step')}, processed={st.session_state.get('processed')}, viewer_html={'yes' if st.session_state.get('viewer_html_bytes') else 'no'})"
                 )
                 # 3Dモデル用イメージを先に表示
-                #st.subheader("📊 3Dモデル用イメージ")
-                #if st.session_state.viz_bytes is not None:
-                #    # 画面サイズの50%に縮小表示（左寄せ）
-                #    col1, col2 = st.columns([0.5, 0.5])
-                #    with col1:
-                #        st.image(st.session_state.viz_bytes, use_container_width=True)
+                st.subheader("📊 3Dモデル用イメージ")
+                if st.session_state.viz_bytes is not None:
+                    # 画面サイズの50%に縮小表示（左寄せ）
+                    col1, col2 = st.columns([0.5, 0.5])
+                    with col1:
+                        st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
                 with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
@@ -5324,22 +5324,23 @@ def main():
             
             # 編集済み3DビューアHTML（viewer_html_bytesを常に表示）
             if st.session_state.viewer_html_bytes:
-                st.download_button(
-                label=" 編集済み3Dモデルをダウンロード",
-                data=st.session_state.viewer_html_bytes,
-                type="primary",
-                file_name=st.session_state.viewer_html_name,
-                mime="text/html"
-                )
+                #st.download_button(
+                #label=" 編集済み3Dモデルをダウンロード",
+                #data=st.session_state.viewer_html_bytes,
+                #type="primary",
+                #file_name=st.session_state.viewer_html_name,
+                #mime="text/html"
+                #)
                 
                 # 編集済み3Dビューアを表示
-                st.subheader("🎨 編集済み3Dビューア")
-                import streamlit.components.v1 as components
-                components.html(
-                st.session_state.viewer_html_bytes.decode('utf-8'),
-                height=600,
-                scrolling=True
-                )
+                #st.subheader("🎨 編集済み3Dビューア")
+                #import streamlit.components.v1 as components
+                #components.html(
+                #st.session_state.viewer_html_bytes.decode('utf-8'),
+                #height=600,
+                #scrolling=True
+                #)
+                pass
             else:
                 # 可視化画像がない場合のエラーメッセージ
                 st.warning("⚠️ 手動編集画面を表示するには、まずStep 1で図面を変換してください。")
@@ -5350,18 +5351,10 @@ def main():
     # ============= 3Dビュー表示（Step3の下） =============
     with st.expander("🔭 3Dビュー", expanded=st.session_state.get('open_3d_expander', False)):
         if st.session_state.get('processed', False) and st.session_state.get('viz_bytes'):
-            st.markdown("### 📊 3Dモデル用イメージ")
-            if st.session_state.viz_bytes is not None:
-                # 画面サイズの50%に縮小表示（左寄せ）
-                col1, col2 = st.columns([0.5, 0.5])
-                with col1:
-                    st.image(st.session_state.viz_bytes, use_container_width=True)
-            
-            st.divider()
             
             # 3Dビューア埋め込み表示
             if st.session_state.get('viewer_html_bytes'):
-                st.markdown("### 🎨 3Dビューア（インタラクティブ）")
+                st.markdown("### 🎨 3Dビューア")
                 import streamlit.components.v1 as components
                 components.html(
                     st.session_state.viewer_html_bytes.decode('utf-8'),
@@ -5375,9 +5368,10 @@ def main():
                 st.download_button(
                     label="📥 3Dモデルをダウンロード",
                     data=st.session_state.viewer_html_bytes,
+                    type="primary",
                     file_name=st.session_state.viewer_html_name,
                     mime="text/html",
-                    use_container_width=True
+                    #use_container_width=True
                 )
         else:
             st.info("💡 Step 1で図面を変換すると、ここに3Dビューが表示されます。")
