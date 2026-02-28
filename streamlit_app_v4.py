@@ -101,9 +101,9 @@ def install_ichijo_core():
 success, error_detail = install_ichijo_core()
 if not success:
     import streamlit as st
-    st.error("? ichijo_core のロードに失敗しました")
+    st.error("❌ ichijo_core のロードに失敗しました")
     if error_detail:
-        with st.expander("?? エラー詳細を表示"):
+        with st.expander("🔍 エラー詳細を表示"):
             st.code(error_detail)
     st.info("""
     **トラブルシューティング:**
@@ -342,7 +342,7 @@ def _render_logged_in_sidebar(user_email, supabase):
                 st.success("Checkout に遷移中です。新しいタブが開かない場合は上のリンクをクリックしてください。")
     else:
         if cancel_at_period_end:
-            st.warning(f"?? 解約手続き済みです。\n{current_period_end or '次回更新日'}までは有料プランをご利用いただけます。その後、自動的に無料プランへ移行します。")
+            st.warning(f"⚠️ 解約手続き済みです。\n{current_period_end or '次回更新日'}までは有料プランをご利用いただけます。その後、自動的に無料プランへ移行します。")
             if st.button("有料プランの自動更新を再開する", key="resume_sub_btn"):
                 secret, _, _ = get_stripe_config()
                 if secret:
@@ -439,7 +439,7 @@ with st.sidebar.expander("アカウント設定"):
                 auth_mode = None
         if auth_mode == "会員登録":
             su_email = st.text_input("Email", key="su_email")
-            su_pwd = st.text_input("Password", type="password", key="su_pwd", placeholder="6文字以上で入力してください")
+            su_pwd = st.text_input("Password", type="password", key="su_pwd", placeholder="6文字以上で入力")
             
             # 会員登録して無料トライアルを開始 (メール認証 + パスワードのみ)
             if st.button("会員登録して無料トライアルを開始", key="trial_btn"):
@@ -523,7 +523,7 @@ try:
                     try:
                         sub = stripe.Subscription.retrieve(subscription_id)
                         status = sub.get('status')
-                        st.success(f"支払いが確認されました。サブスクリプション状態: {status} ? ようこそ、有料会員です。")
+                        st.success(f"支払いが確認されました。サブスクリプション状態: {status} — ようこそ、有料会員です。")
                         if email:
                             st.info(f"登録メール: {email}")
                     except Exception as e:
@@ -1310,7 +1310,7 @@ try:
     test_result = _prepare_display_from_pil(test_img, max_width=50)
     if len(test_result) != 4:
         # 古いバージョンがロードされている場合、フォールバック関数を定義
-        print(f"?? Warning: ichijo_core.ui_helpers.prepare_display_from_pil returns {len(test_result)} values instead of 4. Using fallback.")
+        print(f"⚠️ Warning: ichijo_core.ui_helpers.prepare_display_from_pil returns {len(test_result)} values instead of 4. Using fallback.")
         
         def _prepare_display_from_pil_fallback(pil_img, max_width=800):
             orig_w, orig_h = pil_img.size
@@ -1339,7 +1339,7 @@ try:
         _display_to_original = _display_to_original_fallback
         _display_to_meter = _display_to_meter_fallback
 except ImportError as e:
-    st.error(f"? ichijo_core パッケージが見つかりません: {e}")
+    st.error(f"❌ ichijo_core パッケージが見つかりません: {e}")
     st.info("このアプリケーションを実行するには ichijo_core パッケージが必要です。")
     st.stop()
 
@@ -1792,13 +1792,13 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
             wall_id = wall.get('id', '?')
             reasons = []
             if start_in_rect:
-                reasons.append("始点?")
+                reasons.append("始点✓")
             if end_in_rect:
-                reasons.append("終点?")
+                reasons.append("終点✓")
             if intersects and not (start_in_rect or end_in_rect):
-                reasons.append("交差?")
+                reasons.append("交差✓")
             
-            reason_str = ",".join(reasons) if reasons else "範囲外?"
+            reason_str = ",".join(reasons) if reasons else "範囲外✗"
             
             # 検出された壁のみ、または全壁を表示（最初の50本まで）
             if matched or len(debug_info) < 60:  # ヘッダー行+最大50壁
@@ -1863,7 +1863,7 @@ def main():
     if st.session_state.get('user'):
         supabase = get_supabase()
         if check_membership_status_v2(supabase, st.session_state.user):
-            with st.expander("?? 保存したセッション（HTML）を復元する"):
+            with st.expander("📂 保存したセッション（HTML）を復元する"):
                 st.info("有料会員特典: 以前に保存したHTMLファイル（viewer_3d_edited.htmlなど）をアップロードして、編集状態を復元できます。")
                 uploaded_html = st.file_uploader("HTMLファイルを選択", type=["html"], key="restore_html")
                 if uploaded_html and st.button("復元実行"):
@@ -2015,8 +2015,8 @@ def main():
         # 最初のステップの説明
         st.info(
             "間取り図のPDF（またはJPG/PNG）をアップロードしてください。\n\n"
-            # "? **PDF**: 図面アプリから出力したPDFファイル\n\n"
-            # "? **JPG/PNG**: スキャン画像やスクリーンショット"
+            # "• **PDF**: 図面アプリから出力したPDFファイル\n\n"
+            # "• **JPG/PNG**: スキャン画像やスクリーンショット"
         )
 
         uploaded = st.file_uploader("図面PDF/画像をアップロード", type=["pdf", "jpg", "jpeg", "png"], accept_multiple_files=False)
@@ -2032,7 +2032,7 @@ def main():
                 doc.close()
                 
                 if total_pages > 1:
-                    # st.info(f"?? このPDFは {total_pages} ページあります。処理するページを選択してください。")
+                    # st.info(f"📄 このPDFは {total_pages} ページあります。処理するページを選択してください。")
                     page_number = st.selectbox(
                         "処理するページを選択",
                         options=list(range(total_pages)),
@@ -2040,7 +2040,7 @@ def main():
                         help="PDFの何ページ目を処理するか選択します（0始まり）"
                     )
                 else:
-                    st.info("?? このPDFは 1 ページです。")
+                    st.info("📄 このPDFは 1 ページです。")
             except Exception as e:
                 st.warning(f"PDFページ数の取得に失敗しました: {e}")
         
@@ -2049,15 +2049,15 @@ def main():
         
         # アップロード後のパラメータ設定を折りたたみで表示
         if uploaded is not None or st.session_state.processed:
-            with st.expander("?? **パラメータ設定（必要に応じて修正）**", expanded=False):
+            with st.expander("⚙️ **パラメータ設定（必要に応じて修正）**", expanded=False):
                 # 3列レイアウト
                 col1, col2, col3 = st.columns(3)
                 
                 # 列1: 除外範囲設定
                 with col1:
-                    st.subheader("?? 除外範囲")
+                    st.subheader("✂️ 除外範囲")
                     st.markdown("#### 外枠・ロゴ除外")
-                    with st.expander("?? 使い方", expanded=False):
+                    with st.expander("💡 使い方", expanded=False):
                         st.markdown(
                             "**調整方法:**\n\n"
                             "- PDFの外枠、タイトル、ロゴを除外\n\n"
@@ -2086,10 +2086,10 @@ def main():
                 
                 # 列2: 壁検出パラメータ(黒閾値、最小線幅)
                 with col2:
-                    st.subheader("?? 壁パラメータ")
+                    st.subheader("🎨 壁パラメータ")
                     
                     #st.markdown("#### 黒線認識の閾値")
-                    #with st.expander("?? 調整のコツ", expanded=False):
+                    #with st.expander("💡 調整のコツ", expanded=False):
                     #    st.markdown(
                     #        "**調整方法:**\n\n"
                     #        "1. 最初は190から試す\n\n"
@@ -2108,7 +2108,7 @@ def main():
                     black_threshold = 190  # 固定値に変更
 
                     st.markdown("#### 最小認識 黒線幅")
-                    with st.expander("?? 調整のコツ", expanded=False):
+                    with st.expander("💡 調整のコツ", expanded=False):
                         st.markdown(
                             "**調整方法:**\n\n"
                             "1. 壁が多すぎる → 値を上げる\n\n"
@@ -2126,7 +2126,7 @@ def main():
                 
                 # 列3: 出力スケール(壁高さ)
                 with col3:
-                    st.subheader("??? 出力スケール")
+                    st.subheader("🏗️ 出力スケール")
                     wall_height = st.number_input(
                         "壁(天井)高さ",
                         min_value=0.1,
@@ -2145,7 +2145,7 @@ def main():
                         json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                         pixel_to_meter = json_data.get("metadata", {}).get("pixel_to_meter", 0.005) or 0.005
                         if pixel_to_meter != 0.005:
-                            st.info(f"?? スケール校正済みの値を使用: pixel_to_meter = {pixel_to_meter:.6f}")
+                            st.info(f"📐 スケール校正済みの値を使用: pixel_to_meter = {pixel_to_meter:.6f}")
                     except:
                         pixel_to_meter = 0.005
                 else:
@@ -2154,9 +2154,9 @@ def main():
             # ステップ1: 変換実行ボタン
             col_run, col_skip = st.columns([2, 1])
             with col_run:
-                run = st.button("?? 変換を実行", type="primary", use_container_width=True, key="step1_run")
+                run = st.button("🚀 変換を実行", type="primary", use_container_width=True, key="step1_run")
             with col_skip:
-                if st.button("?? スキップ", use_container_width=True, key="step1_skip"):
+                if st.button("⏭️ スキップ", use_container_width=True, key="step1_skip"):
                     if st.session_state.get('user') is None:
                         st.warning("ステップ2はログインが必要です。サイドバーでログインしてください。")
                     else:
@@ -2233,8 +2233,8 @@ def main():
             try:
                 result = process_image_to_3d(str(refined_path), str(json_path), wall_height=wall_height, pixel_to_meter=pixel_to_meter)
                 if result is None:
-                    st.error("? 3D座標の生成に失敗しました。")
-                    st.warning("?? 原因: refined画像から壁線が検出できませんでした。")
+                    st.error("❌ 3D座標の生成に失敗しました。")
+                    st.warning("⚠️ 原因: refined画像から壁線が検出できませんでした。")
                     st.info(
                         "**対策:**\n\n"
                         "- 最小線幅を大きくする（8-12px推奨）\n\n"
@@ -2243,10 +2243,10 @@ def main():
                     )
                     # デバッグ用：refined画像が実際に存在するか確認
                     if refined_path.exists():
-                        st.info(f"? refined画像は生成されています: {refined_path.name}")
+                        st.info(f"✓ refined画像は生成されています: {refined_path.name}")
                     return
             except Exception as e:
-                st.error(f"? 3D座標生成でエラー: {e}")
+                st.error(f"❌ 3D座標生成でエラー: {e}")
                 import traceback
                 st.code(traceback.format_exc())
                 return
@@ -2329,7 +2329,7 @@ def main():
                 st.session_state.viewer_html_name = merged_viewer_path.name
                 st.session_state.merged_processed = True
             except Exception as e:
-                st.warning(f"?? 自動結合でエラー: {e}")
+                st.warning(f"⚠️ 自動結合でエラー: {e}")
                 st.session_state.merged_processed = False
             
             # ZIP生成（JSON+抽出PNG+3DビューアHTML）
@@ -2355,7 +2355,7 @@ def main():
                     f"render: entering processed block (workflow_step={st.session_state.get('workflow_step')}, processed={st.session_state.get('processed')}, viewer_html={'yes' if st.session_state.get('viewer_html_bytes') else 'no'})"
                 )
                 # 3Dモデル用イメージを先に表示
-                st.subheader("?? 3Dモデル用イメージ")
+                st.subheader("📊 3Dモデル用イメージ")
                 if st.session_state.viz_bytes is not None:
                     # 画面サイズの50%に縮小表示（左寄せ）
                     col1, col2 = st.columns([0.5, 0.5])
@@ -2363,7 +2363,7 @@ def main():
                         st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
-                with st.expander("??? 壁線抽出結果（CAD図面参照）", expanded=False):
+                with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
                     if st.session_state.refined_img is not None:
                         # 画面サイズの50%に縮小表示（左寄せ）
                         col1, col2 = st.columns([0.5, 0.5])
@@ -2391,8 +2391,8 @@ def main():
                 # ボタン列幅を広げ、ボタンをコンテナ幅いっぱいに表示して折返しを防止
                 col_btn, col_rest = st.columns([3, 7])
                 with col_btn:
-                    #st.button("? 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
-                    st.button("? 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2, True), use_container_width=True)
+                    #st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
+                    st.button("✅ 読み取り完了", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2, True), use_container_width=True)
 
 
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
@@ -2502,7 +2502,7 @@ def main():
                         )
                         st.session_state.step3_grid_input_val = grid_count
                         
-                        if st.button("?? このスケールで更新", type="primary", use_container_width=True, key="step3_apply_scale"):
+                        if st.button("💾 このスケールで更新", type="primary", use_container_width=True, key="step3_apply_scale"):
                             try:
                                 # 実測距離（メートル単位）
                                 actual_distance_m = grid_count * 0.9  # 1マス = 0.9m = 90cm
@@ -2515,7 +2515,7 @@ def main():
                                     current_length_m = math.sqrt(dx_m**2 + dy_m**2)
                                 
                                 if current_length_m <= 0:
-                                    st.error("? 現在の壁長が0mのため再計算できません。別の壁で試してください。")
+                                    st.error("❌ 現在の壁長が0mのため再計算できません。別の壁で試してください。")
                                 else:
                                     # スケール比率を計算（実測/現在）
                                     scale_ratio = actual_distance_m / current_length_m
@@ -2616,7 +2616,7 @@ def main():
                                         st.session_state.workflow_step = 3
                                         st.rerun()
                             except Exception as e:
-                                st.error(f"? スケール更新でエラーが発生しました: {e}")
+                                st.error(f"❌ スケール更新でエラーが発生しました: {e}")
                                 import traceback
                                 st.code(traceback.format_exc())
 
@@ -2628,11 +2628,11 @@ def main():
                     with col_zoom_label:
                         st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                     with col_zoom1:
-                        if st.button("???", key="step2_zoom_out"):
+                        if st.button("🔍−", key="step2_zoom_out"):
                             st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
-                        if st.button("??+", key="step2_zoom_in"):
+                        if st.button("🔍+", key="step2_zoom_in"):
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     
@@ -2650,11 +2650,11 @@ def main():
                     
                     # 画像データの検証（表示エラー対策 - ステップ3と同じロジック）
                     if overlay_resized is None:
-                        st.warning("?? 画像データを再生成しています...")
+                        st.warning("⚠️ 画像データを再生成しています...")
                         st.rerun()
                     
                     if overlay_resized.size[0] == 0 or overlay_resized.size[1] == 0:
-                        st.warning("?? 画像サイズが不正です。再試行しています...")
+                        st.warning("⚠️ 画像サイズが不正です。再試行しています...")
                         # ズームレベルをリセット
                         st.session_state.editor_zoom_level = 1.0
                         st.rerun()
@@ -2716,7 +2716,7 @@ def main():
 
                     col_reset = st.columns(2)[0]
                     with col_reset:
-                        if st.button("?? 選択をリセット", use_container_width=True, key="step3_calib_reset"):
+                        if st.button("🔄 選択をリセット", use_container_width=True, key="step3_calib_reset"):
                             st.session_state.selected_wall_for_calibration = None
                             st.session_state.scale_last_click = None
                             st.session_state.calibration_reset_counter = st.session_state.get('calibration_reset_counter', 0) + 1
@@ -2729,7 +2729,7 @@ def main():
                     st.error(f"スケール校正ビュー表示エラー: {e}")
                 
                 # スキップして次へボタンを最後に配置
-                if st.button("?? スキップして次へ", use_container_width=True, key="step3_skip"):
+                if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
                     if st.session_state.get('user') is None:
                         st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
                     else:
@@ -2765,28 +2765,28 @@ def main():
             )
             
             if edit_mode == "線を結合":
-                st.write("?? 結合したい2本の壁線を選択してください。（複数選択可能）" )
+                st.write("💡 結合したい2本の壁線を選択してください。（複数選択可能）" )
             elif edit_mode == "窓を追加":
-                st.write("?? 窓追加したい2本の壁線を選択して、窓タイプを入力してください。（複数選択可能）")
+                st.write("💡 窓追加したい2本の壁線を選択して、窓タイプを入力してください。（複数選択可能）")
             elif edit_mode == "線を追加":
-                st.write("?? 追加したい壁の端点2点を指定してください。（複数選択可能）")
+                st.write("💡 追加したい壁の端点2点を指定してください。（複数選択可能）")
             elif edit_mode == "線を削除":
-                st.write("?? 削除したい壁線をクリックしてください（複数選択可能）")
+                st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
             elif edit_mode == "オブジェクトを配置":
-                st.write("?? オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
+                st.write("💡 オブジェクトを配置したい範囲(四角形)の対角線の2点を選択して、オブジェクトタイプを入力してください。")
             elif edit_mode == "オブジェクトを削除":
-                st.write("?? 削除したいオブジェクトをクリックしてください。")
+                st.write("💡 削除したいオブジェクトをクリックしてください。")
             elif edit_mode == "階段を配置":
-                st.write("?? 階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
+                st.write("💡 階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
             
-            with st.expander("?? 使い方", expanded=False):
+            with st.expander("💡 使い方", expanded=False):
                 if edit_mode == "線を結合":
                     st.markdown(
                         "**複数線結合の手順:**\n\n"
                         "1. 下の画像上で結合したい**1本目の壁線をクリック**して選択\n\n"
                         "2. **2本目の壁線をクリック**して選択\n\n"
                         "3. さらに結合したい箇所があれば手順1-2を繰り返す（2本ずつペアで選択）\n\n"
-                        "4. 「?? 結合実行」で選択した全てのペアを一括結合\n\n"
+                        "4. 「🔗 結合実行」で選択した全てのペアを一括結合\n\n"
                         "**ヒント:**\n\n"
                         "- 壁線を直接クリックするだけで選択できます\n\n"
                         "- 間違えた場合は同じ壁をもう一度クリックで選択解除"
@@ -2800,7 +2800,7 @@ def main():
                         "4. 窓のサイズを入力:\n\n"
                         "   - 窓の高さ（mm）: 例 1200mm\n\n"
                         "   - 床から窓下端までの高さ（mm）: 例 900mm\n\n"
-                        "5. 「?? 窓追加実行」で選択した全ての窓を一括追加\n\n"
+                        "5. 「🪟 窓追加実行」で選択した全ての窓を一括追加\n\n"
                         "**ヒント:**\n\n"
                         "- 壁線を直接クリックするだけで選択できます\n\n"
                         "- 間違えた場合は同じ壁をもう一度クリックで選択解除\n\n"
@@ -2811,14 +2811,14 @@ def main():
                         "**線追加の手順:**\n\n"
                         "1. 下の画像上で**2回クリック**して追加したい線の位置を選択する\n\n"
                         "2. さらに線を追加したければ手順1を繰り返す\n\n"
-                        "3. 「? 線追加実行」で全ての選択範囲に線を追加\n\n"
+                        "3. 「➕ 線追加実行」で全ての選択範囲に線を追加\n\n"
                     )
                 elif edit_mode == "線を削除":
                     st.markdown(
                         "**線削除の手順:**\n\n"
                         "1. 下の画像上で削除したい**壁線をクリック**して選択\n\n"
                         "2. さらに削除したい壁線があればクリックして追加\n\n"
-                        "3. 「??? 削除実行」で選択した全ての壁線を一括削除\n\n"
+                        "3. 「🗑️ 削除実行」で選択した全ての壁線を一括削除\n\n"
                         "**ヒント:**\n\n"
                         "- 壁線を直接クリックするだけで選択できます\n\n"
                         "- 間違えた場合は同じ壁をもう一度クリックで選択解除"
@@ -2828,21 +2828,21 @@ def main():
                         "**オブジェクト配置の手順:**\n\n"
                         "1. 下の画像上で**2回クリック**してオブジェクトを配置したい領域を四角形で囲む\n\n"
                         "2. 配置するオブジェクト高さと色を選択\n\n"
-                        "3. 「?? オブジェクト配置実行」で家具を配置\n\n"
+                        "3. 「🪑 オブジェクト配置実行」で家具を配置\n\n"
                         )
                 elif edit_mode == "オブジェクトを削除":
                     st.markdown(
                         "**オブジェクト削除の手順:**\n\n"
                         "1. 下の画像上で削除したい**オブジェクトをクリック**して選択\n\n"
                         "2. さらに削除したいオブジェクトがあればクリックして追加（赤枠で表示されます）\n\n"
-                        "3. 「??? 削除実行」で選択したオブジェクトを削除\n\n"
+                        "3. 「🗑️ 削除実行」で選択したオブジェクトを削除\n\n"
                         )
                 elif edit_mode == "階段を配置":
                     st.markdown(
                         "**階段配置の手順:**\n\n"
                         "1. 下の画像上で**2回クリック**して階段を配置したい領域を四角形で囲む\n\n"
                         "2. 階段パターンをプルダウンから選択\n\n"
-                        "3. 「?? 階段配置実行」で階段を配置\n\n"
+                        "3. 「🪜 階段配置実行」で階段を配置\n\n"
                         "**注意:**\n\n"
                         "- コの字階段は実際の階段形状と異なります。"
                         )
@@ -2899,8 +2899,8 @@ def main():
             if st.session_state.merge_result is not None:
                 result = st.session_state.merge_result
                 
-                st.success("?? 編集完了！")
-                st.markdown("### ?? 編集前後の比較")
+                st.success("🎉 編集完了！")
+                st.markdown("### 📊 編集前後の比較")
                 
                 col_before, col_after = st.columns(2)
                 with col_before:
@@ -2911,7 +2911,7 @@ def main():
                     st.image(Image.open(io.BytesIO(result['edited_viz_bytes'])), use_container_width=True)
                 
                 # 統計情報の比較
-                st.markdown("### ?? 統計")
+                st.markdown("### 📈 統計")
                 col_stat1, col_stat2 = st.columns(2)
                 with col_stat1:
                     st.metric("編集前の壁セグメント数", result['json_data']['metadata']['total_walls'])
@@ -2924,7 +2924,7 @@ def main():
                 
                 # デバッグログを表示（rerun後も表示される）
                 if 'debug_log' in result and result['debug_log']:
-                    with st.expander("?? デバッグログ（詳細情報）", expanded=True):
+                    with st.expander("🔍 デバッグログ（詳細情報）", expanded=True):
                         for log_entry in result['debug_log']:
                             st.text(log_entry)
                 
@@ -2932,7 +2932,7 @@ def main():
                 st.divider()
                 col_save, col_discard = st.columns(2)
                 with col_save:
-                    if st.button("?? この結果を保存して続行", type="primary"):
+                    if st.button("💾 この結果を保存して続行", type="primary"):
                         # JSON・画像を更新
                         st.session_state.json_bytes = result['temp_json_path'].read_bytes()
                         st.session_state.json_name = "walls_3d_edited.json"
@@ -2952,11 +2952,11 @@ def main():
                         st.session_state.reset_flag = False
                         st.session_state.merge_result = None
                         
-                        st.success("? 保存しました。さらに編集を続けることができます。")
+                        st.success("✅ 保存しました。さらに編集を続けることができます。")
                         time.sleep(0.5)
                         st.rerun()
                 with col_discard:
-                    if st.button("? この結果を破棄"):
+                    if st.button("❌ この結果を破棄"):
                         # 元のJSON・画像を復元
                         original_json_data = result['json_data']
                         original_viz_bytes = result['original_viz_bytes']
@@ -2976,7 +2976,7 @@ def main():
                         st.session_state.last_click = None
                         st.session_state.reset_flag = False
                         st.session_state.merge_result = None
-                        st.info("? 編集を破棄して元に戻しました。")
+                        st.info("✅ 編集を破棄して元に戻しました。")
                         st.rerun()
             else:
                 # 編集結果がない場合のみ、編集UIを表示
@@ -3031,7 +3031,7 @@ def main():
                                 
                                 # 赤枠でハイライト（太さ4）
                                 cv2.rectangle(display_img_array, (px_min_x, px_min_y), (px_max_x, px_max_y), (0, 0, 255), 4)
-                                # ?印を描画
+                                # ✕印を描画
                                 cv2.line(display_img_array, (px_min_x, px_min_y), (px_max_x, px_max_y), (0, 0, 255), 2)
                                 cv2.line(display_img_array, (px_max_x, px_min_y), (px_min_x, px_max_y), (0, 0, 255), 2)
                                 
@@ -3528,7 +3528,7 @@ def main():
                             # 四角形の枠線を描画（太めの青線）
                             cv2.rectangle(display_img_array, (x1, y1), (x2, y2), stair_color, 5)
                             # 番号と階段アイコンを描画
-                            text = f"?? {idx+1}"
+                            text = f"🪜 {idx+1}"
                             cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 3)
                             cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, stair_color, 2)
                         else:
@@ -3759,17 +3759,17 @@ def main():
                         num_selected = len(st.session_state.selected_walls_for_merge)
                         if num_selected == 0:
                             pass
-                            #st.write("?? 結合したい壁線を1本目クリックしてください")
+                            #st.write("💡 結合したい壁線を1本目クリックしてください")
                         elif num_selected % 2 == 1:
                             merge_num = (num_selected // 2) + 1
-                            #st.info(f"? **結合{merge_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                            #st.info(f"✅ **結合{merge_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
                         else:
                             merge_count = num_selected // 2
-                            #st.success(f"? **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「?? 結合実行」ボタンをクリックしてください")
+                            #st.success(f"✅ **{merge_count}組の結合を選択完了**\n\n→ さらに結合を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下の「🔗 結合実行」ボタンをクリックしてください")
                             
                             # 結合実行ボタン（選択完了メッセージの直後、画像の前に表示）
                             st.markdown("---")
-                            if st.button("?? 結合実行", type="primary", key="btn_merge_exec_top"):
+                            if st.button("🔗 結合実行", type="primary", key="btn_merge_exec_top"):
                                 # 選択された壁をセッションに保存してから選択リストをクリア
                                 st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
                                 st.session_state.selected_walls_for_merge = []
@@ -3781,17 +3781,17 @@ def main():
                         num_selected = len(st.session_state.selected_walls_for_window)
                         if num_selected == 0:
                             pass
-                            #st.write("?? 窓を追加したい壁線(2本)をクリックしてください")
+                            #st.write("💡 窓を追加したい壁線(2本)をクリックしてください")
                         elif num_selected % 2 == 1:
                             window_num = (num_selected // 2) + 1
-                            #st.info(f"? **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
+                            #st.info(f"✅ **窓{window_num}：1本目選択完了** → 2本目の壁線をクリックしてください")
                         else:
                             window_count = num_selected // 2
-                            #st.success(f"? **{window_count}組の窓を選択完了**\n\n→ さらに窓を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下で窓パラメータを入力して「?? 窓追加実行」ボタンをクリックしてください")
+                            #st.success(f"✅ **{window_count}組の窓を選択完了**\n\n→ さらに窓を追加する場合は下の編集画面で次の壁線をクリック\n\n→ 確定する場合は下で窓パラメータを入力して「🪟 窓追加実行」ボタンをクリックしてください")
                             
                             # 窓パラメータ入力フォーム（選択完了メッセージの直後、画像の前に表示）
                             st.markdown("---")
-                            st.markdown(f"### ?? 窓のサイズを入力（{window_count}組）")
+                            st.markdown(f"### 🪟 窓のサイズを入力（{window_count}組）")
                             
                             # セッションステートに窓パラメータリストを初期化
                             if 'window_click_params_list' not in st.session_state:
@@ -3869,7 +3869,7 @@ def main():
                                 })
                             
                             # 実行ボタンを表示
-                            if st.button("?? 窓追加実行", type="primary", key="btn_window_exec_top"):
+                            if st.button("🪟 窓追加実行", type="primary", key="btn_window_exec_top"):
                                 # 選択された壁とパラメータをセッションに保存してから選択リストをクリア
                                 st.session_state.window_walls_to_process = list(st.session_state.selected_walls_for_window)
                                 st.session_state.window_click_params_list_to_process = window_params_to_save
@@ -3882,13 +3882,13 @@ def main():
                         num_selected = len(st.session_state.selected_walls_for_delete)
                         if num_selected == 0:
                             pass
-                            #st.write("?? 削除したい壁線をクリックしてください（複数選択可能）")
+                            #st.write("💡 削除したい壁線をクリックしてください（複数選択可能）")
                         else:
-                            #st.success(f"? **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「??? 削除実行」ボタンをクリックしてください")
+                            #st.success(f"✅ **{num_selected}本選択完了**\n\n→ さらに削除する壁線を追加する場合は下の編集画面でクリック\n\n→ 確定する場合は下の「🗑️ 削除実行」ボタンをクリックしてください")
                             
                             # 削除実行ボタン（選択完了メッセージの直後、画像の前に表示）
                             st.markdown("---")
-                            if st.button("??? 削除実行", type="primary", key="btn_delete_exec_top"):
+                            if st.button("🗑️ 削除実行", type="primary", key="btn_delete_exec_top"):
                                 # 選択された壁をセッションに保存してから選択リストをクリア
                                 st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
                                 st.session_state.selected_walls_for_delete = []
@@ -3900,18 +3900,18 @@ def main():
                         num_selected = len(st.session_state.selected_furniture_to_delete)
                         if num_selected > 0:
                             st.markdown("---")
-                            st.success(f"? **{num_selected}個のオブジェクトを選択中**")
-                            if st.button("??? 削除実行", type="primary", key="btn_furn_delete_exec"):
+                            st.success(f"✅ **{num_selected}個のオブジェクトを選択中**")
+                            if st.button("🗑️ 削除実行", type="primary", key="btn_furn_delete_exec"):
                                 st.session_state.execute_furniture_deletion = True
                                 st.rerun()
                     elif edit_mode == "階段を配置":
                         # 階段追加モード：2点選択
                         if len(st.session_state.rect_coords_list) > 0:
-                            #st.success(f"? **{len(st.session_state.rect_coords_list)}箇所の配置範囲を選択完了**\n\n→ さらに追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下で階段パターンを選択して「?? 階段配置実行」ボタンをクリックしてください")
+                            #st.success(f"✅ **{len(st.session_state.rect_coords_list)}箇所の配置範囲を選択完了**\n\n→ さらに追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下で階段パターンを選択して「🪜 階段配置実行」ボタンをクリックしてください")
                             
                             # 階段パターン選択
                             st.markdown("---")
-                            st.markdown("### ?? 階段パターンを選択")
+                            st.markdown("### 🪜 階段パターンを選択")
                             
                             stair_pattern_key = st.selectbox(
                                 "階段の種類",
@@ -3922,28 +3922,28 @@ def main():
                             )
                             
                             # 選択されたパターンの説明を表示
-                            st.caption(f"?? {STAIR_PATTERNS[stair_pattern_key]['description']}")
+                            st.caption(f"📝 {STAIR_PATTERNS[stair_pattern_key]['description']}")
                             
                             # 階段パターンの参照図を折りたたみで表示
-                            with st.expander("?? 階段パターンの参照図を表示"):
+                            with st.expander("📐 階段パターンの参照図を表示"):
                                 stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
                                 try:
                                     if stair_img_path.exists():
                                         img = Image.open(stair_img_path)
                                         st.image(img, caption="階段パターン一覧（番号は各パターンの識別番号）", width=300)
                                     else:
-                                        st.info(f"?? 参照画像が見つかりません: {stair_img_path.name}")
+                                        st.info(f"📋 参照画像が見つかりません: {stair_img_path.name}")
                                 except Exception as e:
-                                    st.warning(f"?? 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
+                                    st.warning(f"⚠️ 参照画像が読み込めません: {stair_img_path.name} (エラー: {str(e)})")
                             
                             # 階段配置実行ボタン
-                            if st.button("?? 階段配置実行", type="primary", key="stair_exec"):
+                            if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                                 st.session_state.execute_stair_placement = True
                                 st.session_state.selected_stair_pattern = stair_pattern_key
                                 st.rerun()
                         else:
                             pass
-                            #st.write("?? 画像をクリックして四角形の対角線上の2点を指定してください")
+                            #st.write("💡 画像をクリックして四角形の対角線上の2点を指定してください")
                     
                     # 線を結合・窓を追加・線を削除モードは壁線クリック選択なので、ここでのメッセージ表示は不要
                     elif edit_mode not in ("線を結合", "窓を追加", "線を削除"):
@@ -3952,18 +3952,18 @@ def main():
                         # 線を追加モード：rect_coords_listに選択がある場合は実行ボタンを表示
                         if edit_mode == "線を追加" and len(st.session_state.rect_coords_list) > 0:
                             num_rects = len(st.session_state.rect_coords_list)
-                            #st.success(f"? **{num_rects}本の線を選択完了**\n\n→ さらに線を追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下の「? 線追加実行」ボタンをクリックしてください")
+                            #st.success(f"✅ **{num_rects}本の線を選択完了**\n\n→ さらに線を追加する場合は下の編集画面で次の2点をクリック\n\n→ 確定する場合は下の「➕ 線追加実行」ボタンをクリックしてください")
                             
                             # 線追加実行ボタン（選択完了メッセージの直後、画像の前に表示）
                             st.markdown("---")
-                            if st.button("? 線追加実行", type="primary", key="btn_add_line_exec_top"):
+                            if st.button("➕ 線追加実行", type="primary", key="btn_add_line_exec_top"):
                                 # 実行フラグを立てて処理実行
                                 st.session_state.add_line_execute = True
                                 st.rerun()
                         
                         if len(st.session_state.rect_coords) == 1:
                             pass
-                            #st.info(f"? 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
                         elif len(st.session_state.rect_coords) == 2:
                             # 窓追加モードで自動追加される場合は、前のrerunでrect_coordsがクリアされるため、
                             # このブロックに到達しない。失敗時のみここに到達する
@@ -3976,12 +3976,12 @@ def main():
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][len(st.session_state.rect_coords_list) % 6]
-                                #st.success(f"? 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
+                                #st.success(f"✅ 2点選択完了（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})")
                         
                         # オブジェクト配置モード：家具のオプション選択を画像の前に表示
                         if edit_mode == "オブジェクトを配置" and len(st.session_state.rect_coords_list) > 0:
                             st.markdown("---")
-                            st.markdown("### ?? 家具のオプションを選択")
+                            st.markdown("### 🪑 家具のオプションを選択")
                             
                             col_height, col_color = st.columns(2)
                             
@@ -4040,13 +4040,13 @@ def main():
                                     st.session_state.viz_scale
                                 )
                             
-                            if st.button("?? オブジェクト配置実行", type="primary", key="furniture_exec"):
+                            if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
                                 st.session_state.execute_furniture_placement = True
                                 st.rerun()
                         
                         # モード別の説明メッセージ
                         #if edit_mode == "線を追加":
-                            #st.write("?? 追加したい壁の端点2点を指定してください")
+                            #st.write("💡 追加したい壁の端点2点を指定してください")
                         else:
                             pass
                         
@@ -4155,15 +4155,15 @@ def main():
                                             dy = abs(w['end'][1] - w['start'][1])
                                             direction = "縦" if dx < dy else "横"
                                             wall_details.append(f"ID{w['id']}({direction}, dx={dx:.2f}, dy={dy:.2f})")
-                                        st.info(f"?? この範囲に2本の壁が検出されました\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本\n選択された壁: {', '.join(wall_details)}")
+                                        st.info(f"🎯 この範囲に2本の壁が検出されました\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本\n選択された壁: {', '.join(wall_details)}")
                                     except Exception:
-                                        st.info(f"?? この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
+                                        st.info(f"🎯 この範囲に2本の壁が検出されました（ID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}）\n検出数: {len(walls_in_rect_check)}本 → フィルタ後: {len(walls_in_rect_filtered)}本")
                                 elif len(walls_in_rect_filtered) == 0:
-                                    st.error("? **この範囲に壁が検出されませんでした。**\n\n?? **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
+                                    st.error("❌ **この範囲に壁が検出されませんでした。**\n\n💡 **窓で分断された2本の壁を両方含むように**、もう少し広い範囲を選択してください。")
                                 elif len(walls_in_rect_filtered) == 1:
-                                    st.warning(f"?? **この範囲に1本の壁しか検出されません。**\n\n?? **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
+                                    st.warning(f"⚠️ **この範囲に1本の壁しか検出されません。**\n\n💡 **窓で分断された2本の壁を両方含むように**選択してください。\n\n窓の両側（上下または左右）にある壁が2本とも範囲内に入るように、選択範囲を広げてください。")
                                 else:
-                                    st.warning(f"?? **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n?? 選択範囲を狭めて余分な壁が含まれないように調整してください。")
+                                    st.warning(f"⚠️ **この範囲に{len(walls_in_rect_filtered)}本の壁が検出されました。**\n\n💡 選択範囲を狭めて余分な壁が含まれないように調整してください。")
                             except Exception:
                                 pass
                     
@@ -4190,21 +4190,21 @@ def main():
                     with col_zoom_label:
                         st.markdown(f"表示サイズ調整: {st.session_state.editor_zoom_level*100:.0f}%")
                     with col_zoom1:
-                        if st.button("???", key="step3_zoom_out"):
+                        if st.button("🔍−", key="step3_zoom_out"):
                             st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
-                        if st.button("??+", key="step3_zoom_in"):
+                        if st.button("🔍+", key="step3_zoom_in"):
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     
                     # 画像データの検証（表示エラー対策）
                     if display_img_resized is None:
-                        st.warning("?? 画像データを再生成しています...")
+                        st.warning("⚠️ 画像データを再生成しています...")
                         st.rerun()
                     
                     if display_img_resized.size[0] == 0 or display_img_resized.size[1] == 0:
-                        st.warning("?? 画像サイズが不正です。再試行しています...")
+                        st.warning("⚠️ 画像サイズが不正です。再試行しています...")
                         # ズームレベルをリセット
                         st.session_state.editor_zoom_level = 1.0
                         st.rerun()
@@ -4218,7 +4218,7 @@ def main():
                     # リセットボタンを画像の下に配置
                     col_reset, col_space = st.columns([2, 10])
                     with col_reset:
-                        if st.button("??? 選択リセット"):
+                        if st.button("🗑️ 選択リセット"):
                             _reset_selection_state()
                             st.rerun()
                     
@@ -4577,10 +4577,10 @@ def main():
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        st.success(f"? 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
+                        st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
                     
                         with col_add:
-                            if st.button("? この選択を追加", type="primary"):
+                            if st.button("➕ この選択を追加", type="primary"):
                                 # 現在の2点をリストに追加
                                 st.session_state.rect_coords_list.append((p1, p2))
                                 # 現在の選択をクリア
@@ -4592,10 +4592,10 @@ def main():
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        st.success(f"? 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
+                        st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
                     
                         with col_add:
-                            if st.button("? この選択を追加", type="primary"):
+                            if st.button("➕ この選択を追加", type="primary"):
                                 # 現在の2点をリストに追加
                                 st.session_state.rect_coords_list.append((p1, p2))
                                 # 現在の選択をクリア
@@ -4607,7 +4607,7 @@ def main():
                     # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
                     if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("線を結合", "線を削除", "線を追加", "オブジェクトを配置", "階段を配置"):
                         if edit_mode == "線を削除":
-                            st.markdown("### ?? 追加済みの削除対象")
+                            st.markdown("### 📋 追加済みの削除対象")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][idx % 6]
                                 st.write(f"#{idx+1}（{color_name}）: ({p1[0]}, {p1[1]})")
@@ -4647,7 +4647,7 @@ def main():
                                 
                                 # 失敗がある場合のみ見出しを表示
                                 #if not all_successful:
-                                #    st.markdown("### ?? 追加済みの選択範囲（窓）")
+                                #    st.markdown("### 📋 追加済みの選択範囲（窓）")
                                 
                                 #for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                                 #    x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
@@ -4669,19 +4669,19 @@ def main():
                                     # ハイライト表示（失敗の場合のみ）
                                 #    if len(walls_in_rect) != 2:
                                 #        if len(walls_in_rect) == 0:
-                                #            st.error(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n? 壁なし → 範囲を広げてください")
+                                #            st.error(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n❌ 壁なし → 範囲を広げてください")
                                 #        elif len(walls_in_rect) == 1:
-                                #            st.warning(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n?? 1本のみ → 窓の両側の壁が入るように範囲を広げてください")
+                                #            st.warning(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n⚠️ 1本のみ → 窓の両側の壁が入るように範囲を広げてください")
                                 #        else:
-                                #            st.warning(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n?? {len(walls_in_rect)}本（多すぎ） → 範囲を狭めてください")
+                                #            st.warning(f"#{idx+1}（{color_name}）: ({x1}, {y1}) - ({x2}, {y2})\n\n⚠️ {len(walls_in_rect)}本（多すぎ） → 範囲を狭めてください")
                             except Exception as e:
                                 st.error(f"壁検出エラー: {e}")
                             
                             # 窓追加モード: 各窓のパラメータ入力フォームを表示
                             if len(st.session_state.rect_coords_list) > 0:
                                 st.markdown("---")
-                                st.markdown("### ?? 窓のサイズを入力")
-                                st.info("?? 窓追加のパラメータを画面上部で入力してください（型番選択→窓高さ等）。")
+                                st.markdown("### 🪟 窓のサイズを入力")
+                                st.info("💡 窓追加のパラメータを画面上部で入力してください（型番選択→窓高さ等）。")
                                 
                                 # 窓パラメータのデフォルト値を初期化
                                 if 'window_params_list' not in st.session_state:
@@ -4697,7 +4697,7 @@ def main():
                                 
                                 # 各窓の入力フォーム
                                 for idx in range(len(st.session_state.rect_coords_list)):
-                                    with st.expander(f"?? 窓 #{idx+1} のパラメータ", expanded=True):
+                                    with st.expander(f"🪟 窓 #{idx+1} のパラメータ", expanded=True):
                                         col1, col2, col3 = st.columns([2, 1, 1])
                                         
                                         # 型番選択
@@ -4763,16 +4763,16 @@ def main():
                                             st.session_state.window_params_list[idx]['base_mm'] = base_mm
                                         
                                         # デバッグ情報を表示
-                                        st.caption(f"?? 現在の設定: 高さ={st.session_state.window_params_list[idx]['height_mm']}mm, "
+                                        st.caption(f"💡 現在の設定: 高さ={st.session_state.window_params_list[idx]['height_mm']}mm, "
                                                 f"床から={st.session_state.window_params_list[idx]['base_mm']}mm, "
                                                 f"合計={st.session_state.window_params_list[idx]['height_mm'] + st.session_state.window_params_list[idx]['base_mm']}mm "
                                                 f"({(st.session_state.window_params_list[idx]['height_mm'] + st.session_state.window_params_list[idx]['base_mm'])/1000:.3f}m)")
                                 
-                                if st.button("?? 窓追加実行", type="primary", key="window_batch_exec"):
+                                if st.button("🪟 窓追加実行", type="primary", key="window_batch_exec"):
                                     st.session_state.execute_window_batch = True
                                     st.rerun()
                         else:
-                            st.markdown("### ?? 追加済みの選択範囲")
+                            st.markdown("### 📋 追加済みの選択範囲")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
@@ -4807,9 +4807,9 @@ def main():
                                 bh_mm = params_preview.get('base_height_mm', int(bh * 1000))
                                 rh = params_preview.get('room_height', 2.4)
                                 ceiling_height = rh - (bh + wh)
-                                st.info(f"?? 床側の壁: {bh:.2f}m ({bh_mm}mm)、天井側の壁: {ceiling_height:.2f}m")
+                                st.info(f"📐 床側の壁: {bh:.2f}m ({bh_mm}mm)、天井側の壁: {ceiling_height:.2f}m")
                                 if ceiling_height < 0:
-                                    st.error("?? 窓のサイズが部屋の高さを超えています")
+                                    st.error("⚠️ 窓のサイズが部屋の高さを超えています")
 
                         # 追加: 現在の2点選択がある場合、実行前にデバッグ情報を表示
                         if len(st.session_state.get('rect_coords', [])) == 2:
@@ -4861,11 +4861,11 @@ def main():
                                 window_params_list = st.session_state.get('window_params_list', [])
                                 
                                 if len(target_rects) == 0:
-                                    st.error("?? 窓の範囲を選択してください")
+                                    st.error("⚠️ 窓の範囲を選択してください")
                                     st.stop()
                                 
                                 if len(window_params_list) < len(target_rects):
-                                    st.error("?? すべての窓のパラメータを入力してください")
+                                    st.error("⚠️ すべての窓のパラメータを入力してください")
                                     st.stop()
                             
                                 # JSONデータを読み込み
@@ -4900,7 +4900,7 @@ def main():
                                 
                                 # ===== 窓を追加モード =====
                                 # デバッグが必要なため、詳細ログはデフォルトで展開表示する
-                                with st.expander("?? 窓追加処理の詳細ログ", expanded=True):
+                                with st.expander("🔍 窓追加処理の詳細ログ", expanded=True):
                                     total_added_count = 0
                                     window_details = []
                     
@@ -4917,11 +4917,11 @@ def main():
                                             window_height = float(window_height_mm) / 1000.0
                                             base_height = float(base_height_mm) / 1000.0
                                             
-                                            st.info(f"?? 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
+                                            st.info(f"📝 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
                                                 f"高さ={window_height}m ({window_height_mm}mm), "
                                                 f"床から={base_height}m ({base_height_mm}mm)")
                                         else:
-                                            st.error(f"?? 窓#{rect_idx+1}のパラメータが見つかりません")
+                                            st.error(f"⚠️ 窓#{rect_idx+1}のパラメータが見つかりません")
                                             continue
                                         
                                         rect = {
@@ -4979,7 +4979,7 @@ def main():
                                     
                                         if len(walls_in_rect) == 2:
                                             # 2本の壁の間に床側と天井側の壁を追加
-                                            st.success(f"? 2本の壁を検出、窓追加処理を実行します")
+                                            st.success(f"✅ 2本の壁を検出、窓追加処理を実行します")
                                             st.write(f"**デバッグ:** window_height={window_height}m ({window_height_mm}mm), base_height={base_height}m ({base_height_mm}mm), room_height={room_height}m")
                                             st.write(f"**計算:** ceiling_height = {room_height} - ({base_height} + {window_height}) = {room_height - (base_height + window_height)}m")
                                             updated_json, added_walls = add_window_walls(
@@ -4993,7 +4993,7 @@ def main():
                                                 window_height_mm
                                             )
                                             total_added_count += len(added_walls)
-                                            #st.success(f"? {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
+                                            #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
                                             
                                             # 追加した壁の詳細を表示
                                             #for aw in added_walls:
@@ -5019,12 +5019,12 @@ def main():
                                                 append_debug(f"Window rect #{rect_idx+1} skipped during execution: found {len(walls_in_rect)} walls")
                                             except Exception:
                                                 pass
-                                            st.warning(f"?? 四角形#{rect_idx+1}: 2本の壁が必要ですが、{len(walls_in_rect)}本しか見つかりません")
+                                            st.warning(f"⚠️ 四角形#{rect_idx+1}: 2本の壁が必要ですが、{len(walls_in_rect)}本しか見つかりません")
                                         else:
-                                            st.warning(f"?? 四角形#{rect_idx+1}: 2本の壁を選択してください（{len(walls_in_rect)}本選択されています）")
+                                            st.warning(f"⚠️ 四角形#{rect_idx+1}: 2本の壁を選択してください（{len(walls_in_rect)}本選択されています）")
                     
                                     #if total_added_count > 0:
-                                    #    st.success(f"?? 合計 {total_added_count} 本の壁を追加しました（窓{len(window_details)}箇所）")
+                                    #    st.success(f"✅✅ 合計 {total_added_count} 本の壁を追加しました（窓{len(window_details)}箇所）")
                                     
                                     #    # 追加詳細を表示
                                     #    st.markdown("**窓追加結果:**")
@@ -5035,7 +5035,7 @@ def main():
                                     #            f"窓高さ: {detail['window_height']}m ({detail.get('window_height_mm', int(detail['window_height']*1000))}mm), 床から: {detail['base_height']}m ({int(detail.get('base_height_mm', detail['base_height']*1000))}mm)"
                                     #        )
                                     #else:
-                                    #    st.warning("?? 追加可能な窓が見つかりません")
+                                    #    st.warning("⚠️ 追加可能な窓が見つかりません")
                                         #st.stop()
                                 # 一時ファイルに保存
                                 temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
@@ -5065,7 +5065,7 @@ def main():
                                 _reset_selection_state()
                                 st.session_state.reset_flag = False  # このフラグだけはFalseに設定
                                 
-                                st.success("? 窓追加完了！自動保存しました。さらに編集を続けることができます。")
+                                st.success("✅ 窓追加完了！自動保存しました。さらに編集を続けることができます。")
                                 time.sleep(0.5)
                                 st.rerun()
                         
@@ -5265,7 +5265,7 @@ def main():
                                         st.session_state.selected_furniture_to_delete = []
                                         _reset_selection_state()
                                         
-                                        st.success(f"? {deleted_count}個のオブジェクトを削除しました。")
+                                        st.success(f"✅ {deleted_count}個のオブジェクトを削除しました。")
                                         time.sleep(0.5)
                                         st.rerun()
                                     except Exception as e:
@@ -5275,7 +5275,7 @@ def main():
                                 # ===== 階段を配置モード =====
                                 # 選択範囲がない場合のエラーチェック
                                 if len(target_rects) == 0:
-                                    st.error("? 階段配置範囲が選択されていません。画像上で2点をクリックして範囲を指定してください。")
+                                    st.error("❌ 階段配置範囲が選択されていません。画像上で2点をクリックして範囲を指定してください。")
                                     # 処理を中断せず、エラー表示のみ
                                     st.session_state.execute_stair_placement = False
                                 else:
@@ -5368,12 +5368,12 @@ def main():
                                         st.session_state.selected_stair_pattern = None
                                         
                                         # 成功メッセージ
-                                        st.success(f"? 階段を{stair_count}ステップ配置しました！")
+                                        st.success(f"✅ 階段を{stair_count}ステップ配置しました！")
                                         
                                         # 画面を再描画して更新を反映
                                         st.rerun()
                                     except Exception as e:
-                                        st.error(f"? 階段配置エラー: {e}")
+                                        st.error(f"❌ 階段配置エラー: {e}")
                                         import traceback
                                         st.error(traceback.format_exc())
                                         try:
@@ -5567,7 +5567,7 @@ def main():
                                                     id_set = set(last_filtered)
                                                     walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
                                                     try:
-                                                        st.write(f"?? プレビューのフィルタ済みIDを優先して walls_in_selection を置換しました: {list(id_set)}")
+                                                        st.write(f"🔧 プレビューのフィルタ済みIDを優先して walls_in_selection を置換しました: {list(id_set)}")
                                                     except Exception:
                                                         pass
                                                     try:
@@ -6063,21 +6063,21 @@ def main():
                                                     'deleted_walls': walls_to_delete
                                                 })
                                             else:
-                                                st.warning(f"?? 四角形内の壁が接続されていません")
+                                                st.warning(f"⚠️ 四角形内の壁が接続されていません")
                                     
                                         if total_merged_count > 0:
                                             # クリック選択の場合は組数を表示
                                             if st.session_state.get('edit_mode') == "線を結合" and len(merge_details) > 0 and merge_details[0].get('color_name', '').startswith('結合'):
-                                                st.success(f"? 合計 {total_merged_count} 組の結合が完了しました")
+                                                st.success(f"✅ 合計 {total_merged_count} 組の結合が完了しました")
                                             else:
-                                                st.success(f"? 合計 {total_merged_count} 個の選択範囲で結合が完了しました")
+                                                st.success(f"✅ 合計 {total_merged_count} 個の選択範囲で結合が完了しました")
                                         
                                             # 結合詳細を表示
                                             st.markdown("**結合結果:**")
                                             for detail in merge_details:
                                                 result_text = (
                                                     f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
-                                                    f"壁({detail['walls'][0]}) ? 壁({detail['walls'][1]}) "
+                                                    f"壁({detail['walls'][0]}) ↔ 壁({detail['walls'][1]}) "
                                                     f"({detail['direction']}) - "
                                                     f"距離: {detail['distance']:.3f}m"
                                                 )
@@ -6086,7 +6086,7 @@ def main():
                                                     result_text += f" | 削除: {deleted_display}"
                                                 st.write(result_text)
                                         else:
-                                            st.warning("?? 選択範囲内に結合可能な壁線が見つかりません")
+                                            st.warning("⚠️ 選択範囲内に結合可能な壁線が見つかりません")
                             
                             elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
                                         # ===== 窓を追加モード（クリック選択・複数窓対応） =====
@@ -6096,7 +6096,7 @@ def main():
                                         
                                         window_count = len(walls_list) // 2
                                         
-                                        st.markdown(f"### ?? 窓追加処理（{window_count}組）")
+                                        st.markdown(f"### 🪟 窓追加処理（{window_count}組）")
                                         
                                         # 天井高さ（部屋の高さ）を取得
                                         heights = [w.get('height', 2.4) for w in walls if 'height' in w]
@@ -6119,7 +6119,7 @@ def main():
                                             base_height = float(base_height_mm) / 1000.0
                                             
                                             st.markdown(f"#### 窓{window_idx + 1}")
-                                            st.info(f"?? 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
+                                            st.info(f"📝 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
                                                 f"窓高さ={window_height}m ({window_height_mm}mm), "
                                                 f"床から={base_height}m ({base_height_mm}mm)")
                                             
@@ -6137,7 +6137,7 @@ def main():
                                                 )
                                                 
                                                 added_wall_ids.extend([w['id'] for w in added_walls])
-                                                #st.success(f"? {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
+                                                #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
                                                 
                                                 # 追加した壁の詳細を表示
                                                 #for aw in added_walls:
@@ -6159,7 +6159,7 @@ def main():
                                             del st.session_state.window_click_params_list
                                         
                                         if total_windows_added > 0:
-                                            st.success(f"?? 合計{total_windows_added}組の窓を追加しました！")
+                                            st.success(f"🎉 合計{total_windows_added}組の窓を追加しました！")
                             
                             elif edit_mode == "線を追加":
                                 # ===== 線を追加モード =====
@@ -6198,7 +6198,7 @@ def main():
                                     })
                                 
                                 #if total_added_count > 0:
-                                #    st.success(f"?? 合計{total_added_count}本の壁を追加しました！")
+                                #    st.success(f"🎉 合計{total_added_count}本の壁を追加しました！")
                                 #    for detail in add_details:
                                 #        st.write(f"  壁ID#{detail['wall_id']}: 方向={detail['direction']}, 長さ={detail['length']:.2f}m")
                             
@@ -6278,7 +6278,7 @@ def main():
                                             # 壁を削除
                                             updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                         else:
-                                            st.warning("?? 削除対象の壁が見つかりません")
+                                            st.warning("⚠️ 削除対象の壁が見つかりません")
                             
                             elif edit_mode == "床を追加":
                                 # ===== 床を追加モード =====
@@ -6333,7 +6333,7 @@ def main():
                                     })
                                 
                                 if total_floor_count > 0:
-                                    st.success(f"? 合計 {total_floor_count} 個の床を追加しました")
+                                    st.success(f"✅ 合計 {total_floor_count} 個の床を追加しました")
                                     
                                     # 追加詳細を表示
                                     st.markdown("**追加結果:**")
@@ -6343,7 +6343,7 @@ def main():
                                             f"幅 {detail['width']:.2f}m × 奥行き {detail['depth']:.2f}m"
                                         )
                                 else:
-                                    st.warning("?? 床の追加に失敗しました")
+                                    st.warning("⚠️ 床の追加に失敗しました")
                             
                             # 一時ファイルに保存
                             temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
@@ -6442,19 +6442,19 @@ def main():
                     pass
                 else:
                     # 可視化画像がない場合のエラーメッセージ
-                    st.warning("?? 手動編集画面を表示するには、まずStep 1で図面を変換してください。")
-                    if st.button("?? Step 1に戻る", type="primary"):
+                    st.warning("⚠️ 手動編集画面を表示するには、まずStep 1で図面を変換してください。")
+                    if st.button("📄 Step 1に戻る", type="primary"):
                         st.session_state.workflow_step = 1
                         st.rerun()
 
     # ============= 3Dビュー表示（Step3の下） =============
-    with st.expander("?? 3Dビュー", expanded=st.session_state.get('open_3d_expander', False)):
+    with st.expander("🔭 3Dビュー", expanded=st.session_state.get('open_3d_expander', False)):
 
         if st.session_state.get('processed', False) and st.session_state.get('viz_bytes'):
             
             # 3Dビューア埋め込み表示
             if st.session_state.get('viewer_html_bytes'):
-                st.markdown("### ?? 3Dビューア")
+                st.markdown("### 🎨 3Dビューア")
                 import streamlit.components.v1 as components
                 components.html(
                     st.session_state.viewer_html_bytes.decode('utf-8'),
@@ -6466,7 +6466,7 @@ def main():
                 
                 # ダウンロードボタン
                 st.download_button(
-                    label="?? 3Dモデルをダウンロード",
+                    label="📥 3Dモデルをダウンロード",
                     data=st.session_state.viewer_html_bytes,
                     type="primary",
                     file_name=st.session_state.viewer_html_name,
@@ -6474,11 +6474,11 @@ def main():
                     #use_container_width=True
                 )
         else:
-            st.info("?? Step 1で図面を変換すると、ここに3Dビューが表示されます。")
+            st.info("💡 Step 1で図面を変換すると、ここに3Dビューが表示されます。")
     
     # ============= フッター（全ステップ共通） =============
     st.divider()
-    with st.expander("?? 利用規約", expanded=False):
+    with st.expander("📋 利用規約", expanded=False):
         st.markdown("""
         ## 利用規約
         
@@ -6574,7 +6574,7 @@ def main():
     st.markdown(
         f"""
         <div style='text-align: center; color: #888; padding: 20px; margin-top: 20px; border-top: 1px solid #ddd;'>
-            <p style='margin: 5px 0; font-size: 0.9em;'>c 2026 Ichijo 3D Maker {version_info}</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>© 2026 Ichijo 3D Maker {version_info}</p>
             <p style='margin: 5px 0; font-size: 0.9em;'>※ 本サービスは一条工務店の公式アプリではありません</p>
             <p style='margin: 5px 0; font-size: 0.8em;'>本サービスのご利用には、上記の利用規約への同意が必要です。</p>
         </div>
