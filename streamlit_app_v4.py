@@ -1,51 +1,51 @@
-ï»¿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Streamlitã‚¢ãƒ—ãƒª: ä¸€æ¡å·¥å‹™åº—CADå›³é¢3DåŒ–ã‚¢ãƒ—ãƒª
+StreamlitƒAƒvƒŠ: ˆêğH–±“XCAD}–Ê3D‰»ƒAƒvƒŠ
 
 """
 
-# ichijo_coreã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒã‚§ãƒƒã‚¯ã¨è‡ªå‹•ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+# ichijo_core‚ÌƒCƒ“ƒXƒg[ƒ‹ƒ`ƒFƒbƒN‚Æ©“®ƒCƒ“ƒXƒg[ƒ‹
 import subprocess
 import sys
 import os
 
 def install_ichijo_core():
-    """Streamlit Cloudç”¨: ãƒ­ãƒ¼ã‚«ãƒ«ã®ichijo_core_checkã¾ãŸã¯GitHubã‹ã‚‰ichijo_coreã‚’ãƒ­ãƒ¼ãƒ‰"""
+    """Streamlit Cloud—p: ƒ[ƒJƒ‹‚Ìichijo_core_check‚Ü‚½‚ÍGitHub‚©‚çichijo_core‚ğƒ[ƒh"""
     
-    # **å„ªå…ˆ: ãƒ­ãƒ¼ã‚«ãƒ«ã®ichijo_core_checkãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ä½¿ç”¨**
-    # ç¾åœ¨ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®è¦ªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ichijo_core_checkãŒå­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
+    # **—Dæ: ƒ[ƒJƒ‹‚Ìichijo_core_checkƒfƒBƒŒƒNƒgƒŠ‚ğg—p**
+    # Œ»İ‚Ìƒtƒ@ƒCƒ‹‚ÌeƒfƒBƒŒƒNƒgƒŠ‚Éichijo_core_check‚ª‘¶İ‚·‚é‚©Šm”F
     current_dir = os.path.dirname(os.path.abspath(__file__))
     local_ichijo_path = os.path.join(current_dir, "ichijo_core_check")
     
     if os.path.exists(local_ichijo_path) and os.path.isdir(local_ichijo_path):
-        # ãƒ­ãƒ¼ã‚«ãƒ«ã®ichijo_core_checkã‚’sys.pathã«è¿½åŠ 
+        # ƒ[ƒJƒ‹‚Ìichijo_core_check‚ğsys.path‚É’Ç‰Á
         if local_ichijo_path not in sys.path:
             sys.path.insert(0, local_ichijo_path)
         
         try:
             import ichijo_core
-            # ãƒ­ãƒ¼ã‚«ãƒ«ç‰ˆã®ã‚¤ãƒ³ãƒãƒ¼ãƒˆæˆåŠŸ
+            # ƒ[ƒJƒ‹”Å‚ÌƒCƒ“ƒ|[ƒg¬Œ÷
             return True, None
         except Exception as e:
-            # ãƒ­ãƒ¼ã‚«ãƒ«ç‰ˆã®ã‚¤ãƒ³ãƒãƒ¼ãƒˆå¤±æ•— â†’ GitHubã‹ã‚‰ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã‚’è©¦ã¿ã‚‹
+            # ƒ[ƒJƒ‹”Å‚ÌƒCƒ“ƒ|[ƒg¸”s ¨ GitHub‚©‚çƒCƒ“ƒXƒg[ƒ‹‚ğ‚İ‚é
             pass
     
-    # **ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: GitHubã‹ã‚‰ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«**
-    # æ—¢å­˜ã®ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒã‚§ãƒƒã‚¯ï¼ˆãƒãƒ¼ã‚¸ãƒ§ãƒ³ç¢ºèªï¼‰
+    # **ƒtƒH[ƒ‹ƒoƒbƒN: GitHub‚©‚çƒCƒ“ƒXƒg[ƒ‹**
+    # Šù‘¶‚ÌƒCƒ“ƒ|[ƒgƒ`ƒFƒbƒNiƒo[ƒWƒ‡ƒ“Šm”Fj
     try:
         import ichijo_core
         
-        # ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒæœŸå¾…å€¤ã¨ä¸€è‡´ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆ0.0.13ç³»ã‚’è¨±å¯ï¼‰
+        # ƒo[ƒWƒ‡ƒ“‚ªŠú‘Ò’l‚Æˆê’v‚·‚é‚©ƒ`ƒFƒbƒNi0.0.13Œn‚ğ‹–‰Âj
         if ichijo_core.__version__.startswith("0.0.13"):
             return True, None
         else:
-            # å¼·åˆ¶çš„ã«å†ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+            # ‹­§“I‚ÉÄƒCƒ“ƒXƒg[ƒ‹
             pass
     except Exception as e:
         pass
     
-    # GitHubã‹ã‚‰ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+    # GitHub‚©‚çƒCƒ“ƒXƒg[ƒ‹
     try:
         import streamlit as st_temp
         
@@ -55,25 +55,25 @@ def install_ichijo_core():
         
         token = st_temp.secrets['GITHUB_TOKEN']
         
-        # ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ç”¨ã®ä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+        # ƒCƒ“ƒXƒg[ƒ‹—p‚ÌˆêƒfƒBƒŒƒNƒgƒŠ
         import tempfile
         target_dir = tempfile.mkdtemp(prefix="ichijo_core_")
         
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # æœ€æ–°ã‚³ãƒŸãƒƒãƒˆï¼ˆaaed720: éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ç”Ÿæˆé–¢æ•°ã‚’stair_utilsã«ç§»è¡Œï¼‰ã‚’æŒ‡å®š
+        # ÅVƒRƒ~ƒbƒgiaaed720: ŠK’iƒpƒ^[ƒ“¶¬ŠÖ”‚ğstair_utils‚ÉˆÚsj‚ğw’è
         commit_hash = "aaed720"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
-        # ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+        # ƒAƒ“ƒCƒ“ƒXƒg[ƒ‹
         subprocess.run(
             [sys.executable, "-m", "pip", "uninstall", "-y", "ichijo_core"],
             capture_output=True,
             text=True
         )
         
-        # ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+        # ƒCƒ“ƒXƒg[ƒ‹
         result = subprocess.run(
             [sys.executable, "-m", "pip", "install", "--target", target_dir, "--force-reinstall", "--no-cache-dir", install_url],
             capture_output=True,
@@ -82,11 +82,11 @@ def install_ichijo_core():
         )
         
         if result.returncode == 0:
-            # ã‚¤ãƒ³ãƒãƒ¼ãƒˆã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ã‚¯ãƒªã‚¢
+            # ƒCƒ“ƒ|[ƒgƒLƒƒƒbƒVƒ…‚ğƒNƒŠƒA
             import importlib
             importlib.invalidate_caches()
             
-            # ã‚¤ãƒ³ãƒãƒ¼ãƒˆç¢ºèª
+            # ƒCƒ“ƒ|[ƒgŠm”F
             import ichijo_core
             return True, None
         else:
@@ -97,21 +97,21 @@ def install_ichijo_core():
         error_msg = f"Error: {type(e).__name__}: {str(e)}"
         return False, error_msg
 
-# ã‚¢ãƒ—ãƒªèµ·å‹•æ™‚ã«ä¸€åº¦ã ã‘ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+# ƒAƒvƒŠ‹N“®‚Éˆê“x‚¾‚¯ƒCƒ“ƒXƒg[ƒ‹
 success, error_detail = install_ichijo_core()
 if not success:
     import streamlit as st
-    st.error("âŒ ichijo_core ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ã¾ã—ãŸ")
+    st.error("? ichijo_core ‚Ìƒ[ƒh‚É¸”s‚µ‚Ü‚µ‚½")
     if error_detail:
-        with st.expander("ğŸ” ã‚¨ãƒ©ãƒ¼è©³ç´°ã‚’è¡¨ç¤º"):
+        with st.expander("?? ƒGƒ‰[Ú×‚ğ•\¦"):
             st.code(error_detail)
     st.info("""
-    **ãƒˆãƒ©ãƒ–ãƒ«ã‚·ãƒ¥ãƒ¼ãƒ†ã‚£ãƒ³ã‚°:**
+    **ƒgƒ‰ƒuƒ‹ƒVƒ…[ƒeƒBƒ“ƒO:**
     
-    1. Streamlit Cloud ã® **Settings â†’ Secrets** ã§ `GITHUB_TOKEN` ãŒæ­£ã—ãè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª
-    2. ãƒˆãƒ¼ã‚¯ãƒ³ã®å½¢å¼: `GITHUB_TOKEN = "ghp_xxxxxxxxxxxx"`
-    3. ãƒˆãƒ¼ã‚¯ãƒ³ã®æ¨©é™: Contents (Read-only), ichijo_core ãƒªãƒã‚¸ãƒˆãƒªã¸ã®ã‚¢ã‚¯ã‚»ã‚¹æ¨©
-    4. ã‚¢ãƒ—ãƒªã‚’å†èµ·å‹•ã—ã¦ã¿ã¦ãã ã•ã„
+    1. Streamlit Cloud ‚Ì **Settings ¨ Secrets** ‚Å `GITHUB_TOKEN` ‚ª³‚µ‚­İ’è‚³‚ê‚Ä‚¢‚é‚©Šm”F
+    2. ƒg[ƒNƒ“‚ÌŒ`®: `GITHUB_TOKEN = "ghp_xxxxxxxxxxxx"`
+    3. ƒg[ƒNƒ“‚ÌŒ ŒÀ: Contents (Read-only), ichijo_core ƒŠƒ|ƒWƒgƒŠ‚Ö‚ÌƒAƒNƒZƒXŒ 
+    4. ƒAƒvƒŠ‚ğÄ‹N“®‚µ‚Ä‚İ‚Ä‚­‚¾‚³‚¢
     """)
     st.stop()
 
@@ -133,13 +133,13 @@ from PIL import Image
 import stripe
 import streamlit.components.v1 as components
 
-# --- Supabase helper and simple Auth UI (uses SUPA_URL and SUPA_ANON from Streamlit secrets or env) ---
+# --- Supabase helper and simple Auth UI (uses SUPA_URL and SUPA_SERVICE_ROLE from Streamlit secrets or env) ---
 def get_supabase():
     import streamlit as _st
     # Try Streamlit secrets first
     try:
         url = _st.secrets.get("SUPA_URL")
-        key = _st.secrets.get("SUPA_ANON")
+        key = _st.secrets.get("SUPA_SERVICE_ROLE")
     except Exception:
         url = None
         key = None
@@ -148,7 +148,7 @@ def get_supabase():
     if not url:
         url = os.environ.get("SUPA_URL")
     if not key:
-        key = os.environ.get("SUPA_ANON")
+        key = os.environ.get("SUPA_SERVICE_ROLE")
 
     if not url or not key:
         return None
@@ -193,7 +193,7 @@ def get_stripe_config():
 def create_checkout_session(email=None):
     secret, price_id, base_url = get_stripe_config()
     if not secret or not price_id:
-        st.error("Stripe ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚STRIPE_SECRET ã¨ STRIPE_PRICE_ID ã‚’ Streamlit secrets ã‹ç’°å¢ƒå¤‰æ•°ã§è¨­å®šã—ã¦ãã ã•ã„ã€‚")
+        st.error("Stripe ‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñBSTRIPE_SECRET ‚Æ STRIPE_PRICE_ID ‚ğ Streamlit secrets ‚©ŠÂ‹«•Ï”‚Åİ’è‚µ‚Ä‚­‚¾‚³‚¢B")
         return None
 
     stripe.api_key = secret
@@ -201,9 +201,9 @@ def create_checkout_session(email=None):
     # Quick validation: user often supplies a product (prod_...) instead of a price (price_...)
     if not str(price_id).startswith("price_"):
         if str(price_id).startswith("prod_") or str(price_id).startswith("product_"):
-            st.error("æŒ‡å®šã•ã‚ŒãŸ ID ã¯ productï¼ˆprod_...ï¼‰ã®ã‚ˆã†ã«è¦‹ãˆã¾ã™ã€‚Checkout ã«ã¯ Priceï¼ˆprice_...ï¼‰ã® ID ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚Stripe ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ â†’ Products â†’ ä¾¡æ ¼ï¼ˆPriceï¼‰ã‹ã‚‰ price_... ã® ID ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•ã„ã€‚")
+            st.error("w’è‚³‚ê‚½ ID ‚Í productiprod_...j‚Ì‚æ‚¤‚ÉŒ©‚¦‚Ü‚·BCheckout ‚É‚Í Priceiprice_...j‚Ì ID ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢BStripe ƒ_ƒbƒVƒ…ƒ{[ƒh ¨ Products ¨ ‰¿ŠiiPricej‚©‚ç price_... ‚Ì ID ‚ğƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B")
         else:
-            st.error("STRIPE_PRICE_ID ãŒ price_... ã®å½¢å¼ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚Stripe ã® Price IDï¼ˆprice_...ï¼‰ã‚’ç¢ºèªã—ã¦ãã ã•ã„ã€‚")
+            st.error("STRIPE_PRICE_ID ‚ª price_... ‚ÌŒ`®‚Å‚Í‚ ‚è‚Ü‚¹‚ñBStripe ‚Ì Price IDiprice_...j‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢B")
         return None
 
     success_url = f"{base_url}/?session_id={{CHECKOUT_SESSION_ID}}"
@@ -247,7 +247,7 @@ def create_checkout_session(email=None):
         session = stripe.checkout.Session.create(**params)
         return session.url
     except Exception as e:
-        st.error(f"Checkout ã‚»ãƒƒã‚·ãƒ§ãƒ³ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ: {type(e).__name__}: {e}")
+        st.error(f"Checkout ƒZƒbƒVƒ‡ƒ“ì¬‚É¸”s‚µ‚Ü‚µ‚½: {type(e).__name__}: {e}")
         return None
 
 
@@ -270,7 +270,7 @@ def _render_logged_in_sidebar(user_email, supabase):
 
     Returns True if the user was logged out by this handler, else False.
     """
-    user_status_text = "çŠ¶æ…‹ç¢ºèªä¸­..."
+    user_status_text = "ó‘ÔŠm”F’†..."
     is_paid = False
     stripe_sub_id = None
     cancel_at_period_end = False
@@ -287,9 +287,9 @@ def _render_logged_in_sidebar(user_email, supabase):
                 stripe_sub_id = member_info.get('stripe_subscription_id')
                 
                 if plan == 'paid':
-                    user_status_text = "æœ‰æ–™ä¼šå“¡"
+                    user_status_text = "—L—¿‰ïˆõ"
                     is_paid = True
-                    # Stripeã‹ã‚‰æœ€æ–°ã®ã‚µãƒ–ã‚¹ã‚¯ãƒªãƒ—ã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’å–å¾—ã—ã¦è§£ç´„äºˆç´„ã‚’ç¢ºèª
+                    # Stripe‚©‚çÅV‚ÌƒTƒuƒXƒNƒŠƒvƒVƒ‡ƒ“ó‘Ô‚ğæ“¾‚µ‚Ä‰ğ–ñ—\–ñ‚ğŠm”F
                     if stripe_sub_id:
                         secret, _, _ = get_stripe_config()
                         if secret:
@@ -299,7 +299,7 @@ def _render_logged_in_sidebar(user_email, supabase):
                                 cancel_at_period_end = sub.get('cancel_at_period_end', False)
                                 if sub.get('current_period_end'):
                                     from datetime import datetime
-                                    current_period_end = datetime.fromtimestamp(sub['current_period_end']).strftime('%Yå¹´%mæœˆ%dæ—¥')
+                                    current_period_end = datetime.fromtimestamp(sub['current_period_end']).strftime('%Y”N%mŒ%d“ú')
                             except Exception:
                                 pass
                 else:
@@ -311,23 +311,23 @@ def _render_logged_in_sidebar(user_email, supabase):
                             if expires_dt.tzinfo is None:
                                 expires_dt = expires_dt.replace(tzinfo=timezone.utc)
                             if datetime.now(timezone.utc) < expires_dt:
-                                user_status_text = "ç„¡æ–™ä¼šå“¡(ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«ä¸­)"
+                                user_status_text = "–³—¿‰ïˆõ(–³—¿ƒgƒ‰ƒCƒAƒ‹’†)"
                             else:
-                                user_status_text = "ç„¡æ–™ä¼šå“¡(ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«çµ‚äº†)"
+                                user_status_text = "–³—¿‰ïˆõ(–³—¿ƒgƒ‰ƒCƒAƒ‹I—¹)"
                         except Exception:
-                            user_status_text = "ç„¡æ–™ä¼šå“¡(ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«çµ‚äº†)"
+                            user_status_text = "–³—¿‰ïˆõ(–³—¿ƒgƒ‰ƒCƒAƒ‹I—¹)"
                     else:
-                        user_status_text = "ç„¡æ–™ä¼šå“¡(ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«çµ‚äº†)"
+                        user_status_text = "–³—¿‰ïˆõ(–³—¿ƒgƒ‰ƒCƒAƒ‹I—¹)"
             else:
-                user_status_text = "æœªç™»éŒ² (ãƒ‡ãƒ¼ã‚¿ãªã—)"
+                user_status_text = "–¢“o˜^ (ƒf[ƒ^‚È‚µ)"
         except Exception:
-            user_status_text = "çŠ¶æ…‹å–å¾—ã‚¨ãƒ©ãƒ¼"
+            user_status_text = "ó‘Ôæ“¾ƒGƒ‰["
 
-    st.write(f"ãƒ­ã‚°ã‚¤ãƒ³ä¸­: {user_email or 'ï¼ˆä¸æ˜ãªãƒ¦ãƒ¼ã‚¶ãƒ¼ï¼‰'}")
-    st.markdown(f"ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹: {user_status_text}")
+    st.write(f"ƒƒOƒCƒ“’†: {user_email or 'i•s–¾‚Èƒ†[ƒU[j'}")
+    st.markdown(f"ƒXƒe[ƒ^ƒX: {user_status_text}")
 
     if not is_paid:
-        if st.button("æœ‰æ–™ç™»éŒ²", key="pay_btn_logged_in"):
+        if st.button("—L—¿“o˜^", key="pay_btn_logged_in"):
             checkout_url = create_checkout_session(user_email)
             if checkout_url:
                 try:
@@ -338,44 +338,44 @@ def _render_logged_in_sidebar(user_email, supabase):
                     """
                     st.components.v1.html(js, height=0)
                 except Exception:
-                    st.markdown("[Checkout ã«é€²ã‚€](" + checkout_url + ")")
-                st.success("Checkout ã«é·ç§»ä¸­ã§ã™ã€‚æ–°ã—ã„ã‚¿ãƒ–ãŒé–‹ã‹ãªã„å ´åˆã¯ä¸Šã®ãƒªãƒ³ã‚¯ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ã€‚")
+                    st.markdown("[Checkout ‚Éi‚Ş](" + checkout_url + ")")
+                st.success("Checkout ‚É‘JˆÚ’†‚Å‚·BV‚µ‚¢ƒ^ƒu‚ªŠJ‚©‚È‚¢ê‡‚Íã‚ÌƒŠƒ“ƒN‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B")
     else:
         if cancel_at_period_end:
-            st.warning(f"âš ï¸ è§£ç´„æ‰‹ç¶šãæ¸ˆã¿ã§ã™ã€‚\n{current_period_end or 'æ¬¡å›æ›´æ–°æ—¥'}ã¾ã§ã¯æœ‰æ–™ãƒ—ãƒ©ãƒ³ã‚’ã”åˆ©ç”¨ã„ãŸã ã‘ã¾ã™ã€‚ãã®å¾Œã€è‡ªå‹•çš„ã«ç„¡æ–™ãƒ—ãƒ©ãƒ³ã¸ç§»è¡Œã—ã¾ã™ã€‚")
-            if st.button("æœ‰æ–™ãƒ—ãƒ©ãƒ³ã®è‡ªå‹•æ›´æ–°ã‚’å†é–‹ã™ã‚‹", key="resume_sub_btn"):
+            st.warning(f"?? ‰ğ–ñè‘±‚«Ï‚İ‚Å‚·B\n{current_period_end or 'Ÿ‰ñXV“ú'}‚Ü‚Å‚Í—L—¿ƒvƒ‰ƒ“‚ğ‚²—˜—p‚¢‚½‚¾‚¯‚Ü‚·B‚»‚ÌŒãA©“®“I‚É–³—¿ƒvƒ‰ƒ“‚ÖˆÚs‚µ‚Ü‚·B")
+            if st.button("—L—¿ƒvƒ‰ƒ“‚Ì©“®XV‚ğÄŠJ‚·‚é", key="resume_sub_btn"):
                 secret, _, _ = get_stripe_config()
                 if secret:
                     try:
                         stripe.api_key = secret
-                        # è§£ç´„äºˆç´„ã‚’å–ã‚Šæ¶ˆã—ã€è‡ªå‹•æ›´æ–°ã‚’å†é–‹ã™ã‚‹
+                        # ‰ğ–ñ—\–ñ‚ğæ‚èÁ‚µA©“®XV‚ğÄŠJ‚·‚é
                         stripe.Subscription.modify(stripe_sub_id, cancel_at_period_end=False)
-                        st.success("è‡ªå‹•æ›´æ–°ã‚’å†é–‹ã—ã¾ã—ãŸã€‚å¼•ãç¶šãæœ‰æ–™ãƒ—ãƒ©ãƒ³ã‚’ã”åˆ©ç”¨ã„ãŸã ã‘ã¾ã™ã€‚")
+                        st.success("©“®XV‚ğÄŠJ‚µ‚Ü‚µ‚½Bˆø‚«‘±‚«—L—¿ƒvƒ‰ƒ“‚ğ‚²—˜—p‚¢‚½‚¾‚¯‚Ü‚·B")
                         _safe_rerun_or_stop()
                     except Exception as e:
-                        st.error(f"å†é–‹å‡¦ç†ã«å¤±æ•—ã—ã¾ã—ãŸ: {e}")
+                        st.error(f"ÄŠJˆ—‚É¸”s‚µ‚Ü‚µ‚½: {e}")
                 else:
-                    st.error("Stripeã®è¨­å®šãŒã‚ã‚Šã¾ã›ã‚“ã€‚")
+                    st.error("Stripe‚Ìİ’è‚ª‚ ‚è‚Ü‚¹‚ñB")
         else:
-            st.info("ç¾åœ¨ã€æœ‰æ–™ãƒ—ãƒ©ãƒ³ã‚’ã”åˆ©ç”¨ä¸­ã§ã™ã€‚")
+            st.info("Œ»İA—L—¿ƒvƒ‰ƒ“‚ğ‚²—˜—p’†‚Å‚·B")
             if stripe_sub_id:
-                cancel_confirm = st.checkbox("è§£ç´„æ‰‹ç¶šãã‚’è¡Œã†")
+                cancel_confirm = st.checkbox("‰ğ–ñè‘±‚«‚ğs‚¤")
                 if cancel_confirm:
-                    if st.button("è§£ç´„ã™ã‚‹ï¼ˆæ¬¡å›æ›´æ–°ã‚’åœæ­¢ï¼‰", key="cancel_sub_btn"):
+                    if st.button("‰ğ–ñ‚·‚éiŸ‰ñXV‚ğ’â~j", key="cancel_sub_btn"):
                         secret, _, _ = get_stripe_config()
                         if secret:
                             try:
                                 stripe.api_key = secret
-                                # æ¬¡å›æ›´æ–°æ—¥ï¼ˆæœŸé–“çµ‚äº†æ™‚ï¼‰ã«è§£ç´„ã™ã‚‹ã‚ˆã†äºˆç´„
+                                # Ÿ‰ñXV“úiŠúŠÔI—¹j‚É‰ğ–ñ‚·‚é‚æ‚¤—\–ñ
                                 stripe.Subscription.modify(stripe_sub_id, cancel_at_period_end=True)
-                                st.success("è§£ç´„ã‚’äºˆç´„ã—ã¾ã—ãŸã€‚ç”»é¢ã‚’å†èª­ã¿è¾¼ã¿ã™ã‚‹ã¨ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãŒæ›´æ–°ã•ã‚Œã¾ã™ã€‚")
+                                st.success("‰ğ–ñ‚ğ—\–ñ‚µ‚Ü‚µ‚½B‰æ–Ê‚ğÄ“Ç‚İ‚İ‚·‚é‚ÆƒXƒe[ƒ^ƒX‚ªXV‚³‚ê‚Ü‚·B")
                                 _safe_rerun_or_stop()
                             except Exception as e:
-                                st.error(f"è§£ç´„å‡¦ç†ã«å¤±æ•—ã—ã¾ã—ãŸ: {e}")
+                                st.error(f"‰ğ–ñˆ—‚É¸”s‚µ‚Ü‚µ‚½: {e}")
                         else:
-                            st.error("Stripeã®è¨­å®šãŒã‚ã‚Šã¾ã›ã‚“ã€‚")
+                            st.error("Stripe‚Ìİ’è‚ª‚ ‚è‚Ü‚¹‚ñB")
 
-    if st.button("ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ", key="sidebar_logout_btn"):
+    if st.button("ƒƒOƒAƒEƒg", key="sidebar_logout_btn"):
         try:
             supabase.auth.sign_out()
         except Exception:
@@ -383,7 +383,7 @@ def _render_logged_in_sidebar(user_email, supabase):
         st.session_state.pop('user', None)
         # ensure login form is shown after logout
         st.session_state['hide_login_form'] = False
-        st.success("ãƒ­ã‚°ã‚¢ã‚¦ãƒˆã—ã¾ã—ãŸ")
+        st.success("ƒƒOƒAƒEƒg‚µ‚Ü‚µ‚½")
         _safe_rerun_or_stop()
         return True
 
@@ -392,9 +392,9 @@ def _render_logged_in_sidebar(user_email, supabase):
 
 def _render_auth_ui():
     """Render the auth radio and return chosen auth_mode string."""
-    return st.radio("Auth", ("ãƒ­ã‚°ã‚¤ãƒ³", "ä¼šå“¡ç™»éŒ²"))
+    return st.radio("Auth", ("ƒƒOƒCƒ“", "‰ïˆõ“o˜^"))
 
-with st.sidebar.expander("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆè¨­å®š"):
+with st.sidebar.expander("ƒAƒJƒEƒ“ƒgİ’è"):
     supabase = get_supabase()
     # ensure flag exists to control whether login form should be hidden after login
     if 'hide_login_form' not in st.session_state:
@@ -434,21 +434,21 @@ with st.sidebar.expander("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆè¨­å®š"):
         else:
             # Only show auth radio when not explicitly hidden (e.g., just logged in)
             if not st.session_state.get('hide_login_form', False):
-                auth_mode = st.radio("Auth", ("ãƒ­ã‚°ã‚¤ãƒ³", "ä¼šå“¡ç™»éŒ²"))
+                auth_mode = st.radio("Auth", ("ƒƒOƒCƒ“", "‰ïˆõ“o˜^"))
             else:
                 auth_mode = None
-        if auth_mode == "ä¼šå“¡ç™»éŒ²":
+        if auth_mode == "‰ïˆõ“o˜^":
             su_email = st.text_input("Email", key="su_email")
-            su_pwd = st.text_input("Password", type="password", key="su_pwd", placeholder="6æ–‡å­—ä»¥ä¸Šã§å…¥åŠ›ã—ã¦ãã ã•ã„")
+            su_pwd = st.text_input("Password", type="password", key="su_pwd", placeholder="6•¶šˆÈã‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢")
             
-            # ä¼šå“¡ç™»éŒ²ã—ã¦ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«ã‚’é–‹å§‹ (ãƒ¡ãƒ¼ãƒ«èªè¨¼ + ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ã¿)
-            if st.button("ä¼šå“¡ç™»éŒ²ã—ã¦ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«ã‚’é–‹å§‹", key="trial_btn"):
+            # ‰ïˆõ“o˜^‚µ‚Ä–³—¿ƒgƒ‰ƒCƒAƒ‹‚ğŠJn (ƒ[ƒ‹”FØ + ƒpƒXƒ[ƒh‚Ì‚İ)
+            if st.button("‰ïˆõ“o˜^‚µ‚Ä–³—¿ƒgƒ‰ƒCƒAƒ‹‚ğŠJn", key="trial_btn"):
                 if not su_email or not su_pwd:
-                    st.error("ãƒ¡ãƒ¼ãƒ«ã¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚")
+                    st.error("ƒ[ƒ‹‚ÆƒpƒXƒ[ƒh‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B")
                 else:
                     try:
                         res = supabase.auth.sign_up({"email": su_email, "password": su_pwd})
-                        st.success("ç¢ºèªãƒ¡ãƒ¼ãƒ«ã‚’é€ä¿¡ã—ã¾ã—ãŸã€‚ãƒ¡ãƒ¼ãƒ«ã®ãƒªãƒ³ã‚¯ã§ã‚¢ã‚«ã‚¦ãƒ³ãƒˆã‚’æœ‰åŠ¹åŒ–ã—ã¦ãã ã•ã„ã€‚\nåŒæ™‚ã«ç„¡æ–™ãƒˆãƒ©ã‚¤ã‚¢ãƒ«ï¼ˆ15æ—¥é–“ï¼‰ã‚’ä»˜ä¸ã—ã¾ã—ãŸã€‚")
+                        st.success("Šm”Fƒ[ƒ‹‚ğ‘—M‚µ‚Ü‚µ‚½Bƒ[ƒ‹‚ÌƒŠƒ“ƒN‚ÅƒAƒJƒEƒ“ƒg‚ğ—LŒø‰»‚µ‚Ä‚­‚¾‚³‚¢B\n“¯‚É–³—¿ƒgƒ‰ƒCƒAƒ‹i15“úŠÔj‚ğ•t—^‚µ‚Ü‚µ‚½B")
                         # Compute trial expiry
                         trial_expires = (datetime.utcnow() + timedelta(days=15)).isoformat()
                         # Try to extract user id from response if available
@@ -474,24 +474,24 @@ with st.sidebar.expander("ã‚¢ã‚«ã‚¦ãƒ³ãƒˆè¨­å®š"):
                             upsert_payload["user_id"] = user_id
 
                         try:
-                            # emailã‚’åŸºæº–ã«æ—¢å­˜ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚Œã°ä¸Šæ›¸ãï¼ˆupsertï¼‰ã™ã‚‹ã‚ˆã†æ˜ç¤º
+                            # email‚ğŠî€‚ÉŠù‘¶ƒf[ƒ^‚ª‚ ‚ê‚Îã‘‚«iupsertj‚·‚é‚æ‚¤–¾¦
                             supabase.table('members').upsert(upsert_payload, on_conflict='email').execute()
-                            st.info("ãƒˆãƒ©ã‚¤ã‚¢ãƒ«æƒ…å ±ã‚’è¨˜éŒ²ã—ã¾ã—ãŸã€‚")
+                            st.info("ƒgƒ‰ƒCƒAƒ‹î•ñ‚ğ‹L˜^‚µ‚Ü‚µ‚½B")
                         except Exception as e:
-                            st.warning("ãƒˆãƒ©ã‚¤ã‚¢ãƒ«ã¯ä½œæˆã•ã‚Œã¾ã—ãŸãŒã€members ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®è¨˜éŒ²ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ç®¡ç†è€…ã«é€£çµ¡ã—ã¦ãã ã•ã„ã€‚")
+                            st.warning("ƒgƒ‰ƒCƒAƒ‹‚Íì¬‚³‚ê‚Ü‚µ‚½‚ªAmembers ƒe[ƒuƒ‹‚Ö‚Ì‹L˜^‚É¸”s‚µ‚Ü‚µ‚½BŠÇ—Ò‚É˜A—‚µ‚Ä‚­‚¾‚³‚¢B")
                     except Exception as e:
                         st.error(f"Sign up failed: {type(e).__name__}: {e}")
-        elif auth_mode == "ãƒ­ã‚°ã‚¤ãƒ³":
+        elif auth_mode == "ƒƒOƒCƒ“":
             li_email = st.text_input("Email", key="li_email")
             li_pwd = st.text_input("Password", type="password", key="li_pwd")
-            if st.button("ãƒ­ã‚°ã‚¤ãƒ³", key="li_btn"):
+            if st.button("ƒƒOƒCƒ“", key="li_btn"):
                 login_success = False
                 try:
                     session = supabase.auth.sign_in_with_password({"email": li_email, "password": li_pwd})
                     st.session_state['user'] = session
                     # Hide login form on subsequent render
                     st.session_state['hide_login_form'] = True
-                    st.success("ãƒ­ã‚°ã‚¤ãƒ³ã—ã¾ã—ãŸ")
+                    st.success("ƒƒOƒCƒ“‚µ‚Ü‚µ‚½")
                     login_success = True
                 except Exception as e:
                     st.error(f"Login failed: {type(e).__name__}: {e}")
@@ -523,22 +523,22 @@ try:
                     try:
                         sub = stripe.Subscription.retrieve(subscription_id)
                         status = sub.get('status')
-                        st.success(f"æ”¯æ‰•ã„ãŒç¢ºèªã•ã‚Œã¾ã—ãŸã€‚ã‚µãƒ–ã‚¹ã‚¯ãƒªãƒ—ã‚·ãƒ§ãƒ³çŠ¶æ…‹: {status} â€” ã‚ˆã†ã“ãã€æœ‰æ–™ä¼šå“¡ã§ã™ã€‚")
+                        st.success(f"x•¥‚¢‚ªŠm”F‚³‚ê‚Ü‚µ‚½BƒTƒuƒXƒNƒŠƒvƒVƒ‡ƒ“ó‘Ô: {status} ? ‚æ‚¤‚±‚»A—L—¿‰ïˆõ‚Å‚·B")
                         if email:
-                            st.info(f"ç™»éŒ²ãƒ¡ãƒ¼ãƒ«: {email}")
+                            st.info(f"“o˜^ƒ[ƒ‹: {email}")
                     except Exception as e:
-                        st.warning(f"ã‚µãƒ–ã‚¹ã‚¯ãƒªãƒ—ã‚·ãƒ§ãƒ³æƒ…å ±ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸ: {type(e).__name__}: {e}")
+                        st.warning(f"ƒTƒuƒXƒNƒŠƒvƒVƒ‡ƒ“î•ñ‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½: {type(e).__name__}: {e}")
                 else:
-                    st.info("Checkout ã¯å®Œäº†ã—ã¾ã—ãŸã€‚ã‚µãƒ–ã‚¹ã‚¯ãƒªãƒ—ã‚·ãƒ§ãƒ³æƒ…å ±ã¯ã¾ã åˆ©ç”¨ã§ãã¾ã›ã‚“ã€‚Webhook ã«ã‚ˆã‚‹è¨˜éŒ²ã‚’æ•°ç§’å¾…ã£ã¦ã‹ã‚‰ãƒšãƒ¼ã‚¸ã‚’å†èª­ã¿è¾¼ã¿ã—ã¦ãã ã•ã„ã€‚")
+                    st.info("Checkout ‚ÍŠ®—¹‚µ‚Ü‚µ‚½BƒTƒuƒXƒNƒŠƒvƒVƒ‡ƒ“î•ñ‚Í‚Ü‚¾—˜—p‚Å‚«‚Ü‚¹‚ñBWebhook ‚É‚æ‚é‹L˜^‚ğ”•b‘Ò‚Á‚Ä‚©‚çƒy[ƒW‚ğÄ“Ç‚İ‚İ‚µ‚Ä‚­‚¾‚³‚¢B")
             except Exception as e:
-                st.warning(f"Checkout ã‚»ãƒƒã‚·ãƒ§ãƒ³ã®ç¢ºèªä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: {type(e).__name__}: {e}")
+                st.warning(f"Checkout ƒZƒbƒVƒ‡ƒ“‚ÌŠm”F’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {type(e).__name__}: {e}")
         else:
-            st.info("Stripe ã®ã‚·ãƒ¼ã‚¯ãƒ¬ãƒƒãƒˆã‚­ãƒ¼ãŒè¨­å®šã•ã‚Œã¦ã„ãªã„ãŸã‚ã€Checkout çµæœã‚’å³æ™‚ç¢ºèªã§ãã¾ã›ã‚“ã€‚Webhook ã®åæ˜ ã‚’ãŠå¾…ã¡ãã ã•ã„ã€‚")
+            st.info("Stripe ‚ÌƒV[ƒNƒŒƒbƒgƒL[‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢‚½‚ßACheckout Œ‹‰Ê‚ğ‘¦Šm”F‚Å‚«‚Ü‚¹‚ñBWebhook ‚Ì”½‰f‚ğ‚¨‘Ò‚¿‚­‚¾‚³‚¢B")
 except Exception:
     pass
 
-# ichijo_core ã‹ã‚‰å…¨ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ã‚¤ãƒ³ãƒãƒ¼ãƒˆï¼ˆå¿…é ˆï¼‰
-# ichijo_core ã‹ã‚‰å…¨ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ã‚¤ãƒ³ãƒãƒ¼ãƒˆï¼ˆå¿…é ˆï¼‰
+# ichijo_core ‚©‚ç‘Sƒ‚ƒWƒ…[ƒ‹‚ğƒCƒ“ƒ|[ƒgi•K{j
+# ichijo_core ‚©‚ç‘Sƒ‚ƒWƒ…[ƒ‹‚ğƒCƒ“ƒ|[ƒgi•K{j
 try:
     from ichijo_core.pdf_to_image import pdf_to_image
     from ichijo_core.refine_from_image import refine_floor_plan_from_image
@@ -569,28 +569,28 @@ try:
     )
     
 
-    # window_utilsã¨wall_editingã®ã‚¤ãƒ³ãƒãƒ¼ãƒˆï¼ˆichijo_coreã¯ä½¿ã‚ãšãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆã®ã¿ä½¿ç”¨ï¼‰
+    # window_utils‚Æwall_editing‚ÌƒCƒ“ƒ|[ƒgiichijo_core‚Íg‚í‚¸ƒtƒH[ƒ‹ƒoƒbƒN”Å‚Ì‚İg—pj
     try:
-        # ichijo_coreãŒã‚ã£ã¦ã‚‚ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆã‚’ä½¿ã†ï¼ˆIDç”Ÿæˆã®ä¿®æ­£ã‚’ç¢ºå®Ÿã«é©ç”¨ï¼‰
+        # ichijo_core‚ª‚ ‚Á‚Ä‚àƒtƒH[ƒ‹ƒoƒbƒN”Å‚ğg‚¤iID¶¬‚ÌC³‚ğŠmÀ‚É“K—pj
         raise ImportError("Force use of fallback functions")
     except ImportError as e:
-        # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’å®šç¾©
+        # ƒtƒH[ƒ‹ƒoƒbƒNŠÖ”‚ğ’è‹`
         import copy
         
-        # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢ç”Ÿæˆé–¢æ•°ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯å…¼ä¿®æ­£ç‰ˆï¼‰
+        # 3Dƒrƒ…[ƒA¶¬ŠÖ”iƒtƒH[ƒ‹ƒoƒbƒNŒ“C³”Åj
         def _generate_3d_viewer_html(json_path: Path, out_path: Path, with_lights: bool = False) -> Path:
-            """Three.js HTMLãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’è‡ªå‹•ç”Ÿæˆï¼ˆJSONå†…å®¹ã‚’ç›´æ¥åŸ‹ã‚è¾¼ã¿ï¼‰- ã‚«ã‚¹ã‚¿ãƒ ä¿®æ­£ç‰ˆ"""
-            # JSONãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚“ã§å†…å®¹ã‚’åŸ‹ã‚è¾¼ã‚€
+            """Three.js HTMLƒrƒ…[ƒA‚ğ©“®¶¬iJSON“à—e‚ğ’¼Ú–„‚ß‚İj- ƒJƒXƒ^ƒ€C³”Å"""
+            # JSONƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ñ‚Å“à—e‚ğ–„‚ß‚Ş
             with open(json_path, 'r', encoding='utf-8') as f:
                 json_content = f.read()
             
-            # HTMLãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆï¼ˆichijo_coreã¨åŒæ§˜ã ãŒã€å®¶å…·ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆå¯¾å¿œã‚’ç¢ºå®Ÿã«å«ã‚ã‚‹ï¼‰
+            # HTMLƒeƒ“ƒvƒŒ[ƒgiichijo_core‚Æ“¯—l‚¾‚ªA‰Æ‹ï‚ÌƒIƒtƒZƒbƒg‘Î‰‚ğŠmÀ‚ÉŠÜ‚ß‚éj
             html_template = '''<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>é–“å–ã‚Šå›³ 3Dãƒ“ãƒ¥ãƒ¼ã‚¢</title>
+    <title>ŠÔæ‚è} 3Dƒrƒ…[ƒA</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: sans-serif; }
         #container { width: 100vw; height: 100vh; }
@@ -604,8 +604,8 @@ try:
 </head>
 <body>
     <div id="info">
-        <strong>é–“å–ã‚Šå›³ 3Dãƒ“ãƒ¥ãƒ¼ã‚¢</strong><br>
-        åˆæœŸåŒ–ä¸­...
+        <strong>ŠÔæ‚è} 3Dƒrƒ…[ƒA</strong><br>
+        ‰Šú‰»’†...
     </div>
     <div id="container"></div>
 
@@ -625,9 +625,9 @@ try:
         const info = document.getElementById('info');
 
         try {
-            info.innerHTML = '<strong>é–“å–ã‚Šå›³ 3Dãƒ“ãƒ¥ãƒ¼ã‚¢</strong><br>èª­è¾¼ä¸­...';
+            info.innerHTML = '<strong>ŠÔæ‚è} 3Dƒrƒ…[ƒA</strong><br>“Ç’†...';
 
-            // ã‚·ãƒ¼ãƒ³ãƒ»ã‚«ãƒ¡ãƒ©ãƒ»ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼åˆæœŸåŒ–
+            // ƒV[ƒ“EƒJƒƒ‰EƒŒƒ“ƒ_ƒ‰[‰Šú‰»
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(BACKGROUND_COLOR_PLACEHOLDER);
 
@@ -645,7 +645,7 @@ try:
             AMBIENT_LIGHT_PLACEHOLDER
             DIRECTIONAL_LIGHT_PLACEHOLDER
 
-            // JSON ãƒ‡ãƒ¼ã‚¿ï¼ˆåŸ‹ã‚è¾¼ã¿ï¼‰
+            // JSON ƒf[ƒ^i–„‚ß‚İj
             const wallsData = JSON_DATA_PLACEHOLDER;
             let walls = wallsData.walls || [];
             
@@ -696,7 +696,7 @@ try:
             const gridHelper = new THREE.GridHelper(sceneSize * 2.5, 50, 0x888888, 0xcccccc);
             scene.add(gridHelper);
             
-            info.innerHTML = `<strong>é–“å–ã‚Šå›³ 3Dãƒ“ãƒ¥ãƒ¼ã‚¢</strong><br>å£æ•°: ${walls.length}<br>ãƒã‚¦ã‚¹: å›è»¢ãƒ»æ‹¡å¤§ç¸®å°ãƒ»ç§»å‹•`;
+            info.innerHTML = `<strong>ŠÔæ‚è} 3Dƒrƒ…[ƒA</strong><br>•Ç”: ${walls.length}<br>ƒ}ƒEƒX: ‰ñ“]EŠg‘åk¬EˆÚ“®`;
 
             const wallMaterial = new THREE.MeshStandardMaterial({
                 color: 0xffffff,
@@ -764,7 +764,7 @@ try:
                 
             WITH_LIGHTS_PLACEHOLDER
 
-            // å®¶å…·ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+            // ‰Æ‹ïƒIƒuƒWƒFƒNƒg
             const furniture = wallsData.furniture || [];
             furniture.forEach((item, idx) => {
                 const width = item.dimensions.width;
@@ -784,11 +784,11 @@ try:
                 });
                 const furnitureMesh = new THREE.Mesh(furnitureGeometry, furnitureMaterial);
                 
-                // ã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆåºŠã‹ã‚‰ã®é«˜ã•ï¼‰ã‚’å–å¾—ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ0ï¼‰
-                // JSONã«ä¿å­˜ã•ã‚ŒãŸ offset ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ä½¿ç”¨
+                // ƒIƒtƒZƒbƒgi°‚©‚ç‚Ì‚‚³j‚ğæ“¾iƒfƒtƒHƒ‹ƒg0j
+                // JSON‚É•Û‘¶‚³‚ê‚½ offset ƒtƒB[ƒ‹ƒh‚ğg—p
                 const offset = item.offset || 0;
                 
-                // ä½ç½®è¨­å®šï¼ˆåºŠã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ + é«˜ã•ã®åŠåˆ†ã®ä½ç½®ï¼‰
+                // ˆÊ’uİ’èi°‚©‚ç‚ÌƒIƒtƒZƒbƒg + ‚‚³‚Ì”¼•ª‚ÌˆÊ’uj
                 furnitureMesh.position.set(
                     x - offsetX,
                     offset + height / 2, 
@@ -800,7 +800,7 @@ try:
                 scene.add(furnitureMesh);
             });
 
-            // éšæ®µã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+            // ŠK’iƒIƒuƒWƒFƒNƒg
             const stairs = wallsData.stairs || [];
             const colorMap = { 'Tan': 0xd2b48c, 'Walnut': 0x8B4513, 'Oak': 0xDEB887, 'Dark': 0x654321 };
             stairs.forEach((stair, idx) => {
@@ -845,8 +845,8 @@ try:
             });
 
         } catch (err) {
-            info.innerHTML = `<strong>ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿ</strong><br>${err.message}<br><small>ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‚’ç¢ºèªã—ã¦ãã ã•ã„</small>`;
-            console.error('3Dãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¨ãƒ©ãƒ¼:', err);
+            info.innerHTML = `<strong>ƒGƒ‰[”­¶</strong><br>${err.message}<br><small>ƒRƒ“ƒ\[ƒ‹‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢</small>`;
+            console.error('3Dƒrƒ…[ƒAƒGƒ‰[:', err);
         }
     </script>
 </body>
@@ -856,7 +856,7 @@ try:
                 emissive_intensity = '0.05'
                 background_color = '0x000000'
                 ambient_light_code = 'const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); scene.add(ambientLight);'
-                directional_light_code = '// ãƒ‡ã‚£ãƒ¬ã‚¯ã‚·ãƒ§ãƒŠãƒ«ãƒ©ã‚¤ãƒˆãªã—'
+                directional_light_code = '// ƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚È‚µ'
                 lights_code = '''
                     const lights = wallsData.metadata?.lights || [];
                     const avgWallHeight = walls.reduce((sum, w) => sum + w.height, 0) / walls.length || 2.7;
@@ -911,7 +911,7 @@ try:
                         dirLight.shadow.camera.near = 0.5; dirLight.shadow.camera.far = 200;
                     }
                     scene.add(dirLight);'''
-                lights_code = '                    // ç…§æ˜æ©Ÿèƒ½ãªã—\n\n'
+                lights_code = '                    // Æ–¾‹@”\‚È‚µ\n\n'
             
             html_content = html_template.replace('JSON_DATA_PLACEHOLDER', json_content)
             html_content = html_content.replace('EMISSIVE_INTENSITY_PLACEHOLDER', emissive_intensity)
@@ -923,7 +923,7 @@ try:
             return out_path
         
         def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None):
-            """çª“ã§åˆ†æ–­ã•ã‚ŒãŸ2æœ¬ã®å£ã®é–“ã«ã€åºŠå´ã¨å¤©äº•å´ã®å£ã‚’è¿½åŠ ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """‘‹‚Å•ª’f‚³‚ê‚½2–{‚Ì•Ç‚ÌŠÔ‚ÉA°‘¤‚Æ“Vˆä‘¤‚Ì•Ç‚ğ’Ç‰ÁiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
             endpoints = [
@@ -944,7 +944,7 @@ try:
             thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
             default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
             
-            # æ—¢å­˜ã®IDã‚’å…¨ã¦å–å¾—ã—ã¦ã€æœ€å¤§å€¤ã‚’ç¢ºå®Ÿã«å–å¾—ï¼ˆé‡è¤‡å›é¿ï¼‰
+            # Šù‘¶‚ÌID‚ğ‘S‚Äæ“¾‚µ‚ÄAÅ‘å’l‚ğŠmÀ‚Éæ“¾id•¡‰ñ”ğj
             existing_ids = []
             for w in walls:
                 try:
@@ -991,7 +991,7 @@ try:
             return updated_data, added_walls
         
         def find_closest_wall_to_point(walls, point_px, scale, margin, img_height, min_x, min_y, max_x, max_y):
-            """ãƒã‚¤ãƒ³ãƒˆã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’è¦‹ã¤ã‘ã‚‹ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """ƒ|ƒCƒ“ƒg‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒ©‚Â‚¯‚éiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             min_distance = float('inf')
             closest_wall = None
             point_m = [
@@ -1024,9 +1024,9 @@ try:
                     closest_wall = wall
             return closest_wall, min_distance
         
-        # wall_editingé–¢æ•°ã®ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼ˆ7ã¤ã®é–¢æ•°ï¼‰
+        # wall_editingŠÖ”‚ÌƒtƒH[ƒ‹ƒoƒbƒNi7‚Â‚ÌŠÖ”j
         def _point_to_line_segment_distance(px, py, x1, y1, x2, y2):
-            """ç‚¹ã‹ã‚‰ç·šåˆ†ã¾ã§ã®æœ€çŸ­è·é›¢ã‚’è¨ˆç®—ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """“_‚©‚çü•ª‚Ü‚Å‚ÌÅ’Z‹——£‚ğŒvZiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             dx = x2 - x1
             dy = y2 - y1
             len_sq = dx * dx + dy * dy
@@ -1038,8 +1038,8 @@ try:
             return math.sqrt((px - nearest_x)**2 + (py - nearest_y)**2)
         
         def _find_nearest_wall_from_click(click_x, click_y, walls, scale, margin, img_height, min_x, min_y, max_x, max_y, threshold=20):
-            """ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡ºï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰
-            åŒã˜åº§æ¨™ã®å£ãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯æœ€åˆã«è¦‹ã¤ã‹ã£ãŸå£ã®ã¿ã‚’è¿”ã™ï¼ˆçª“ã®å£ã®é‡è¤‡é¸æŠã‚’é˜²ãï¼‰
+            """ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸoiƒtƒH[ƒ‹ƒoƒbƒN”Åj
+            “¯‚¶À•W‚Ì•Ç‚ª•¡”‚ ‚éê‡‚ÍÅ‰‚ÉŒ©‚Â‚©‚Á‚½•Ç‚Ì‚İ‚ğ•Ô‚·i‘‹‚Ì•Ç‚Ìd•¡‘I‘ğ‚ğ–h‚®j
             """
             min_distance = float('inf')
             nearest_wall = None
@@ -1060,34 +1060,34 @@ try:
                 return None, None
         
         def _find_furniture_at_click(click_x, click_y, furniture_list, scale, margin, img_height, min_x, min_y):
-            """ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã«ã‚ã‚‹å®¶å…·ã‚’æ¤œå‡º"""
-            # é€†é †ã§æ¢ç´¢ï¼ˆæç”»é †ãŒå¾Œï¼ä¸Šã«ã‚ã‚‹ã‚‚ã®ã‚’å„ªå…ˆã™ã‚‹ãŸã‚ï¼‰
+            """ƒNƒŠƒbƒNˆÊ’u‚É‚ ‚é‰Æ‹ï‚ğŒŸo"""
+            # ‹t‡‚Å’Tõi•`‰æ‡‚ªŒãã‚É‚ ‚é‚à‚Ì‚ğ—Dæ‚·‚é‚½‚ßj
             for i in range(len(furniture_list) - 1, -1, -1):
                 item = furniture_list[i]
                 bounds = item.get('bounds')
                 if not bounds:
                     continue
                     
-                # ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã‚’è¨ˆç®—
+                # ƒ[ƒgƒ‹À•W‚©‚çƒsƒNƒZƒ‹À•W‚ğŒvZ
                 x_start_px = int((bounds['x_start'] - min_x) * scale) + margin
                 y_start_px = img_height - (int((bounds['y_start'] - min_y) * scale) + margin)
                 x_end_px = int((bounds['x_end'] - min_x) * scale) + margin
                 y_end_px = img_height - (int((bounds['y_end'] - min_y) * scale) + margin)
                 
-                # Yè»¸ã¯åè»¢ã—ã¦ã„ã‚‹ã®ã§å¤§å°é–¢ä¿‚ã‚’æ•´ç†
+                # Y²‚Í”½“]‚µ‚Ä‚¢‚é‚Ì‚Å‘å¬ŠÖŒW‚ğ®—
                 px_min_x = min(x_start_px, x_end_px)
                 px_max_x = max(x_start_px, x_end_px)
                 px_min_y = min(y_start_px, y_end_px)
                 px_max_y = max(y_start_px, y_end_px)
                 
-                # çŸ©å½¢å†…åˆ¤å®š
+                # ‹éŒ`“à”»’è
                 if (px_min_x <= click_x <= px_max_x) and (px_min_y <= click_y <= px_max_y):
                     return item, i
                     
             return None, -1
 
         def _select_best_wall_pair_from_4(walls):
-            """4æœ¬ã®å£ã‹ã‚‰çµåˆã™ã¹ãæœ€é©ãª2æœ¬ã‚’é¸æŠï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """4–{‚Ì•Ç‚©‚çŒ‹‡‚·‚×‚«Å“K‚È2–{‚ğ‘I‘ğiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             if len(walls) < 2:
                 return None
             vertical_walls = []
@@ -1123,7 +1123,7 @@ try:
                 return horizontal_walls[:2] if len(horizontal_walls) >= 2 else None
         
         def _find_collinear_chains(walls_in_selection, distance_threshold=0.3, angle_threshold=15):
-            """ä¸€ç›´ç·šä¸Šã«ä¸¦ã‚“ã é€£çµå£ç·šã®ãƒã‚§ãƒ¼ãƒ³ã‚’æ¤œå‡ºï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """ˆê’¼üã‚É•À‚ñ‚¾˜AŒ‹•Çü‚Ìƒ`ƒF[ƒ“‚ğŒŸoiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             if len(walls_in_selection) < 2:
                 return []
             connections = {}
@@ -1178,7 +1178,7 @@ try:
             return chains
         
         def _find_mergeable_walls(walls_in_selection, distance_threshold=0.3, angle_threshold=15):
-            """é¸æŠç¯„å›²å†…ã§çµåˆå¯èƒ½ãªå£ç·šãƒšã‚¢ã¾ãŸã¯ãƒã‚§ãƒ¼ãƒ³ã‚’æ¢ã™ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """‘I‘ğ”ÍˆÍ“à‚ÅŒ‹‡‰Â”\‚È•ÇüƒyƒA‚Ü‚½‚Íƒ`ƒF[ƒ“‚ğ’T‚·iƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             candidates = []
             chains = _find_collinear_chains(walls_in_selection, distance_threshold, angle_threshold)
             for chain in chains:
@@ -1241,7 +1241,7 @@ try:
             return candidates
         
         def _merge_walls_in_json(json_data, merge_pairs):
-            """JSONãƒ‡ãƒ¼ã‚¿å†…ã®å£ç·šã‚’çµåˆï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """JSONƒf[ƒ^“à‚Ì•Çü‚ğŒ‹‡iƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
             for pair in merge_pairs:
@@ -1296,7 +1296,7 @@ try:
             return updated_data
         
         def _delete_walls_in_json(json_data, wall_ids_to_delete):
-            """JSONãƒ‡ãƒ¼ã‚¿å†…ã®æŒ‡å®šã•ã‚ŒãŸå£ç·šã‚’å‰Šé™¤ï¼ˆãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ç‰ˆï¼‰"""
+            """JSONƒf[ƒ^“à‚Ìw’è‚³‚ê‚½•Çü‚ğíœiƒtƒH[ƒ‹ƒoƒbƒN”Åj"""
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
             delete_ids = set(wall_ids_to_delete)
@@ -1304,13 +1304,13 @@ try:
             updated_data['metadata']['total_walls'] = len(walls)
             return updated_data
     
-    # é–¢æ•°ã®æˆ»ã‚Šå€¤ã‚’æ¤œè¨¼ï¼ˆå¤ã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ãªã„ã‹ç¢ºèªï¼‰
+    # ŠÖ”‚Ì–ß‚è’l‚ğŒŸØiŒÃ‚¢ƒo[ƒWƒ‡ƒ“‚ªƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚©Šm”Fj
     import io
     test_img = Image.new('RGB', (100, 100))
     test_result = _prepare_display_from_pil(test_img, max_width=50)
     if len(test_result) != 4:
-        # å¤ã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ã‚‹å ´åˆã€ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’å®šç¾©
-        print(f"âš ï¸ Warning: ichijo_core.ui_helpers.prepare_display_from_pil returns {len(test_result)} values instead of 4. Using fallback.")
+        # ŒÃ‚¢ƒo[ƒWƒ‡ƒ“‚ªƒ[ƒh‚³‚ê‚Ä‚¢‚éê‡AƒtƒH[ƒ‹ƒoƒbƒNŠÖ”‚ğ’è‹`
+        print(f"?? Warning: ichijo_core.ui_helpers.prepare_display_from_pil returns {len(test_result)} values instead of 4. Using fallback.")
         
         def _prepare_display_from_pil_fallback(pil_img, max_width=800):
             orig_w, orig_h = pil_img.size
@@ -1333,28 +1333,28 @@ try:
             meter_y = (orig_img_height - orig_y - margin) / scale_px + min_y
             return meter_x, meter_y, orig_x, orig_y
         
-        # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«ç½®ãæ›ãˆ
+        # ƒtƒH[ƒ‹ƒoƒbƒNŠÖ”‚É’u‚«Š·‚¦
         _prepare_display_from_pil = _prepare_display_from_pil_fallback
         _prepare_display_from_bytes = _prepare_display_from_bytes_fallback
         _display_to_original = _display_to_original_fallback
         _display_to_meter = _display_to_meter_fallback
 except ImportError as e:
-    st.error(f"âŒ ichijo_core ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {e}")
-    st.info("ã“ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å®Ÿè¡Œã™ã‚‹ã«ã¯ ichijo_core ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãŒå¿…è¦ã§ã™ã€‚")
+    st.error(f"? ichijo_core ƒpƒbƒP[ƒW‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {e}")
+    st.info("‚±‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğÀs‚·‚é‚É‚Í ichijo_core ƒpƒbƒP[ƒW‚ª•K—v‚Å‚·B")
     st.stop()
 
 BASE_DIR = Path(__file__).parent
 OUTPUTS_DIR = BASE_DIR / "outputs"
 OUTPUTS_DIR.mkdir(exist_ok=True)
 
-# çª“ã‚«ã‚¿ãƒ­ã‚°ï¼ˆå¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Œã°èª­ã¿è¾¼ã‚€ã€‚ãªã‘ã‚Œã°çµ„ã¿è¾¼ã¿ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚’ä½¿ç”¨ï¼‰
+# ‘‹ƒJƒ^ƒƒOiŠO•”ƒtƒ@ƒCƒ‹‚ª‚ ‚ê‚Î“Ç‚İ‚ŞB‚È‚¯‚ê‚Î‘g‚İ‚İ‚ÌƒfƒtƒHƒ‹ƒg‚ğg—pj
 WINDOW_CATALOG_PATH = BASE_DIR / "window_catalog.json"
 try:
     if WINDOW_CATALOG_PATH.exists():
         with open(WINDOW_CATALOG_PATH, 'r', encoding='utf-8') as f:
             WINDOW_CATALOG = json.load(f)
     else:
-        # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚«ã‚¿ãƒ­ã‚°ï¼ˆç°¡æ˜“ï¼‰
+        # ƒfƒtƒHƒ‹ƒgƒJƒ^ƒƒOiŠÈˆÕj
         WINDOW_CATALOG = {
             "JF2020/JK2020": {"height": 603, "base": 1541},
             "JF2030/JK2030": {"height": 906, "base": 1238},
@@ -1369,29 +1369,29 @@ except Exception:
 
 
 def _reset_selection_state():
-    """é¸æŠçŠ¶æ…‹ã‚’å®Œå…¨ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹çµ±ä¸€é–¢æ•°
+    """‘I‘ğó‘Ô‚ğŠ®‘S‚ÉƒŠƒZƒbƒg‚·‚é“ˆêŠÖ”
     
-    ç·šã‚’çµåˆã€çª“ã‚’è¿½åŠ ã€ç·šã‚’å‰Šé™¤ãªã©ã®å®Ÿè¡Œå¾Œã«å‘¼ã³å‡ºã—ã¦ã€
-    é¸æŠçŠ¶æ…‹ã‚’å®Œå…¨ã«ã‚¯ãƒªã‚¢ã—ã€æ¬¡ã®æ“ä½œã«å‚™ãˆã‚‹ã€‚
+    ü‚ğŒ‹‡A‘‹‚ğ’Ç‰ÁAü‚ğíœ‚È‚Ç‚ÌÀsŒã‚ÉŒÄ‚Ño‚µ‚ÄA
+    ‘I‘ğó‘Ô‚ğŠ®‘S‚ÉƒNƒŠƒA‚µAŸ‚Ì‘€ì‚É”õ‚¦‚éB
     """
-    st.session_state.skip_click_processing = True        # ã‚¯ãƒªãƒƒã‚¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—ï¼ˆå†é¸æŠã‚’é˜²ãï¼‰
-    st.session_state.rect_coords = []                    # ç¾åœ¨é¸æŠä¸­ã®2ç‚¹ã‚’ã‚¯ãƒªã‚¢
-    st.session_state.rect_coords_list = []               # ç¢ºå®šæ¸ˆã¿é¸æŠç¯„å›²ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
-    st.session_state.reset_flag = True                   # ãƒªã‚»ãƒƒãƒˆãƒ•ãƒ©ã‚°ã‚’è¨­å®š
-    st.session_state.last_click = None                   # æœ€å¾Œã®ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‚’ã‚¯ãƒªã‚¢
-    st.session_state.merge_result = None                 # çµåˆçµæœã‚’ã‚¯ãƒªã‚¢
-    st.session_state.selected_walls_for_merge = []       # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã®å£é¸æŠã‚’ã‚¯ãƒªã‚¢
-    st.session_state.selected_walls_for_window = []      # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã®å£é¸æŠã‚’ã‚¯ãƒªã‚¢
-    st.session_state.selected_walls_for_delete = []      # ç·šå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã®å£é¸æŠã‚’ã‚¯ãƒªã‚¢
-    st.session_state.selected_furniture_to_delete = []   # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã®é¸æŠã‚’ã‚¯ãƒªã‚¢
-    st.session_state.execute_furniture_deletion = False  # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤å®Ÿè¡Œãƒ•ãƒ©ã‚°ã®ã‚¯ãƒªã‚¢
+    st.session_state.skip_click_processing = True        # ƒNƒŠƒbƒNˆ—‚ğƒXƒLƒbƒviÄ‘I‘ğ‚ğ–h‚®j
+    st.session_state.rect_coords = []                    # Œ»İ‘I‘ğ’†‚Ì2“_‚ğƒNƒŠƒA
+    st.session_state.rect_coords_list = []               # Šm’èÏ‚İ‘I‘ğ”ÍˆÍƒŠƒXƒg‚ğƒNƒŠƒA
+    st.session_state.reset_flag = True                   # ƒŠƒZƒbƒgƒtƒ‰ƒO‚ğİ’è
+    st.session_state.last_click = None                   # ÅŒã‚ÌƒNƒŠƒbƒNˆÊ’u‚ğƒNƒŠƒA
+    st.session_state.merge_result = None                 # Œ‹‡Œ‹‰Ê‚ğƒNƒŠƒA
+    st.session_state.selected_walls_for_merge = []       # ü‚ğŒ‹‡ƒ‚[ƒh‚Ì•Ç‘I‘ğ‚ğƒNƒŠƒA
+    st.session_state.selected_walls_for_window = []      # ‘‹’Ç‰Áƒ‚[ƒh‚Ì•Ç‘I‘ğ‚ğƒNƒŠƒA
+    st.session_state.selected_walls_for_delete = []      # üíœƒ‚[ƒh‚Ì•Ç‘I‘ğ‚ğƒNƒŠƒA
+    st.session_state.selected_furniture_to_delete = []   # ƒIƒuƒWƒFƒNƒgíœƒ‚[ƒh‚Ì‘I‘ğ‚ğƒNƒŠƒA
+    st.session_state.execute_furniture_deletion = False  # ƒIƒuƒWƒFƒNƒgíœÀsƒtƒ‰ƒO‚ÌƒNƒŠƒA
     
-    # ãƒªã‚»ãƒƒãƒˆã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆï¼ˆç”»åƒã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ã‚­ãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ãŸã‚ï¼‰
+    # ƒŠƒZƒbƒgƒJƒEƒ“ƒ^[‚ğƒCƒ“ƒNƒŠƒƒ“ƒgi‰æ‘œƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌƒL[‚ğƒŠƒZƒbƒg‚·‚é‚½‚ßj
     if 'selection_reset_counter' not in st.session_state:
         st.session_state.selection_reset_counter = 0
     st.session_state.selection_reset_counter += 1
     
-    # å‡¦ç†ç”¨ã®ä¸€æ™‚ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªã‚¢
+    # ˆ——p‚Ìˆêƒf[ƒ^‚ğƒNƒŠƒA
     if 'merge_walls_to_process' in st.session_state:
         del st.session_state.merge_walls_to_process
     if 'window_walls_to_process' in st.session_state:
@@ -1400,36 +1400,36 @@ def _reset_selection_state():
         del st.session_state.window_execution_params
     if 'window_click_params' in st.session_state:
         del st.session_state.window_click_params
-    # window_click_params_listã¯å‰Šé™¤ã—ãªã„ï¼ˆãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒè¨­å®šã—ãŸçª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿æŒï¼‰
+    # window_click_params_list‚Ííœ‚µ‚È‚¢iƒ†[ƒU[‚ªİ’è‚µ‚½‘‹ƒpƒ‰ƒ[ƒ^‚ğ•Ûj
     # if 'window_click_params_list' in st.session_state:
     #     del st.session_state.window_click_params_list
     if 'window_click_params_list_to_process' in st.session_state:
         del st.session_state.window_click_params_list_to_process
 
 
-# ä»¥ä¸‹ã®é–¢æ•°ã¯ ichijo_core.geometry_utils ã‹ã‚‰ã‚¤ãƒ³ãƒãƒ¼ãƒˆæ¸ˆã¿:
+# ˆÈ‰º‚ÌŠÖ”‚Í ichijo_core.geometry_utils ‚©‚çƒCƒ“ƒ|[ƒgÏ‚İ:
 # - _calc_distance, _calc_angle_diff, _wall_angle_deg, _angle_diff_deg, _determine_line_direction
 
-# ä»¥ä¸‹ã®å®šæ•°ã¯ ichijo_core.furniture_utils ã‹ã‚‰ã‚¤ãƒ³ãƒãƒ¼ãƒˆæ¸ˆã¿:
+# ˆÈ‰º‚Ì’è”‚Í ichijo_core.furniture_utils ‚©‚çƒCƒ“ƒ|[ƒgÏ‚İ:
 # - FURNITURE_HEIGHT_OPTIONS, FURNITURE_COLOR_OPTIONS
 
 
 def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
     """
-    ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã®å››è§’å½¢ã‚’ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›ï¼ˆã‚°ãƒªãƒƒãƒ‰ã‚¹ãƒŠãƒƒãƒ—ãªã—ï¼‰
+    ƒsƒNƒZƒ‹À•W‚ÌlŠpŒ`‚ğƒ[ƒgƒ‹À•W‚É•ÏŠ·iƒOƒŠƒbƒhƒXƒiƒbƒv‚È‚µj
     
     Args:
-        rect_pixel: (x1, y1, x2, y2) ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã®å››è§’å½¢
-        json_data: JSONå£ãƒ‡ãƒ¼ã‚¿ï¼ˆåº§æ¨™å¤‰æ›ç”¨ï¼‰
-        scale: å¯è¦–åŒ–ã‚¹ã‚±ãƒ¼ãƒ« (px/m)
-        grid_size: ã‚°ãƒªãƒƒãƒ‰é–“éš”ï¼ˆmï¼‰â€»æœªä½¿ç”¨
+        rect_pixel: (x1, y1, x2, y2) ƒsƒNƒZƒ‹À•W‚ÌlŠpŒ`
+        json_data: JSON•Çƒf[ƒ^iÀ•W•ÏŠ·—pj
+        scale: ‰Â‹‰»ƒXƒP[ƒ‹ (px/m)
+        grid_size: ƒOƒŠƒbƒhŠÔŠuimj¦–¢g—p
     
     Returns:
-        (x_start_m, y_start_m, width_m, depth_m): ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã§ã®é…ç½®æƒ…å ±
+        (x_start_m, y_start_m, width_m, depth_m): ƒ[ƒgƒ‹À•W‚Å‚Ì”z’uî•ñ
     """
     x1_px, y1_px, x2_px, y2_px = rect_pixel
     
-    # åº§æ¨™å¤‰æ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+    # À•W•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğæ“¾
     all_x = [w['start'][0] for w in json_data['walls']] + [w['end'][0] for w in json_data['walls']]
     all_y = [w['start'][1] for w in json_data['walls']] + [w['end'][1] for w in json_data['walls']]
     min_x, max_x = min(all_x), max(all_x)
@@ -1438,13 +1438,13 @@ def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
     margin = 50
     img_height = int((max_y - min_y) * scale) + 2 * margin
     
-    # ãƒ”ã‚¯ã‚»ãƒ« â†’ ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›ï¼ˆã‚¹ãƒŠãƒƒãƒ—ãªã—ã€å››è§’å½¢ç¯„å›²ã‚’ãã®ã¾ã¾ä½¿ç”¨ï¼‰
+    # ƒsƒNƒZƒ‹ ¨ ƒ[ƒgƒ‹À•W‚É•ÏŠ·iƒXƒiƒbƒv‚È‚µAlŠpŒ`”ÍˆÍ‚ğ‚»‚Ì‚Ü‚Üg—pj
     x1_m = (min(x1_px, x2_px) - margin) / scale + min_x
     y1_m = (img_height - max(y1_px, y2_px) - margin) / scale + min_y
     x2_m = (max(x1_px, x2_px) - margin) / scale + min_x
     y2_m = (img_height - min(y1_px, y2_px) - margin) / scale + min_y
     
-    # å¹…ã¨å¥¥è¡Œãã‚’è¨ˆç®—ï¼ˆé¸æŠç¯„å›²ãã®ã¾ã¾ï¼‰
+    # •‚Æ‰œs‚«‚ğŒvZi‘I‘ğ”ÍˆÍ‚»‚Ì‚Ü‚Üj
     width_m = x2_m - x1_m
     depth_m = y2_m - y1_m
     
@@ -1453,36 +1453,36 @@ def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
 
 def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, width, depth, offset_m=0.0):
     """
-    JSONã«å®¶å…·ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ 
+    JSON‚É‰Æ‹ïƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á
     
     Args:
-        json_data: æ—¢å­˜ã®JSON
-        height_m: å®¶å…·ã®é«˜ã•ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰
-        color_name: è‰²ã®åå‰ï¼ˆFURNITURE_COLOR_OPTIONSã®ã‚­ãƒ¼ï¼‰
-        x_start, y_start: é…ç½®é–‹å§‹åº§æ¨™ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰
-        width, depth: å¹…ã¨å¥¥è¡Œãï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰
-        offset_m: åºŠã‹ã‚‰ã®é«˜ã•ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯0.0ï¼ˆåºŠç½®ãï¼‰
+        json_data: Šù‘¶‚ÌJSON
+        height_m: ‰Æ‹ï‚Ì‚‚³iƒ[ƒgƒ‹j
+        color_name: F‚Ì–¼‘OiFURNITURE_COLOR_OPTIONS‚ÌƒL[j
+        x_start, y_start: ”z’uŠJnÀ•Wiƒ[ƒgƒ‹j
+        width, depth: •‚Æ‰œs‚«iƒ[ƒgƒ‹j
+        offset_m: °‚©‚ç‚Ì‚‚³iƒ[ƒgƒ‹j. ƒfƒtƒHƒ‹ƒg‚Í0.0i°’u‚«j
     """
     import copy
     
     updated_data = copy.deepcopy(json_data)
     
-    # furnitureã‚­ãƒ¼ãŒãªã‘ã‚Œã°ä½œæˆ
+    # furnitureƒL[‚ª‚È‚¯‚ê‚Îì¬
     if 'furniture' not in updated_data:
         updated_data['furniture'] = []
     
     color_info = FURNITURE_COLOR_OPTIONS[color_name]
     
-    # å®¶å…·ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ 
+    # ‰Æ‹ïƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á
     furniture_obj = {
-        "type": f"å®¶å…·ï¼ˆ{color_name}ï¼‰",
-        "position": [x_start + width/2, y_start + depth/2],  # ä¸­å¿ƒåº§æ¨™
+        "type": f"‰Æ‹ïi{color_name}j",
+        "position": [x_start + width/2, y_start + depth/2],  # ’†SÀ•W
         "dimensions": {
             "width": width,
             "depth": depth,
             "height": height_m
         },
-        "offset": offset_m,  # åºŠã‹ã‚‰ã®é«˜ã•ã‚’è¿½åŠ 
+        "offset": offset_m,  # °‚©‚ç‚Ì‚‚³‚ğ’Ç‰Á
         "bounds": {
             "x_start": x_start,
             "y_start": y_start,
@@ -1492,12 +1492,12 @@ def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, wi
         "color": color_name,
         "color_rgb": color_info["rgb"],
         "color_three_js": color_info["three_js"],
-        "description": f"{color_name}ã®å®¶å…·ï¼ˆé«˜ã•{height_m*100:.0f}cmï¼‰"
+        "description": f"{color_name}‚Ì‰Æ‹ïi‚‚³{height_m*100:.0f}cmj"
     }
     
     updated_data['furniture'].append(furniture_obj)
     
-    # ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿æ›´æ–°
+    # ƒƒ^ƒf[ƒ^XV
     if 'metadata' not in updated_data:
         updated_data['metadata'] = {}
     updated_data['metadata']['furniture_count'] = len(updated_data['furniture'])
@@ -1506,27 +1506,27 @@ def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, wi
 
 
 def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
-    """å››è§’å½¢é¸æŠã‹ã‚‰ç·šã‚’è¿½åŠ ï¼ˆ2ç‚¹ã‹ã‚‰è‡ªå‹•åˆ¤å®šã—ãŸæ–¹å‘ã§ç·šã‚’ç”Ÿæˆï¼‰"""
+    """lŠpŒ`‘I‘ğ‚©‚çü‚ğ’Ç‰Ái2“_‚©‚ç©“®”»’è‚µ‚½•ûŒü‚Åü‚ğ¶¬j"""
     import copy
     
-    # å…ƒãƒ‡ãƒ¼ã‚¿ã‚’ä¿è­·ã™ã‚‹ãŸã‚ãƒ‡ã‚£ãƒ¼ãƒ—ã‚³ãƒ”ãƒ¼
+    # Œ³ƒf[ƒ^‚ğ•ÛŒì‚·‚é‚½‚ßƒfƒB[ƒvƒRƒs[
     updated_data = copy.deepcopy(json_data)
     walls = updated_data['walls']
     
-    # æ—¢å­˜ã®å£ã‹ã‚‰å¹³å‡åšã•ã‚’å–å¾—
+    # Šù‘¶‚Ì•Ç‚©‚ç•½‹ÏŒú‚³‚ğæ“¾
     thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
     default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
     
-    # æ—¢å­˜ã®å£ã‹ã‚‰å¹³å‡é«˜ã•ã‚’å–å¾—ï¼ˆæŒ‡å®šãŒãªã„å ´åˆï¼‰
+    # Šù‘¶‚Ì•Ç‚©‚ç•½‹Ï‚‚³‚ğæ“¾iw’è‚ª‚È‚¢ê‡j
     if wall_height is None:
         heights = [w.get('height', 2.4) for w in walls if 'height' in w]
         wall_height = sum(heights) / len(heights) if heights else 2.4
     
-    # å››è§’å½¢ã®åº§æ¨™ã‚’è¨ˆç®—
+    # lŠpŒ`‚ÌÀ•W‚ğŒvZ
     x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
     x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
     
-    # å¯è¦–åŒ–ç”»åƒã®ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™å¤‰æ›ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+    # ‰Â‹‰»‰æ‘œ‚Ìƒ[ƒgƒ‹À•W•ÏŠ·ƒpƒ‰ƒ[ƒ^‚ğæ“¾
     all_x = [w['start'][0] for w in json_data['walls']] + [w['end'][0] for w in json_data['walls']]
     all_y = [w['start'][1] for w in json_data['walls']] + [w['end'][1] for w in json_data['walls']]
     min_x, max_x = min(all_x), max(all_x)
@@ -1535,33 +1535,33 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     margin = 50
     img_height = int((max_y - min_y) * scale) + 2 * margin
     
-    # ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ â†’ ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›
+    # ƒsƒNƒZƒ‹À•W ¨ ƒ[ƒgƒ‹À•W‚É•ÏŠ·
     x1_m = (x1 - margin) / scale + min_x
     y1_m = (img_height - y1 - margin) / scale + min_y
     x2_m = (x2 - margin) / scale + min_x
     y2_m = (img_height - y2 - margin) / scale + min_y
     
-    # æ–¹å‘ã‚’åˆ¤å®š
+    # •ûŒü‚ğ”»’è
     direction = _determine_line_direction(p1, p2)
     
-    # æ–°ã—ã„å£ç·šã‚’ç”Ÿæˆ
+    # V‚µ‚¢•Çü‚ğ¶¬
     if direction == "vertical":
-        # ç¸¦ç·šï¼šxåº§æ¨™ã‚’å››è§’å½¢ã®ä¸­å¤®ã«å›ºå®šã€yåº§æ¨™ã¯ä¸Šä¸‹ç«¯
+        # cüFxÀ•W‚ğlŠpŒ`‚Ì’†‰›‚ÉŒÅ’èAyÀ•W‚Íã‰º’[
         x_center = (x1_m + x2_m) / 2
         start_pt = [x_center, min(y1_m, y2_m)]
         end_pt = [x_center, max(y1_m, y2_m)]
     else:  # horizontal
-        # æ¨ªç·šï¼šyåº§æ¨™ã‚’å››è§’å½¢ã®ä¸­å¤®ã«å›ºå®šã€xåº§æ¨™ã¯å·¦å³ç«¯
+        # ‰¡üFyÀ•W‚ğlŠpŒ`‚Ì’†‰›‚ÉŒÅ’èAxÀ•W‚Í¶‰E’[
         y_center = (y1_m + y2_m) / 2
         start_pt = [min(x1_m, x2_m), y_center]
         end_pt = [max(x1_m, x2_m), y_center]
     
-    # ç·šã®é•·ã•ã‚’è¨ˆç®—
+    # ü‚Ì’·‚³‚ğŒvZ
     dx = end_pt[0] - start_pt[0]
     dy = end_pt[1] - start_pt[1]
     length = round(math.sqrt(dx**2 + dy**2), 3)
     
-    # æ–°ã—ã„å£ã®IDã‚’ç”Ÿæˆï¼ˆIDãŒæ–‡å­—åˆ—ã®å ´åˆã‚‚å¯¾å¿œã€é‡è¤‡å›é¿ï¼‰
+    # V‚µ‚¢•Ç‚ÌID‚ğ¶¬iID‚ª•¶š—ñ‚Ìê‡‚à‘Î‰Ad•¡‰ñ”ğj
     existing_ids = []
     for w in walls:
         try:
@@ -1571,29 +1571,29 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     max_id = max(existing_ids) if existing_ids else 0
     new_id = max_id + 1
     
-    # æ–°ã—ã„å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆï¼ˆæ—¢å­˜ã®å£ã¨åŒã˜æ§‹é€ ï¼‰
+    # V‚µ‚¢•ÇƒIƒuƒWƒFƒNƒg‚ğì¬iŠù‘¶‚Ì•Ç‚Æ“¯‚¶\‘¢j
     new_wall = {
         'id': new_id,
         'start': [round(start_pt[0], 3), round(start_pt[1], 3)],
         'end': [round(end_pt[0], 3), round(end_pt[1], 3)],
-        'height': round(wall_height, 3),  # æ—¢å­˜ã®å£ã¨åŒã˜é«˜ã•
-        'base_height': 0.0,  # é€šå¸¸ã®å£ã¯åºŠã‹ã‚‰
+        'height': round(wall_height, 3),  # Šù‘¶‚Ì•Ç‚Æ“¯‚¶‚‚³
+        'base_height': 0.0,  # ’Êí‚Ì•Ç‚Í°‚©‚ç
         'length': length,
-        'thickness': round(default_thickness, 3),  # æ—¢å­˜ã®å£ã¨åŒã˜åšã•
-        'source': 'added'  # æ‰‹å‹•è¿½åŠ ã®å£ã¨ã—ã¦è¨˜éŒ²
+        'thickness': round(default_thickness, 3),  # Šù‘¶‚Ì•Ç‚Æ“¯‚¶Œú‚³
+        'source': 'added'  # è“®’Ç‰Á‚Ì•Ç‚Æ‚µ‚Ä‹L˜^
     }
     
-    # å£ã‚’è¿½åŠ 
+    # •Ç‚ğ’Ç‰Á
     walls.append(new_wall)
     
-    # ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿æ›´æ–°
+    # ƒƒ^ƒf[ƒ^XV
     updated_data['metadata']['total_walls'] = len(walls)
     
     return updated_data, direction, new_wall
 
 
 def _point_in_rect(point, rect):
-    """ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆå¯è¦–åŒ–ç”»åƒã®ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ï¼‰"""
+    """“_‚ªlŠpŒ`“à‚É‚ ‚é‚©ƒ`ƒFƒbƒNi‰Â‹‰»‰æ‘œ‚ÌƒsƒNƒZƒ‹À•Wj"""
     x, y = point
     x_min, y_min = rect['left'], rect['top']
     x_max, y_max = rect['left'] + rect['width'], rect['top'] + rect['height']
@@ -1601,24 +1601,24 @@ def _point_in_rect(point, rect):
 
 
 def _line_intersects_rect(x1, y1, x2, y2, rect, tolerance=20):
-    """ç·šåˆ†ãŒå››è§’å½¢ã¨äº¤å·®ã¾ãŸã¯è¿‘æ¥ã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆæ‹¡å¼µç‰ˆï¼‰"""
+    """ü•ª‚ªlŠpŒ`‚ÆŒğ·‚Ü‚½‚Í‹ßÚ‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒNiŠg’£”Åj"""
     x_min = rect['left'] - tolerance
     y_min = rect['top'] - tolerance
     x_max = rect['left'] + rect['width'] + tolerance
     y_max = rect['top'] + rect['height'] + tolerance
     
-    # 1. ç«¯ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹
+    # 1. ’[“_‚ªlŠpŒ`“à‚É‚ ‚é
     if (x_min <= x1 <= x_max and y_min <= y1 <= y_max) or \
        (x_min <= x2 <= x_max and y_min <= y2 <= y_max):
         return True
     
-    # 2. ç·šåˆ†ãŒå››è§’å½¢ã®è¾ºã¨äº¤å·®ã™ã‚‹ã‹ï¼ˆç°¡æ˜“åˆ¤å®šï¼‰
-    # ç·šåˆ†ãŒå››è§’å½¢ã‚’å®Œå…¨ã«æ¨ªæ–­ã—ã¦ã„ã‚‹å ´åˆ
+    # 2. ü•ª‚ªlŠpŒ`‚Ì•Ó‚ÆŒğ·‚·‚é‚©iŠÈˆÕ”»’èj
+    # ü•ª‚ªlŠpŒ`‚ğŠ®‘S‚É‰¡’f‚µ‚Ä‚¢‚éê‡
     if (x1 < x_min and x2 > x_max) or (x2 < x_min and x1 > x_max) or \
        (y1 < y_min and y2 > y_max) or (y2 < y_min and y1 > y_max):
         return True
     
-    # 3. å››è§’å½¢ãŒç·šåˆ†ã®é–“ã«ã‚ã‚‹
+    # 3. lŠpŒ`‚ªü•ª‚ÌŠÔ‚É‚ ‚é
     if (min(x1, x2) <= x_max and max(x1, x2) >= x_min) and \
        (min(y1, y2) <= y_max and max(y1, y2) >= y_min):
         return True
@@ -1627,21 +1627,21 @@ def _line_intersects_rect(x1, y1, x2, y2, rect, tolerance=20):
 
 
 def _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y):
-    """å£ç·šãŒå››è§’å½¢é¸æŠç¯„å›²å†…ã¾ãŸã¯è¿‘æ¥ã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆæ‹¡å¼µç‰ˆï¼‰"""
-    # å£ç·šã®ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã‚’ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã«å¤‰æ›ï¼ˆvisualize_3d_wallsã¨åŒã˜ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+    """•Çü‚ªlŠpŒ`‘I‘ğ”ÍˆÍ“à‚Ü‚½‚Í‹ßÚ‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒNiŠg’£”Åj"""
+    # •Çü‚Ìƒ[ƒgƒ‹À•W‚ğƒsƒNƒZƒ‹À•W‚É•ÏŠ·ivisualize_3d_walls‚Æ“¯‚¶ƒƒWƒbƒNj
     x1_px = int((wall['start'][0] - min_x) * scale) + margin
     y1_px = img_height - (int((wall['start'][1] - min_y) * scale) + margin)
     x2_px = int((wall['end'][0] - min_x) * scale) + margin
     y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
     
-    # ç·šåˆ†ãŒå››è§’å½¢ã¨äº¤å·®ã¾ãŸã¯è¿‘æ¥ã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆè¨±å®¹ç¯„å›²20ãƒ”ã‚¯ã‚»ãƒ«ï¼‰
+    # ü•ª‚ªlŠpŒ`‚ÆŒğ·‚Ü‚½‚Í‹ßÚ‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒNi‹–—e”ÍˆÍ20ƒsƒNƒZƒ‹j
     return _line_intersects_rect(x1_px, y1_px, x2_px, y2_px, rect, tolerance=20)
 
 
 def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y):
     """
-    å››è§’å½¢ç¯„å›²å†…ã«å®Œå…¨ã«å«ã¾ã‚Œã‚‹å£ç·šã®ã¿ã‚’è¿”ã™ï¼ˆç²¾å¯†ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ï¼‰
-    äº¤å·®ã‚„è¿‘æ¥ã§ã¯ãªãã€ä¸¡ç«¯ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹ç·šã®ã¿ã‚’æŠ½å‡º
+    lŠpŒ`”ÍˆÍ“à‚ÉŠ®‘S‚ÉŠÜ‚Ü‚ê‚é•Çü‚Ì‚İ‚ğ•Ô‚·i¸–§ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOj
+    Œğ·‚â‹ßÚ‚Å‚Í‚È‚­A—¼’[“_‚ªlŠpŒ`“à‚É‚ ‚éü‚Ì‚İ‚ğ’Šo
     """
     filtered_walls = []
     
@@ -1651,13 +1651,13 @@ def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x
     y_rect_max = rect['top'] + rect['height']
     
     for wall in walls:
-        # ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã«å¤‰æ›
+        # ƒsƒNƒZƒ‹À•W‚É•ÏŠ·
         x1_px = int((wall['start'][0] - min_x) * scale) + margin
         y1_px = img_height - (int((wall['start'][1] - min_y) * scale) + margin)
         x2_px = int((wall['end'][0] - min_x) * scale) + margin
         y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
         
-        # ä¸¡ç«¯ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆè¨±å®¹å€¤ãªã—ï¼‰
+        # —¼’[“_‚ªlŠpŒ`“à‚É‚ ‚é‚©ƒ`ƒFƒbƒNi‹–—e’l‚È‚µj
         if (x_rect_min <= x1_px <= x_rect_max and y_rect_min <= y1_px <= y_rect_max and
             x_rect_min <= x2_px <= x_rect_max and y_rect_min <= y2_px <= y_rect_max):
             filtered_walls.append(wall)
@@ -1666,13 +1666,13 @@ def _filter_walls_strictly_in_rect(walls, rect, scale, margin, img_height, min_x
 
 
 def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_right=None, rect_bottom=None, tolerance=0):
-    """ç·šåˆ†ãŒå››è§’å½¢ã¨äº¤å·®ã¾ãŸã¯è¿‘æ¥ã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã€‚
-    äº’æ›æ€§ã‚’æŒãŸã›ã‚‹ãŸã‚ã€ä»¥ä¸‹ã®å‘¼ã³å‡ºã—å½¢å¼ã®ä¸¡æ–¹ã‚’å—ã‘å…¥ã‚Œã¾ã™:
+    """ü•ª‚ªlŠpŒ`‚ÆŒğ·‚Ü‚½‚Í‹ßÚ‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒNB
+    ŒİŠ·«‚ğ‚½‚¹‚é‚½‚ßAˆÈ‰º‚ÌŒÄ‚Ño‚µŒ`®‚Ì—¼•û‚ğó‚¯“ü‚ê‚Ü‚·:
       - _line_intersects_rect(x1,y1,x2,y2, rect_dict, tolerance=...)
       - _line_intersects_rect(x1,y1,x2,y2, left, top, right, bottom)
     """
 
-    # rect_or_left ãŒè¾æ›¸ã§æ¸¡ã•ã‚ŒãŸå ´åˆã¯å±•é–‹
+    # rect_or_left ‚ª«‘‚Å“n‚³‚ê‚½ê‡‚Í“WŠJ
     if rect_top is None and isinstance(rect_or_left, dict):
         rect = rect_or_left
         rect_left = rect.get('left', 0)
@@ -1680,21 +1680,21 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
         rect_right = rect_left + rect.get('width', 0)
         rect_bottom = rect_top + rect.get('height', 0)
     else:
-        # æ•°å€¤ã§æ¸¡ã•ã‚ŒãŸå ´åˆ
+        # ”’l‚Å“n‚³‚ê‚½ê‡
         rect_left = rect_or_left
 
-    # æ‹¡å¼µåˆ¤å®š: tolerance ã‚’å››è§’å½¢ã«é©ç”¨ã—ã¦æ‹¡å¤§ã™ã‚‹
+    # Šg’£”»’è: tolerance ‚ğlŠpŒ`‚É“K—p‚µ‚ÄŠg‘å‚·‚é
     x_min = rect_left - tolerance
     y_min = rect_top - tolerance
     x_max = rect_right + tolerance
     y_max = rect_bottom + tolerance
 
-    # 1. ç«¯ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹
+    # 1. ’[“_‚ªlŠpŒ`“à‚É‚ ‚é
     if (x_min <= x1 <= x_max and y_min <= y1 <= y_max) or \
        (x_min <= x2 <= x_max and y_min <= y2 <= y_max):
         return True
 
-    # ãƒ˜ãƒ«ãƒ‘: ç·šåˆ†äº¤å·®åˆ¤å®šï¼ˆ2Dã€é–‰åŒºé–“ï¼‰
+    # ƒwƒ‹ƒp: ü•ªŒğ·”»’èi2DA•Â‹æŠÔj
     def _on_segment(ax, ay, bx, by, cx, cy):
         return min(ax, bx) <= cx <= max(ax, bx) and min(ay, by) <= cy <= max(ay, by)
 
@@ -1722,7 +1722,7 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
 
         return (o1 * o2 < 0) and (o3 * o4 < 0)
 
-    # 2. ç·šåˆ†ã¨å››è§’å½¢ã®4è¾ºãŒäº¤å·®ã—ã¦ã„ã‚‹ã‹å³å¯†ã«åˆ¤å®š
+    # 2. ü•ª‚ÆlŠpŒ`‚Ì4•Ó‚ªŒğ·‚µ‚Ä‚¢‚é‚©Œµ–§‚É”»’è
     rect_edges = [
         ((x_min, y_min), (x_max, y_min)),  # top
         ((x_max, y_min), (x_max, y_max)),  # right
@@ -1735,17 +1735,17 @@ def _line_intersects_rect(x1, y1, x2, y2, rect_or_left, rect_top=None, rect_righ
         if _segments_intersect(seg_a[0], seg_a[1], edge[0], edge[1]):
             return True
 
-    # 3. ä¸Šè¨˜ã§åˆ¤å®šã§ããªã‘ã‚Œã°é‡ãªã‚Šãªã—
+    # 3. ã‹L‚Å”»’è‚Å‚«‚È‚¯‚ê‚Îd‚È‚è‚È‚µ
     return False
 
 
 def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y, tolerance=0, debug=False):
     """
-    å››è§’å½¢ç¯„å›²å†…ã«ç«¯ç‚¹ãŒã‚ã‚‹ã‹ã€ç·šåˆ†ãŒå››è§’å½¢ã¨äº¤å·®ã™ã‚‹å£ç·šã‚’è¿”ã™ï¼ˆçª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ç”¨ï¼‰
+    lŠpŒ`”ÍˆÍ“à‚É’[“_‚ª‚ ‚é‚©Aü•ª‚ªlŠpŒ`‚ÆŒğ·‚·‚é•Çü‚ğ•Ô‚·i‘‹’Ç‰Áƒ‚[ƒh—pj
     
     Args:
-        tolerance: ç«¯ç‚¹åˆ¤å®šã®è¨±å®¹ç¯„å›²ï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ0pxï¼ˆèª¤æ¤œå‡ºé˜²æ­¢ï¼‰
-        debug: Trueã®å ´åˆã€è©³ç´°ãªãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’è¿”ã™
+        tolerance: ’[“_”»’è‚Ì‹–—e”ÍˆÍiƒsƒNƒZƒ‹jƒfƒtƒHƒ‹ƒg0pxiŒëŒŸo–h~j
+        debug: True‚Ìê‡AÚ×‚ÈƒfƒoƒbƒOî•ñ‚ğ•Ô‚·
     """
     filtered_walls = []
     debug_info = []
@@ -1756,21 +1756,21 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
     y_rect_max = rect['top'] + rect['height']
     
     if debug:
-        debug_info.append(f"å››è§’å½¢ç¯„å›²: X[{x_rect_min:.1f}, {x_rect_max:.1f}], Y[{y_rect_min:.1f}, {y_rect_max:.1f}]")
-        debug_info.append(f"å››è§’å½¢ã‚µã‚¤ã‚º: {rect['width']:.1f} x {rect['height']:.1f} px")
+        debug_info.append(f"lŠpŒ`”ÍˆÍ: X[{x_rect_min:.1f}, {x_rect_max:.1f}], Y[{y_rect_min:.1f}, {y_rect_max:.1f}]")
+        debug_info.append(f"lŠpŒ`ƒTƒCƒY: {rect['width']:.1f} x {rect['height']:.1f} px")
         if tolerance > 0:
-            debug_info.append(f"è¨±å®¹ç¯„å›²: Â±{tolerance}px")
-        debug_info.append(f"æ¤œè¨¼å¯¾è±¡ã®å£æ•°: {len(walls)}æœ¬")
+            debug_info.append(f"‹–—e”ÍˆÍ: }{tolerance}px")
+        debug_info.append(f"ŒŸØ‘ÎÛ‚Ì•Ç”: {len(walls)}–{")
         debug_info.append("---")
     
     for wall in walls:
-        # ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã«å¤‰æ›
+        # ƒsƒNƒZƒ‹À•W‚É•ÏŠ·
         x1_px = int((wall['start'][0] - min_x) * scale) + margin
         y1_px = img_height - (int((wall['start'][1] - min_y) * scale) + margin)
         x2_px = int((wall['end'][0] - min_x) * scale) + margin
         y2_px = img_height - (int((wall['end'][1] - min_y) * scale) + margin)
         
-        # ç«¯ç‚¹ãŒå››è§’å½¢å†…ã«ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+        # ’[“_‚ªlŠpŒ`“à‚É‚ ‚é‚©ƒ`ƒFƒbƒN
         start_in_rect = (
             x_rect_min - tolerance <= x1_px <= x_rect_max + tolerance and 
             y_rect_min - tolerance <= y1_px <= y_rect_max + tolerance
@@ -1780,7 +1780,7 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
             y_rect_min - tolerance <= y2_px <= y_rect_max + tolerance
         )
         
-        # ç·šåˆ†ãŒå››è§’å½¢ã¨äº¤å·®ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+        # ü•ª‚ªlŠpŒ`‚ÆŒğ·‚·‚é‚©ƒ`ƒFƒbƒN
         intersects = _line_intersects_rect(
             x1_px, y1_px, x2_px, y2_px,
             x_rect_min, y_rect_min, x_rect_max, y_rect_max
@@ -1792,18 +1792,18 @@ def _filter_walls_by_endpoints_in_rect(walls, rect, scale, margin, img_height, m
             wall_id = wall.get('id', '?')
             reasons = []
             if start_in_rect:
-                reasons.append("å§‹ç‚¹âœ“")
+                reasons.append("n“_?")
             if end_in_rect:
-                reasons.append("çµ‚ç‚¹âœ“")
+                reasons.append("I“_?")
             if intersects and not (start_in_rect or end_in_rect):
-                reasons.append("äº¤å·®âœ“")
+                reasons.append("Œğ·?")
             
-            reason_str = ",".join(reasons) if reasons else "ç¯„å›²å¤–âœ—"
+            reason_str = ",".join(reasons) if reasons else "”ÍˆÍŠO?"
             
-            # æ¤œå‡ºã•ã‚ŒãŸå£ã®ã¿ã€ã¾ãŸã¯å…¨å£ã‚’è¡¨ç¤ºï¼ˆæœ€åˆã®50æœ¬ã¾ã§ï¼‰
-            if matched or len(debug_info) < 60:  # ãƒ˜ãƒƒãƒ€ãƒ¼è¡Œ+æœ€å¤§50å£
+            # ŒŸo‚³‚ê‚½•Ç‚Ì‚İA‚Ü‚½‚Í‘S•Ç‚ğ•\¦iÅ‰‚Ì50–{‚Ü‚Åj
+            if matched or len(debug_info) < 60:  # ƒwƒbƒ_[s+Å‘å50•Ç
                 debug_info.append(
-                    f"å£#{wall_id}: start({x1_px:.0f},{y1_px:.0f}) end({x2_px:.0f},{y2_px:.0f}) â†’ {reason_str}"
+                    f"•Ç#{wall_id}: start({x1_px:.0f},{y1_px:.0f}) end({x2_px:.0f},{y2_px:.0f}) ¨ {reason_str}"
                 )
         
         if matched:
@@ -1855,18 +1855,18 @@ def extract_json_from_html_v2(html_bytes):
     return None
 
 def main():
-    st.set_page_config(page_title="ä¸€æ¡å·¥å‹™åº— CADå›³é¢3DåŒ–ã‚¢ãƒ—ãƒª (Î²)", layout="wide")
-    st.title("ä¸€æ¡å·¥å‹™åº— CADå›³é¢3DåŒ–ã‚¢ãƒ—ãƒª (Î²)")
-    st.caption("ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ãŸå›³é¢ã¯ä¸€æ™‚çš„ãªå‡¦ç†ã«ã®ã¿ä½¿ç”¨ã—ã€ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«ä¿å­˜ã•ã‚Œã‚‹ã“ã¨ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚")
+    st.set_page_config(page_title="ˆêğH–±“X CAD}–Ê3D‰»ƒAƒvƒŠ (ƒÀ)", layout="wide")
+    st.title("ˆêğH–±“X CAD}–Ê3D‰»ƒAƒvƒŠ (ƒÀ)")
+    st.caption("ƒAƒbƒvƒ[ƒh‚µ‚½}–Ê‚Íˆê“I‚Èˆ—‚É‚Ì‚İg—p‚µAƒf[ƒ^ƒx[ƒX‚É•Û‘¶‚³‚ê‚é‚±‚Æ‚Í‚ ‚è‚Ü‚¹‚ñB")
 
     # --- Restore Session Feature (Paid Members) ---
     if st.session_state.get('user'):
         supabase = get_supabase()
         if check_membership_status_v2(supabase, st.session_state.user):
-            with st.expander("ğŸ“‚ ä¿å­˜ã—ãŸã‚»ãƒƒã‚·ãƒ§ãƒ³ï¼ˆHTMLï¼‰ã‚’å¾©å…ƒã™ã‚‹"):
-                st.info("æœ‰æ–™ä¼šå“¡ç‰¹å…¸: ä»¥å‰ã«ä¿å­˜ã—ãŸHTMLãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆviewer_3d_edited.htmlãªã©ï¼‰ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ã¦ã€ç·¨é›†çŠ¶æ…‹ã‚’å¾©å…ƒã§ãã¾ã™ã€‚")
-                uploaded_html = st.file_uploader("HTMLãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ", type=["html"], key="restore_html")
-                if uploaded_html and st.button("å¾©å…ƒå®Ÿè¡Œ"):
+            with st.expander("?? •Û‘¶‚µ‚½ƒZƒbƒVƒ‡ƒ“iHTMLj‚ğ•œŒ³‚·‚é"):
+                st.info("—L—¿‰ïˆõ“Á“T: ˆÈ‘O‚É•Û‘¶‚µ‚½HTMLƒtƒ@ƒCƒ‹iviewer_3d_edited.html‚È‚Çj‚ğƒAƒbƒvƒ[ƒh‚µ‚ÄA•ÒWó‘Ô‚ğ•œŒ³‚Å‚«‚Ü‚·B")
+                uploaded_html = st.file_uploader("HTMLƒtƒ@ƒCƒ‹‚ğ‘I‘ğ", type=["html"], key="restore_html")
+                if uploaded_html and st.button("•œŒ³Às"):
                     try:
                         data = extract_json_from_html_v2(uploaded_html.getvalue())
                         if data:
@@ -1928,17 +1928,17 @@ def main():
                             # Clear intermediate states
                             st.session_state.merged_processed = False 
                             
-                            st.success("å¾©å…ƒã«æˆåŠŸã—ã¾ã—ãŸã€‚ç·¨é›†ã‚¹ãƒ†ãƒƒãƒ—ã«ç§»å‹•ã—ã¾ã™ã€‚")
+                            st.success("•œŒ³‚É¬Œ÷‚µ‚Ü‚µ‚½B•ÒWƒXƒeƒbƒv‚ÉˆÚ“®‚µ‚Ü‚·B")
                             _safe_rerun_or_stop()
                         else:
-                            st.error("HTMLãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰JSONãƒ‡ãƒ¼ã‚¿ã‚’æŠ½å‡ºã§ãã¾ã›ã‚“ã§ã—ãŸã€‚")
+                            st.error("HTMLƒtƒ@ƒCƒ‹‚©‚çJSONƒf[ƒ^‚ğ’Šo‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B")
                     except Exception as e:
-                        st.error(f"å¾©å…ƒã‚¨ãƒ©ãƒ¼: {e}")
+                        st.error(f"•œŒ³ƒGƒ‰[: {e}")
     
-    # å›ºå®šç”»åƒå¹…ï¼ˆè‡ªå‹•çµåˆã¨æ‰‹å‹•ç·¨é›†ã§çµ±ä¸€ï¼‰
+    # ŒÅ’è‰æ‘œ•i©“®Œ‹‡‚Æè“®•ÒW‚Å“ˆêj
     DISPLAY_IMAGE_WIDTH = 800
 
-    # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã®åˆæœŸåŒ–ï¼ˆçµæœã®æ°¸ç¶šåŒ–ï¼‰
+    # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚Ì‰Šú‰»iŒ‹‰Ê‚Ì‰i‘±‰»j
     if "processed" not in st.session_state:
         st.session_state.processed = False
     for key in [
@@ -1951,31 +1951,31 @@ def main():
     if "merged_processed" not in st.session_state:
         st.session_state.merged_processed = False
     if "workflow_step" not in st.session_state:
-        st.session_state.workflow_step = 1  # 1:èª­ã¿è¾¼ã¿, 2:ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£, 3:æ‰‹å‹•ç·¨é›†
+        st.session_state.workflow_step = 1  # 1:“Ç‚İ‚İ, 2:ƒXƒP[ƒ‹Z³, 3:è“®•ÒW
         # debug: record initialization
         st.session_state.setdefault('debug_log', []).append(f"init: set workflow_step=1")
     if "merge_choice" not in st.session_state:
-        st.session_state.merge_choice = "è‡ªå‹•å£çµåˆã‚’å®Ÿè¡Œ"
+        st.session_state.merge_choice = "©“®•ÇŒ‹‡‚ğÀs"
     if "viz_scale" not in st.session_state:
-        st.session_state.viz_scale = 100  # å¯è¦–åŒ–ã‚¹ã‚±ãƒ¼ãƒ«ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«ï¼‰å›ºå®šå€¤
+        st.session_state.viz_scale = 100  # ‰Â‹‰»ƒXƒP[ƒ‹iƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹jŒÅ’è’l
     
-    # å£é¸æŠç”¨ã®ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ï¼ˆå„ç·¨é›†ãƒ¢ãƒ¼ãƒ‰ç”¨ï¼‰
+    # •Ç‘I‘ğ—p‚ÌƒZƒbƒVƒ‡ƒ“ó‘ÔiŠe•ÒWƒ‚[ƒh—pj
     if "selected_walls_for_merge" not in st.session_state:
-        st.session_state.selected_walls_for_merge = []  # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ï¼šé¸æŠã•ã‚ŒãŸå£ã®ãƒªã‚¹ãƒˆï¼ˆæœ€å¤§2æœ¬ï¼‰
+        st.session_state.selected_walls_for_merge = []  # ü‚ğŒ‹‡ƒ‚[ƒhF‘I‘ğ‚³‚ê‚½•Ç‚ÌƒŠƒXƒgiÅ‘å2–{j
     if "selected_walls_for_window" not in st.session_state:
-        st.session_state.selected_walls_for_window = []  # çª“ã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šé¸æŠã•ã‚ŒãŸå£ã®ãƒªã‚¹ãƒˆï¼ˆæœ€å¤§2æœ¬ï¼‰
+        st.session_state.selected_walls_for_window = []  # ‘‹‚ğ’Ç‰Áƒ‚[ƒhF‘I‘ğ‚³‚ê‚½•Ç‚ÌƒŠƒXƒgiÅ‘å2–{j
     if "selected_walls_for_delete" not in st.session_state:
-        st.session_state.selected_walls_for_delete = []  # ç·šã‚’å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ï¼šé¸æŠã•ã‚ŒãŸå£ã®ãƒªã‚¹ãƒˆï¼ˆç„¡åˆ¶é™ï¼‰
+        st.session_state.selected_walls_for_delete = []  # ü‚ğíœƒ‚[ƒhF‘I‘ğ‚³‚ê‚½•Ç‚ÌƒŠƒXƒgi–³§ŒÀj
 
-    # 2Då¯è¦–åŒ–ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å›ºå®šå€¤ã«è¨­å®š
+    # 2D‰Â‹‰»ƒXƒP[ƒ‹‚ğŒÅ’è’l‚Éİ’è
     viz_scale = 100
 
-    # æ°¸ç¶šãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°åˆæœŸåŒ–ã¨ãƒ˜ãƒ«ãƒ‘ãƒ¼
+    # ‰i‘±ƒfƒoƒbƒOƒƒO‰Šú‰»‚Æƒwƒ‹ƒp[
     if 'debug_log' not in st.session_state:
         st.session_state['debug_log'] = []
     # (internal debug_log retained in session_state; no UI display)
 
-    # 3Dè¡¨ç¤ºç”¨expanderã®é–‹é–‰çŠ¶æ…‹ã‚’ç®¡ç†
+    # 3D•\¦—pexpander‚ÌŠJ•Âó‘Ô‚ğŠÇ—
     if 'open_3d_expander' not in st.session_state:
         st.session_state['open_3d_expander'] = False
 
@@ -1987,7 +1987,7 @@ def main():
             # If the caller specifically requested opening the 3D expander, allow
             # the viewer to open even for anonymous users, but do not advance
             # the protected workflow step.
-            st.warning(f"ã‚¹ãƒ†ãƒƒãƒ—{n}ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+            st.warning(f"ƒXƒeƒbƒv{n}‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
             if open_3d:
                 st.session_state.open_3d_expander = True
             return
@@ -2003,167 +2003,167 @@ def main():
             ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             st.session_state.setdefault('debug_logs', []).append(f"{ts} {msg}")
         except Exception:
-            # append ã«å¤±æ•—ã—ã¦ã‚‚å‡¦ç†ç¶™ç¶š
+            # append ‚É¸”s‚µ‚Ä‚àˆ—Œp‘±
             pass
     
     st.divider()
 
-    # ============= ã‚¹ãƒ†ãƒƒãƒ—1: ç”»åƒèª­ã¿è¾¼ã¿ =============
-    with st.expander("Step 1ï¼šç”»åƒèª­ã¿è¾¼ã¿", expanded=(st.session_state.workflow_step == 1)):
-        st.markdown("## ã‚¹ãƒ†ãƒƒãƒ— â‘   ç”»åƒèª­ã¿è¾¼ã¿")
+    # ============= ƒXƒeƒbƒv1: ‰æ‘œ“Ç‚İ‚İ =============
+    with st.expander("Step 1F‰æ‘œ“Ç‚İ‚İ", expanded=(st.session_state.workflow_step == 1)):
+        st.markdown("## ƒXƒeƒbƒv ‡@  ‰æ‘œ“Ç‚İ‚İ")
 
-        # æœ€åˆã®ã‚¹ãƒ†ãƒƒãƒ—ã®èª¬æ˜
+        # Å‰‚ÌƒXƒeƒbƒv‚Ìà–¾
         st.info(
-            "é–“å–ã‚Šå›³ã®PDFï¼ˆã¾ãŸã¯JPG/PNGï¼‰ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„ã€‚\n\n"
-            # "â€¢ **PDF**: å›³é¢ã‚¢ãƒ—ãƒªã‹ã‚‰å‡ºåŠ›ã—ãŸPDFãƒ•ã‚¡ã‚¤ãƒ«\n\n"
-            # "â€¢ **JPG/PNG**: ã‚¹ã‚­ãƒ£ãƒ³ç”»åƒã‚„ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚·ãƒ§ãƒƒãƒˆ"
+            "ŠÔæ‚è}‚ÌPDFi‚Ü‚½‚ÍJPG/PNGj‚ğƒAƒbƒvƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢B\n\n"
+            # "? **PDF**: }–ÊƒAƒvƒŠ‚©‚ço—Í‚µ‚½PDFƒtƒ@ƒCƒ‹\n\n"
+            # "? **JPG/PNG**: ƒXƒLƒƒƒ“‰æ‘œ‚âƒXƒNƒŠ[ƒ“ƒVƒ‡ƒbƒg"
         )
 
-        uploaded = st.file_uploader("å›³é¢PDF/ç”»åƒã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰", type=["pdf", "jpg", "jpeg", "png"], accept_multiple_files=False)
+        uploaded = st.file_uploader("}–ÊPDF/‰æ‘œ‚ğƒAƒbƒvƒ[ƒh", type=["pdf", "jpg", "jpeg", "png"], accept_multiple_files=False)
     
-        # PDFã®å ´åˆã€ãƒšãƒ¼ã‚¸æ•°ã‚’ç¢ºèªã—ã¦ãƒšãƒ¼ã‚¸é¸æŠUIã‚’è¡¨ç¤º
-        page_number = 0  # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+        # PDF‚Ìê‡Aƒy[ƒW”‚ğŠm”F‚µ‚Äƒy[ƒW‘I‘ğUI‚ğ•\¦
+        page_number = 0  # ƒfƒtƒHƒ‹ƒg
         if uploaded is not None and uploaded.name.lower().endswith('.pdf'):
             try:
-                # ä¸€æ™‚çš„ã«PDFã‚’ä¿å­˜ã—ã¦ãƒšãƒ¼ã‚¸æ•°ã‚’å–å¾—
+                # ˆê“I‚ÉPDF‚ğ•Û‘¶‚µ‚Äƒy[ƒW”‚ğæ“¾
                 temp_pdf = io.BytesIO(uploaded.getvalue())
                 doc = fitz.open(stream=temp_pdf, filetype="pdf")
                 total_pages = len(doc)
                 doc.close()
                 
                 if total_pages > 1:
-                    # st.info(f"ğŸ“„ ã“ã®PDFã¯ {total_pages} ãƒšãƒ¼ã‚¸ã‚ã‚Šã¾ã™ã€‚å‡¦ç†ã™ã‚‹ãƒšãƒ¼ã‚¸ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚")
+                    # st.info(f"?? ‚±‚ÌPDF‚Í {total_pages} ƒy[ƒW‚ ‚è‚Ü‚·Bˆ—‚·‚éƒy[ƒW‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B")
                     page_number = st.selectbox(
-                        "å‡¦ç†ã™ã‚‹ãƒšãƒ¼ã‚¸ã‚’é¸æŠ",
+                        "ˆ—‚·‚éƒy[ƒW‚ğ‘I‘ğ",
                         options=list(range(total_pages)),
-                        format_func=lambda x: f"ãƒšãƒ¼ã‚¸ {x + 1}",
-                        help="PDFã®ä½•ãƒšãƒ¼ã‚¸ç›®ã‚’å‡¦ç†ã™ã‚‹ã‹é¸æŠã—ã¾ã™ï¼ˆ0å§‹ã¾ã‚Šï¼‰"
+                        format_func=lambda x: f"ƒy[ƒW {x + 1}",
+                        help="PDF‚Ì‰½ƒy[ƒW–Ú‚ğˆ—‚·‚é‚©‘I‘ğ‚µ‚Ü‚·i0n‚Ü‚èj"
                     )
                 else:
-                    st.info("ğŸ“„ ã“ã®PDFã¯ 1 ãƒšãƒ¼ã‚¸ã§ã™ã€‚")
+                    st.info("?? ‚±‚ÌPDF‚Í 1 ƒy[ƒW‚Å‚·B")
             except Exception as e:
-                st.warning(f"PDFãƒšãƒ¼ã‚¸æ•°ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸ: {e}")
+                st.warning(f"PDFƒy[ƒW”‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½: {e}")
         
         # if uploaded is None and not st.session_state.processed:
-        #     st.info("PDF/JPG/PNGã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„ã€‚")
+        #     st.info("PDF/JPG/PNG‚ğƒAƒbƒvƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢B")
         
-        # ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰å¾Œã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šã‚’æŠ˜ã‚ŠãŸãŸã¿ã§è¡¨ç¤º
+        # ƒAƒbƒvƒ[ƒhŒã‚Ìƒpƒ‰ƒ[ƒ^İ’è‚ğÜ‚è‚½‚½‚İ‚Å•\¦
         if uploaded is not None or st.session_state.processed:
-            with st.expander("âš™ï¸ **ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šï¼ˆå¿…è¦ã«å¿œã˜ã¦ä¿®æ­£ï¼‰**", expanded=False):
-                # 3åˆ—ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
+            with st.expander("?? **ƒpƒ‰ƒ[ƒ^İ’èi•K—v‚É‰‚¶‚ÄC³j**", expanded=False):
+                # 3—ñƒŒƒCƒAƒEƒg
                 col1, col2, col3 = st.columns(3)
                 
-                # åˆ—1: é™¤å¤–ç¯„å›²è¨­å®š
+                # —ñ1: œŠO”ÍˆÍİ’è
                 with col1:
-                    st.subheader("âœ‚ï¸ é™¤å¤–ç¯„å›²")
-                    st.markdown("#### å¤–æ ãƒ»ãƒ­ã‚´é™¤å¤–")
-                    with st.expander("ğŸ’¡ ä½¿ã„æ–¹", expanded=False):
+                    st.subheader("?? œŠO”ÍˆÍ")
+                    st.markdown("#### ŠO˜gEƒƒSœŠO")
+                    with st.expander("?? g‚¢•û", expanded=False):
                         st.markdown(
-                            "**èª¿æ•´æ–¹æ³•:**\n\n"
-                            "- PDFã®å¤–æ ã€ã‚¿ã‚¤ãƒˆãƒ«ã€ãƒ­ã‚´ã‚’é™¤å¤–\n\n"
-                            "- ä¸­å¿ƒéƒ¨ã®é–“å–ã‚Šå›³ã ã‘ã‚’å‡¦ç†\n\n"
-                            "- é™¤å¤–ãŒå°‘ãªã„ â†’ å€¤ã‚’ä¸Šã’ã‚‹\n\n"
-                            "- å›³é¢ãŒæ¬ ã‘ã‚‹ â†’ å€¤ã‚’ä¸‹ã’ã‚‹"
+                            "**’²®•û–@:**\n\n"
+                            "- PDF‚ÌŠO˜gAƒ^ƒCƒgƒ‹AƒƒS‚ğœŠO\n\n"
+                            "- ’†S•”‚ÌŠÔæ‚è}‚¾‚¯‚ğˆ—\n\n"
+                            "- œŠO‚ª­‚È‚¢ ¨ ’l‚ğã‚°‚é\n\n"
+                            "- }–Ê‚ªŒ‡‚¯‚é ¨ ’l‚ğ‰º‚°‚é"
                         )
                     
                     margin_vertical = st.slider(
-                        "ä¸Šä¸‹é™¤å¤–(%)",
+                        "ã‰ºœŠO(%)",
                         min_value=0,
                         max_value=30,
                         value=10,
                         step=1,
-                        help="ä¸Šä¸‹ã®å¤–æ ãƒ»ã‚¿ã‚¤ãƒˆãƒ«ãƒ»ãƒ­ã‚´ã‚’é™¤å¤–ã—ã¾ã™ã€‚"
+                        help="ã‰º‚ÌŠO˜gEƒ^ƒCƒgƒ‹EƒƒS‚ğœŠO‚µ‚Ü‚·B"
                     )
                     
                     margin_horizontal = st.slider(
-                        "å·¦å³é™¤å¤–(%)",
+                        "¶‰EœŠO(%)",
                         min_value=0,
                         max_value=30,
                         value=10,
                         step=1,
-                        help="å·¦å³ã®å¤–æ ãƒ»ãƒ­ã‚´ã‚’é™¤å¤–ã—ã¾ã™ã€‚"
+                        help="¶‰E‚ÌŠO˜gEƒƒS‚ğœŠO‚µ‚Ü‚·B"
                     )
                 
-                # åˆ—2: å£æ¤œå‡ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(é»’é–¾å€¤ã€æœ€å°ç·šå¹…)
+                # —ñ2: •ÇŒŸoƒpƒ‰ƒ[ƒ^(•è‡’lAÅ¬ü•)
                 with col2:
-                    st.subheader("ğŸ¨ å£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿")
+                    st.subheader("?? •Çƒpƒ‰ƒ[ƒ^")
                     
-                    #st.markdown("#### é»’ç·šèªè­˜ã®é–¾å€¤")
-                    #with st.expander("ğŸ’¡ èª¿æ•´ã®ã‚³ãƒ„", expanded=False):
+                    #st.markdown("#### •ü”F¯‚Ìè‡’l")
+                    #with st.expander("?? ’²®‚ÌƒRƒc", expanded=False):
                     #    st.markdown(
-                    #        "**èª¿æ•´æ–¹æ³•:**\n\n"
-                    #        "1. æœ€åˆã¯190ã‹ã‚‰è©¦ã™\n\n"
-                    #        "2. ãƒã‚¤ã‚ºãŒå¤šã„ â†’ å€¤ã‚’ä¸‹ã’ã‚‹\n\n"
-                    #        "3. è–„ã„ç·šãŒæ¶ˆãˆã‚‹ â†’ å€¤ã‚’ä¸Šã’ã‚‹"
+                    #        "**’²®•û–@:**\n\n"
+                    #        "1. Å‰‚Í190‚©‚ç‚·\n\n"
+                    #        "2. ƒmƒCƒY‚ª‘½‚¢ ¨ ’l‚ğ‰º‚°‚é\n\n"
+                    #        "3. ”–‚¢ü‚ªÁ‚¦‚é ¨ ’l‚ğã‚°‚é"
                     #    )
                     
                     #black_threshold = st.slider(
-                    #    "é»’é–¾å€¤",
+                    #    "•è‡’l",
                     #    min_value=100,
                     #    max_value=240,
                     #    value=190,
                     #    step=5,
-                    #    help="å€¤ã‚’ä¸Šã’ã‚‹ = è–„ã„ç·šã‚‚æ‹¾ã†ã€‚å€¤ã‚’ä¸‹ã’ã‚‹ = æ¿ƒã„ç·šã®ã¿ã€‚"
+                    #    help="’l‚ğã‚°‚é = ”–‚¢ü‚àE‚¤B’l‚ğ‰º‚°‚é = ”Z‚¢ü‚Ì‚İB"
                     #)
-                    black_threshold = 190  # å›ºå®šå€¤ã«å¤‰æ›´
+                    black_threshold = 190  # ŒÅ’è’l‚É•ÏX
 
-                    st.markdown("#### æœ€å°èªè­˜ é»’ç·šå¹…")
-                    with st.expander("ğŸ’¡ èª¿æ•´ã®ã‚³ãƒ„", expanded=False):
+                    st.markdown("#### Å¬”F¯ •ü•")
+                    with st.expander("?? ’²®‚ÌƒRƒc", expanded=False):
                         st.markdown(
-                            "**èª¿æ•´æ–¹æ³•:**\n\n"
-                            "1. å£ãŒå¤šã™ãã‚‹ â†’ å€¤ã‚’ä¸Šã’ã‚‹\n\n"
-                            "2. å£ãŒè¶³ã‚Šãªã„ â†’ å€¤ã‚’ä¸‹ã’ã‚‹"
+                            "**’²®•û–@:**\n\n"
+                            "1. •Ç‚ª‘½‚·‚¬‚é ¨ ’l‚ğã‚°‚é\n\n"
+                            "2. •Ç‚ª‘«‚è‚È‚¢ ¨ ’l‚ğ‰º‚°‚é"
                         )
                     
                     min_thickness = st.slider(
-                        "æœ€å°ç·šå¹…(px)",
+                        "Å¬ü•(px)",
                         min_value=3,
                         max_value=20,
                         value=10,
                         step=1,
-                        help="å°ã•ã„ = ç´°ã„ç·šã‚‚æ‹¾ã†ã€‚å¤§ãã„ = å¤ªã„ç·šã®ã¿ã€‚DPIé«˜ã„æ™‚ã¯å¤§ããã€‚"
+                        help="¬‚³‚¢ = ×‚¢ü‚àE‚¤B‘å‚«‚¢ = ‘¾‚¢ü‚Ì‚İBDPI‚‚¢‚Í‘å‚«‚­B"
                     )
                 
-                # åˆ—3: å‡ºåŠ›ã‚¹ã‚±ãƒ¼ãƒ«(å£é«˜ã•)
+                # —ñ3: o—ÍƒXƒP[ƒ‹(•Ç‚‚³)
                 with col3:
-                    st.subheader("ğŸ—ï¸ å‡ºåŠ›ã‚¹ã‚±ãƒ¼ãƒ«")
+                    st.subheader("??? o—ÍƒXƒP[ƒ‹")
                     wall_height = st.number_input(
-                        "å£(å¤©äº•)é«˜ã•",
+                        "•Ç(“Vˆä)‚‚³",
                         min_value=0.1,
                         max_value=10.0,
                         value=2.4,
                         step=0.1,
-                        help="éƒ¨å±‹ã®å¤©äº•é«˜ã•ï¼ˆåºŠã‹ã‚‰å¤©äº•ã¾ã§ã®é«˜ã•ï¼‰ã‚’ãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½ã§æŒ‡å®šã—ã¾ã™ã€‚ä¸€èˆ¬çš„ãªä½å®…ã¯2.4mç¨‹åº¦ã§ã™ã€‚"
+                        help="•”‰®‚Ì“Vˆä‚‚³i°‚©‚ç“Vˆä‚Ü‚Å‚Ì‚‚³j‚ğƒ[ƒgƒ‹’PˆÊ‚Åw’è‚µ‚Ü‚·Bˆê”Ê“I‚ÈZ‘î‚Í2.4m’ö“x‚Å‚·B"
                     )
                 
-                # PDFãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°DPIï¼ˆå›ºå®šå€¤ã«å¤‰æ›´ï¼‰
+                # PDFƒŒƒ“ƒ_ƒŠƒ“ƒODPIiŒÅ’è’l‚É•ÏXj
                 dpi = 300
                 
-                # ãƒ”ã‚¯ã‚»ãƒ«â†’ãƒ¡ãƒ¼ãƒˆãƒ«ä¿‚æ•°: ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£æ¸ˆã¿ã®å€¤ãŒã‚ã‚Œã°ãã‚Œã‚’ä½¿ç”¨ã€ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+                # ƒsƒNƒZƒ‹¨ƒ[ƒgƒ‹ŒW”: ƒXƒP[ƒ‹Z³Ï‚İ‚Ì’l‚ª‚ ‚ê‚Î‚»‚ê‚ğg—pA‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg’l
                 if "json_bytes" in st.session_state and st.session_state.json_bytes:
                     try:
                         json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                         pixel_to_meter = json_data.get("metadata", {}).get("pixel_to_meter", 0.005) or 0.005
                         if pixel_to_meter != 0.005:
-                            st.info(f"ğŸ“ ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£æ¸ˆã¿ã®å€¤ã‚’ä½¿ç”¨: pixel_to_meter = {pixel_to_meter:.6f}")
+                            st.info(f"?? ƒXƒP[ƒ‹Z³Ï‚İ‚Ì’l‚ğg—p: pixel_to_meter = {pixel_to_meter:.6f}")
                     except:
                         pixel_to_meter = 0.005
                 else:
                     pixel_to_meter = 0.005
             
-            # ã‚¹ãƒ†ãƒƒãƒ—1: å¤‰æ›å®Ÿè¡Œãƒœã‚¿ãƒ³
+            # ƒXƒeƒbƒv1: •ÏŠ·Àsƒ{ƒ^ƒ“
             col_run, col_skip = st.columns([2, 1])
             with col_run:
-                run = st.button("ğŸš€ å¤‰æ›ã‚’å®Ÿè¡Œ", type="primary", use_container_width=True, key="step1_run")
+                run = st.button("?? •ÏŠ·‚ğÀs", type="primary", use_container_width=True, key="step1_run")
             with col_skip:
-                if st.button("â­ï¸ ã‚¹ã‚­ãƒƒãƒ—", use_container_width=True, key="step1_skip"):
+                if st.button("?? ƒXƒLƒbƒv", use_container_width=True, key="step1_skip"):
                     if st.session_state.get('user') is None:
-                        st.warning("ã‚¹ãƒ†ãƒƒãƒ—2ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+                        st.warning("ƒXƒeƒbƒv2‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
                     else:
                         st.session_state.workflow_step = 2
                         st.rerun()
         else:
-            # ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰å‰ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’è¨­å®š
+            # ƒAƒbƒvƒ[ƒh‘O‚ÌƒfƒtƒHƒ‹ƒg’l‚ğİ’è
             dpi = 300
             black_threshold = 190
             min_thickness = 8
@@ -2173,29 +2173,29 @@ def main():
             margin_horizontal = 5
             run = False
 
-        # é€”ä¸­çµŒéã®è¡¨ç¤ºå¯å¦ï¼ˆFalseã§æœ€çµ‚çµæœã®ã¿è¡¨ç¤ºï¼‰
+        # “r’†Œo‰ß‚Ì•\¦‰Â”ÛiFalse‚ÅÅIŒ‹‰Ê‚Ì‚İ•\¦j
         show_progress = False
 
         if run:
             if uploaded is None:
-                st.error("ãƒ•ã‚¡ã‚¤ãƒ«ãŒæœªé¸æŠã§ã™ã€‚å…ˆã«PDF/ç”»åƒã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„ã€‚")
+                st.error("ƒtƒ@ƒCƒ‹‚ª–¢‘I‘ğ‚Å‚·Bæ‚ÉPDF/‰æ‘œ‚ğƒAƒbƒvƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢B")
                 st.stop()
-            # å‡ºåŠ›ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã§åˆ†é›¢ï¼‰
+            # o—ÍƒfƒBƒŒƒNƒgƒŠiƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚Å•ª—£j
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
             out_dir = OUTPUTS_DIR / f"run_{ts}"
             out_dir.mkdir(parents=True, exist_ok=True)
 
-            # å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜
+            # “ü—Íƒtƒ@ƒCƒ‹•Û‘¶
             input_suffix = Path(uploaded.name).suffix.lower()
             input_path = out_dir / f"input{input_suffix}"
             _save_uploaded_file(uploaded, input_path)
             if show_progress:
-                st.success(f"å…¥åŠ›ã‚’ä¿å­˜: {input_path}")
+                st.success(f"“ü—Í‚ğ•Û‘¶: {input_path}")
 
-            # PDFãªã‚‰ç”»åƒã¸ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
+            # PDF‚È‚ç‰æ‘œ‚ÖƒŒƒ“ƒ_ƒŠƒ“ƒO
             if input_suffix == ".pdf":
                 if show_progress:
-                    st.write(f"PDFã‚’ç”»åƒã«å¤‰æ›ä¸­â€¦ (ãƒšãƒ¼ã‚¸ {page_number + 1})")
+                    st.write(f"PDF‚ğ‰æ‘œ‚É•ÏŠ·’†c (ƒy[ƒW {page_number + 1})")
                 source_image = out_dir / "source.png"
                 pdf_to_image(str(input_path), output_path=str(source_image), page_number=page_number, dpi=dpi)
                 image_path = source_image
@@ -2203,7 +2203,7 @@ def main():
                 image_path = input_path
 
             if show_progress:
-                st.write("å£ç·šæŠ½å‡ºã¨ãƒã‚¤ã‚ºé™¤å»ã‚’å®Ÿè¡Œä¸­â€¦")
+                st.write("•Çü’Šo‚ÆƒmƒCƒYœ‹‚ğÀs’†c")
             try:
                 refined_img, refined_path = refine_floor_plan_from_image(
                     str(image_path), 
@@ -2215,63 +2215,63 @@ def main():
                 )
                 refined_path = Path(refined_path)
                 
-                # refinedç”»åƒã‚’out_dirã«ç§»å‹•
+                # refined‰æ‘œ‚ğout_dir‚ÉˆÚ“®
                 refined_dest = out_dir / refined_path.name
                 if refined_path.exists() and refined_path != refined_dest:
                     refined_path.rename(refined_dest)
                     refined_path = refined_dest
                     if show_progress:
-                        st.success(f"å£ç·šæŠ½å‡ºå®Œäº†: {refined_path.name}")
+                        st.success(f"•Çü’ŠoŠ®—¹: {refined_path.name}")
             except Exception as e:
-                st.error(f"å£ç·šæŠ½å‡ºã§ã‚¨ãƒ©ãƒ¼: {e}")
+                st.error(f"•Çü’Šo‚ÅƒGƒ‰[: {e}")
                 return
 
-            # 3D JSON ç”Ÿæˆ
+            # 3D JSON ¶¬
             if show_progress:
-                st.write("3Dåº§æ¨™JSONã‚’ç”Ÿæˆä¸­â€¦")
+                st.write("3DÀ•WJSON‚ğ¶¬’†c")
             json_path = out_dir / "walls_3d.json"
             try:
                 result = process_image_to_3d(str(refined_path), str(json_path), wall_height=wall_height, pixel_to_meter=pixel_to_meter)
                 if result is None:
-                    st.error("âŒ 3Dåº§æ¨™ã®ç”Ÿæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚")
-                    st.warning("âš ï¸ åŸå› : refinedç”»åƒã‹ã‚‰å£ç·šãŒæ¤œå‡ºã§ãã¾ã›ã‚“ã§ã—ãŸã€‚")
+                    st.error("? 3DÀ•W‚Ì¶¬‚É¸”s‚µ‚Ü‚µ‚½B")
+                    st.warning("?? Œ´ˆö: refined‰æ‘œ‚©‚ç•Çü‚ªŒŸo‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B")
                     st.info(
-                        "**å¯¾ç­–:**\n\n"
-                        "- æœ€å°ç·šå¹…ã‚’å¤§ããã™ã‚‹ï¼ˆ8-12pxæ¨å¥¨ï¼‰\n\n"
-                        "- é»’é–¾å€¤ã‚’èª¿æ•´ã™ã‚‹ï¼ˆ190-210æ¨å¥¨ï¼‰\n\n"
-                        "- DPIã‚’ä¸Šã’ã‚‹ï¼ˆ400-600æ¨å¥¨ï¼‰"
+                        "**‘Îô:**\n\n"
+                        "- Å¬ü•‚ğ‘å‚«‚­‚·‚éi8-12px„§j\n\n"
+                        "- •è‡’l‚ğ’²®‚·‚éi190-210„§j\n\n"
+                        "- DPI‚ğã‚°‚éi400-600„§j"
                     )
-                    # ãƒ‡ãƒãƒƒã‚°ç”¨ï¼šrefinedç”»åƒãŒå®Ÿéš›ã«å­˜åœ¨ã™ã‚‹ã‹ç¢ºèª
+                    # ƒfƒoƒbƒO—pFrefined‰æ‘œ‚ªÀÛ‚É‘¶İ‚·‚é‚©Šm”F
                     if refined_path.exists():
-                        st.info(f"âœ“ refinedç”»åƒã¯ç”Ÿæˆã•ã‚Œã¦ã„ã¾ã™: {refined_path.name}")
+                        st.info(f"? refined‰æ‘œ‚Í¶¬‚³‚ê‚Ä‚¢‚Ü‚·: {refined_path.name}")
                     return
             except Exception as e:
-                st.error(f"âŒ 3Dåº§æ¨™ç”Ÿæˆã§ã‚¨ãƒ©ãƒ¼: {e}")
+                st.error(f"? 3DÀ•W¶¬‚ÅƒGƒ‰[: {e}")
                 import traceback
                 st.code(traceback.format_exc())
                 return
 
-            # 2Då¯è¦–åŒ–
+            # 2D‰Â‹‰»
             if show_progress:
-                st.write("2Då¯è¦–åŒ–ç”»åƒã‚’ç”Ÿæˆä¸­â€¦")
+                st.write("2D‰Â‹‰»‰æ‘œ‚ğ¶¬’†c")
             viz_path = out_dir / "visualization.png"
             try:
                 canvas = visualize_3d_walls(str(json_path), str(viz_path), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
             except Exception as e:
                 canvas = None
-                st.warning(f"å¯è¦–åŒ–ã®ç”Ÿæˆã«å¤±æ•—ã—ã¾ã—ãŸ: {e}")
+                st.warning(f"‰Â‹‰»‚Ì¶¬‚É¸”s‚µ‚Ü‚µ‚½: {e}")
 
-            # Three.js HTMLãƒ“ãƒ¥ãƒ¼ã‚¢ç”Ÿæˆ
+            # Three.js HTMLƒrƒ…[ƒA¶¬
             if show_progress:
-                st.write("3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLã‚’ç”Ÿæˆä¸­â€¦")
+                st.write("3Dƒrƒ…[ƒAHTML‚ğ¶¬’†c")
             viewer_html = out_dir / "viewer_3d.html"
             try:
                 _generate_3d_viewer_html(json_path, viewer_html)
             except Exception as e:
-                st.error(f"3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLç”Ÿæˆã§ã‚¨ãƒ©ãƒ¼: {e}")
+                st.error(f"3Dƒrƒ…[ƒAHTML¶¬‚ÅƒGƒ‰[: {e}")
                 return
 
-            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«çµæœã‚’ä¿å­˜ï¼ˆãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã§å†å®Ÿè¡Œã•ã‚Œã¦ã‚‚æ®‹ã™ï¼‰
+            # ƒZƒbƒVƒ‡ƒ“‚ÉŒ‹‰Ê‚ğ•Û‘¶iƒ_ƒEƒ“ƒ[ƒh‚ÅÄÀs‚³‚ê‚Ä‚àc‚·j
             st.session_state.out_dir = str(out_dir)
             st.session_state.refined_img = refined_img
             st.session_state.refined_name = refined_path.name
@@ -2287,16 +2287,16 @@ def main():
                 st.session_state.viz_bytes = None
                 st.session_state.viz_name = None
             
-            # ====== è‡ªå‹•çµåˆã‚’å®Ÿè¡Œ ======
+            # ====== ©“®Œ‹‡‚ğÀs ======
             try:
-                # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚’ 30px ã«å¤‰æ›´ã—ã¦èª¤çµåˆã‚’æŠ‘åˆ¶
+                # ƒfƒtƒHƒ‹ƒg‚ğ 30px ‚É•ÏX‚µ‚ÄŒëŒ‹‡‚ğ—}§
                 merge_radius = st.session_state.get("merge_radius", 55)
                 merge_angle = st.session_state.get("merge_angle", 15)
                 
                 merged_json_path = out_dir / "walls_3d_merged.json"
                 merged_viz_path = out_dir / "visualization_merged.png"
                 
-                # (è¡¨ç¤ºå‰Šé™¤) è‡ªå‹•çµåˆã§ä½¿ç”¨ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æƒ…å ±è¡¨ç¤ºã‚’å‰Šé™¤ã—ã¾ã—ãŸ
+                # (•\¦íœ) ©“®Œ‹‡‚Åg—p‚·‚éƒpƒ‰ƒ[ƒ^‚Ìî•ñ•\¦‚ğíœ‚µ‚Ü‚µ‚½
                 merger = WallAutoMerger(search_radius=merge_radius, angle_tolerance=merge_angle)
                 merger.process(str(refined_path), str(json_path), str(merged_json_path))
                 
@@ -2320,7 +2320,7 @@ def main():
                     st.session_state.merged_viewer_html_bytes = merged_viewer_path.read_bytes()
                     st.session_state.merged_viewer_html_name = merged_viewer_path.name
                 
-                # çµåˆæ¸ˆã¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæ¥­ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦è¨­å®š
+                # Œ‹‡Ï‚İƒtƒ@ƒCƒ‹‚ğì‹Æƒtƒ@ƒCƒ‹‚Æ‚µ‚Äİ’è
                 st.session_state.json_bytes = merged_json_path.read_bytes()
                 st.session_state.json_name = merged_json_path.name
                 st.session_state.viz_bytes = merged_viz_path.read_bytes()
@@ -2329,10 +2329,10 @@ def main():
                 st.session_state.viewer_html_name = merged_viewer_path.name
                 st.session_state.merged_processed = True
             except Exception as e:
-                st.warning(f"âš ï¸ è‡ªå‹•çµåˆã§ã‚¨ãƒ©ãƒ¼: {e}")
+                st.warning(f"?? ©“®Œ‹‡‚ÅƒGƒ‰[: {e}")
                 st.session_state.merged_processed = False
             
-            # ZIPç”Ÿæˆï¼ˆJSON+æŠ½å‡ºPNG+3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLï¼‰
+            # ZIP¶¬iJSON+’ŠoPNG+3Dƒrƒ…[ƒAHTMLj
             try:
                 zip_buf = io.BytesIO()
                 with zipfile.ZipFile(zip_buf, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -2347,72 +2347,72 @@ def main():
                 st.session_state.zip_bytes = None
                 st.session_state.zip_name = None
             st.session_state.processed = True
-            # st.success("å¤‰æ›ãŒå®Œäº†ã—ã¾ã—ãŸï¼")
+            # st.success("•ÏŠ·‚ªŠ®—¹‚µ‚Ü‚µ‚½I")
 
-            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«çµæœãŒã‚ã‚Œã°å¸¸ã«è¡¨ç¤ºï¼ˆãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã§ã®å†å®Ÿè¡Œã§ã‚‚æ¶ˆãˆãªã„ï¼‰
+            # ƒZƒbƒVƒ‡ƒ“‚ÉŒ‹‰Ê‚ª‚ ‚ê‚Îí‚É•\¦iƒ_ƒEƒ“ƒ[ƒh‚Å‚ÌÄÀs‚Å‚àÁ‚¦‚È‚¢j
             if st.session_state.processed:
                 st.session_state.setdefault('debug_log', []).append(
                     f"render: entering processed block (workflow_step={st.session_state.get('workflow_step')}, processed={st.session_state.get('processed')}, viewer_html={'yes' if st.session_state.get('viewer_html_bytes') else 'no'})"
                 )
-                # 3Dãƒ¢ãƒ‡ãƒ«ç”¨ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’å…ˆã«è¡¨ç¤º
-                st.subheader("ğŸ“Š 3Dãƒ¢ãƒ‡ãƒ«ç”¨ã‚¤ãƒ¡ãƒ¼ã‚¸")
+                # 3Dƒ‚ƒfƒ‹—pƒCƒ[ƒW‚ğæ‚É•\¦
+                st.subheader("?? 3Dƒ‚ƒfƒ‹—pƒCƒ[ƒW")
                 if st.session_state.viz_bytes is not None:
-                    # ç”»é¢ã‚µã‚¤ã‚ºã®50%ã«ç¸®å°è¡¨ç¤ºï¼ˆå·¦å¯„ã›ï¼‰
+                    # ‰æ–ÊƒTƒCƒY‚Ì50%‚Ék¬•\¦i¶Šñ‚¹j
                     col1, col2 = st.columns([0.5, 0.5])
                     with col1:
                         st.image(st.session_state.viz_bytes, use_container_width=True)
 
-                # å£ç·šæŠ½å‡ºçµæœã¯expanderã®ä¸­ã«æ ¼ç´ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§é–‰ã˜ã‚‹ï¼‰
-                with st.expander("ğŸ–¼ï¸ å£ç·šæŠ½å‡ºçµæœï¼ˆCADå›³é¢å‚ç…§ï¼‰", expanded=False):
+                # •Çü’ŠoŒ‹‰Ê‚Íexpander‚Ì’†‚ÉŠi”[iƒfƒtƒHƒ‹ƒg‚Å•Â‚¶‚éj
+                with st.expander("??? •Çü’ŠoŒ‹‰ÊiCAD}–ÊQÆj", expanded=False):
                     if st.session_state.refined_img is not None:
-                        # ç”»é¢ã‚µã‚¤ã‚ºã®50%ã«ç¸®å°è¡¨ç¤ºï¼ˆå·¦å¯„ã›ï¼‰
+                        # ‰æ–ÊƒTƒCƒY‚Ì50%‚Ék¬•\¦i¶Šñ‚¹j
                         col1, col2 = st.columns([0.5, 0.5])
                         with col1:
                             st.image(st.session_state.refined_img, clamp=True, use_container_width=True)
 
-                # èª¬æ˜æ–‡ã‚’è¿½åŠ 
+                # à–¾•¶‚ğ’Ç‰Á
                 st.success(
-                    "å¤‰æ›å®Œäº†ï¼ å£ã®åˆ†æ–­ã‚„éä¸è¶³ãŒã‚ã‚‹å ´åˆã¯ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ‰‹å‹•èª¿æ•´ã—ã¦å†å¤‰æ›ã™ã‚‹ã‹ã€æ‰‹å‹•ç·¨é›†ã§ä¿®æ­£å¯èƒ½ã§ã™ã€‚\n\n"
-                    "çª“ã¯æ‰‹å‹•ç·¨é›†ã§è¿½åŠ ã§ãã¾ã™ã€‚"
+                    "•ÏŠ·Š®—¹I •Ç‚Ì•ª’f‚â‰ß•s‘«‚ª‚ ‚éê‡‚Íƒpƒ‰ƒ[ƒ^‚ğè“®’²®‚µ‚ÄÄ•ÏŠ·‚·‚é‚©Aè“®•ÒW‚ÅC³‰Â”\‚Å‚·B\n\n"
+                    "‘‹‚Íè“®•ÒW‚Å’Ç‰Á‚Å‚«‚Ü‚·B"
                 )
 
-                # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãƒœã‚¿ãƒ³
+                # 3Dƒrƒ…[ƒAHTMLƒ_ƒEƒ“ƒ[ƒhƒ{ƒ^ƒ“
                 #if st.session_state.viewer_html_bytes:
                 #    st.download_button(
-                #        label="3Dãƒ¢ãƒ‡ãƒ«ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰",
+                #        label="3Dƒ‚ƒfƒ‹‚ğƒ_ƒEƒ“ƒ[ƒh",
                 #        data=st.session_state.viewer_html_bytes,
                 #        file_name=st.session_state.viewer_html_name,
                 #        mime="text/html"
                 #    )
 
-                # ã‚¹ãƒ†ãƒƒãƒ—1: èª­ã¿å–ã‚Šå®Œäº†ãƒœã‚¿ãƒ³ï¼ˆå·¦å¯„ã›ã€æŠ¼ã™ã¨Step2ã¸é·ç§»ï¼‰
-                # ã‚¹ãƒ†ãƒƒãƒ—1: èª­ã¿å–ã‚Šå®Œäº†ãƒœã‚¿ãƒ³ï¼ˆå·¦å¯„ã›ã€æŠ¼ã™ã¨Step2ã¸é·ç§»ã—3Dè¡¨ç¤ºã‚’é–‹ãï¼‰
+                # ƒXƒeƒbƒv1: “Ç‚İæ‚èŠ®—¹ƒ{ƒ^ƒ“i¶Šñ‚¹A‰Ÿ‚·‚ÆStep2‚Ö‘JˆÚj
+                # ƒXƒeƒbƒv1: “Ç‚İæ‚èŠ®—¹ƒ{ƒ^ƒ“i¶Šñ‚¹A‰Ÿ‚·‚ÆStep2‚Ö‘JˆÚ‚µ3D•\¦‚ğŠJ‚­j
                 st.session_state.setdefault('debug_log', []).append("render: before creating step1_complete button")
-                # ãƒœã‚¿ãƒ³åˆ—å¹…ã‚’åºƒã’ã€ãƒœã‚¿ãƒ³ã‚’ã‚³ãƒ³ãƒ†ãƒŠå¹…ã„ã£ã±ã„ã«è¡¨ç¤ºã—ã¦æŠ˜è¿”ã—ã‚’é˜²æ­¢
+                # ƒ{ƒ^ƒ“—ñ•‚ğL‚°Aƒ{ƒ^ƒ“‚ğƒRƒ“ƒeƒi•‚¢‚Á‚Ï‚¢‚É•\¦‚µ‚ÄÜ•Ô‚µ‚ğ–h~
                 col_btn, col_rest = st.columns([3, 7])
                 with col_btn:
-                    #st.button("âœ… èª­ã¿å–ã‚Šå®Œäº†", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
-                    st.button("âœ… èª­ã¿å–ã‚Šå®Œäº†", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2, True), use_container_width=True)
+                    #st.button("? “Ç‚İæ‚èŠ®—¹", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2,), use_container_width=True)
+                    st.button("? “Ç‚İæ‚èŠ®—¹", type="primary", key="step1_complete", on_click=_set_workflow_step, args=(2, True), use_container_width=True)
 
 
-    with st.expander("Step 2ï¼šã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£", expanded=(st.session_state.workflow_step == 2)):
+    with st.expander("Step 2FƒXƒP[ƒ‹Z³", expanded=(st.session_state.workflow_step == 2)):
         # Gate Step 2 UI behind login: show warning and skip internals when not logged in
         if st.session_state.get('user') is None:
-            st.warning("ã‚¹ãƒ†ãƒƒãƒ—2ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+            st.warning("ƒXƒeƒbƒv2‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
             #st.stop()
         else:
             if st.session_state.workflow_step >= 2 and st.session_state.processed:
                 st.divider()
-                st.markdown("## ã‚¹ãƒ†ãƒƒãƒ— â‘¡  ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£")
+                st.markdown("## ƒXƒeƒbƒv ‡A  ƒXƒP[ƒ‹Z³")
             st.info(
-                "åŸºæº–ã¨ãªã‚‹å£ã‚’é¸æŠã—ã¦ã€ä¿®æ­£ã‚¹ã‚±ãƒ¼ãƒ«å€¤ã‚’å…¥åŠ›ã—ã¦å®Ÿè¡Œã—ã¦ãã ã•ã„ã€‚(ä¸€æ¡CADå›³é¢ 1ãƒã‚¹ = ç·¨é›†ç”»é¢ 2ãƒã‚¹æ¨å¥¨)\n\n"
-                "å¤‰æ›´ãªã„å ´åˆã¯ã€Œã‚¹ã‚­ãƒƒãƒ—ã—ã¦æ¬¡ã¸ã€ã‚’é¸æŠã—ã¦ãã ã•ã„"
+                "Šî€‚Æ‚È‚é•Ç‚ğ‘I‘ğ‚µ‚ÄAC³ƒXƒP[ƒ‹’l‚ğ“ü—Í‚µ‚ÄÀs‚µ‚Ä‚­‚¾‚³‚¢B(ˆêğCAD}–Ê 1ƒ}ƒX = •ÒW‰æ–Ê 2ƒ}ƒX„§)\n\n"
+                "•ÏX‚È‚¢ê‡‚ÍuƒXƒLƒbƒv‚µ‚ÄŸ‚Öv‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢"
             )
 
-            # å£é¸æŠç”¨ã®ç°¡æ˜“ç·¨é›†ã‚¨ãƒªã‚¢ã‚’å³æ™‚è¡¨ç¤º
-            #st.caption("å£ç·šã‚’1å›ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨èµ¤è‰²ã«ãƒã‚¤ãƒ©ã‚¤ãƒˆã—ã¾ã™ã€‚é¸æŠã—ãªã„å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—ã§æ¬¡ã¸é€²ã‚ã¾ã™ã€‚")
+            # •Ç‘I‘ğ—p‚ÌŠÈˆÕ•ÒWƒGƒŠƒA‚ğ‘¦•\¦
+            #st.caption("•Çü‚ğ1‰ñƒNƒŠƒbƒN‚·‚é‚ÆÔF‚ÉƒnƒCƒ‰ƒCƒg‚µ‚Ü‚·B‘I‘ğ‚µ‚È‚¢ê‡‚ÍƒXƒLƒbƒv‚ÅŸ‚Öi‚ß‚Ü‚·B")
 
-            # åˆæœŸåŒ–
+            # ‰Šú‰»
             if "selected_wall_for_calibration" not in st.session_state:
                 st.session_state.selected_wall_for_calibration = None
             if "scale_last_click" not in st.session_state:
@@ -2427,11 +2427,11 @@ def main():
                         st.session_state.viz_bytes, max_width=DISPLAY_IMAGE_WIDTH
                     )
 
-                    # å£ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ã¨åº§æ¨™å¤‰æ›ï¼ˆstreamlit_app.pyã¨åŒã˜ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+                    # •Çƒf[ƒ^“Ç‚İ‚İ‚ÆÀ•W•ÏŠ·istreamlit_app.py‚Æ“¯‚¶ƒƒWƒbƒNj
                     json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                     walls = json_data.get("walls", [])
                     scale_px = int(st.session_state.viz_scale)
-                    margin = 50  # streamlit_app.pyã¨åŒã˜ãƒãƒ¼ã‚¸ãƒ³
+                    margin = 50  # streamlit_app.py‚Æ“¯‚¶ƒ}[ƒWƒ“
                     all_x, all_y = [], []
                     for w in walls:
                         s = w.get("start", [])
@@ -2442,7 +2442,7 @@ def main():
                     if all_x and all_y:
                         min_x, max_x = min(all_x), max(all_x)
                         min_y, max_y = min(all_y), max(all_y)
-                        # visualizationç”»åƒã®ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ï¼ˆYåº§æ¨™åè»¢ã‚’è€ƒæ…®ï¼‰
+                        # visualization‰æ‘œ‚ÌƒTƒCƒY‚ğŒvZiYÀ•W”½“]‚ğl—¶j
                         img_width_calc = int((max_x - min_x) * scale_px) + 2 * margin
                         img_height_calc = int((max_y - min_y) * scale_px) + 2 * margin
                     else:
@@ -2451,11 +2451,11 @@ def main():
                         img_width_calc = orig_w
                         img_height_calc = orig_h
 
-                    # ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤æç”»ç”¨ã«ã‚³ãƒ”ãƒ¼
+                    # ƒI[ƒo[ƒŒƒC•`‰æ—p‚ÉƒRƒs[
                     overlay = disp_img.copy()
                     draw = ImageDraw.Draw(overlay)
 
-                    # é¸æŠã•ã‚ŒãŸå£ã‚’ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤º
+                    # ‘I‘ğ‚³‚ê‚½•Ç‚ğƒnƒCƒ‰ƒCƒg•\¦
                     target_wall_data = None
                     px_distance = None
                     if st.session_state.selected_wall_for_calibration:
@@ -2463,20 +2463,20 @@ def main():
                         s = selected_wall.get("start", [])
                         e = selected_wall.get("end", [])
                         if len(s) >= 2 and len(e) >= 2:
-                            # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›ï¼ˆYåº§æ¨™åè»¢ã‚’è€ƒæ…®ï¼‰
+                            # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·iYÀ•W”½“]‚ğl—¶j
                             x1 = int((s[0] - min_x) * scale_px) + margin
                             y1 = img_height_calc - (int((s[1] - min_y) * scale_px) + margin)
                             x2 = int((e[0] - min_x) * scale_px) + margin
                             y2 = img_height_calc - (int((e[1] - min_y) * scale_px) + margin)
 
-                            # è¡¨ç¤ºåº§æ¨™ã§èµ¤ç·šã‚’æç”»
+                            # •\¦À•W‚ÅÔü‚ğ•`‰æ
                             dx1 = int(x1 * scale_disp)
                             dy1 = int(y1 * scale_disp)
                             dx2 = int(x2 * scale_disp)
                             dy2 = int(y2 * scale_disp)
                             draw.line((dx1, dy1, dx2, dy2), fill=(255, 0, 0), width=4)
 
-                            # å£ãƒ‡ãƒ¼ã‚¿ã‚’æº–å‚™
+                            # •Çƒf[ƒ^‚ğ€”õ
                             wall_length_px = math.hypot(x2 - x1, y2 - y1)
                             target_wall_data = {
                                 'wall': selected_wall,
@@ -2488,12 +2488,12 @@ def main():
                             px_distance = wall_length_px
 
 
-                        # ã‚¹ã‚±ãƒ¼ãƒ«å…¥åŠ›ã¨åæ˜ 
+                        # ƒXƒP[ƒ‹“ü—Í‚Æ”½‰f
                         if px_distance is not None and target_wall_data is not None:
-                            # ãƒã‚¹æ•°å…¥åŠ›ãƒ•ã‚©ãƒ¼ãƒ 
+                            # ƒ}ƒX”“ü—ÍƒtƒH[ƒ€
                             default_grid = st.session_state.get("step3_grid_input_val", 1.0)
                         grid_count = st.number_input(
-                            "ã“ã®å£ã¯ä¸€æ¡å·¥å‹™åº—CADå›³é¢ä¸Šã§ä½•ãƒã‚¹åˆ†ã§ã™ã‹ï¼Ÿ (1ãƒã‚¹=0.9m)",
+                            "‚±‚Ì•Ç‚ÍˆêğH–±“XCAD}–Êã‚Å‰½ƒ}ƒX•ª‚Å‚·‚©H (1ƒ}ƒX=0.9m)",
                             min_value=0.1,
                             max_value=100.0,
                             value=float(default_grid),
@@ -2502,12 +2502,12 @@ def main():
                         )
                         st.session_state.step3_grid_input_val = grid_count
                         
-                        if st.button("ğŸ’¾ ã“ã®ã‚¹ã‚±ãƒ¼ãƒ«ã§æ›´æ–°", type="primary", use_container_width=True, key="step3_apply_scale"):
+                        if st.button("?? ‚±‚ÌƒXƒP[ƒ‹‚ÅXV", type="primary", use_container_width=True, key="step3_apply_scale"):
                             try:
-                                # å®Ÿæ¸¬è·é›¢ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½ï¼‰
-                                actual_distance_m = grid_count * 0.9  # 1ãƒã‚¹ = 0.9m = 90cm
+                                # À‘ª‹——£iƒ[ƒgƒ‹’PˆÊj
+                                actual_distance_m = grid_count * 0.9  # 1ƒ}ƒX = 0.9m = 90cm
                                 
-                                # ç¾åœ¨ã®å£ã®é•·ã•ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½ï¼‰ã‚’å–å¾—
+                                # Œ»İ‚Ì•Ç‚Ì’·‚³iƒ[ƒgƒ‹’PˆÊj‚ğæ“¾
                                 current_length_m = target_wall_data['wall'].get('length')
                                 if current_length_m is None:
                                     dx_m = target_wall_data['end_m'][0] - target_wall_data['start_m'][0]
@@ -2515,48 +2515,48 @@ def main():
                                     current_length_m = math.sqrt(dx_m**2 + dy_m**2)
                                 
                                 if current_length_m <= 0:
-                                    st.error("âŒ ç¾åœ¨ã®å£é•·ãŒ0mã®ãŸã‚å†è¨ˆç®—ã§ãã¾ã›ã‚“ã€‚åˆ¥ã®å£ã§è©¦ã—ã¦ãã ã•ã„ã€‚")
+                                    st.error("? Œ»İ‚Ì•Ç’·‚ª0m‚Ì‚½‚ßÄŒvZ‚Å‚«‚Ü‚¹‚ñB•Ê‚Ì•Ç‚Å‚µ‚Ä‚­‚¾‚³‚¢B")
                                 else:
-                                    # ã‚¹ã‚±ãƒ¼ãƒ«æ¯”ç‡ã‚’è¨ˆç®—ï¼ˆå®Ÿæ¸¬/ç¾åœ¨ï¼‰
+                                    # ƒXƒP[ƒ‹”ä—¦‚ğŒvZiÀ‘ª/Œ»İj
                                     scale_ratio = actual_distance_m / current_length_m
                                     
-                                    # ç¾åœ¨ã®JSONã‚’èª­ã¿è¾¼ã¿
+                                    # Œ»İ‚ÌJSON‚ğ“Ç‚İ‚İ
                                     import copy
                                     out_dir = Path(st.session_state.out_dir)
                                     json_path = out_dir / st.session_state.json_name
                                     json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                     old_pixel_to_meter = json_data.get("metadata", {}).get("pixel_to_meter", 0.005) or 0.005
                                     
-                                    # æ–°ã—ã„pixel_to_meterã‚’è¨ˆç®—
+                                    # V‚µ‚¢pixel_to_meter‚ğŒvZ
                                     new_pixel_to_meter = old_pixel_to_meter * scale_ratio
                                     
-                                    # å„å£ã®åº§æ¨™ã‚’ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
+                                    # Še•Ç‚ÌÀ•W‚ğƒXƒP[ƒ‹•ÏŠ·
                                     calibrated_json = copy.deepcopy(json_data)
                                     for wall in calibrated_json.get("walls", []):
                                         if "start" in wall and "end" in wall:
-                                            # åº§æ¨™ã‚’ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›ï¼ˆX-Yå¹³é¢ã®ã¿ï¼‰
+                                            # À•W‚ğƒXƒP[ƒ‹•ÏŠ·iX-Y•½–Ê‚Ì‚İj
                                             wall["start"] = [round(wall["start"][0] * scale_ratio, 3),
                                                         round(wall["start"][1] * scale_ratio, 3)]
                                             wall["end"] = [round(wall["end"][0] * scale_ratio, 3),
                                                         round(wall["end"][1] * scale_ratio, 3)]
-                                            # é•·ã•ã‚’å†è¨ˆç®—ï¼ˆX-Yå¹³é¢ã®é•·ã•ï¼‰
+                                            # ’·‚³‚ğÄŒvZiX-Y•½–Ê‚Ì’·‚³j
                                             dx = wall["end"][0] - wall["start"][0]
                                             dy = wall["end"][1] - wall["start"][1]
                                             wall["length"] = round(math.sqrt(dx**2 + dy**2), 3)
                                             
-                                            # é«˜ã•ã¯2.4må›ºå®šï¼ˆã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›ã—ãªã„ï¼‰
-                                            # ä¸€æ¡å·¥å‹™åº—ã®æ¨™æº–å¤©äº•é«˜ã¯2.4mã§å›ºå®š
+                                            # ‚‚³‚Í2.4mŒÅ’èiƒXƒP[ƒ‹•ÏŠ·‚µ‚È‚¢j
+                                            # ˆêğH–±“X‚Ì•W€“Vˆä‚‚Í2.4m‚ÅŒÅ’è
                                             if "height" not in wall or wall.get("height") != 2.4:
                                                 wall["height"] = 2.4
                                             
-                                            # åšã•ã¯10cmå›ºå®šï¼ˆã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›ã—ãªã„ï¼‰
-                                            # ä¸€æ¡å·¥å‹™åº—ã®æ¨™æº–å£åšã¯10cmã§å›ºå®š
+                                            # Œú‚³‚Í10cmŒÅ’èiƒXƒP[ƒ‹•ÏŠ·‚µ‚È‚¢j
+                                            # ˆêğH–±“X‚Ì•W€•ÇŒú‚Í10cm‚ÅŒÅ’è
                                             wall["thickness"] = 0.1
                                     
-                                    # ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°
+                                    # ƒƒ^ƒf[ƒ^‚ğXV
                                     calibrated_json.setdefault("metadata", {})["pixel_to_meter"] = new_pixel_to_meter
                                     
-                                    # ãƒ‡ãƒãƒƒã‚°æƒ…å ±ï¼šæ ¡æ­£å¾Œã®åº§æ¨™ç¯„å›²ã‚’è¨ˆç®—
+                                    # ƒfƒoƒbƒOî•ñFZ³Œã‚ÌÀ•W”ÍˆÍ‚ğŒvZ
                                     all_x_after = []
                                     all_y_after = []
                                     for w in calibrated_json.get("walls", []):
@@ -2570,11 +2570,11 @@ def main():
                                         width_after = max_x_after - min_x_after
                                         height_after = max_y_after - min_y_after
                                     
-                                    # ä¿å­˜ã¨å†å¯è¦–åŒ–
+                                    # •Û‘¶‚ÆÄ‰Â‹‰»
                                     json_path.write_text(json.dumps(calibrated_json, indent=2, ensure_ascii=False))
                                     st.session_state.json_bytes = json_path.read_bytes()
 
-                                    # ã¾ãšã¯å¿…ãš 3D ãƒ“ãƒ¥ãƒ¼ã‚¢ HTML ã‚’å†ç”Ÿæˆã—ã¦ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«åæ˜ 
+                                    # ‚Ü‚¸‚Í•K‚¸ 3D ƒrƒ…[ƒA HTML ‚ğÄ¶¬‚µ‚ÄƒZƒbƒVƒ‡ƒ“‚É”½‰f
                                     try:
                                         viewer_html = out_dir / (st.session_state.viewer_html_name if st.session_state.get('viewer_html_name') else 'viewer_3d.html')
                                         _generate_3d_viewer_html(json_path, viewer_html)
@@ -2588,7 +2588,7 @@ def main():
                                         import traceback
                                         st.session_state.setdefault('debug_log', []).append('viewer regen failed: ' + traceback.format_exc())
 
-                                    # å¯è¦–åŒ–ç”»åƒã¯å¯èƒ½ãªã‚‰æ›´æ–°ï¼ˆãƒ“ãƒ¥ãƒ¼ã‚¢ã¨ç‹¬ç«‹ã—ã¦æ›´æ–°ï¼‰
+                                    # ‰Â‹‰»‰æ‘œ‚Í‰Â”\‚È‚çXViƒrƒ…[ƒA‚Æ“Æ—§‚µ‚ÄXVj
                                     viz_path = out_dir / st.session_state.viz_name
                                     try:
                                         visualize_3d_walls(
@@ -2602,42 +2602,42 @@ def main():
                                             st.session_state.viz_bytes = viz_path.read_bytes()
                                     except Exception:
                                         st.session_state.setdefault('debug_log', []).append('viz regen failed: ' + traceback.format_exc())
-                                    # å¾Œç¶šç”¨ã«çŠ¶æ…‹æ›´æ–°
+                                    # Œã‘±—p‚Éó‘ÔXV
                                     st.session_state.scale_calibration_done = True
                                     st.session_state.selected_wall_for_calibration = None
                                     st.session_state.scale_last_click = None
                                     st.session_state.step3_grid_input_val = grid_count
-                                    # 3Dè¡¨ç¤ºã‚’é–‹ã
+                                    # 3D•\¦‚ğŠJ‚­
                                     st.session_state.open_3d_expander = True
-                                    # æ‰‹å‹•ç·¨é›†ã¸é·ç§»
+                                    # è“®•ÒW‚Ö‘JˆÚ
                                     if st.session_state.get('user') is None:
-                                        st.warning("ã‚¹ãƒ†ãƒƒãƒ—3ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+                                        st.warning("ƒXƒeƒbƒv3‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
                                     else:
                                         st.session_state.workflow_step = 3
                                         st.rerun()
                             except Exception as e:
-                                st.error(f"âŒ ã‚¹ã‚±ãƒ¼ãƒ«æ›´æ–°ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: {e}")
+                                st.error(f"? ƒXƒP[ƒ‹XV‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {e}")
                                 import traceback
                                 st.code(traceback.format_exc())
 
-                    # ã‚ºãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ï¼ˆã‚¹ãƒ†ãƒƒãƒ—2ï¼‰
+                    # ƒY[ƒ€ƒRƒ“ƒgƒ[ƒ‹iƒXƒeƒbƒv2j
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
                     
                     col_zoom_label, col_zoom1, col_zoom2, col_zoom_space = st.columns([3, 1, 1, 7])
                     with col_zoom_label:
-                        st.markdown(f"è¡¨ç¤ºã‚µã‚¤ã‚ºèª¿æ•´: {st.session_state.editor_zoom_level*100:.0f}%")
+                        st.markdown(f"•\¦ƒTƒCƒY’²®: {st.session_state.editor_zoom_level*100:.0f}%")
                     with col_zoom1:
-                        if st.button("ğŸ”âˆ’", key="step2_zoom_out"):
+                        if st.button("???", key="step2_zoom_out"):
                             st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
-                        if st.button("ğŸ”+", key="step2_zoom_in"):
+                        if st.button("??+", key="step2_zoom_in"):
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     
                     
-                    # ã‚ºãƒ¼ãƒ é©ç”¨
+                    # ƒY[ƒ€“K—p
                     zoom_level = st.session_state.get('editor_zoom_level', 1.0)
                     if zoom_level != 1.0:
                         w, h = overlay.size
@@ -2648,56 +2648,56 @@ def main():
                     else:
                         overlay_resized = overlay
                     
-                    # ç”»åƒãƒ‡ãƒ¼ã‚¿ã®æ¤œè¨¼ï¼ˆè¡¨ç¤ºã‚¨ãƒ©ãƒ¼å¯¾ç­– - ã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒã˜ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+                    # ‰æ‘œƒf[ƒ^‚ÌŒŸØi•\¦ƒGƒ‰[‘Îô - ƒXƒeƒbƒv3‚Æ“¯‚¶ƒƒWƒbƒNj
                     if overlay_resized is None:
-                        st.warning("âš ï¸ ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’å†ç”Ÿæˆã—ã¦ã„ã¾ã™...")
+                        st.warning("?? ‰æ‘œƒf[ƒ^‚ğÄ¶¬‚µ‚Ä‚¢‚Ü‚·...")
                         st.rerun()
                     
                     if overlay_resized.size[0] == 0 or overlay_resized.size[1] == 0:
-                        st.warning("âš ï¸ ç”»åƒã‚µã‚¤ã‚ºãŒä¸æ­£ã§ã™ã€‚å†è©¦è¡Œã—ã¦ã„ã¾ã™...")
-                        # ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã‚’ãƒªã‚»ãƒƒãƒˆ
+                        st.warning("?? ‰æ‘œƒTƒCƒY‚ª•s³‚Å‚·BÄs‚µ‚Ä‚¢‚Ü‚·...")
+                        # ƒY[ƒ€ƒŒƒxƒ‹‚ğƒŠƒZƒbƒg
                         st.session_state.editor_zoom_level = 1.0
                         st.rerun()
                     
-                    # æ³¨é‡ˆã‚’è¡¨ç¤ºï¼ˆã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒã˜ï¼‰
+                    # ’ß‚ğ•\¦iƒXƒeƒbƒv3‚Æ“¯‚¶j
                     st.markdown(
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                        <b>æ³¨:</b> ç·¨é›†ç”»é¢ãŒè¡¨ç¤ºã•ã‚Œãªã„ã¨ãã¯é¸æŠãƒªã‚»ãƒƒãƒˆã‹è¡¨ç¤ºã‚µã‚¤ã‚ºèª¿æ•´ã‚’æŠ¼ã—ã¦ãã ã•ã„ã€‚
+                        <b>’:</b> •ÒW‰æ–Ê‚ª•\¦‚³‚ê‚È‚¢‚Æ‚«‚Í‘I‘ğƒŠƒZƒbƒg‚©•\¦ƒTƒCƒY’²®‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢B
                         </p>
                         """,
                         unsafe_allow_html=True
                     )
                     
-                    # ã‚­ãƒ¼ã‚’å‹•çš„ã«ç”Ÿæˆï¼ˆã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒæ§˜ã«çŠ¶æ…‹ã‚’åæ˜ ï¼‰
+                    # ƒL[‚ğ“®“I‚É¶¬iƒXƒeƒbƒv3‚Æ“¯—l‚Éó‘Ô‚ğ”½‰fj
                     if 'calibration_reset_counter' not in st.session_state:
                         st.session_state.calibration_reset_counter = 0
                     
                     selected_wall_id = st.session_state.selected_wall_for_calibration.get('id', 'none') if st.session_state.selected_wall_for_calibration else 'none'
                     calib_key = f"step2_calib_click_{selected_wall_id}_{st.session_state.calibration_reset_counter}"
 
-                    # ã‚¯ãƒªãƒƒã‚¯å—ä»˜ï¼ˆè¡¨ç¤ºç”»åƒï¼‰
+                    # ƒNƒŠƒbƒNó•ti•\¦‰æ‘œj
                     click = streamlit_image_coordinates(overlay_resized, key=calib_key)
 
-                    # ã‚¯ãƒªãƒƒã‚¯å‡¦ç†ï¼ˆå£é¸æŠæ–¹å¼ - ã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒã˜åº§æ¨™å¤‰æ›ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+                    # ƒNƒŠƒbƒNˆ—i•Ç‘I‘ğ•û® - ƒXƒeƒbƒv3‚Æ“¯‚¶À•W•ÏŠ·ƒƒWƒbƒNj
                     if click and click.get("x") is not None:
                         cur = (click["x"], click["y"])
                         if st.session_state.scale_last_click != cur:
                             st.session_state.scale_last_click = cur
                             
-                            # ã‚ºãƒ¼ãƒ è£œæ­£ã‚’é©ç”¨ï¼ˆã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒã˜ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+                            # ƒY[ƒ€•â³‚ğ“K—piƒXƒeƒbƒv3‚Æ“¯‚¶ƒƒWƒbƒNj
                             zoom_level = st.session_state.get('editor_zoom_level', 1.0)
                             adjusted_x = click["x"] / zoom_level
                             adjusted_y = click["y"] / zoom_level
                             
-                            # å…ƒã®åº§æ¨™ã«å¤‰æ›ï¼ˆã‚¹ãƒ†ãƒƒãƒ—3ã¨åŒã˜ _display_to_original é–¢æ•°ã‚’ä½¿ç”¨ï¼‰
+                            # Œ³‚ÌÀ•W‚É•ÏŠ·iƒXƒeƒbƒv3‚Æ“¯‚¶ _display_to_original ŠÖ”‚ğg—pj
                             if scale_disp != 1.0:
                                 orig_click_x, orig_click_y = _display_to_original(adjusted_x, adjusted_y, scale_disp)
                             else:
                                 orig_click_x = adjusted_x
                                 orig_click_y = adjusted_y
                             
-                            # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡ºï¼ˆå…ƒç”»åƒã®åº§æ¨™ç³»ã§ï¼‰
+                            # ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸoiŒ³‰æ‘œ‚ÌÀ•WŒn‚Åj
                             nearest_wall, distance = _find_nearest_wall_from_click(
                                 int(orig_click_x), int(orig_click_y),
                                 walls, scale_px, margin,
@@ -2706,152 +2706,152 @@ def main():
                             )
                             
                             if nearest_wall:
-                                # å£ã‚’é¸æŠ
+                                # •Ç‚ğ‘I‘ğ
                                 st.session_state.selected_wall_for_calibration = nearest_wall
                             else:
-                                # é–¾å€¤å¤–ã®å ´åˆã¯é¸æŠè§£é™¤
+                                # è‡’lŠO‚Ìê‡‚Í‘I‘ğ‰ğœ
                                 st.session_state.selected_wall_for_calibration = None
                             
                             st.rerun()
 
                     col_reset = st.columns(2)[0]
                     with col_reset:
-                        if st.button("ğŸ”„ é¸æŠã‚’ãƒªã‚»ãƒƒãƒˆ", use_container_width=True, key="step3_calib_reset"):
+                        if st.button("?? ‘I‘ğ‚ğƒŠƒZƒbƒg", use_container_width=True, key="step3_calib_reset"):
                             st.session_state.selected_wall_for_calibration = None
                             st.session_state.scale_last_click = None
                             st.session_state.calibration_reset_counter = st.session_state.get('calibration_reset_counter', 0) + 1
                             st.rerun()
 
-                    # ã‚¹ã‚±ãƒ¼ãƒ«é©ç”¨æ¸ˆã¿ã®æ¡ˆå†…ï¼ˆé·ç§»ã¯é©ç”¨æ™‚ã«å®Ÿæ–½æ¸ˆã¿ï¼‰
+                    # ƒXƒP[ƒ‹“K—pÏ‚İ‚ÌˆÄ“ài‘JˆÚ‚Í“K—p‚ÉÀ{Ï‚İj
                     if st.session_state.get("scale_calibration_done"):
-                        st.success("ã‚¹ã‚±ãƒ¼ãƒ«ã‚’é©ç”¨ã—ã¾ã—ãŸã€‚æ‰‹å‹•ç·¨é›†ã«é€²ã‚“ã§ãã ã•ã„ã€‚")
+                        st.success("ƒXƒP[ƒ‹‚ğ“K—p‚µ‚Ü‚µ‚½Bè“®•ÒW‚Éi‚ñ‚Å‚­‚¾‚³‚¢B")
                 except Exception as e:
-                    st.error(f"ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ãƒ“ãƒ¥ãƒ¼è¡¨ç¤ºã‚¨ãƒ©ãƒ¼: {e}")
+                    st.error(f"ƒXƒP[ƒ‹Z³ƒrƒ…[•\¦ƒGƒ‰[: {e}")
                 
-                # ã‚¹ã‚­ãƒƒãƒ—ã—ã¦æ¬¡ã¸ãƒœã‚¿ãƒ³ã‚’æœ€å¾Œã«é…ç½®
-                if st.button("â­ï¸ ã‚¹ã‚­ãƒƒãƒ—ã—ã¦æ¬¡ã¸", use_container_width=True, key="step3_skip"):
+                # ƒXƒLƒbƒv‚µ‚ÄŸ‚Öƒ{ƒ^ƒ“‚ğÅŒã‚É”z’u
+                if st.button("?? ƒXƒLƒbƒv‚µ‚ÄŸ‚Ö", use_container_width=True, key="step3_skip"):
                     if st.session_state.get('user') is None:
-                        st.warning("ã‚¹ãƒ†ãƒƒãƒ—3ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+                        st.warning("ƒXƒeƒbƒv3‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
                     else:
                         st.session_state.workflow_step = 3
                         st.session_state.open_3d_expander = True
                         st.rerun()
-    # ============= ã‚¹ãƒ†ãƒƒãƒ—3: æ‰‹å‹•ç·¨é›† =============
-    with st.expander("Step 3ï¼šæ‰‹å‹•ç·¨é›†", expanded=(st.session_state.workflow_step == 3)):
+    # ============= ƒXƒeƒbƒv3: è“®•ÒW =============
+    with st.expander("Step 3Fè“®•ÒW", expanded=(st.session_state.workflow_step == 3)):
         # Gate Step 3 UI behind login: show warning and skip internals when not logged in
         if st.session_state.get('user') is None:
-            st.warning("ã‚¹ãƒ†ãƒƒãƒ—3ã¯ãƒ­ã‚°ã‚¤ãƒ³ãŒå¿…è¦ã§ã™ã€‚ã‚µã‚¤ãƒ‰ãƒãƒ¼ã§ãƒ­ã‚°ã‚¤ãƒ³ã—ã¦ãã ã•ã„ã€‚")
+            st.warning("ƒXƒeƒbƒv3‚ÍƒƒOƒCƒ“‚ª•K—v‚Å‚·BƒTƒCƒhƒo[‚ÅƒƒOƒCƒ“‚µ‚Ä‚­‚¾‚³‚¢B")
             #st.stop()
         else:
             if st.session_state.workflow_step >= 3 and st.session_state.processed:
                 st.divider()
-                st.markdown("## ã‚¹ãƒ†ãƒƒãƒ— â‘¢ æ‰‹å‹•ç·¨é›†")
-            # --- è‡ªå‹•çµåˆã®ç¾åœ¨å€¤è¡¨ç¤ºã¨å†å®Ÿè¡Œãƒœã‚¿ãƒ³ ---
-            # è‡ªå‹•çµåˆã®æ‰‹å‹•æ“ä½œUIã¯ä¸è¦ã®ãŸã‚å‰Šé™¤ã—ã¾ã—ãŸã€‚
-            # å›ºå®šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä½¿ç”¨ã—ã¾ã™: merge_radius=55px, merge_angle=15Â°
+                st.markdown("## ƒXƒeƒbƒv ‡B è“®•ÒW")
+            # --- ©“®Œ‹‡‚ÌŒ»İ’l•\¦‚ÆÄÀsƒ{ƒ^ƒ“ ---
+            # ©“®Œ‹‡‚Ìè“®‘€ìUI‚Í•s—v‚Ì‚½‚ßíœ‚µ‚Ü‚µ‚½B
+            # ŒÅ’èƒpƒ‰ƒ[ƒ^‚ğg—p‚µ‚Ü‚·: merge_radius=55px, merge_angle=15‹
             cur_merge_radius = 55
             cur_merge_angle = 15
             merged_flag = st.session_state.get('merged_processed', False)
-            # st.write("å£ç·šã‚’æ‰‹å‹•ã§ç·¨é›†ãƒ»èª¿æ•´ã—ã¾ã™ã€‚")
+            # st.write("•Çü‚ğè“®‚Å•ÒWE’²®‚µ‚Ü‚·B")
             
-            # ãƒ¢ãƒ¼ãƒ‰é¸æŠã‚¿ãƒ–
+            # ƒ‚[ƒh‘I‘ğƒ^ƒu
             edit_mode = st.radio(
-                "ç·¨é›†ãƒ¢ãƒ¼ãƒ‰ã‚’é¸æŠ:",
-                #["ç·šã‚’çµåˆ", "ç·šã‚’è¿½åŠ ", "ç·šã‚’å‰Šé™¤", "çª“ã‚’è¿½åŠ ", "ç…§æ˜ã‚’é…ç½®", "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®", "åºŠã‚’è¿½åŠ ", "éšæ®µã‚’é…ç½®"],
-                ["ç·šã‚’çµåˆ", "ç·šã‚’è¿½åŠ ", "ç·šã‚’å‰Šé™¤", "çª“ã‚’è¿½åŠ ", "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®", "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤", "éšæ®µã‚’é…ç½®"],
+                "•ÒWƒ‚[ƒh‚ğ‘I‘ğ:",
+                #["ü‚ğŒ‹‡", "ü‚ğ’Ç‰Á", "ü‚ğíœ", "‘‹‚ğ’Ç‰Á", "Æ–¾‚ğ”z’u", "ƒIƒuƒWƒFƒNƒg‚ğ”z’u", "°‚ğ’Ç‰Á", "ŠK’i‚ğ”z’u"],
+                ["ü‚ğŒ‹‡", "ü‚ğ’Ç‰Á", "ü‚ğíœ", "‘‹‚ğ’Ç‰Á", "ƒIƒuƒWƒFƒNƒg‚ğ”z’u", "ƒIƒuƒWƒFƒNƒg‚ğíœ", "ŠK’i‚ğ”z’u"],
                 horizontal=True,
-                #help="ç·šã‚’çµåˆï¼š2ã¤ã®å£ç·šã‚’ç¹‹ã\n\nçª“ã‚’è¿½åŠ ï¼šçª“ã§åˆ†æ–­ã•ã‚ŒãŸ2æœ¬ã®å£ã‚’ä¸Šä¸‹ã®å£ã§ç¹‹ã\n\nç·šã‚’è¿½åŠ ï¼šæ–°ã—ã„å£ç·šã‚’è¿½åŠ \n\nç·šã‚’å‰Šé™¤ï¼šé¸æŠç¯„å›²ã®å£ã‚’å‰Šé™¤\n\nç…§æ˜ã‚’é…ç½®ï¼šã‚¯ãƒªãƒƒã‚¯ä½ç½®ã«ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã‚’é…ç½®\n\nã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®ï¼šã‚­ãƒƒãƒãƒ³ãƒœãƒ¼ãƒ‰ãªã©ã®å®¶å…·ã‚’é…ç½®\n\nåºŠã‚’è¿½åŠ ï¼šå››è§’å½¢ç¯„å›²ã‚’é¸æŠã—ã¦åºŠã‚’è¿½åŠ \n\néšæ®µã‚’é…ç½®ï¼šã‚³ã®å­—éšæ®µã‚’é…ç½®"
-                help="ç·šã‚’çµåˆï¼š2ã¤ã®å£ç·šã‚’ç¹‹ã\n\nç·šã‚’è¿½åŠ ï¼šæ–°ã—ã„å£ç·šã‚’è¿½åŠ \n\nç·šã‚’å‰Šé™¤ï¼šé¸æŠç¯„å›²ã®å£ã‚’å‰Šé™¤\n\nçª“ã‚’è¿½åŠ ï¼šçª“ã§åˆ†æ–­ã•ã‚ŒãŸ2æœ¬ã®å£ã‚’ä¸Šä¸‹ã®å£ã§ç¹‹ã\n\nã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®ï¼šã‚­ãƒƒãƒãƒ³ãƒœãƒ¼ãƒ‰ãªã©ã®å®¶å…·ã‚’é…ç½®\n\nã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤ï¼šé…ç½®ã—ãŸå®¶å…·ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦å‰Šé™¤\n\néšæ®µã‚’é…ç½®ï¼šã‚³ã®å­—éšæ®µã‚’é…ç½®"
+                #help="ü‚ğŒ‹‡F2‚Â‚Ì•Çü‚ğŒq‚®\n\n‘‹‚ğ’Ç‰ÁF‘‹‚Å•ª’f‚³‚ê‚½2–{‚Ì•Ç‚ğã‰º‚Ì•Ç‚ÅŒq‚®\n\nü‚ğ’Ç‰ÁFV‚µ‚¢•Çü‚ğ’Ç‰Á\n\nü‚ğíœF‘I‘ğ”ÍˆÍ‚Ì•Ç‚ğíœ\n\nÆ–¾‚ğ”z’uFƒNƒŠƒbƒNˆÊ’u‚ÉƒXƒ|ƒbƒgƒ‰ƒCƒg‚ğ”z’u\n\nƒIƒuƒWƒFƒNƒg‚ğ”z’uFƒLƒbƒ`ƒ“ƒ{[ƒh‚È‚Ç‚Ì‰Æ‹ï‚ğ”z’u\n\n°‚ğ’Ç‰ÁFlŠpŒ`”ÍˆÍ‚ğ‘I‘ğ‚µ‚Ä°‚ğ’Ç‰Á\n\nŠK’i‚ğ”z’uFƒR‚ÌšŠK’i‚ğ”z’u"
+                help="ü‚ğŒ‹‡F2‚Â‚Ì•Çü‚ğŒq‚®\n\nü‚ğ’Ç‰ÁFV‚µ‚¢•Çü‚ğ’Ç‰Á\n\nü‚ğíœF‘I‘ğ”ÍˆÍ‚Ì•Ç‚ğíœ\n\n‘‹‚ğ’Ç‰ÁF‘‹‚Å•ª’f‚³‚ê‚½2–{‚Ì•Ç‚ğã‰º‚Ì•Ç‚ÅŒq‚®\n\nƒIƒuƒWƒFƒNƒg‚ğ”z’uFƒLƒbƒ`ƒ“ƒ{[ƒh‚È‚Ç‚Ì‰Æ‹ï‚ğ”z’u\n\nƒIƒuƒWƒFƒNƒg‚ğíœF”z’u‚µ‚½‰Æ‹ï‚ğƒNƒŠƒbƒN‚µ‚Äíœ\n\nŠK’i‚ğ”z’uFƒR‚ÌšŠK’i‚ğ”z’u"
             )
             
-            if edit_mode == "ç·šã‚’çµåˆ":
-                st.write("ğŸ’¡ çµåˆã—ãŸã„2æœ¬ã®å£ç·šã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚ï¼ˆè¤‡æ•°é¸æŠå¯èƒ½ï¼‰" )
-            elif edit_mode == "çª“ã‚’è¿½åŠ ":
-                st.write("ğŸ’¡ çª“è¿½åŠ ã—ãŸã„2æœ¬ã®å£ç·šã‚’é¸æŠã—ã¦ã€çª“ã‚¿ã‚¤ãƒ—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚ï¼ˆè¤‡æ•°é¸æŠå¯èƒ½ï¼‰")
-            elif edit_mode == "ç·šã‚’è¿½åŠ ":
-                st.write("ğŸ’¡ è¿½åŠ ã—ãŸã„å£ã®ç«¯ç‚¹2ç‚¹ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚ï¼ˆè¤‡æ•°é¸æŠå¯èƒ½ï¼‰")
-            elif edit_mode == "ç·šã‚’å‰Šé™¤":
-                st.write("ğŸ’¡ å‰Šé™¤ã—ãŸã„å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ï¼ˆè¤‡æ•°é¸æŠå¯èƒ½ï¼‰")
-            elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®":
-                st.write("ğŸ’¡ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®ã—ãŸã„ç¯„å›²(å››è§’å½¢)ã®å¯¾è§’ç·šã®2ç‚¹ã‚’é¸æŠã—ã¦ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¿ã‚¤ãƒ—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚")
-            elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤":
-                st.write("ğŸ’¡ å‰Šé™¤ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ã€‚")
-            elif edit_mode == "éšæ®µã‚’é…ç½®":
-                st.write("ğŸ’¡ éšæ®µã‚’é…ç½®ã—ãŸã„ç¯„å›²ã‚’2ç‚¹ã‚¯ãƒªãƒƒã‚¯ã—ã¦é¸æŠã—ã€éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ãƒ—ãƒ«ãƒ€ã‚¦ãƒ³ã‹ã‚‰é¸ã‚“ã§ãã ã•ã„")
+            if edit_mode == "ü‚ğŒ‹‡":
+                st.write("?? Œ‹‡‚µ‚½‚¢2–{‚Ì•Çü‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢Bi•¡”‘I‘ğ‰Â”\j" )
+            elif edit_mode == "‘‹‚ğ’Ç‰Á":
+                st.write("?? ‘‹’Ç‰Á‚µ‚½‚¢2–{‚Ì•Çü‚ğ‘I‘ğ‚µ‚ÄA‘‹ƒ^ƒCƒv‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢Bi•¡”‘I‘ğ‰Â”\j")
+            elif edit_mode == "ü‚ğ’Ç‰Á":
+                st.write("?? ’Ç‰Á‚µ‚½‚¢•Ç‚Ì’[“_2“_‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢Bi•¡”‘I‘ğ‰Â”\j")
+            elif edit_mode == "ü‚ğíœ":
+                st.write("?? íœ‚µ‚½‚¢•Çü‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢i•¡”‘I‘ğ‰Â”\j")
+            elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğ”z’u":
+                st.write("?? ƒIƒuƒWƒFƒNƒg‚ğ”z’u‚µ‚½‚¢”ÍˆÍ(lŠpŒ`)‚Ì‘ÎŠpü‚Ì2“_‚ğ‘I‘ğ‚µ‚ÄAƒIƒuƒWƒFƒNƒgƒ^ƒCƒv‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B")
+            elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ":
+                st.write("?? íœ‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B")
+            elif edit_mode == "ŠK’i‚ğ”z’u":
+                st.write("?? ŠK’i‚ğ”z’u‚µ‚½‚¢”ÍˆÍ‚ğ2“_ƒNƒŠƒbƒN‚µ‚Ä‘I‘ğ‚µAŠK’iƒpƒ^[ƒ“‚ğƒvƒ‹ƒ_ƒEƒ“‚©‚ç‘I‚ñ‚Å‚­‚¾‚³‚¢")
             
-            with st.expander("ğŸ’¡ ä½¿ã„æ–¹", expanded=False):
-                if edit_mode == "ç·šã‚’çµåˆ":
+            with st.expander("?? g‚¢•û", expanded=False):
+                if edit_mode == "ü‚ğŒ‹‡":
                     st.markdown(
-                        "**è¤‡æ•°ç·šçµåˆã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§çµåˆã—ãŸã„**1æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "2. **2æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "3. ã•ã‚‰ã«çµåˆã—ãŸã„ç®‡æ‰€ãŒã‚ã‚Œã°æ‰‹é †1-2ã‚’ç¹°ã‚Šè¿”ã™ï¼ˆ2æœ¬ãšã¤ãƒšã‚¢ã§é¸æŠï¼‰\n\n"
-                        "4. ã€ŒğŸ”— çµåˆå®Ÿè¡Œã€ã§é¸æŠã—ãŸå…¨ã¦ã®ãƒšã‚¢ã‚’ä¸€æ‹¬çµåˆ\n\n"
-                        "**ãƒ’ãƒ³ãƒˆ:**\n\n"
-                        "- å£ç·šã‚’ç›´æ¥ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã ã‘ã§é¸æŠã§ãã¾ã™\n\n"
-                        "- é–“é•ãˆãŸå ´åˆã¯åŒã˜å£ã‚’ã‚‚ã†ä¸€åº¦ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠè§£é™¤"
+                        "**•¡”üŒ‹‡‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚ÅŒ‹‡‚µ‚½‚¢**1–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "2. **2–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "3. ‚³‚ç‚ÉŒ‹‡‚µ‚½‚¢‰ÓŠ‚ª‚ ‚ê‚Îè‡1-2‚ğŒJ‚è•Ô‚·i2–{‚¸‚ÂƒyƒA‚Å‘I‘ğj\n\n"
+                        "4. u?? Œ‹‡Àsv‚Å‘I‘ğ‚µ‚½‘S‚Ä‚ÌƒyƒA‚ğˆêŠ‡Œ‹‡\n\n"
+                        "**ƒqƒ“ƒg:**\n\n"
+                        "- •Çü‚ğ’¼ÚƒNƒŠƒbƒN‚·‚é‚¾‚¯‚Å‘I‘ğ‚Å‚«‚Ü‚·\n\n"
+                        "- ŠÔˆá‚¦‚½ê‡‚Í“¯‚¶•Ç‚ğ‚à‚¤ˆê“xƒNƒŠƒbƒN‚Å‘I‘ğ‰ğœ"
                     )
-                elif edit_mode == "çª“ã‚’è¿½åŠ ":
+                elif edit_mode == "‘‹‚ğ’Ç‰Á":
                     st.markdown(
-                        "**çª“è¿½åŠ ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§çª“ã‚’è¿½åŠ ã—ãŸã„**1æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "2. **2æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "3. ã•ã‚‰ã«çª“ã‚’è¿½åŠ ã—ãŸã‘ã‚Œã°æ‰‹é †1-2ã‚’ç¹°ã‚Šè¿”ã™\n\n"
-                        "4. çª“ã®ã‚µã‚¤ã‚ºã‚’å…¥åŠ›:\n\n"
-                        "   - çª“ã®é«˜ã•ï¼ˆmmï¼‰: ä¾‹ 1200mm\n\n"
-                        "   - åºŠã‹ã‚‰çª“ä¸‹ç«¯ã¾ã§ã®é«˜ã•ï¼ˆmmï¼‰: ä¾‹ 900mm\n\n"
-                        "5. ã€ŒğŸªŸ çª“è¿½åŠ å®Ÿè¡Œã€ã§é¸æŠã—ãŸå…¨ã¦ã®çª“ã‚’ä¸€æ‹¬è¿½åŠ \n\n"
-                        "**ãƒ’ãƒ³ãƒˆ:**\n\n"
-                        "- å£ç·šã‚’ç›´æ¥ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã ã‘ã§é¸æŠã§ãã¾ã™\n\n"
-                        "- é–“é•ãˆãŸå ´åˆã¯åŒã˜å£ã‚’ã‚‚ã†ä¸€åº¦ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠè§£é™¤\n\n"
-                        "- ä¸€æ¡å·¥å‹™åº—ã®å›³é¢è¡¨è¨˜ã‹ã‚‰ãã®ã¾ã¾å…¥åŠ›å¯èƒ½"
+                        "**‘‹’Ç‰Á‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Å‘‹‚ğ’Ç‰Á‚µ‚½‚¢**1–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "2. **2–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "3. ‚³‚ç‚É‘‹‚ğ’Ç‰Á‚µ‚½‚¯‚ê‚Îè‡1-2‚ğŒJ‚è•Ô‚·\n\n"
+                        "4. ‘‹‚ÌƒTƒCƒY‚ğ“ü—Í:\n\n"
+                        "   - ‘‹‚Ì‚‚³immj: —á 1200mm\n\n"
+                        "   - °‚©‚ç‘‹‰º’[‚Ü‚Å‚Ì‚‚³immj: —á 900mm\n\n"
+                        "5. u?? ‘‹’Ç‰ÁÀsv‚Å‘I‘ğ‚µ‚½‘S‚Ä‚Ì‘‹‚ğˆêŠ‡’Ç‰Á\n\n"
+                        "**ƒqƒ“ƒg:**\n\n"
+                        "- •Çü‚ğ’¼ÚƒNƒŠƒbƒN‚·‚é‚¾‚¯‚Å‘I‘ğ‚Å‚«‚Ü‚·\n\n"
+                        "- ŠÔˆá‚¦‚½ê‡‚Í“¯‚¶•Ç‚ğ‚à‚¤ˆê“xƒNƒŠƒbƒN‚Å‘I‘ğ‰ğœ\n\n"
+                        "- ˆêğH–±“X‚Ì}–Ê•\‹L‚©‚ç‚»‚Ì‚Ü‚Ü“ü—Í‰Â”\"
                     )
-                elif edit_mode == "ç·šã‚’è¿½åŠ ":
+                elif edit_mode == "ü‚ğ’Ç‰Á":
                     st.markdown(
-                        "**ç·šè¿½åŠ ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§**2å›ã‚¯ãƒªãƒƒã‚¯**ã—ã¦è¿½åŠ ã—ãŸã„ç·šã®ä½ç½®ã‚’é¸æŠã™ã‚‹\n\n"
-                        "2. ã•ã‚‰ã«ç·šã‚’è¿½åŠ ã—ãŸã‘ã‚Œã°æ‰‹é †1ã‚’ç¹°ã‚Šè¿”ã™\n\n"
-                        "3. ã€Œâ• ç·šè¿½åŠ å®Ÿè¡Œã€ã§å…¨ã¦ã®é¸æŠç¯„å›²ã«ç·šã‚’è¿½åŠ \n\n"
+                        "**ü’Ç‰Á‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Å**2‰ñƒNƒŠƒbƒN**‚µ‚Ä’Ç‰Á‚µ‚½‚¢ü‚ÌˆÊ’u‚ğ‘I‘ğ‚·‚é\n\n"
+                        "2. ‚³‚ç‚Éü‚ğ’Ç‰Á‚µ‚½‚¯‚ê‚Îè‡1‚ğŒJ‚è•Ô‚·\n\n"
+                        "3. u? ü’Ç‰ÁÀsv‚Å‘S‚Ä‚Ì‘I‘ğ”ÍˆÍ‚Éü‚ğ’Ç‰Á\n\n"
                     )
-                elif edit_mode == "ç·šã‚’å‰Šé™¤":
+                elif edit_mode == "ü‚ğíœ":
                     st.markdown(
-                        "**ç·šå‰Šé™¤ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§å‰Šé™¤ã—ãŸã„**å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "2. ã•ã‚‰ã«å‰Šé™¤ã—ãŸã„å£ç·šãŒã‚ã‚Œã°ã‚¯ãƒªãƒƒã‚¯ã—ã¦è¿½åŠ \n\n"
-                        "3. ã€ŒğŸ—‘ï¸ å‰Šé™¤å®Ÿè¡Œã€ã§é¸æŠã—ãŸå…¨ã¦ã®å£ç·šã‚’ä¸€æ‹¬å‰Šé™¤\n\n"
-                        "**ãƒ’ãƒ³ãƒˆ:**\n\n"
-                        "- å£ç·šã‚’ç›´æ¥ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã ã‘ã§é¸æŠã§ãã¾ã™\n\n"
-                        "- é–“é•ãˆãŸå ´åˆã¯åŒã˜å£ã‚’ã‚‚ã†ä¸€åº¦ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠè§£é™¤"
+                        "**üíœ‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Åíœ‚µ‚½‚¢**•Çü‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "2. ‚³‚ç‚Éíœ‚µ‚½‚¢•Çü‚ª‚ ‚ê‚ÎƒNƒŠƒbƒN‚µ‚Ä’Ç‰Á\n\n"
+                        "3. u??? íœÀsv‚Å‘I‘ğ‚µ‚½‘S‚Ä‚Ì•Çü‚ğˆêŠ‡íœ\n\n"
+                        "**ƒqƒ“ƒg:**\n\n"
+                        "- •Çü‚ğ’¼ÚƒNƒŠƒbƒN‚·‚é‚¾‚¯‚Å‘I‘ğ‚Å‚«‚Ü‚·\n\n"
+                        "- ŠÔˆá‚¦‚½ê‡‚Í“¯‚¶•Ç‚ğ‚à‚¤ˆê“xƒNƒŠƒbƒN‚Å‘I‘ğ‰ğœ"
                     )
-                elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®":
+                elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğ”z’u":
                     st.markdown(
-                        "**ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§**2å›ã‚¯ãƒªãƒƒã‚¯**ã—ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®ã—ãŸã„é ˜åŸŸã‚’å››è§’å½¢ã§å›²ã‚€\n\n"
-                        "2. é…ç½®ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé«˜ã•ã¨è‰²ã‚’é¸æŠ\n\n"
-                        "3. ã€ŒğŸª‘ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®å®Ÿè¡Œã€ã§å®¶å…·ã‚’é…ç½®\n\n"
+                        "**ƒIƒuƒWƒFƒNƒg”z’u‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Å**2‰ñƒNƒŠƒbƒN**‚µ‚ÄƒIƒuƒWƒFƒNƒg‚ğ”z’u‚µ‚½‚¢—Ìˆæ‚ğlŠpŒ`‚ÅˆÍ‚Ş\n\n"
+                        "2. ”z’u‚·‚éƒIƒuƒWƒFƒNƒg‚‚³‚ÆF‚ğ‘I‘ğ\n\n"
+                        "3. u?? ƒIƒuƒWƒFƒNƒg”z’uÀsv‚Å‰Æ‹ï‚ğ”z’u\n\n"
                         )
-                elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤":
+                elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ":
                     st.markdown(
-                        "**ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§å‰Šé™¤ã—ãŸã„**ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¯ãƒªãƒƒã‚¯**ã—ã¦é¸æŠ\n\n"
-                        "2. ã•ã‚‰ã«å‰Šé™¤ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒã‚ã‚Œã°ã‚¯ãƒªãƒƒã‚¯ã—ã¦è¿½åŠ ï¼ˆèµ¤æ ã§è¡¨ç¤ºã•ã‚Œã¾ã™ï¼‰\n\n"
-                        "3. ã€ŒğŸ—‘ï¸ å‰Šé™¤å®Ÿè¡Œã€ã§é¸æŠã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤\n\n"
+                        "**ƒIƒuƒWƒFƒNƒgíœ‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Åíœ‚µ‚½‚¢**ƒIƒuƒWƒFƒNƒg‚ğƒNƒŠƒbƒN**‚µ‚Ä‘I‘ğ\n\n"
+                        "2. ‚³‚ç‚Éíœ‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg‚ª‚ ‚ê‚ÎƒNƒŠƒbƒN‚µ‚Ä’Ç‰ÁiÔ˜g‚Å•\¦‚³‚ê‚Ü‚·j\n\n"
+                        "3. u??? íœÀsv‚Å‘I‘ğ‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğíœ\n\n"
                         )
-                elif edit_mode == "éšæ®µã‚’é…ç½®":
+                elif edit_mode == "ŠK’i‚ğ”z’u":
                     st.markdown(
-                        "**éšæ®µé…ç½®ã®æ‰‹é †:**\n\n"
-                        "1. ä¸‹ã®ç”»åƒä¸Šã§**2å›ã‚¯ãƒªãƒƒã‚¯**ã—ã¦éšæ®µã‚’é…ç½®ã—ãŸã„é ˜åŸŸã‚’å››è§’å½¢ã§å›²ã‚€\n\n"
-                        "2. éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ãƒ—ãƒ«ãƒ€ã‚¦ãƒ³ã‹ã‚‰é¸æŠ\n\n"
-                        "3. ã€ŒğŸªœ éšæ®µé…ç½®å®Ÿè¡Œã€ã§éšæ®µã‚’é…ç½®\n\n"
-                        "**æ³¨æ„:**\n\n"
-                        "- ã‚³ã®å­—éšæ®µã¯å®Ÿéš›ã®éšæ®µå½¢çŠ¶ã¨ç•°ãªã‚Šã¾ã™ã€‚"
+                        "**ŠK’i”z’u‚Ìè‡:**\n\n"
+                        "1. ‰º‚Ì‰æ‘œã‚Å**2‰ñƒNƒŠƒbƒN**‚µ‚ÄŠK’i‚ğ”z’u‚µ‚½‚¢—Ìˆæ‚ğlŠpŒ`‚ÅˆÍ‚Ş\n\n"
+                        "2. ŠK’iƒpƒ^[ƒ“‚ğƒvƒ‹ƒ_ƒEƒ“‚©‚ç‘I‘ğ\n\n"
+                        "3. u?? ŠK’i”z’uÀsv‚ÅŠK’i‚ğ”z’u\n\n"
+                        "**’ˆÓ:**\n\n"
+                        "- ƒR‚ÌšŠK’i‚ÍÀÛ‚ÌŠK’iŒ`ó‚ÆˆÙ‚È‚è‚Ü‚·B"
                         )
             
-            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã§å››è§’å½¢åº§æ¨™ã‚’ç®¡ç†
+            # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒg‚ÅlŠpŒ`À•W‚ğŠÇ—
             if 'rect_coords' not in st.session_state:
                 st.session_state.rect_coords = []
             if 'rect_coords_list' not in st.session_state:
-                st.session_state.rect_coords_list = []  # ç¢ºå®šã—ãŸå››è§’å½¢ã®ãƒªã‚¹ãƒˆ
+                st.session_state.rect_coords_list = []  # Šm’è‚µ‚½lŠpŒ`‚ÌƒŠƒXƒg
             if 'reset_flag' not in st.session_state:
                 st.session_state.reset_flag = False
             if 'last_click' not in st.session_state:
@@ -2859,15 +2859,15 @@ def main():
             if 'merge_result' not in st.session_state:
                 st.session_state.merge_result = None
             if 'edit_mode_state' not in st.session_state:
-                st.session_state.edit_mode_state = "ç·šã‚’çµåˆ"  # ç¾åœ¨ã®ãƒ¢ãƒ¼ãƒ‰
+                st.session_state.edit_mode_state = "ü‚ğŒ‹‡"  # Œ»İ‚Ìƒ‚[ƒh
             if 'selected_furniture_to_delete' not in st.session_state:
-                st.session_state.selected_furniture_to_delete = []  # å‰Šé™¤å¯¾è±¡ã®å®¶å…·ãƒªã‚¹ãƒˆï¼ˆIDãŒç„¡ã„ã®ã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå…¨ä½“ã‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼‰
-                                                                    # ãŸã ã—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯ãšã‚Œã‚‹ã®ã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç­‰ä¾¡æ€§ã§åˆ¤å®šã™ã‚‹æˆ¦ç•¥ã‚’å–ã‚‹
+                st.session_state.selected_furniture_to_delete = []  # íœ‘ÎÛ‚Ì‰Æ‹ïƒŠƒXƒgiID‚ª–³‚¢‚Ì‚ÅƒIƒuƒWƒFƒNƒg‘S‘Ì‚©ƒCƒ“ƒfƒbƒNƒXj
+                                                                    # ‚½‚¾‚µƒCƒ“ƒfƒbƒNƒX‚Í‚¸‚ê‚é‚Ì‚ÅƒIƒuƒWƒFƒNƒg‚Ì“™‰¿«‚Å”»’è‚·‚éí—ª‚ğæ‚é
             if 'execute_furniture_deletion' not in st.session_state:
                 st.session_state.execute_furniture_deletion = False
 
-            # çª“è¿½åŠ ç”¨ã®å…¥åŠ›ãƒ•ã‚©ãƒ¼ãƒ ï¼ˆç”»é¢ä¸Šéƒ¨ã«ã¾ã¨ã‚ã¦è¡¨ç¤ºï¼‰
-            if edit_mode == "çª“ã‚’è¿½åŠ ":
+            # ‘‹’Ç‰Á—p‚Ì“ü—ÍƒtƒH[ƒ€i‰æ–Êã•”‚É‚Ü‚Æ‚ß‚Ä•\¦j
+            if edit_mode == "‘‹‚ğ’Ç‰Á":
                 try:
                     json_data_tmp = json.loads(st.session_state.json_bytes.decode("utf-8"))
                     walls_tmp = json_data_tmp.get('walls', [])
@@ -2876,131 +2876,131 @@ def main():
                 except Exception:
                     default_room_height = 2.4
 
-                # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ä»¥å¤–ã®å ´åˆã®ã¿ã€ä¸Šéƒ¨ã«çª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å…¥åŠ›ã‚’è¡¨ç¤º
-                if edit_mode != "çª“ã‚’è¿½åŠ ":
-                    # ä»–ã®ãƒ¢ãƒ¼ãƒ‰ç”¨ã®å‡¦ç†ï¼ˆå¿…è¦ã«å¿œã˜ã¦ï¼‰
+                # ‘‹’Ç‰Áƒ‚[ƒhˆÈŠO‚Ìê‡‚Ì‚İAã•”‚É‘‹ƒpƒ‰ƒ[ƒ^“ü—Í‚ğ•\¦
+                if edit_mode != "‘‹‚ğ’Ç‰Á":
+                    # ‘¼‚Ìƒ‚[ƒh—p‚Ìˆ—i•K—v‚É‰‚¶‚Äj
                     pass
             
-            # å››è§’å½¢ã®è‰²å®šç¾©ï¼ˆOpenCV BGRãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼‰
+            # lŠpŒ`‚ÌF’è‹`iOpenCV BGRƒtƒH[ƒ}ƒbƒgj
             RECT_COLORS = [
-                (255, 0, 0),      # èµ¤
-                (0, 255, 0),      # ç·‘
-                (0, 0, 255),      # é’
-                (255, 255, 0),    # é»„
-                (255, 0, 255),    # ãƒã‚¼ãƒ³ã‚¿
-                (0, 255, 255),    # ã‚·ã‚¢ãƒ³
+                (255, 0, 0),      # Ô
+                (0, 255, 0),      # —Î
+                (0, 0, 255),      # Â
+                (255, 255, 0),    # ‰©
+                (255, 0, 255),    # ƒ}ƒ[ƒ“ƒ^
+                (0, 255, 255),    # ƒVƒAƒ“
             ]
             
-            # è·é›¢é–¾å€¤ï¼ˆãƒ¡ãƒ¼ãƒˆãƒ«ï¼‰: æ‰‹å‹•çµåˆæ™‚ã«è¿‘æ¥ã—ãŸåˆ¥å£ã¨èª¤çµåˆã—ãªã„ã‚ˆã†ã€å®Ÿç”¨çš„ãªé–¾å€¤ã‚’ä½¿ç”¨
-            # 0.3mï¼ˆ30cmï¼‰ç¨‹åº¦ã«è¨­å®šã€‚å¿…è¦ã«å¿œã˜ã¦èª¿æ•´ã—ã¦ãã ã•ã„ã€‚
+            # ‹——£è‡’liƒ[ƒgƒ‹j: è“®Œ‹‡‚É‹ßÚ‚µ‚½•Ê•Ç‚ÆŒëŒ‹‡‚µ‚È‚¢‚æ‚¤AÀ—p“I‚Èè‡’l‚ğg—p
+            # 0.3mi30cmj’ö“x‚Éİ’èB•K—v‚É‰‚¶‚Ä’²®‚µ‚Ä‚­‚¾‚³‚¢B
             distance_threshold = 0.3
             
-            # ç·¨é›†çµæœã®è¡¨ç¤ºï¼ˆã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«ä¿å­˜ã•ã‚Œã¦ã„ã‚‹å ´åˆï¼‰
+            # •ÒWŒ‹‰Ê‚Ì•\¦iƒZƒbƒVƒ‡ƒ“ó‘Ô‚É•Û‘¶‚³‚ê‚Ä‚¢‚éê‡j
             if st.session_state.merge_result is not None:
                 result = st.session_state.merge_result
                 
-                st.success("ğŸ‰ ç·¨é›†å®Œäº†ï¼")
-                st.markdown("### ğŸ“Š ç·¨é›†å‰å¾Œã®æ¯”è¼ƒ")
+                st.success("?? •ÒWŠ®—¹I")
+                st.markdown("### ?? •ÒW‘OŒã‚Ì”äŠr")
                 
                 col_before, col_after = st.columns(2)
                 with col_before:
-                    st.markdown("**ç·¨é›†å‰**")
+                    st.markdown("**•ÒW‘O**")
                     st.image(Image.open(io.BytesIO(result['original_viz_bytes'])), use_container_width=True)
                 with col_after:
-                    st.markdown("**ç·¨é›†å¾Œ**")
+                    st.markdown("**•ÒWŒã**")
                     st.image(Image.open(io.BytesIO(result['edited_viz_bytes'])), use_container_width=True)
                 
-                # çµ±è¨ˆæƒ…å ±ã®æ¯”è¼ƒ
-                st.markdown("### ğŸ“ˆ çµ±è¨ˆ")
+                # “Œvî•ñ‚Ì”äŠr
+                st.markdown("### ?? “Œv")
                 col_stat1, col_stat2 = st.columns(2)
                 with col_stat1:
-                    st.metric("ç·¨é›†å‰ã®å£ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ•°", result['json_data']['metadata']['total_walls'])
+                    st.metric("•ÒW‘O‚Ì•ÇƒZƒOƒƒ“ƒg”", result['json_data']['metadata']['total_walls'])
                 with col_stat2:
                     st.metric(
-                        "ç·¨é›†å¾Œã®å£ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ•°", 
+                        "•ÒWŒã‚Ì•ÇƒZƒOƒƒ“ƒg”", 
                         result['updated_json']['metadata']['total_walls'],
                         delta=result['updated_json']['metadata']['total_walls'] - result['json_data']['metadata']['total_walls']
                     )
                 
-                # ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’è¡¨ç¤ºï¼ˆrerunå¾Œã‚‚è¡¨ç¤ºã•ã‚Œã‚‹ï¼‰
+                # ƒfƒoƒbƒOƒƒO‚ğ•\¦irerunŒã‚à•\¦‚³‚ê‚éj
                 if 'debug_log' in result and result['debug_log']:
-                    with st.expander("ğŸ” ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ï¼ˆè©³ç´°æƒ…å ±ï¼‰", expanded=True):
+                    with st.expander("?? ƒfƒoƒbƒOƒƒOiÚ×î•ñj", expanded=True):
                         for log_entry in result['debug_log']:
                             st.text(log_entry)
                 
-                # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°ã®ç¢ºèª
+                # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒgXV‚ÌŠm”F
                 st.divider()
                 col_save, col_discard = st.columns(2)
                 with col_save:
-                    if st.button("ğŸ’¾ ã“ã®çµæœã‚’ä¿å­˜ã—ã¦ç¶šè¡Œ", type="primary"):
-                        # JSONãƒ»ç”»åƒã‚’æ›´æ–°
+                    if st.button("?? ‚±‚ÌŒ‹‰Ê‚ğ•Û‘¶‚µ‚Ä‘±s", type="primary"):
+                        # JSONE‰æ‘œ‚ğXV
                         st.session_state.json_bytes = result['temp_json_path'].read_bytes()
                         st.session_state.json_name = "walls_3d_edited.json"
                         st.session_state.viz_bytes = result['temp_viz_path'].read_bytes()
                         
-                        # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLã‚‚æ›´æ–°
+                        # 3Dƒrƒ…[ƒAHTML‚àXV
                         st.session_state.viewer_html_bytes = result['viewer_html_bytes']
                         st.session_state.viewer_html_name = result['temp_viewer_path'].name
 
-                        # 3Dè¡¨ç¤ºã‚’é–‹ã
+                        # 3D•\¦‚ğŠJ‚­
                         st.session_state.open_3d_expander = True
 
-                        # çŠ¶æ…‹ã‚’å®Œå…¨ã«ã‚¯ãƒªã‚¢
+                        # ó‘Ô‚ğŠ®‘S‚ÉƒNƒŠƒA
                         st.session_state.rect_coords = []
                         st.session_state.rect_coords_list = []
                         st.session_state.last_click = None
                         st.session_state.reset_flag = False
                         st.session_state.merge_result = None
                         
-                        st.success("âœ… ä¿å­˜ã—ã¾ã—ãŸã€‚ã•ã‚‰ã«ç·¨é›†ã‚’ç¶šã‘ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚")
+                        st.success("? •Û‘¶‚µ‚Ü‚µ‚½B‚³‚ç‚É•ÒW‚ğ‘±‚¯‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B")
                         time.sleep(0.5)
                         st.rerun()
                 with col_discard:
-                    if st.button("âŒ ã“ã®çµæœã‚’ç ´æ£„"):
-                        # å…ƒã®JSONãƒ»ç”»åƒã‚’å¾©å…ƒ
+                    if st.button("? ‚±‚ÌŒ‹‰Ê‚ğ”jŠü"):
+                        # Œ³‚ÌJSONE‰æ‘œ‚ğ•œŒ³
                         original_json_data = result['json_data']
                         original_viz_bytes = result['original_viz_bytes']
                         
-                        # JSONã‚’ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãæˆ»ã™
+                        # JSON‚ğˆêƒtƒ@ƒCƒ‹‚É‘‚«–ß‚·
                         temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                         with open(temp_json_path, 'w', encoding='utf-8') as f:
                             json.dump(original_json_data, f, indent=2, ensure_ascii=False)
                         
-                        # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’å…ƒã«æˆ»ã™
+                        # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚ğŒ³‚É–ß‚·
                         st.session_state.json_bytes = temp_json_path.read_bytes()
                         st.session_state.viz_bytes = original_viz_bytes
                         
-                        # çŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢
+                        # ó‘Ô‚ğƒNƒŠƒA
                         st.session_state.rect_coords = []
                         st.session_state.rect_coords_list = []
                         st.session_state.last_click = None
                         st.session_state.reset_flag = False
                         st.session_state.merge_result = None
-                        st.info("âœ… ç·¨é›†ã‚’ç ´æ£„ã—ã¦å…ƒã«æˆ»ã—ã¾ã—ãŸã€‚")
+                        st.info("? •ÒW‚ğ”jŠü‚µ‚ÄŒ³‚É–ß‚µ‚Ü‚µ‚½B")
                         st.rerun()
             else:
-                # ç·¨é›†çµæœãŒãªã„å ´åˆã®ã¿ã€ç·¨é›†UIã‚’è¡¨ç¤º
+                # •ÒWŒ‹‰Ê‚ª‚È‚¢ê‡‚Ì‚İA•ÒWUI‚ğ•\¦
                 
-                # å¯è¦–åŒ–ç”»åƒã‚’èª­ã¿è¾¼ã¿
+                # ‰Â‹‰»‰æ‘œ‚ğ“Ç‚İ‚İ
                 if st.session_state.viz_bytes:
                     viz_img = Image.open(io.BytesIO(st.session_state.viz_bytes))
                     
-                    # é¸æŠç¯„å›²ã‚’æç”»ã—ãŸç”»åƒã‚’ä½œæˆ
+                    # ‘I‘ğ”ÍˆÍ‚ğ•`‰æ‚µ‚½‰æ‘œ‚ğì¬
                     import cv2
                     display_img_array = np.array(viz_img.copy())
                     
-                    # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ãƒ»çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ãƒ»ç·šå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ãƒ»ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ãƒ¢ãƒ¼ãƒ‰ï¼šé¸æŠã•ã‚ŒãŸå£ã‚’ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤º
+                    # ü‚ğŒ‹‡ƒ‚[ƒhE‘‹’Ç‰Áƒ‚[ƒhEüíœƒ‚[ƒhEƒXƒP[ƒ‹Z³ƒ‚[ƒhF‘I‘ğ‚³‚ê‚½•Ç‚ğƒnƒCƒ‰ƒCƒg•\¦
                     selected_walls_to_highlight = []
-                    if edit_mode == "ç·šã‚’çµåˆ" and len(st.session_state.selected_walls_for_merge) > 0:
+                    if edit_mode == "ü‚ğŒ‹‡" and len(st.session_state.selected_walls_for_merge) > 0:
                         selected_walls_to_highlight = st.session_state.selected_walls_for_merge
-                    elif edit_mode == "çª“ã‚’è¿½åŠ " and len(st.session_state.selected_walls_for_window) > 0:
+                    elif edit_mode == "‘‹‚ğ’Ç‰Á" and len(st.session_state.selected_walls_for_window) > 0:
                         selected_walls_to_highlight = st.session_state.selected_walls_for_window
-                    elif edit_mode == "ç·šã‚’å‰Šé™¤" and len(st.session_state.selected_walls_for_delete) > 0:
+                    elif edit_mode == "ü‚ğíœ" and len(st.session_state.selected_walls_for_delete) > 0:
                         selected_walls_to_highlight = st.session_state.selected_walls_for_delete
-                    elif edit_mode == "ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£" and st.session_state.selected_wall_for_calibration:
+                    elif edit_mode == "ƒXƒP[ƒ‹Z³" and st.session_state.selected_wall_for_calibration:
                         selected_walls_to_highlight = [st.session_state.selected_wall_for_calibration]
-                    elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤" and len(st.session_state.selected_furniture_to_delete) > 0:
-                        # å‰Šé™¤å¯¾è±¡ã¨ã—ã¦é¸æŠã•ã‚ŒãŸå®¶å…·ã‚’ãƒã‚¤ãƒ©ã‚¤ãƒˆ
+                    elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ" and len(st.session_state.selected_furniture_to_delete) > 0:
+                        # íœ‘ÎÛ‚Æ‚µ‚Ä‘I‘ğ‚³‚ê‚½‰Æ‹ï‚ğƒnƒCƒ‰ƒCƒg
                         try:
                             json_data_del = json.loads(st.session_state.json_bytes.decode("utf-8"))
                             furniture_list = json_data_del.get('furniture', [])
@@ -3023,20 +3023,20 @@ def main():
                                 x_end_px = int((bounds['x_end'] - min_x) * scale_val) + margin_val
                                 y_end_px = img_height_val - (int((bounds['y_end'] - min_y) * scale_val) + margin_val)
                                 
-                                # Yè»¸åè»¢
+                                # Y²”½“]
                                 px_min_x = min(x_start_px, x_end_px)
                                 px_max_x = max(x_start_px, x_end_px)
                                 px_min_y = min(y_start_px, y_end_px)
                                 px_max_y = max(y_start_px, y_end_px)
                                 
-                                # èµ¤æ ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆï¼ˆå¤ªã•4ï¼‰
+                                # Ô˜g‚ÅƒnƒCƒ‰ƒCƒgi‘¾‚³4j
                                 cv2.rectangle(display_img_array, (px_min_x, px_min_y), (px_max_x, px_max_y), (0, 0, 255), 4)
-                                # âœ•å°ã‚’æç”»
+                                # ?ˆó‚ğ•`‰æ
                                 cv2.line(display_img_array, (px_min_x, px_min_y), (px_max_x, px_max_y), (0, 0, 255), 2)
                                 cv2.line(display_img_array, (px_max_x, px_min_y), (px_min_x, px_max_y), (0, 0, 255), 2)
                                 
                         except Exception as e:
-                            print(f"[ERROR] å®¶å…·ãƒã‚¤ãƒ©ã‚¤ãƒˆæç”»ã‚¨ãƒ©ãƒ¼: {e}")
+                            print(f"[ERROR] ‰Æ‹ïƒnƒCƒ‰ƒCƒg•`‰æƒGƒ‰[: {e}")
                             pass
 
                     if len(selected_walls_to_highlight) > 0:
@@ -3055,19 +3055,19 @@ def main():
                             margin_highlight = 50
                             img_height_highlight = viz_img.height
                             
-                            # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ãƒ»çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§2æœ¬ä»¥ä¸Šé¸æŠã•ã‚ŒãŸå ´åˆï¼šã‚®ãƒ£ãƒƒãƒ—éƒ¨åˆ†ã®ã¿ã‚’èµ¤ç·šã§è¡¨ç¤º
-                            if edit_mode == "ç·šã‚’çµåˆ" and len(selected_walls_to_highlight) >= 1:
-                                # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ï¼š2æœ¬ãšã¤ãƒšã‚¢ã§ã‚®ãƒ£ãƒƒãƒ—ã‚’è¡¨ç¤ºã—ã€ç•ªå·ã‚’æŒ¯ã‚‹
-                                # å¥‡æ•°æœ¬é¸æŠæ™‚ã¯æœ€å¾Œã®1æœ¬ã‚’å˜ç‹¬ã§è¡¨ç¤º
+                            # ü‚ğŒ‹‡ƒ‚[ƒhE‘‹’Ç‰Áƒ‚[ƒh‚Å2–{ˆÈã‘I‘ğ‚³‚ê‚½ê‡FƒMƒƒƒbƒv•”•ª‚Ì‚İ‚ğÔü‚Å•\¦
+                            if edit_mode == "ü‚ğŒ‹‡" and len(selected_walls_to_highlight) >= 1:
+                                # ü‚ğŒ‹‡ƒ‚[ƒhF2–{‚¸‚ÂƒyƒA‚ÅƒMƒƒƒbƒv‚ğ•\¦‚µA”Ô†‚ğU‚é
+                                # Šï”–{‘I‘ğ‚ÍÅŒã‚Ì1–{‚ğ’P“Æ‚Å•\¦
                                 merge_pairs = []
                                 for i in range(0, len(selected_walls_to_highlight), 2):
                                     if i + 1 < len(selected_walls_to_highlight):
                                         merge_pairs.append((selected_walls_to_highlight[i], selected_walls_to_highlight[i + 1]))
                                 
-                                # ãƒšã‚¢ã«ãªã£ã¦ã„ã‚‹çµåˆã‚’è¡¨ç¤º
+                                # ƒyƒA‚É‚È‚Á‚Ä‚¢‚éŒ‹‡‚ğ•\¦
                                 for pair_idx, (wall1, wall2) in enumerate(merge_pairs):
                                     try:
-                                        # 2ã¤ã®å£ã®4ã¤ã®ç«¯ç‚¹ã‹ã‚‰æœ€ã‚‚è¿‘ã„çµ„ã¿åˆã‚ã›ã‚’è¦‹ã¤ã‘ã‚‹
+                                        # 2‚Â‚Ì•Ç‚Ì4‚Â‚Ì’[“_‚©‚çÅ‚à‹ß‚¢‘g‚İ‡‚í‚¹‚ğŒ©‚Â‚¯‚é
                                         endpoints1 = [wall1['start'], wall1['end']]
                                         endpoints2 = [wall2['start'], wall2['end']]
                                         
@@ -3083,17 +3083,17 @@ def main():
                                                     closest_p1 = p1
                                                     closest_p2 = p2
                                         
-                                        # æœ€ã‚‚è¿‘ã„ç«¯ç‚¹åŒå£«ã‚’èµ¤ç·šã§çµã³ã€ç•ªå·ã‚’è¡¨ç¤º
+                                        # Å‚à‹ß‚¢’[“_“¯m‚ğÔü‚ÅŒ‹‚ÑA”Ô†‚ğ•\¦
                                         if closest_p1 and closest_p2:
                                             gap_start_px_x = int((closest_p1[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                             gap_start_px_y = img_height_highlight - (int((closest_p1[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                             gap_end_px_x = int((closest_p2[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                             gap_end_px_y = img_height_highlight - (int((closest_p2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                             
-                                            # ã‚®ãƒ£ãƒƒãƒ—éƒ¨åˆ†ã‚’èµ¤ç·šã§æç”»ï¼ˆå¤ªã•6ï¼‰
+                                            # ƒMƒƒƒbƒv•”•ª‚ğÔü‚Å•`‰æi‘¾‚³6j
                                             cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
                                             
-                                            # ã‚®ãƒ£ãƒƒãƒ—ã®ä¸­å¿ƒã«çµåˆç•ªå·ã‚’è¡¨ç¤ºï¼ˆè–„ã„ã‚ªãƒ¬ãƒ³ã‚¸èƒŒæ™¯ã®å››è§’ã§å›²ã‚€ï¼‰
+                                            # ƒMƒƒƒbƒv‚Ì’†S‚ÉŒ‹‡”Ô†‚ğ•\¦i”–‚¢ƒIƒŒƒ“ƒW”wŒi‚ÌlŠp‚ÅˆÍ‚Şj
                                             center_x = (gap_start_px_x + gap_end_px_x) // 2
                                             center_y = (gap_start_px_y + gap_end_px_y) // 2
                                             merge_num = pair_idx + 1
@@ -3102,23 +3102,23 @@ def main():
                                             text_x = center_x - text_size[0] // 2
                                             text_y = center_y + text_size[1] // 2
                                             
-                                            # è–„ã„ã‚ªãƒ¬ãƒ³ã‚¸èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”» (BGR: 180, 220, 255 = è–„ã„ã‚ªãƒ¬ãƒ³ã‚¸)
+                                            # ”–‚¢ƒIƒŒƒ“ƒW”wŒi‚ÌlŠpŒ`‚ğ•`‰æ (BGR: 180, 220, 255 = ”–‚¢ƒIƒŒƒ“ƒW)
                                             cv2.rectangle(display_img_array,
                                                         (text_x - 5, text_y - text_size[1] - 5),
                                                         (text_x + text_size[0] + 5, text_y + 5),
                                                         (180, 220, 255), -1)
-                                            # é»’æ ã‚’æç”»
+                                            # •˜g‚ğ•`‰æ
                                             cv2.rectangle(display_img_array,
                                                         (text_x - 5, text_y - text_size[1] - 5),
                                                         (text_x + text_size[0] + 5, text_y + 5),
                                                         (0, 0, 0), 2)
-                                            # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                            # ”Ô†‚ğ•`‰æi••¶šj
                                             cv2.putText(display_img_array, text, (text_x, text_y),
                                                     cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 2)
                                     except Exception:
                                         pass
                                 
-                                # å¥‡æ•°æœ¬é¸æŠæ™‚ï¼šæœ€å¾Œã®1æœ¬ã‚’å˜ç‹¬ã§è¡¨ç¤ºï¼ˆç·šçµåˆã¨åŒã˜ã‚¹ã‚¿ã‚¤ãƒ«ã§ã€Œ1ã€è¡¨ç¤ºï¼‰
+                                # Šï”–{‘I‘ğFÅŒã‚Ì1–{‚ğ’P“Æ‚Å•\¦iüŒ‹‡‚Æ“¯‚¶ƒXƒ^ƒCƒ‹‚Åu1v•\¦j
                                 if len(selected_walls_to_highlight) % 2 == 1:
                                     last_wall = selected_walls_to_highlight[-1]
                                     
@@ -3126,16 +3126,16 @@ def main():
                                         start_m = last_wall['start']
                                         end_m = last_wall['end']
                                         
-                                        # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›
+                                        # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·
                                         start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                         start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                         end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                         end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                         
-                                        # å£ç·šã‚’é’è‰²ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤ºï¼ˆå¤ªã•6ï¼‰
+                                        # •Çü‚ğÂF‚ÅƒnƒCƒ‰ƒCƒg•\¦i‘¾‚³6j
                                         cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
                                         
-                                        # å£ç·šã®ä¸­å¿ƒã«ã€Œ1ã€ã‚’å››è§’ã§å›²ã‚“ã§è¡¨ç¤ºï¼ˆç·šçµåˆã¨åŒã˜ã‚¹ã‚¿ã‚¤ãƒ«ï¼‰
+                                        # •Çü‚Ì’†S‚Éu1v‚ğlŠp‚ÅˆÍ‚ñ‚Å•\¦iüŒ‹‡‚Æ“¯‚¶ƒXƒ^ƒCƒ‹j
                                         mid_x = (start_px_x + end_px_x) // 2
                                         mid_y = (start_px_y + end_px_y) // 2
                                         text = "1"
@@ -3143,34 +3143,34 @@ def main():
                                         text_x = mid_x - text_size[0] // 2
                                         text_y = mid_y + text_size[1] // 2
                                         
-                                        # ç™½èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”»
+                                        # ”’”wŒi‚ÌlŠpŒ`‚ğ•`‰æ
                                         cv2.rectangle(display_img_array,
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (255, 255, 255), -1)
-                                        # é»’æ ã‚’æç”»
+                                        # •˜g‚ğ•`‰æ
                                         cv2.rectangle(display_img_array,
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (0, 0, 0), 2)
-                                        # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                        # ”Ô†‚ğ•`‰æi••¶šj
                                         cv2.putText(display_img_array, text, (text_x, text_y),
                                                 cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                                     except Exception as e:
-                                        print(f"[ERROR] å¥‡æ•°æœ¬æç”»ã‚¨ãƒ©ãƒ¼: {e}")
+                                        print(f"[ERROR] Šï”–{•`‰æƒGƒ‰[: {e}")
                                         pass
-                            elif edit_mode == "çª“ã‚’è¿½åŠ " and len(selected_walls_to_highlight) >= 1:
-                                # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼š2æœ¬ãšã¤ãƒšã‚¢ã§ã‚®ãƒ£ãƒƒãƒ—ã‚’è¡¨ç¤ºã—ã€ç•ªå·ã‚’æŒ¯ã‚‹
-                                # å¥‡æ•°æœ¬é¸æŠæ™‚ã¯æœ€å¾Œã®1æœ¬ã‚’å˜ç‹¬ã§è¡¨ç¤º
+                            elif edit_mode == "‘‹‚ğ’Ç‰Á" and len(selected_walls_to_highlight) >= 1:
+                                # ‘‹’Ç‰Áƒ‚[ƒhF2–{‚¸‚ÂƒyƒA‚ÅƒMƒƒƒbƒv‚ğ•\¦‚µA”Ô†‚ğU‚é
+                                # Šï”–{‘I‘ğ‚ÍÅŒã‚Ì1–{‚ğ’P“Æ‚Å•\¦
                                 window_pairs = []
                                 for i in range(0, len(selected_walls_to_highlight), 2):
                                     if i + 1 < len(selected_walls_to_highlight):
                                         window_pairs.append((selected_walls_to_highlight[i], selected_walls_to_highlight[i + 1]))
                                 
-                                # ãƒšã‚¢ã«ãªã£ã¦ã„ã‚‹çª“ã‚’è¡¨ç¤º
+                                # ƒyƒA‚É‚È‚Á‚Ä‚¢‚é‘‹‚ğ•\¦
                                 for pair_idx, (wall1, wall2) in enumerate(window_pairs):
                                     try:
-                                        # 2ã¤ã®å£ã®4ã¤ã®ç«¯ç‚¹ã‹ã‚‰æœ€ã‚‚è¿‘ã„çµ„ã¿åˆã‚ã›ã‚’è¦‹ã¤ã‘ã‚‹
+                                        # 2‚Â‚Ì•Ç‚Ì4‚Â‚Ì’[“_‚©‚çÅ‚à‹ß‚¢‘g‚İ‡‚í‚¹‚ğŒ©‚Â‚¯‚é
                                         endpoints1 = [wall1['start'], wall1['end']]
                                         endpoints2 = [wall2['start'], wall2['end']]
                                         
@@ -3186,17 +3186,17 @@ def main():
                                                     closest_p1 = p1
                                                     closest_p2 = p2
                                         
-                                        # æœ€ã‚‚è¿‘ã„ç«¯ç‚¹åŒå£«ã‚’èµ¤ç·šã§çµã³ã€ç•ªå·ã‚’è¡¨ç¤º
+                                        # Å‚à‹ß‚¢’[“_“¯m‚ğÔü‚ÅŒ‹‚ÑA”Ô†‚ğ•\¦
                                         if closest_p1 and closest_p2:
                                             gap_start_px_x = int((closest_p1[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                             gap_start_px_y = img_height_highlight - (int((closest_p1[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                             gap_end_px_x = int((closest_p2[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                             gap_end_px_y = img_height_highlight - (int((closest_p2[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                             
-                                            # ã‚®ãƒ£ãƒƒãƒ—éƒ¨åˆ†ã‚’èµ¤ç·šã§æç”»ï¼ˆå¤ªã•6ï¼‰
+                                            # ƒMƒƒƒbƒv•”•ª‚ğÔü‚Å•`‰æi‘¾‚³6j
                                             cv2.line(display_img_array, (gap_start_px_x, gap_start_px_y), (gap_end_px_x, gap_end_px_y), (0, 0, 255), 6)
                                             
-                                            # ã‚®ãƒ£ãƒƒãƒ—ã®ä¸­å¿ƒã«çª“ç•ªå·ã‚’å››è§’ã§å›²ã‚“ã§è¡¨ç¤ºï¼ˆè–„ã„æ°´è‰²èƒŒæ™¯ï¼‰
+                                            # ƒMƒƒƒbƒv‚Ì’†S‚É‘‹”Ô†‚ğlŠp‚ÅˆÍ‚ñ‚Å•\¦i”–‚¢…F”wŒij
                                             center_x = (gap_start_px_x + gap_end_px_x) // 2
                                             center_y = (gap_start_px_y + gap_end_px_y) // 2
                                             window_num = pair_idx + 1
@@ -3205,23 +3205,23 @@ def main():
                                             text_x = center_x - text_size[0] // 2
                                             text_y = center_y + text_size[1] // 2
                                             
-                                            # è–„ã„æ°´è‰²èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”» (BGR: 255, 200, 150 = è–„ã„æ°´è‰²)
+                                            # ”–‚¢…F”wŒi‚ÌlŠpŒ`‚ğ•`‰æ (BGR: 255, 200, 150 = ”–‚¢…F)
                                             cv2.rectangle(display_img_array,
                                                         (text_x - 5, text_y - text_size[1] - 5),
                                                         (text_x + text_size[0] + 5, text_y + 5),
                                                         (255, 200, 150), -1)
-                                            # é»’æ ã‚’æç”»
+                                            # •˜g‚ğ•`‰æ
                                             cv2.rectangle(display_img_array,
                                                         (text_x - 5, text_y - text_size[1] - 5),
                                                         (text_x + text_size[0] + 5, text_y + 5),
                                                         (0, 0, 0), 2)
-                                            # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                            # ”Ô†‚ğ•`‰æi••¶šj
                                             cv2.putText(display_img_array, text, (text_x, text_y),
                                                     cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 2)
                                     except Exception:
                                         pass
                                 
-                                # å¥‡æ•°æœ¬é¸æŠæ™‚ï¼šæœ€å¾Œã®1æœ¬ã‚’å˜ç‹¬ã§è¡¨ç¤ºï¼ˆç·šçµåˆã¨åŒã˜ã‚¹ã‚¿ã‚¤ãƒ«ã§ã€Œ1ã€è¡¨ç¤ºï¼‰
+                                # Šï”–{‘I‘ğFÅŒã‚Ì1–{‚ğ’P“Æ‚Å•\¦iüŒ‹‡‚Æ“¯‚¶ƒXƒ^ƒCƒ‹‚Åu1v•\¦j
                                 if len(selected_walls_to_highlight) % 2 == 1:
                                     last_wall = selected_walls_to_highlight[-1]
                                     
@@ -3229,16 +3229,16 @@ def main():
                                         start_m = last_wall['start']
                                         end_m = last_wall['end']
                                         
-                                        # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›
+                                        # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·
                                         start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                         start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                         end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                         end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                         
-                                        # å£ç·šã‚’é’è‰²ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤ºï¼ˆå¤ªã•6ï¼‰
+                                        # •Çü‚ğÂF‚ÅƒnƒCƒ‰ƒCƒg•\¦i‘¾‚³6j
                                         cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (255, 0, 0), 6)
                                         
-                                        # å£ç·šã®ä¸­å¿ƒã«ã€Œ1ã€ã‚’å››è§’ã§å›²ã‚“ã§è¡¨ç¤ºï¼ˆç·šçµåˆã¨åŒã˜ã‚¹ã‚¿ã‚¤ãƒ«ï¼‰
+                                        # •Çü‚Ì’†S‚Éu1v‚ğlŠp‚ÅˆÍ‚ñ‚Å•\¦iüŒ‹‡‚Æ“¯‚¶ƒXƒ^ƒCƒ‹j
                                         mid_x = (start_px_x + end_px_x) // 2
                                         mid_y = (start_px_y + end_px_y) // 2
                                         text = "1"
@@ -3246,63 +3246,63 @@ def main():
                                         text_x = mid_x - text_size[0] // 2
                                         text_y = mid_y + text_size[1] // 2
                                         
-                                        # ç™½èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”»
+                                        # ”’”wŒi‚ÌlŠpŒ`‚ğ•`‰æ
                                         cv2.rectangle(display_img_array,
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (255, 255, 255), -1)
-                                        # é»’æ ã‚’æç”»
+                                        # •˜g‚ğ•`‰æ
                                         cv2.rectangle(display_img_array,
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (0, 0, 0), 2)
-                                        # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                        # ”Ô†‚ğ•`‰æi••¶šj
                                         cv2.putText(display_img_array, text, (text_x, text_y),
                                                 cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                                     except Exception as e:
-                                        print(f"[ERROR] å¥‡æ•°æœ¬æç”»ã‚¨ãƒ©ãƒ¼: {e}")
+                                        print(f"[ERROR] Šï”–{•`‰æƒGƒ‰[: {e}")
                                         pass
-                            elif edit_mode == "ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£" and len(selected_walls_to_highlight) > 0:
-                                # ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ãƒ¢ãƒ¼ãƒ‰ï¼šé¸æŠã•ã‚ŒãŸ1æœ¬ã®å£ã‚’èµ¤è‰²ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆ
+                            elif edit_mode == "ƒXƒP[ƒ‹Z³" and len(selected_walls_to_highlight) > 0:
+                                # ƒXƒP[ƒ‹Z³ƒ‚[ƒhF‘I‘ğ‚³‚ê‚½1–{‚Ì•Ç‚ğÔF‚ÅƒnƒCƒ‰ƒCƒg
                                 wall = selected_walls_to_highlight[0]
                                 try:
                                     start_m = wall['start']
                                     end_m = wall['end']
                                     
-                                    # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›
+                                    # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·
                                     start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                     start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                     end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                     end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                     
-                                    # å£ç·šã‚’èµ¤è‰²ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤ºï¼ˆå¤ªã•6ï¼‰
+                                    # •Çü‚ğÔF‚ÅƒnƒCƒ‰ƒCƒg•\¦i‘¾‚³6j
                                     cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (0, 0, 255), 6)
                                 except Exception as e:
-                                    print(f"[ERROR] ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ãƒ¢ãƒ¼ãƒ‰æç”»ã‚¨ãƒ©ãƒ¼: {e}")
+                                    print(f"[ERROR] ƒXƒP[ƒ‹Z³ƒ‚[ƒh•`‰æƒGƒ‰[: {e}")
                                     pass
-                            elif edit_mode != "çª“ã‚’è¿½åŠ ":
-                                # ãã®ä»–ã®ãƒ¢ãƒ¼ãƒ‰ï¼ˆç·šå‰Šé™¤ã€ç·šã‚’çµåˆï¼‰ã®ã¿ï¼šå¾“æ¥é€šã‚Š
-                                # ç·šã‚’å‰Šé™¤ï¼šã™ã¹ã¦èµ¤
-                                # ç·šã‚’çµåˆï¼šé’â†’ç·‘
-                                if edit_mode == "ç·šã‚’å‰Šé™¤":
-                                    colors = [(0, 0, 255)] * 20  # èµ¤è‰²ã§çµ±ä¸€ï¼ˆBGRå½¢å¼ï¼‰
+                            elif edit_mode != "‘‹‚ğ’Ç‰Á":
+                                # ‚»‚Ì‘¼‚Ìƒ‚[ƒhiüíœAü‚ğŒ‹‡j‚Ì‚İF]—ˆ’Ê‚è
+                                # ü‚ğíœF‚·‚×‚ÄÔ
+                                # ü‚ğŒ‹‡FÂ¨—Î
+                                if edit_mode == "ü‚ğíœ":
+                                    colors = [(0, 0, 255)] * 20  # ÔF‚Å“ˆêiBGRŒ`®j
                                 else:
-                                    colors = [(255, 0, 0), (0, 255, 0)]  # 1æœ¬ç›®ï¼šé’ã€2æœ¬ç›®ï¼šç·‘ï¼ˆBGRå½¢å¼ï¼‰
+                                    colors = [(255, 0, 0), (0, 255, 0)]  # 1–{–ÚFÂA2–{–ÚF—ÎiBGRŒ`®j
                                 
                                 for idx, wall in enumerate(selected_walls_to_highlight):
                                     start_m = wall['start']
                                     end_m = wall['end']
                                     
-                                    # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›
+                                    # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·
                                     start_px_x = int((start_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                     start_px_y = img_height_highlight - (int((start_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                     end_px_x = int((end_m[0] - min_x_highlight) * scale_highlight) + margin_highlight
                                     end_px_y = img_height_highlight - (int((end_m[1] - min_y_highlight) * scale_highlight) + margin_highlight)
                                     
-                                    # é¸æŠã•ã‚ŒãŸå£ã‚’å¤ªãæç”»
+                                    # ‘I‘ğ‚³‚ê‚½•Ç‚ğ‘¾‚­•`‰æ
                                     cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), colors[idx], 6)
                                     
-                                    # å£ã®ä¸­å¿ƒã«ç•ªå·ã‚’è¡¨ç¤º
+                                    # •Ç‚Ì’†S‚É”Ô†‚ğ•\¦
                                     mid_x = (start_px_x + end_px_x) // 2
                                     mid_y = (start_px_y + end_px_y) // 2
                                     text = f"{idx+1}"
@@ -3310,33 +3310,33 @@ def main():
                                     text_x = mid_x - text_size[0] // 2
                                     text_y = mid_y + text_size[1] // 2
                                     
-                                    # ç™½èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”»
+                                    # ”’”wŒi‚ÌlŠpŒ`‚ğ•`‰æ
                                     cv2.rectangle(display_img_array, 
                                                 (text_x - 5, text_y - text_size[1] - 5),
                                                 (text_x + text_size[0] + 5, text_y + 5),
                                                 (255, 255, 255), -1)
-                                    # é»’æ ã‚’æç”»
+                                    # •˜g‚ğ•`‰æ
                                     cv2.rectangle(display_img_array, 
                                                 (text_x - 5, text_y - text_size[1] - 5),
                                                 (text_x + text_size[0] + 5, text_y + 5),
                                                 (0, 0, 0), 2)
-                                    # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                    # ”Ô†‚ğ•`‰æi••¶šj
                                     cv2.putText(display_img_array, text, (text_x, text_y), 
                                             cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 2)
                         except Exception as ex:
-                            print(f"[ERROR] ãƒã‚¤ãƒ©ã‚¤ãƒˆæç”»ã®å¤–å´ã‚¨ãƒ©ãƒ¼: {ex}")
+                            print(f"[ERROR] ƒnƒCƒ‰ƒCƒg•`‰æ‚ÌŠO‘¤ƒGƒ‰[: {ex}")
                             import traceback
                             traceback.print_exc()
-                            pass  # ã‚¨ãƒ©ãƒ¼æ™‚ã¯ç„¡è¦–
+                            pass  # ƒGƒ‰[‚Í–³‹
                     
-                    # ç¢ºå®šæ¸ˆã¿ã®å››è§’å½¢ã‚’æç”»ï¼ˆç•°ãªã‚‹è‰²ã§ï¼‰
+                    # Šm’èÏ‚İ‚ÌlŠpŒ`‚ğ•`‰æiˆÙ‚È‚éF‚Åj
                     for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                         color = RECT_COLORS[idx % len(RECT_COLORS)]
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                         
-                        # ç·šå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯å››è§’å½¢å†…ã®å£ã‚’è‰²å¤‰æ›´
-                        if edit_mode == "ç·šã‚’å‰Šé™¤":
+                        # üíœƒ‚[ƒh‚Ìê‡‚ÍlŠpŒ`“à‚Ì•Ç‚ğF•ÏX
+                        if edit_mode == "ü‚ğíœ":
                             try:
                                 json_data_del = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls_del = json_data_del.get('walls', [])
@@ -3364,36 +3364,36 @@ def main():
                                     img_height_del, min_x_del, min_y_del, max_x_del, max_y_del
                                 )
                                 
-                                # å‰Šé™¤å¯¾è±¡ã®å£ã‚’èµ¤è‰²ã§å¤ªãæç”»
+                                # íœ‘ÎÛ‚Ì•Ç‚ğÔF‚Å‘¾‚­•`‰æ
                                 if len(walls_in_rect_del) > 0:
                                     for wall in walls_in_rect_del:
                                         start_m = wall['start']
                                         end_m = wall['end']
                                         
-                                        # ãƒ¡ãƒ¼ãƒˆãƒ«â†’ãƒ”ã‚¯ã‚»ãƒ«å¤‰æ›
+                                        # ƒ[ƒgƒ‹¨ƒsƒNƒZƒ‹•ÏŠ·
                                         start_px_x = int((start_m[0] - min_x_del) * scale_del) + margin_del
                                         start_px_y = img_height_del - (int((start_m[1] - min_y_del) * scale_del) + margin_del)
                                         end_px_x = int((end_m[0] - min_x_del) * scale_del) + margin_del
                                         end_px_y = img_height_del - (int((end_m[1] - min_y_del) * scale_del) + margin_del)
                                         
-                                        # èµ¤è‰²ã§å¤ªã„ç·šã‚’æç”»ï¼ˆå‰Šé™¤å¯¾è±¡ï¼‰
+                                        # ÔF‚Å‘¾‚¢ü‚ğ•`‰æiíœ‘ÎÛj
                                         cv2.line(display_img_array, (start_px_x, start_px_y), (end_px_x, end_px_y), (0, 0, 255), 8)
                                 else:
-                                    # å£ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯å››è§’å½¢ã‚’è¡¨ç¤º
+                                    # •Ç‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍlŠpŒ`‚ğ•\¦
                                     overlay = display_img_array.copy()
                                     cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                     cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                     cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                     cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                             except Exception:
-                                # ã‚¨ãƒ©ãƒ¼æ™‚ã¯å››è§’å½¢ã‚’è¡¨ç¤º
+                                # ƒGƒ‰[‚ÍlŠpŒ`‚ğ•\¦
                                 overlay = display_img_array.copy()
                                 cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                 cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                 cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                 cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-                        # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¾ãŸã¯ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯å››è§’å½¢ã§ã¯ãªãè¿½åŠ äºˆå®šã®å£ã‚’ç·šã§è¡¨ç¤º
-                        elif edit_mode == "çª“ã‚’è¿½åŠ " or edit_mode == "ç·šã‚’çµåˆ":
+                        # ‘‹’Ç‰Áƒ‚[ƒh‚Ü‚½‚Íü‚ğŒ‹‡ƒ‚[ƒh‚Ìê‡‚ÍlŠpŒ`‚Å‚Í‚È‚­’Ç‰Á—\’è‚Ì•Ç‚ğü‚Å•\¦
+                        elif edit_mode == "‘‹‚ğ’Ç‰Á" or edit_mode == "ü‚ğŒ‹‡":
                             try:
                                 json_data_confirmed = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls_confirmed = json_data_confirmed.get('walls', [])
@@ -3416,8 +3416,8 @@ def main():
                                     'height': y2 - y1
                                 }
                                 
-                                # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ãŠã‚ˆã³ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ã§æ¤œå‡ºï¼ˆç«¯ç‚¹ã ã‘å›²ã‚€æ“ä½œã«å¯¾å¿œï¼‰
-                                if edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’çµåˆ"):
+                                # ‘‹’Ç‰Áƒ‚[ƒh‚¨‚æ‚Ñü‚ğŒ‹‡ƒ‚[ƒh‚Å‚Í’[“_/Œğ·ƒx[ƒX‚ÅŒŸoi’[“_‚¾‚¯ˆÍ‚Ş‘€ì‚É‘Î‰j
+                                if edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğŒ‹‡"):
                                     walls_in_rect_confirmed = _filter_walls_by_endpoints_in_rect(
                                         walls_confirmed, rect_confirmed, scale_confirmed, margin_confirmed,
                                         img_height_confirmed, min_x_confirmed, min_y_confirmed, max_x_confirmed, max_y_confirmed,
@@ -3429,14 +3429,14 @@ def main():
                                         img_height_confirmed, min_x_confirmed, min_y_confirmed, max_x_confirmed, max_y_confirmed
                                     )
 
-                                # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã¨åŒã˜ãã€ç«¯ç‚¹ãŒé‡ãªã£ã¦ä½™åˆ†ãªç·šãŒå«ã¾ã‚Œã‚‹å ´åˆã¯ç¸¦æ¨ªåˆ¤å®šã—ã¦æœ€é©ãª2æœ¬ã‚’é¸æŠ
+                                # ƒvƒŒƒrƒ…[‚Æ“¯‚¶‚­A’[“_‚ªd‚È‚Á‚Ä—]•ª‚Èü‚ªŠÜ‚Ü‚ê‚éê‡‚Íc‰¡”»’è‚µ‚ÄÅ“K‚È2–{‚ğ‘I‘ğ
                                 try:
                                     if len(walls_in_rect_confirmed) >= 3:
-                                        # 3æœ¬ä»¥ä¸Šï¼šç¸¦æ¨ªã‚’åˆ†é¡ã—ã¦æœ€ã‚‚è¿‘ã„å¹³è¡Œãªå£ã®ãƒšã‚¢ã‚’é¸ã¶
+                                        # 3–{ˆÈãFc‰¡‚ğ•ª—Ş‚µ‚ÄÅ‚à‹ß‚¢•½s‚È•Ç‚ÌƒyƒA‚ğ‘I‚Ô
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_confirmed)
                                         walls_in_rect_confirmed = best_pair if best_pair else walls_in_rect_confirmed[:2]
                                     else:
-                                        # 2æœ¬ä»¥ä¸‹ã®å ´åˆã¯ãã®ã¾ã¾ä½¿ç”¨
+                                        # 2–{ˆÈ‰º‚Ìê‡‚Í‚»‚Ì‚Ü‚Üg—p
                                         walls_in_rect_confirmed = walls_in_rect_confirmed
                                 except Exception:
                                     pass
@@ -3478,101 +3478,101 @@ def main():
                                             img_height_confirmed - (int((window_end_confirmed[1] - min_y_confirmed) * scale_confirmed) + margin_confirmed)
                                         ]
                                         
-                                        # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã¯é’è‰²ã€çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¯èµ¤è‰²
-                                        line_color = (255, 0, 0) if edit_mode == "ç·šã‚’çµåˆ" else (0, 0, 255)  # BGRå½¢å¼
+                                        # ü‚ğŒ‹‡ƒ‚[ƒh‚ÍÂFA‘‹’Ç‰Áƒ‚[ƒh‚ÍÔF
+                                        line_color = (255, 0, 0) if edit_mode == "ü‚ğŒ‹‡" else (0, 0, 255)  # BGRŒ`®
                                         cv2.line(display_img_array, tuple(start_px), tuple(end_px), line_color, 5)
                                         cv2.circle(display_img_array, tuple(start_px), 8, line_color, -1)
                                         cv2.circle(display_img_array, tuple(end_px), 8, line_color, -1)
                                         
-                                        # ç•ªå·ã‚’æç”»ï¼ˆç·šã®ä¸Šå´ã€ç™½èƒŒæ™¯ã§è¦–èªæ€§å‘ä¸Šï¼‰
+                                        # ”Ô†‚ğ•`‰æiü‚Ìã‘¤A”’”wŒi‚Å‹”F«Œüãj
                                         mid_x = (start_px[0] + end_px[0]) // 2
                                         mid_y = (start_px[1] + end_px[1]) // 2
                                         text = f"{idx+1}"
                                         text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
                                         text_x = mid_x - text_size[0] // 2
-                                        text_y = mid_y - 20  # ç·šã®ä¸Šå´ã«é…ç½®
-                                        # ç™½èƒŒæ™¯ã®å››è§’å½¢ã‚’æç”»
+                                        text_y = mid_y - 20  # ü‚Ìã‘¤‚É”z’u
+                                        # ”’”wŒi‚ÌlŠpŒ`‚ğ•`‰æ
                                         cv2.rectangle(display_img_array, 
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (255, 255, 255), -1)
-                                        # é»’æ ã‚’æç”»
+                                        # •˜g‚ğ•`‰æ
                                         cv2.rectangle(display_img_array, 
                                                     (text_x - 5, text_y - text_size[1] - 5),
                                                     (text_x + text_size[0] + 5, text_y + 5),
                                                     (0, 0, 0), 2)
-                                        # ç•ªå·ã‚’æç”»ï¼ˆé»’æ–‡å­—ï¼‰
+                                        # ”Ô†‚ğ•`‰æi••¶šj
                                         cv2.putText(display_img_array, text, (text_x, text_y), 
                                                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
                                 else:
-                                    # 2æœ¬æ¤œå‡ºã§ããªã„å ´åˆã¯å››è§’å½¢ã‚’è¡¨ç¤º
+                                    # 2–{ŒŸo‚Å‚«‚È‚¢ê‡‚ÍlŠpŒ`‚ğ•\¦
                                     overlay = display_img_array.copy()
                                     cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                     cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                     cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                     cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                             except Exception:
-                                # ã‚¨ãƒ©ãƒ¼æ™‚ã¯é€šå¸¸ã®å››è§’å½¢è¡¨ç¤º
+                                # ƒGƒ‰[‚Í’Êí‚ÌlŠpŒ`•\¦
                                 overlay = display_img_array.copy()
                                 cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                                 cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
                                 cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
                                 cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-                        elif edit_mode == "éšæ®µã‚’é…ç½®":
-                            # éšæ®µè¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šé’è‰²ã®çŸ©å½¢ã§éšæ®µã‚¨ãƒªã‚¢ã‚’è¡¨ç¤º
-                            stair_color = (255, 0, 0)  # BGRå½¢å¼ã§é’è‰²
-                            # åŠé€æ˜ã®å››è§’å½¢ã‚’æç”»
+                        elif edit_mode == "ŠK’i‚ğ”z’u":
+                            # ŠK’i’Ç‰Áƒ‚[ƒhFÂF‚Ì‹éŒ`‚ÅŠK’iƒGƒŠƒA‚ğ•\¦
+                            stair_color = (255, 0, 0)  # BGRŒ`®‚ÅÂF
+                            # ”¼“§–¾‚ÌlŠpŒ`‚ğ•`‰æ
                             overlay = display_img_array.copy()
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), stair_color, -1)
                             cv2.addWeighted(overlay, 0.3, display_img_array, 0.7, 0, display_img_array)
-                            # å››è§’å½¢ã®æ ç·šã‚’æç”»ï¼ˆå¤ªã‚ã®é’ç·šï¼‰
+                            # lŠpŒ`‚Ì˜gü‚ğ•`‰æi‘¾‚ß‚ÌÂüj
                             cv2.rectangle(display_img_array, (x1, y1), (x2, y2), stair_color, 5)
-                            # ç•ªå·ã¨éšæ®µã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»
-                            text = f"ğŸªœ {idx+1}"
+                            # ”Ô†‚ÆŠK’iƒAƒCƒRƒ“‚ğ•`‰æ
+                            text = f"?? {idx+1}"
                             cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 3)
                             cv2.putText(display_img_array, f"Stair {idx+1}", (x1+5, y1+30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, stair_color, 2)
                         else:
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ãƒ»ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ä»¥å¤–ã¯é€šå¸¸ã®å››è§’å½¢è¡¨ç¤º
-                            # åŠé€æ˜ã®å››è§’å½¢ã‚’æç”»
+                            # ‘‹’Ç‰Áƒ‚[ƒhEü‚ğŒ‹‡ƒ‚[ƒhˆÈŠO‚Í’Êí‚ÌlŠpŒ`•\¦
+                            # ”¼“§–¾‚ÌlŠpŒ`‚ğ•`‰æ
                             overlay = display_img_array.copy()
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
                             cv2.addWeighted(overlay, 0.25, display_img_array, 0.75, 0, display_img_array)
-                            # å››è§’å½¢ã®æ ç·šã‚’æç”»
+                            # lŠpŒ`‚Ì˜gü‚ğ•`‰æ
                             cv2.rectangle(display_img_array, (x1, y1), (x2, y2), color, 3)
-                            # ç•ªå·ã‚’æç”»
+                            # ”Ô†‚ğ•`‰æ
                             cv2.putText(display_img_array, f"{idx+1}", (x1+5, y1+25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
                     
-                    # ç¾åœ¨é¸æŠä¸­ã®å››è§’å½¢ã‚’æç”»ï¼ˆèµ¤è‰²ã§è¡¨ç¤ºï¼‰
+                    # Œ»İ‘I‘ğ’†‚ÌlŠpŒ`‚ğ•`‰æiÔF‚Å•\¦j
                     if len(st.session_state.rect_coords) == 1:
-                        # 1ç‚¹ç›®ã‚’èµ¤ã„å††ã§è¡¨ç¤º
-                        red_color = (0, 0, 255)  # BGRå½¢å¼ã§èµ¤è‰²
-                        cv2.circle(display_img_array, st.session_state.rect_coords[0], 12, red_color, -1)  # å¡—ã‚Šã¤ã¶ã—å††
-                        cv2.circle(display_img_array, st.session_state.rect_coords[0], 15, (255, 255, 255), 2)  # ç™½æ 
+                        # 1“_–Ú‚ğÔ‚¢‰~‚Å•\¦
+                        red_color = (0, 0, 255)  # BGRŒ`®‚ÅÔF
+                        cv2.circle(display_img_array, st.session_state.rect_coords[0], 12, red_color, -1)  # “h‚è‚Â‚Ô‚µ‰~
+                        cv2.circle(display_img_array, st.session_state.rect_coords[0], 15, (255, 255, 255), 2)  # ”’˜g
                     elif len(st.session_state.rect_coords) == 2:
-                        # 2ç‚¹ã‚’èµ¤ã„å††ã§è¡¨ç¤ºã—ã€å››è§’å½¢ã‚‚æç”»
-                        red_color = (0, 0, 255)  # BGRå½¢å¼ã§èµ¤è‰²
+                        # 2“_‚ğÔ‚¢‰~‚Å•\¦‚µAlŠpŒ`‚à•`‰æ
+                        red_color = (0, 0, 255)  # BGRŒ`®‚ÅÔF
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        # åŠé€æ˜ã®å››è§’å½¢ã‚’æç”»
+                        # ”¼“§–¾‚ÌlŠpŒ`‚ğ•`‰æ
                         overlay = display_img_array.copy()
                         cv2.rectangle(overlay, (x1, y1), (x2, y2), red_color, -1)
                         cv2.addWeighted(overlay, 0.3, display_img_array, 0.7, 0, display_img_array)
-                        # å››è§’å½¢ã®æ ç·šã‚’æç”»
+                        # lŠpŒ`‚Ì˜gü‚ğ•`‰æ
                         cv2.rectangle(display_img_array, (x1, y1), (x2, y2), red_color, 3)
-                        # ä¸¡ç«¯ã«èµ¤ã„å††ã‚’è¡¨ç¤º
+                        # —¼’[‚ÉÔ‚¢‰~‚ğ•\¦
                         cv2.circle(display_img_array, p1, 12, red_color, -1)
                         cv2.circle(display_img_array, p1, 15, (255, 255, 255), 2)
                         cv2.circle(display_img_array, p2, 12, red_color, -1)
                         cv2.circle(display_img_array, p2, 15, (255, 255, 255), 2)
                         
-                        # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¾ãŸã¯ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã€è¿½åŠ äºˆå®šã®å£ã‚’ç·šã§è¡¨ç¤º
-                        if edit_mode == "çª“ã‚’è¿½åŠ " or edit_mode == "ç·šã‚’çµåˆ":
+                        # ‘‹’Ç‰Áƒ‚[ƒh‚Ü‚½‚Íü‚ğŒ‹‡ƒ‚[ƒh‚Ìê‡A’Ç‰Á—\’è‚Ì•Ç‚ğü‚Å•\¦
+                        if edit_mode == "‘‹‚ğ’Ç‰Á" or edit_mode == "ü‚ğŒ‹‡":
                             try:
                                 json_data_preview = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls_preview = json_data_preview.get('walls', [])
                                 
-                                # å¯è¦–åŒ–ç”»åƒã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                                # ‰Â‹‰»‰æ‘œ‚Ìƒpƒ‰ƒ[ƒ^‚ğæ“¾
                                 all_x_preview = [w['start'][0] for w in walls_preview] + [w['end'][0] for w in walls_preview]
                                 all_y_preview = [w['start'][1] for w in walls_preview] + [w['end'][1] for w in walls_preview]
                                 min_x_preview = min(all_x_preview)
@@ -3591,8 +3591,8 @@ def main():
                                     'height': y2 - y1
                                 }
                                 
-                                # ç¯„å›²å†…ã®å£ã‚’æ¤œå‡ºï¼ˆçª“è¿½åŠ /ç·šã‚’çµåˆã§ã¯ç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ï¼‰
-                                if edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’çµåˆ"):
+                                # ”ÍˆÍ“à‚Ì•Ç‚ğŒŸoi‘‹’Ç‰Á/ü‚ğŒ‹‡‚Å‚Í’[“_/Œğ·ƒx[ƒXj
+                                if edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğŒ‹‡"):
                                     walls_in_rect_preview = _filter_walls_by_endpoints_in_rect(
                                         walls_preview, rect_preview, scale_preview, margin_preview,
                                         img_height_preview, min_x_preview, min_y_preview, max_x_preview, max_y_preview,
@@ -3604,21 +3604,21 @@ def main():
                                         img_height_preview, min_x_preview, min_y_preview, max_x_preview, max_y_preview
                                     )
 
-                                # è¿½åŠ è¡¨ç¤ºç”¨ã«ã€ç¸¦æ¨ªã‚’åˆ¤å®šã—ã¦æœ€é©ãªç·šã‚’é¸æŠï¼ˆãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼æ•´åˆæ€§ï¼‰
+                                # ’Ç‰Á•\¦—p‚ÉAc‰¡‚ğ”»’è‚µ‚ÄÅ“K‚Èü‚ğ‘I‘ğiƒvƒŒƒrƒ…[®‡«j
                                 try:
                                     if len(walls_in_rect_preview) >= 3:
-                                        # 3æœ¬ä»¥ä¸Šï¼šç¸¦æ¨ªã‚’åˆ†é¡ã—ã¦æœ€ã‚‚è¿‘ã„å¹³è¡Œãªå£ã®ãƒšã‚¢ã‚’é¸ã¶
+                                        # 3–{ˆÈãFc‰¡‚ğ•ª—Ş‚µ‚ÄÅ‚à‹ß‚¢•½s‚È•Ç‚ÌƒyƒA‚ğ‘I‚Ô
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_preview)
                                         walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_preview[:2]
                                     else:
-                                        # 2æœ¬ä»¥ä¸‹ã®å ´åˆã¯ãã®ã¾ã¾ä½¿ç”¨
+                                        # 2–{ˆÈ‰º‚Ìê‡‚Í‚»‚Ì‚Ü‚Üg—p
                                         walls_in_rect_filtered = walls_in_rect_preview
                                 except Exception:
                                     walls_in_rect_filtered = walls_in_rect_preview
 
-                                # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼æ™‚ã®è©³ç´°ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ï¼ˆ2ç‚¹ç›®é¸æŠç›´å¾Œã«è¡¨ç¤ºï¼‰
+                                # ƒvƒŒƒrƒ…[‚ÌÚ×ƒfƒoƒbƒOo—Íi2“_–Ú‘I‘ğ’¼Œã‚É•\¦j
                                 try:
-                                    # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼æ™‚ã®å†…éƒ¨ãƒãƒƒãƒ”ãƒ³ã‚°ã¯è¡¨ç¤ºã—ãªã„ï¼ˆãƒ­ã‚°ã®ã¿æ®‹ã™ï¼‰
+                                    # ƒvƒŒƒrƒ…[‚Ì“à•”ƒ}ƒbƒsƒ“ƒO‚Í•\¦‚µ‚È‚¢iƒƒO‚Ì‚İc‚·j
                                     preview_debug = []
                                     for w in walls_preview:
                                         x1w = int((w['start'][0] - min_x_preview) * scale_preview) + margin_preview
@@ -3638,15 +3638,15 @@ def main():
                                 except Exception:
                                     pass
 
-                                # æ¤œå‡ºãŒ2æœ¬ä»¥ä¸Šã‚ã‚‹å ´åˆã€è¿½åŠ äºˆå®šã®ç·šã‚’æç”»
+                                # ŒŸo‚ª2–{ˆÈã‚ ‚éê‡A’Ç‰Á—\’è‚Ìü‚ğ•`‰æ
                                 if len(walls_in_rect_filtered) >= 2:
-                                    # ã¾ãšçª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆè¡¨ç¤ºç”¨ï¼‰
+                                    # ‚Ü‚¸‘‹ƒpƒ‰ƒ[ƒ^‚ğæ“¾i•\¦—pj
                                     params = st.session_state.get('window_execution_params', {})
                                     window_height_preview = params.get('window_height', 1.2)
                                     base_height_preview = params.get('base_height', 0.9)
                                     room_height_preview = params.get('room_height', 2.4)
 
-                                    # 2æœ¬ã‚ˆã‚Šå¤šã„å ´åˆã¯å››è§’å½¢ã®ä¸»æ–¹å‘ã«æ²¿ã£ã¦æœ€ã‚‚é›¢ã‚ŒãŸ2æœ¬ã‚’é¸ã¶
+                                    # 2–{‚æ‚è‘½‚¢ê‡‚ÍlŠpŒ`‚Ìå•ûŒü‚É‰ˆ‚Á‚ÄÅ‚à—£‚ê‚½2–{‚ğ‘I‚Ô
                                     selected_walls = None
                                     try:
                                         rect_w = rect_preview.get('width', 0)
@@ -3663,7 +3663,7 @@ def main():
                                     except Exception:
                                         selected_walls = walls_in_rect_filtered[:2]
 
-                                    # é¸ã°ã‚ŒãŸ2æœ¬ã‹ã‚‰æœ€çŸ­ç«¯ç‚¹å¯¾ã‚’æ¢ã™
+                                    # ‘I‚Î‚ê‚½2–{‚©‚çÅ’Z’[“_‘Î‚ğ’T‚·
                                     wall1_preview = selected_walls[0]
                                     wall2_preview = selected_walls[1]
                                     endpoints_preview = [
@@ -3683,7 +3683,7 @@ def main():
                                             window_start_preview = p1_win
                                             window_end_preview = p2_win
 
-                                    # ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã‚’ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™ã«å¤‰æ›ã—ã¦ç·šã‚’æç”»
+                                    # ƒ[ƒgƒ‹À•W‚ğƒsƒNƒZƒ‹À•W‚É•ÏŠ·‚µ‚Äü‚ğ•`‰æ
                                     if window_start_preview and window_end_preview:
                                         start_px = [
                                             int((window_start_preview[0] - min_x_preview) * scale_preview) + margin_preview,
@@ -3694,17 +3694,17 @@ def main():
                                             img_height_preview - (int((window_end_preview[1] - min_y_preview) * scale_preview) + margin_preview)
                                         ]
 
-                                        # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã¯é’è‰²ã€çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¯èµ¤è‰²ã§å¤ªã„ç·šã‚’æç”»
-                                        line_color = (255, 0, 0) if edit_mode == "ç·šã‚’çµåˆ" else (0, 0, 255)  # BGRå½¢å¼
+                                        # ü‚ğŒ‹‡ƒ‚[ƒh‚ÍÂFA‘‹’Ç‰Áƒ‚[ƒh‚ÍÔF‚Å‘¾‚¢ü‚ğ•`‰æ
+                                        line_color = (255, 0, 0) if edit_mode == "ü‚ğŒ‹‡" else (0, 0, 255)  # BGRŒ`®
                                         cv2.line(display_img_array, tuple(start_px), tuple(end_px), line_color, 5)
                                         cv2.circle(display_img_array, tuple(start_px), 8, line_color, -1)
                                         cv2.circle(display_img_array, tuple(end_px), 8, line_color, -1)
 
-                                        # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§é¸æŠã—ãŸãƒšã‚¢ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ï¼ˆå®Ÿè¡Œæ™‚ã«å„ªå…ˆåˆ©ç”¨ï¼‰
+                                        # ƒvƒŒƒrƒ…[‚Å‘I‘ğ‚µ‚½ƒyƒA‚ğƒZƒbƒVƒ‡ƒ“‚É•Û‘¶iÀs‚É—Dæ—˜—pj
                                         try:
                                             st.session_state['last_preview_pair'] = [wall1_preview.get('id'), wall2_preview.get('id')]
                                             st.session_state['last_preview_rect'] = rect_preview
-                                            # ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿ã®æ¤œå‡ºIDãƒªã‚¹ãƒˆã‚‚ä¿å­˜ï¼ˆãƒ‡ãƒãƒƒã‚°/å®Ÿè¡Œæ•´åˆç”¨ï¼‰
+                                            # ƒtƒBƒ‹ƒ^Ï‚İ‚ÌŒŸoIDƒŠƒXƒg‚à•Û‘¶iƒfƒoƒbƒO/Às®‡—pj
                                             try:
                                                 st.session_state['last_preview_detected_ids'] = [w.get('id') for w in walls_in_rect_preview]
                                                 st.session_state['last_preview_filtered_ids'] = [w.get('id') for w in walls_in_rect_filtered]
@@ -3713,7 +3713,7 @@ def main():
                                         except Exception:
                                             pass
 
-                                        # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã«ç•ªå·ã‚‚æç”»ï¼ˆç¢ºå®šãƒªã‚¹ãƒˆã«è¿½åŠ ã•ã‚Œã¦ã„ãªã„æœªè¿½åŠ ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ï¼‰
+                                        # ƒvƒŒƒrƒ…[—p‚É”Ô†‚à•`‰æiŠm’èƒŠƒXƒg‚É’Ç‰Á‚³‚ê‚Ä‚¢‚È‚¢–¢’Ç‰ÁƒvƒŒƒrƒ…[j
                                         try:
                                             preview_idx = len(st.session_state.get('rect_coords_list', [])) + 1
                                             mid_x = (start_px[0] + end_px[0]) // 2
@@ -3734,13 +3734,13 @@ def main():
                                         except Exception:
                                             pass
                             except Exception as e:
-                                # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼æç”»ã®ã‚¨ãƒ©ãƒ¼ã¯ç„¡è¦–ï¼ˆé€šå¸¸ã®å››è§’å½¢è¡¨ç¤ºã‚’ç¶šè¡Œï¼‰
+                                # ƒvƒŒƒrƒ…[•`‰æ‚ÌƒGƒ‰[‚Í–³‹i’Êí‚ÌlŠpŒ`•\¦‚ğ‘±sj
                                 pass
                     
                     display_img = Image.fromarray(display_img_array)
                     display_img_resized, scale_ratio, _, _ = _prepare_display_from_pil(display_img, max_width=DISPLAY_IMAGE_WIDTH)
                     
-                    # ã‚ºãƒ¼ãƒ æ©Ÿèƒ½: ç”»åƒã‚µã‚¤ã‚ºã‚’èª¿æ•´
+                    # ƒY[ƒ€‹@”\: ‰æ‘œƒTƒCƒY‚ğ’²®
                     zoom_level = st.session_state.get('editor_zoom_level', 1.0)
                     if zoom_level != 1.0:
                         w, h = display_img_resized.size
@@ -3749,55 +3749,55 @@ def main():
                             Image.Resampling.LANCZOS
                         )
                     
-                    # skip_click_processingãƒ•ãƒ©ã‚°ã‚’ç”»é¢æç”»æ™‚ã«ç„¡æ¡ä»¶ã§ã‚¯ãƒªã‚¢ï¼ˆãƒ•ãƒ©ã‚°ãŒæ®‹ã‚Šç¶šã‘ã‚‹ã®ã‚’é˜²ãï¼‰
+                    # skip_click_processingƒtƒ‰ƒO‚ğ‰æ–Ê•`‰æ‚É–³ğŒ‚ÅƒNƒŠƒAiƒtƒ‰ƒO‚ªc‚è‘±‚¯‚é‚Ì‚ğ–h‚®j
                     if st.session_state.get('skip_click_processing'):
                         st.session_state.skip_click_processing = False
                     
-                    # UIè¡¨ç¤ºï¼šãƒ¢ãƒ¼ãƒ‰åˆ¥
-                    if edit_mode == "ç·šã‚’çµåˆ":
-                        # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚¯ãƒªãƒƒã‚¯é¸æŠï¼ˆ2æœ¬ãšã¤ãƒšã‚¢ã§è¤‡æ•°çµåˆå¯èƒ½ï¼‰
+                    # UI•\¦Fƒ‚[ƒh•Ê
+                    if edit_mode == "ü‚ğŒ‹‡":
+                        # ü‚ğŒ‹‡ƒ‚[ƒhF•ÇüƒNƒŠƒbƒN‘I‘ği2–{‚¸‚ÂƒyƒA‚Å•¡”Œ‹‡‰Â”\j
                         num_selected = len(st.session_state.selected_walls_for_merge)
                         if num_selected == 0:
                             pass
-                            #st.write("ğŸ’¡ çµåˆã—ãŸã„å£ç·šã‚’1æœ¬ç›®ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.write("?? Œ‹‡‚µ‚½‚¢•Çü‚ğ1–{–ÚƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                         elif num_selected % 2 == 1:
                             merge_num = (num_selected // 2) + 1
-                            #st.info(f"âœ… **çµåˆ{merge_num}ï¼š1æœ¬ç›®é¸æŠå®Œäº†** â†’ 2æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.info(f"? **Œ‹‡{merge_num}F1–{–Ú‘I‘ğŠ®—¹** ¨ 2–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                         else:
                             merge_count = num_selected // 2
-                            #st.success(f"âœ… **{merge_count}çµ„ã®çµåˆã‚’é¸æŠå®Œäº†**\n\nâ†’ ã•ã‚‰ã«çµåˆã‚’è¿½åŠ ã™ã‚‹å ´åˆã¯ä¸‹ã®ç·¨é›†ç”»é¢ã§æ¬¡ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯\n\nâ†’ ç¢ºå®šã™ã‚‹å ´åˆã¯ä¸‹ã®ã€ŒğŸ”— çµåˆå®Ÿè¡Œã€ãƒœã‚¿ãƒ³ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.success(f"? **{merge_count}‘g‚ÌŒ‹‡‚ğ‘I‘ğŠ®—¹**\n\n¨ ‚³‚ç‚ÉŒ‹‡‚ğ’Ç‰Á‚·‚éê‡‚Í‰º‚Ì•ÒW‰æ–Ê‚ÅŸ‚Ì•Çü‚ğƒNƒŠƒbƒN\n\n¨ Šm’è‚·‚éê‡‚Í‰º‚Ìu?? Œ‹‡Àsvƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                             
-                            # çµåˆå®Ÿè¡Œãƒœã‚¿ãƒ³ï¼ˆé¸æŠå®Œäº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ç›´å¾Œã€ç”»åƒã®å‰ã«è¡¨ç¤ºï¼‰
+                            # Œ‹‡Àsƒ{ƒ^ƒ“i‘I‘ğŠ®—¹ƒƒbƒZ[ƒW‚Ì’¼ŒãA‰æ‘œ‚Ì‘O‚É•\¦j
                             st.markdown("---")
-                            if st.button("ğŸ”— çµåˆå®Ÿè¡Œ", type="primary", key="btn_merge_exec_top"):
-                                # é¸æŠã•ã‚ŒãŸå£ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã—ã¦ã‹ã‚‰é¸æŠãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+                            if st.button("?? Œ‹‡Às", type="primary", key="btn_merge_exec_top"):
+                                # ‘I‘ğ‚³‚ê‚½•Ç‚ğƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚µ‚Ä‚©‚ç‘I‘ğƒŠƒXƒg‚ğƒNƒŠƒA
                                 st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
                                 st.session_state.selected_walls_for_merge = []
-                                st.session_state.skip_click_processing = True  # ã‚¯ãƒªãƒƒã‚¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
-                                # å³åº§ã«rerunã—ã¦é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ï¼ˆæ¬¡ã®rerunã§å®Ÿéš›ã®å‡¦ç†ã‚’å®Ÿè¡Œï¼‰
+                                st.session_state.skip_click_processing = True  # ƒNƒŠƒbƒNˆ—‚ğƒXƒLƒbƒv
+                                # ‘¦À‚Érerun‚µ‚Ä‘I‘ğó‘Ô‚ğƒNƒŠƒAiŸ‚Ìrerun‚ÅÀÛ‚Ìˆ—‚ğÀsj
                                 st.rerun()
-                    elif edit_mode == "çª“ã‚’è¿½åŠ ":
-                        # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚¯ãƒªãƒƒã‚¯é¸æŠï¼ˆ2æœ¬ãšã¤ãƒšã‚¢ã§è¤‡æ•°çª“è¿½åŠ å¯èƒ½ï¼‰
+                    elif edit_mode == "‘‹‚ğ’Ç‰Á":
+                        # ‘‹’Ç‰Áƒ‚[ƒhF•ÇüƒNƒŠƒbƒN‘I‘ği2–{‚¸‚ÂƒyƒA‚Å•¡”‘‹’Ç‰Á‰Â”\j
                         num_selected = len(st.session_state.selected_walls_for_window)
                         if num_selected == 0:
                             pass
-                            #st.write("ğŸ’¡ çª“ã‚’è¿½åŠ ã—ãŸã„å£ç·š(2æœ¬)ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.write("?? ‘‹‚ğ’Ç‰Á‚µ‚½‚¢•Çü(2–{)‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                         elif num_selected % 2 == 1:
                             window_num = (num_selected // 2) + 1
-                            #st.info(f"âœ… **çª“{window_num}ï¼š1æœ¬ç›®é¸æŠå®Œäº†** â†’ 2æœ¬ç›®ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.info(f"? **‘‹{window_num}F1–{–Ú‘I‘ğŠ®—¹** ¨ 2–{–Ú‚Ì•Çü‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                         else:
                             window_count = num_selected // 2
-                            #st.success(f"âœ… **{window_count}çµ„ã®çª“ã‚’é¸æŠå®Œäº†**\n\nâ†’ ã•ã‚‰ã«çª“ã‚’è¿½åŠ ã™ã‚‹å ´åˆã¯ä¸‹ã®ç·¨é›†ç”»é¢ã§æ¬¡ã®å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯\n\nâ†’ ç¢ºå®šã™ã‚‹å ´åˆã¯ä¸‹ã§çª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å…¥åŠ›ã—ã¦ã€ŒğŸªŸ çª“è¿½åŠ å®Ÿè¡Œã€ãƒœã‚¿ãƒ³ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.success(f"? **{window_count}‘g‚Ì‘‹‚ğ‘I‘ğŠ®—¹**\n\n¨ ‚³‚ç‚É‘‹‚ğ’Ç‰Á‚·‚éê‡‚Í‰º‚Ì•ÒW‰æ–Ê‚ÅŸ‚Ì•Çü‚ğƒNƒŠƒbƒN\n\n¨ Šm’è‚·‚éê‡‚Í‰º‚Å‘‹ƒpƒ‰ƒ[ƒ^‚ğ“ü—Í‚µ‚Äu?? ‘‹’Ç‰ÁÀsvƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                             
-                            # çª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å…¥åŠ›ãƒ•ã‚©ãƒ¼ãƒ ï¼ˆé¸æŠå®Œäº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ç›´å¾Œã€ç”»åƒã®å‰ã«è¡¨ç¤ºï¼‰
+                            # ‘‹ƒpƒ‰ƒ[ƒ^“ü—ÍƒtƒH[ƒ€i‘I‘ğŠ®—¹ƒƒbƒZ[ƒW‚Ì’¼ŒãA‰æ‘œ‚Ì‘O‚É•\¦j
                             st.markdown("---")
-                            st.markdown(f"### ğŸªŸ çª“ã®ã‚µã‚¤ã‚ºã‚’å…¥åŠ›ï¼ˆ{window_count}çµ„ï¼‰")
+                            st.markdown(f"### ?? ‘‹‚ÌƒTƒCƒY‚ğ“ü—Íi{window_count}‘gj")
                             
-                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã«çª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã‚’åˆæœŸåŒ–
+                            # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒg‚É‘‹ƒpƒ‰ƒ[ƒ^ƒŠƒXƒg‚ğ‰Šú‰»
                             if 'window_click_params_list' not in st.session_state:
                                 st.session_state.window_click_params_list = []
                             
-                            # å¿…è¦ãªæ•°ã ã‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç¢ºä¿
+                            # •K—v‚È”‚¾‚¯ƒpƒ‰ƒ[ƒ^‚ğŠm•Û
                             while len(st.session_state.window_click_params_list) < window_count:
                                 st.session_state.window_click_params_list.append({
                                     'model': 'J4415/JF4415',
@@ -3806,25 +3806,25 @@ def main():
                                     'base_mm': 900
                                 })
                             
-                            # å„çª“ã”ã¨ã«å…¥åŠ›æ¬„ã‚’è¡¨ç¤º
+                            # Še‘‹‚²‚Æ‚É“ü—Í—“‚ğ•\¦
                             window_params_to_save = []
                             for window_idx in range(window_count):
-                                st.markdown(f"#### çª“{window_idx + 1}")
+                                st.markdown(f"#### ‘‹{window_idx + 1}")
                                 col1, col2, col3 = st.columns(3)
                                 
                                 with col1:
-                                    # ç¾åœ¨ã®å‹ç•ªã‚’å–å¾—
+                                    # Œ»İ‚ÌŒ^”Ô‚ğæ“¾
                                     current_model = st.session_state.window_click_params_list[window_idx].get('model', 'J4415/JF4415')
                                     
                                     window_model = st.selectbox(
-                                        f"çª“{window_idx + 1}ã®å‹ç•ª(æ•°å­—4æ¡)",
+                                        f"‘‹{window_idx + 1}‚ÌŒ^”Ô(”š4Œ…)",
                                         list(WINDOW_CATALOG.keys()),
                                         index=list(WINDOW_CATALOG.keys()).index(current_model) if current_model in WINDOW_CATALOG.keys() else 0,
-                                        help="çª“ã®å‹ç•ª(æ•°å­—4æ¡)ã‚’é¸æŠã—ã¦ãã ã•ã„",
+                                        help="‘‹‚ÌŒ^”Ô(”š4Œ…)‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢",
                                         key=f"window_model_click_{window_idx}"
                                     )
                                     
-                                    # å‹ç•ªãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã€ã‚«ã‚¿ãƒ­ã‚°å€¤ã§æ›´æ–°ã—ã¦rerun
+                                    # Œ^”Ô‚ª•ÏX‚³‚ê‚½ê‡AƒJƒ^ƒƒO’l‚ÅXV‚µ‚Ärerun
                                     if window_model != current_model:
                                         st.session_state.window_click_params_list[window_idx]['model'] = window_model
                                         if window_model in WINDOW_CATALOG:
@@ -3833,14 +3833,14 @@ def main():
                                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = int(catalog_entry.get('height', 1200))
                                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = int(catalog_entry.get('base', 900))
                                             else:
-                                                # å¤ã„å½¢å¼ã®å ´åˆï¼ˆå¹…ã®ã¿ï¼‰
+                                                # ŒÃ‚¢Œ`®‚Ìê‡i•‚Ì‚İj
                                                 st.session_state.window_click_params_list[window_idx]['height_mm'] = 1200
                                                 st.session_state.window_click_params_list[window_idx]['base_mm'] = 900
                                         st.rerun()
                                 
                                 with col2:
                                     window_height_mm = st.number_input(
-                                        f"çª“é•·ã•(é«˜ã•) (mm)",
+                                        f"‘‹’·‚³(‚‚³) (mm)",
                                         min_value=50,
                                         max_value=3000,
                                         value=st.session_state.window_click_params_list[window_idx].get('height_mm', 1200),
@@ -3851,7 +3851,7 @@ def main():
                                 
                                 with col3:
                                     window_base_mm = st.number_input(
-                                        f"åºŠã‹ã‚‰çª“ä¸‹ç«¯ (mm)",
+                                        f"°‚©‚ç‘‹‰º’[ (mm)",
                                         min_value=0,
                                         max_value=5000,
                                         value=st.session_state.window_click_params_list[window_idx].get('base_mm', 900),
@@ -3860,7 +3860,7 @@ def main():
                                     )
                                     st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
                                 
-                                # ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿å­˜
+                                # ƒpƒ‰ƒ[ƒ^‚ğ•Û‘¶
                                 window_params_to_save.append({
                                     'model': window_model,
                                     'width_mm': WINDOW_CATALOG.get(window_model, {}).get("width", 0) if isinstance(WINDOW_CATALOG.get(window_model), dict) else 0,
@@ -3868,168 +3868,168 @@ def main():
                                     'base_mm': window_base_mm
                                 })
                             
-                            # å®Ÿè¡Œãƒœã‚¿ãƒ³ã‚’è¡¨ç¤º
-                            if st.button("ğŸªŸ çª“è¿½åŠ å®Ÿè¡Œ", type="primary", key="btn_window_exec_top"):
-                                # é¸æŠã•ã‚ŒãŸå£ã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã—ã¦ã‹ã‚‰é¸æŠãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+                            # Àsƒ{ƒ^ƒ“‚ğ•\¦
+                            if st.button("?? ‘‹’Ç‰ÁÀs", type="primary", key="btn_window_exec_top"):
+                                # ‘I‘ğ‚³‚ê‚½•Ç‚Æƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚µ‚Ä‚©‚ç‘I‘ğƒŠƒXƒg‚ğƒNƒŠƒA
                                 st.session_state.window_walls_to_process = list(st.session_state.selected_walls_for_window)
                                 st.session_state.window_click_params_list_to_process = window_params_to_save
                                 st.session_state.selected_walls_for_window = []
-                                st.session_state.skip_click_processing = True  # ã‚¯ãƒªãƒƒã‚¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
-                                # å³åº§ã«rerunã—ã¦é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ï¼ˆæ¬¡ã®rerunã§å®Ÿéš›ã®å‡¦ç†ã‚’å®Ÿè¡Œï¼‰
+                                st.session_state.skip_click_processing = True  # ƒNƒŠƒbƒNˆ—‚ğƒXƒLƒbƒv
+                                # ‘¦À‚Érerun‚µ‚Ä‘I‘ğó‘Ô‚ğƒNƒŠƒAiŸ‚Ìrerun‚ÅÀÛ‚Ìˆ—‚ğÀsj
                                 st.rerun()
-                    elif edit_mode == "ç·šã‚’å‰Šé™¤":
-                        # ç·šå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚¯ãƒªãƒƒã‚¯é¸æŠï¼ˆè¤‡æ•°æœ¬å¯èƒ½ï¼‰
+                    elif edit_mode == "ü‚ğíœ":
+                        # üíœƒ‚[ƒhF•ÇüƒNƒŠƒbƒN‘I‘ği•¡”–{‰Â”\j
                         num_selected = len(st.session_state.selected_walls_for_delete)
                         if num_selected == 0:
                             pass
-                            #st.write("ğŸ’¡ å‰Šé™¤ã—ãŸã„å£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ï¼ˆè¤‡æ•°é¸æŠå¯èƒ½ï¼‰")
+                            #st.write("?? íœ‚µ‚½‚¢•Çü‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢i•¡”‘I‘ğ‰Â”\j")
                         else:
-                            #st.success(f"âœ… **{num_selected}æœ¬é¸æŠå®Œäº†**\n\nâ†’ ã•ã‚‰ã«å‰Šé™¤ã™ã‚‹å£ç·šã‚’è¿½åŠ ã™ã‚‹å ´åˆã¯ä¸‹ã®ç·¨é›†ç”»é¢ã§ã‚¯ãƒªãƒƒã‚¯\n\nâ†’ ç¢ºå®šã™ã‚‹å ´åˆã¯ä¸‹ã®ã€ŒğŸ—‘ï¸ å‰Šé™¤å®Ÿè¡Œã€ãƒœã‚¿ãƒ³ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.success(f"? **{num_selected}–{‘I‘ğŠ®—¹**\n\n¨ ‚³‚ç‚Éíœ‚·‚é•Çü‚ğ’Ç‰Á‚·‚éê‡‚Í‰º‚Ì•ÒW‰æ–Ê‚ÅƒNƒŠƒbƒN\n\n¨ Šm’è‚·‚éê‡‚Í‰º‚Ìu??? íœÀsvƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                             
-                            # å‰Šé™¤å®Ÿè¡Œãƒœã‚¿ãƒ³ï¼ˆé¸æŠå®Œäº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ç›´å¾Œã€ç”»åƒã®å‰ã«è¡¨ç¤ºï¼‰
+                            # íœÀsƒ{ƒ^ƒ“i‘I‘ğŠ®—¹ƒƒbƒZ[ƒW‚Ì’¼ŒãA‰æ‘œ‚Ì‘O‚É•\¦j
                             st.markdown("---")
-                            if st.button("ğŸ—‘ï¸ å‰Šé™¤å®Ÿè¡Œ", type="primary", key="btn_delete_exec_top"):
-                                # é¸æŠã•ã‚ŒãŸå£ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã—ã¦ã‹ã‚‰é¸æŠãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+                            if st.button("??? íœÀs", type="primary", key="btn_delete_exec_top"):
+                                # ‘I‘ğ‚³‚ê‚½•Ç‚ğƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚µ‚Ä‚©‚ç‘I‘ğƒŠƒXƒg‚ğƒNƒŠƒA
                                 st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
                                 st.session_state.selected_walls_for_delete = []
-                                st.session_state.skip_click_processing = True  # ã‚¯ãƒªãƒƒã‚¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
-                                # å³åº§ã«rerunã—ã¦é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ï¼ˆæ¬¡ã®rerunã§å®Ÿéš›ã®å‡¦ç†ã‚’å®Ÿè¡Œï¼‰
+                                st.session_state.skip_click_processing = True  # ƒNƒŠƒbƒNˆ—‚ğƒXƒLƒbƒv
+                                # ‘¦À‚Érerun‚µ‚Ä‘I‘ğó‘Ô‚ğƒNƒŠƒAiŸ‚Ìrerun‚ÅÀÛ‚Ìˆ—‚ğÀsj
                                 st.rerun()
-                    elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤":
-                        # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰
+                    elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ":
+                        # ƒIƒuƒWƒFƒNƒgíœƒ‚[ƒh
                         num_selected = len(st.session_state.selected_furniture_to_delete)
                         if num_selected > 0:
                             st.markdown("---")
-                            st.success(f"âœ… **{num_selected}å€‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é¸æŠä¸­**")
-                            if st.button("ğŸ—‘ï¸ å‰Šé™¤å®Ÿè¡Œ", type="primary", key="btn_furn_delete_exec"):
+                            st.success(f"? **{num_selected}ŒÂ‚ÌƒIƒuƒWƒFƒNƒg‚ğ‘I‘ğ’†**")
+                            if st.button("??? íœÀs", type="primary", key="btn_furn_delete_exec"):
                                 st.session_state.execute_furniture_deletion = True
                                 st.rerun()
-                    elif edit_mode == "éšæ®µã‚’é…ç½®":
-                        # éšæ®µè¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼š2ç‚¹é¸æŠ
+                    elif edit_mode == "ŠK’i‚ğ”z’u":
+                        # ŠK’i’Ç‰Áƒ‚[ƒhF2“_‘I‘ğ
                         if len(st.session_state.rect_coords_list) > 0:
-                            #st.success(f"âœ… **{len(st.session_state.rect_coords_list)}ç®‡æ‰€ã®é…ç½®ç¯„å›²ã‚’é¸æŠå®Œäº†**\n\nâ†’ ã•ã‚‰ã«è¿½åŠ ã™ã‚‹å ´åˆã¯ä¸‹ã®ç·¨é›†ç”»é¢ã§æ¬¡ã®2ç‚¹ã‚’ã‚¯ãƒªãƒƒã‚¯\n\nâ†’ ç¢ºå®šã™ã‚‹å ´åˆã¯ä¸‹ã§éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é¸æŠã—ã¦ã€ŒğŸªœ éšæ®µé…ç½®å®Ÿè¡Œã€ãƒœã‚¿ãƒ³ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.success(f"? **{len(st.session_state.rect_coords_list)}‰ÓŠ‚Ì”z’u”ÍˆÍ‚ğ‘I‘ğŠ®—¹**\n\n¨ ‚³‚ç‚É’Ç‰Á‚·‚éê‡‚Í‰º‚Ì•ÒW‰æ–Ê‚ÅŸ‚Ì2“_‚ğƒNƒŠƒbƒN\n\n¨ Šm’è‚·‚éê‡‚Í‰º‚ÅŠK’iƒpƒ^[ƒ“‚ğ‘I‘ğ‚µ‚Äu?? ŠK’i”z’uÀsvƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                             
-                            # éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³é¸æŠ
+                            # ŠK’iƒpƒ^[ƒ“‘I‘ğ
                             st.markdown("---")
-                            st.markdown("### ğŸªœ éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é¸æŠ")
+                            st.markdown("### ?? ŠK’iƒpƒ^[ƒ“‚ğ‘I‘ğ")
                             
                             stair_pattern_key = st.selectbox(
-                                "éšæ®µã®ç¨®é¡",
+                                "ŠK’i‚Ìí—Ş",
                                 list(STAIR_PATTERNS.keys()),
                                 format_func=lambda x: STAIR_PATTERNS[x]["display_name"],
-                                help="é…ç½®ã™ã‚‹éšæ®µã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’é¸æŠã—ã¦ãã ã•ã„",
+                                help="”z’u‚·‚éŠK’i‚Ìƒpƒ^[ƒ“‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢",
                                 key="stair_pattern_select"
                             )
                             
-                            # é¸æŠã•ã‚ŒãŸãƒ‘ã‚¿ãƒ¼ãƒ³ã®èª¬æ˜ã‚’è¡¨ç¤º
-                            st.caption(f"ğŸ“ {STAIR_PATTERNS[stair_pattern_key]['description']}")
+                            # ‘I‘ğ‚³‚ê‚½ƒpƒ^[ƒ“‚Ìà–¾‚ğ•\¦
+                            st.caption(f"?? {STAIR_PATTERNS[stair_pattern_key]['description']}")
                             
-                            # éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã®å‚ç…§å›³ã‚’æŠ˜ã‚ŠãŸãŸã¿ã§è¡¨ç¤º
-                            with st.expander("ğŸ“ éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã®å‚ç…§å›³ã‚’è¡¨ç¤º"):
+                            # ŠK’iƒpƒ^[ƒ“‚ÌQÆ}‚ğÜ‚è‚½‚½‚İ‚Å•\¦
+                            with st.expander("?? ŠK’iƒpƒ^[ƒ“‚ÌQÆ}‚ğ•\¦"):
                                 stair_img_path = BASE_DIR / "stair_pattern_images" / "stair_patterns_reference.png"
                                 try:
                                     if stair_img_path.exists():
                                         img = Image.open(stair_img_path)
-                                        st.image(img, caption="éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ä¸€è¦§ï¼ˆç•ªå·ã¯å„ãƒ‘ã‚¿ãƒ¼ãƒ³ã®è­˜åˆ¥ç•ªå·ï¼‰", width=300)
+                                        st.image(img, caption="ŠK’iƒpƒ^[ƒ“ˆê——i”Ô†‚ÍŠeƒpƒ^[ƒ“‚Ì¯•Ê”Ô†j", width=300)
                                     else:
-                                        st.info(f"ğŸ“‹ å‚ç…§ç”»åƒãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {stair_img_path.name}")
+                                        st.info(f"?? QÆ‰æ‘œ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {stair_img_path.name}")
                                 except Exception as e:
-                                    st.warning(f"âš ï¸ å‚ç…§ç”»åƒãŒèª­ã¿è¾¼ã‚ã¾ã›ã‚“: {stair_img_path.name} (ã‚¨ãƒ©ãƒ¼: {str(e)})")
+                                    st.warning(f"?? QÆ‰æ‘œ‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ: {stair_img_path.name} (ƒGƒ‰[: {str(e)})")
                             
-                            # éšæ®µé…ç½®å®Ÿè¡Œãƒœã‚¿ãƒ³
-                            if st.button("ğŸªœ éšæ®µé…ç½®å®Ÿè¡Œ", type="primary", key="stair_exec"):
+                            # ŠK’i”z’uÀsƒ{ƒ^ƒ“
+                            if st.button("?? ŠK’i”z’uÀs", type="primary", key="stair_exec"):
                                 st.session_state.execute_stair_placement = True
                                 st.session_state.selected_stair_pattern = stair_pattern_key
                                 st.rerun()
                         else:
                             pass
-                            #st.write("ğŸ’¡ ç”»åƒã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦å››è§’å½¢ã®å¯¾è§’ç·šä¸Šã®2ç‚¹ã‚’æŒ‡å®šã—ã¦ãã ã•ã„")
+                            #st.write("?? ‰æ‘œ‚ğƒNƒŠƒbƒN‚µ‚ÄlŠpŒ`‚Ì‘ÎŠpüã‚Ì2“_‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢")
                     
-                    # ç·šã‚’çµåˆãƒ»çª“ã‚’è¿½åŠ ãƒ»ç·šã‚’å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã¯å£ç·šã‚¯ãƒªãƒƒã‚¯é¸æŠãªã®ã§ã€ã“ã“ã§ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤ºã¯ä¸è¦
-                    elif edit_mode not in ("ç·šã‚’çµåˆ", "çª“ã‚’è¿½åŠ ", "ç·šã‚’å‰Šé™¤"):
-                        # ãã®ä»–ã®ãƒ¢ãƒ¼ãƒ‰ï¼š2ç‚¹é¸æŠ
+                    # ü‚ğŒ‹‡E‘‹‚ğ’Ç‰ÁEü‚ğíœƒ‚[ƒh‚Í•ÇüƒNƒŠƒbƒN‘I‘ğ‚È‚Ì‚ÅA‚±‚±‚Å‚ÌƒƒbƒZ[ƒW•\¦‚Í•s—v
+                    elif edit_mode not in ("ü‚ğŒ‹‡", "‘‹‚ğ’Ç‰Á", "ü‚ğíœ"):
+                        # ‚»‚Ì‘¼‚Ìƒ‚[ƒhF2“_‘I‘ğ
                         
-                        # ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šrect_coords_listã«é¸æŠãŒã‚ã‚‹å ´åˆã¯å®Ÿè¡Œãƒœã‚¿ãƒ³ã‚’è¡¨ç¤º
-                        if edit_mode == "ç·šã‚’è¿½åŠ " and len(st.session_state.rect_coords_list) > 0:
+                        # ü‚ğ’Ç‰Áƒ‚[ƒhFrect_coords_list‚É‘I‘ğ‚ª‚ ‚éê‡‚ÍÀsƒ{ƒ^ƒ“‚ğ•\¦
+                        if edit_mode == "ü‚ğ’Ç‰Á" and len(st.session_state.rect_coords_list) > 0:
                             num_rects = len(st.session_state.rect_coords_list)
-                            #st.success(f"âœ… **{num_rects}æœ¬ã®ç·šã‚’é¸æŠå®Œäº†**\n\nâ†’ ã•ã‚‰ã«ç·šã‚’è¿½åŠ ã™ã‚‹å ´åˆã¯ä¸‹ã®ç·¨é›†ç”»é¢ã§æ¬¡ã®2ç‚¹ã‚’ã‚¯ãƒªãƒƒã‚¯\n\nâ†’ ç¢ºå®šã™ã‚‹å ´åˆã¯ä¸‹ã®ã€Œâ• ç·šè¿½åŠ å®Ÿè¡Œã€ãƒœã‚¿ãƒ³ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„")
+                            #st.success(f"? **{num_rects}–{‚Ìü‚ğ‘I‘ğŠ®—¹**\n\n¨ ‚³‚ç‚Éü‚ğ’Ç‰Á‚·‚éê‡‚Í‰º‚Ì•ÒW‰æ–Ê‚ÅŸ‚Ì2“_‚ğƒNƒŠƒbƒN\n\n¨ Šm’è‚·‚éê‡‚Í‰º‚Ìu? ü’Ç‰ÁÀsvƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢")
                             
-                            # ç·šè¿½åŠ å®Ÿè¡Œãƒœã‚¿ãƒ³ï¼ˆé¸æŠå®Œäº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ç›´å¾Œã€ç”»åƒã®å‰ã«è¡¨ç¤ºï¼‰
+                            # ü’Ç‰ÁÀsƒ{ƒ^ƒ“i‘I‘ğŠ®—¹ƒƒbƒZ[ƒW‚Ì’¼ŒãA‰æ‘œ‚Ì‘O‚É•\¦j
                             st.markdown("---")
-                            if st.button("â• ç·šè¿½åŠ å®Ÿè¡Œ", type="primary", key="btn_add_line_exec_top"):
-                                # å®Ÿè¡Œãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã¦å‡¦ç†å®Ÿè¡Œ
+                            if st.button("? ü’Ç‰ÁÀs", type="primary", key="btn_add_line_exec_top"):
+                                # Àsƒtƒ‰ƒO‚ğ—§‚Ä‚Äˆ—Às
                                 st.session_state.add_line_execute = True
                                 st.rerun()
                         
                         if len(st.session_state.rect_coords) == 1:
                             pass
-                            #st.info(f"âœ“ 1ç‚¹ç›®é¸æŠ: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
+                            #st.info(f"? 1“_–Ú‘I‘ğ: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
                         elif len(st.session_state.rect_coords) == 2:
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§è‡ªå‹•è¿½åŠ ã•ã‚Œã‚‹å ´åˆã¯ã€å‰ã®rerunã§rect_coordsãŒã‚¯ãƒªã‚¢ã•ã‚Œã‚‹ãŸã‚ã€
-                            # ã“ã®ãƒ–ãƒ­ãƒƒã‚¯ã«åˆ°é”ã—ãªã„ã€‚å¤±æ•—æ™‚ã®ã¿ã“ã“ã«åˆ°é”ã™ã‚‹
-                            if edit_mode == "ç·šã‚’è¿½åŠ ":
-                                # ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼š2ç‚¹é¸æŠå®Œäº†æ™‚ã®å‡¦ç†
-                                # ã™ã§ã«ä¸Šã§è¡¨ç¤ºã—ã¦ã„ã‚‹ã®ã§ã“ã“ã§ã¯ä½•ã‚‚ã—ãªã„
+                            # ‘‹’Ç‰Áƒ‚[ƒh‚Å©“®’Ç‰Á‚³‚ê‚éê‡‚ÍA‘O‚Ìrerun‚Årect_coords‚ªƒNƒŠƒA‚³‚ê‚é‚½‚ßA
+                            # ‚±‚ÌƒuƒƒbƒN‚É“’B‚µ‚È‚¢B¸”s‚Ì‚İ‚±‚±‚É“’B‚·‚é
+                            if edit_mode == "ü‚ğ’Ç‰Á":
+                                # ü‚ğ’Ç‰Áƒ‚[ƒhF2“_‘I‘ğŠ®—¹‚Ìˆ—
+                                # ‚·‚Å‚Éã‚Å•\¦‚µ‚Ä‚¢‚é‚Ì‚Å‚±‚±‚Å‚Í‰½‚à‚µ‚È‚¢
                                 pass
-                            elif edit_mode != "çª“ã‚’è¿½åŠ ":
+                            elif edit_mode != "‘‹‚ğ’Ç‰Á":
                                 p1, p2 = st.session_state.rect_coords
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                                color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][len(st.session_state.rect_coords_list) % 6]
-                                #st.success(f"âœ… 2ç‚¹é¸æŠå®Œäº†ï¼ˆ{color_name}ï¼‰: ({x1}, {y1}) - ({x2}, {y2})")
+                                color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][len(st.session_state.rect_coords_list) % 6]
+                                #st.success(f"? 2“_‘I‘ğŠ®—¹i{color_name}j: ({x1}, {y1}) - ({x2}, {y2})")
                         
-                        # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ãƒ¢ãƒ¼ãƒ‰ï¼šå®¶å…·ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³é¸æŠã‚’ç”»åƒã®å‰ã«è¡¨ç¤º
-                        if edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®" and len(st.session_state.rect_coords_list) > 0:
+                        # ƒIƒuƒWƒFƒNƒg”z’uƒ‚[ƒhF‰Æ‹ï‚ÌƒIƒvƒVƒ‡ƒ“‘I‘ğ‚ğ‰æ‘œ‚Ì‘O‚É•\¦
+                        if edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğ”z’u" and len(st.session_state.rect_coords_list) > 0:
                             st.markdown("---")
-                            st.markdown("### ğŸª‘ å®¶å…·ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é¸æŠ")
+                            st.markdown("### ?? ‰Æ‹ï‚ÌƒIƒvƒVƒ‡ƒ“‚ğ‘I‘ğ")
                             
                             col_height, col_color = st.columns(2)
                             
                             with col_height:
-                                # é«˜ã•å…¥åŠ›ï¼ˆå¸¸ã«æ•°å€¤å…¥åŠ›ã€cmå˜ä½ã€æ•´æ•°ï¼‰
+                                # ‚‚³“ü—Íií‚É”’l“ü—ÍAcm’PˆÊA®”j
                                 custom_height_cm = st.number_input(
-                                    "é«˜ã• (cm)",
+                                    "‚‚³ (cm)",
                                     min_value=1,
                                     max_value=300,
                                     value=85,
                                     step=1,
                                     format="%d",
                                     key="furniture_custom_height_cm",
-                                    help="å®¶å…·ã®é«˜ã•ã‚’cmå˜ä½ã§å…¥åŠ›ã—ã¦ãã ã•ã„"
+                                    help="‰Æ‹ï‚Ì‚‚³‚ğcm’PˆÊ‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢"
                                 )
                                 
-                                # åºŠã‹ã‚‰ã®é«˜ã•ï¼ˆã‚ªãƒ•ã‚»ãƒƒãƒˆï¼‰è¨­å®šï¼ˆcmå˜ä½ã€æ•´æ•°ï¼‰
+                                # °‚©‚ç‚Ì‚‚³iƒIƒtƒZƒbƒgjİ’èicm’PˆÊA®”j
                                 offset_height_cm = st.number_input(
-                                    "åºŠã‹ã‚‰ã®é«˜ã• (cm)",
+                                    "°‚©‚ç‚Ì‚‚³ (cm)",
                                     min_value=0,
                                     max_value=300,
                                     value=0,
                                     step=1,
                                     format="%d",
-                                    help="å®¶å…·ã®ä¸‹ç«¯ã®åºŠã‹ã‚‰ã®é«˜ã•ï¼ˆ0ã§åºŠç½®ãï¼‰",
+                                    help="‰Æ‹ï‚Ì‰º’[‚Ì°‚©‚ç‚Ì‚‚³i0‚Å°’u‚«j",
                                     key="furniture_offset_height_cm"
                                 )
                                 
-                                # ãƒ¡ãƒ¼ãƒˆãƒ«æ›ç®—ã—ã¦ä¿å­˜ç”¨å¤‰æ•°ã¸
+                                # ƒ[ƒgƒ‹Š·Z‚µ‚Ä•Û‘¶—p•Ï”‚Ö
                                 selected_height = custom_height_cm / 100.0
                                 offset_height = offset_height_cm / 100.0
                             
                             with col_color:
                                 color_option = st.selectbox(
-                                    "é…è‰²",
+                                    "”zF",
                                     list(FURNITURE_COLOR_OPTIONS.keys()),
-                                    help="å®¶å…·ã®è‰²ã‚’é¸æŠã—ã¦ãã ã•ã„",
+                                    help="‰Æ‹ï‚ÌF‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢",
                                     key="furniture_color_option"
                                 )
                             
-                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã«ä¿å­˜
+                            # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒg‚É•Û‘¶
                             st.session_state.furniture_params = {
                                 'color_option': color_option,
                                 'selected_height': selected_height,
                                 'offset_height': offset_height
                             }
                             
-                            # é…ç½®ç¯„å›²ã®ã‚µã‚¤ã‚ºã‚’äºˆæ¸¬è¡¨ç¤º
+                            # ”z’u”ÍˆÍ‚ÌƒTƒCƒY‚ğ—\‘ª•\¦
                             if len(st.session_state.rect_coords_list) > 0:
                                 rect = st.session_state.rect_coords_list[0]
                                 p1, p2 = rect
@@ -4040,18 +4040,18 @@ def main():
                                     st.session_state.viz_scale
                                 )
                             
-                            if st.button("ğŸª‘ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®å®Ÿè¡Œ", type="primary", key="furniture_exec"):
+                            if st.button("?? ƒIƒuƒWƒFƒNƒg”z’uÀs", type="primary", key="furniture_exec"):
                                 st.session_state.execute_furniture_placement = True
                                 st.rerun()
                         
-                        # ãƒ¢ãƒ¼ãƒ‰åˆ¥ã®èª¬æ˜ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-                        #if edit_mode == "ç·šã‚’è¿½åŠ ":
-                            #st.write("ğŸ’¡ è¿½åŠ ã—ãŸã„å£ã®ç«¯ç‚¹2ç‚¹ã‚’æŒ‡å®šã—ã¦ãã ã•ã„")
+                        # ƒ‚[ƒh•Ê‚Ìà–¾ƒƒbƒZ[ƒW
+                        #if edit_mode == "ü‚ğ’Ç‰Á":
+                            #st.write("?? ’Ç‰Á‚µ‚½‚¢•Ç‚Ì’[“_2“_‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢")
                         else:
                             pass
                         
-                        # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§2ç‚¹é¸æŠå®Œäº†æ™‚ï¼šå£æ¤œå‡ºçµæœã‚’ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤ºï¼ˆç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã¯é™¤å¤–ï¼‰
-                        if edit_mode == "çª“ã‚’è¿½åŠ " and len(st.session_state.rect_coords) == 2:
+                        # ‘‹’Ç‰Áƒ‚[ƒh‚Å2“_‘I‘ğŠ®—¹F•ÇŒŸoŒ‹‰Ê‚ğƒnƒCƒ‰ƒCƒg•\¦iü‚ğŒ‹‡ƒ‚[ƒh‚ÍœŠOj
+                        if edit_mode == "‘‹‚ğ’Ç‰Á" and len(st.session_state.rect_coords) == 2:
                             try:
                                 json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls_check = json_data_check['walls']
@@ -4076,33 +4076,33 @@ def main():
                                     'height': y2_check - y1_check
                                 }
                                 
-                                # ç«¯ç‚¹ã®ã¿ã‚’å›²ã‚€æ“ä½œã«å¯¾å¿œã™ã‚‹ãŸã‚ã€å³å¯†ãƒ•ã‚£ãƒ«ã‚¿ã§ã¯ãªãç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ã®ãƒ•ã‚£ãƒ«ã‚¿ã‚’ä½¿ç”¨
+                                # ’[“_‚Ì‚İ‚ğˆÍ‚Ş‘€ì‚É‘Î‰‚·‚é‚½‚ßAŒµ–§ƒtƒBƒ‹ƒ^‚Å‚Í‚È‚­’[“_/Œğ·ƒx[ƒX‚ÌƒtƒBƒ‹ƒ^‚ğg—p
                                 walls_in_rect_check = _filter_walls_by_endpoints_in_rect(
                                     walls_check, rect_check, scale_check, margin_check,
                                     img_height_check, min_x_check, min_y_check, max_x_check, max_y_check,
                                     tolerance=0, debug=False
                                 )
 
-                                # ç«¯ç‚¹ãŒé‡ãªã£ã¦è¤‡æ•°ã®å£ãŒæ¤œå‡ºã•ã‚Œã‚‹å ´åˆã€ç¸¦æ¨ªã‚’åˆ¤å®šã—ã¦æœ€é©ãª2æœ¬ã‚’é¸æŠ
+                                # ’[“_‚ªd‚È‚Á‚Ä•¡”‚Ì•Ç‚ªŒŸo‚³‚ê‚éê‡Ac‰¡‚ğ”»’è‚µ‚ÄÅ“K‚È2–{‚ğ‘I‘ğ
                                 try:
-                                    # ãƒ‡ãƒãƒƒã‚°: æ¤œå‡ºã•ã‚ŒãŸå…¨ã¦ã®å£ã®æƒ…å ±ã‚’è¡¨ç¤º
+                                    # ƒfƒoƒbƒO: ŒŸo‚³‚ê‚½‘S‚Ä‚Ì•Ç‚Ìî•ñ‚ğ•\¦
                                     try:
                                         all_wall_details = []
                                         for w in walls_in_rect_check:
                                             dx = abs(w['end'][0] - w['start'][0])
                                             dy = abs(w['end'][1] - w['start'][1])
-                                            direction = "ç¸¦" if dx < dy else "æ¨ª"
+                                            direction = "c" if dx < dy else "‰¡"
                                             all_wall_details.append(f"ID{w['id']}({direction})")
                                         append_debug(f"Detected walls before filtering: {', '.join(all_wall_details)}")
                                     except:
                                         pass
                                     
                                     if len(walls_in_rect_check) >= 3:
-                                        # 3æœ¬ä»¥ä¸Šï¼šç¸¦æ¨ªã‚’åˆ†é¡ã—ã¦æœ€ã‚‚è¿‘ã„å¹³è¡Œãªå£ã®ãƒšã‚¢ã‚’é¸ã¶
+                                        # 3–{ˆÈãFc‰¡‚ğ•ª—Ş‚µ‚ÄÅ‚à‹ß‚¢•½s‚È•Ç‚ÌƒyƒA‚ğ‘I‚Ô
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
                                         walls_in_rect_filtered = best_pair if best_pair else walls_in_rect_check[:2]
                                     else:
-                                        # 2æœ¬ä»¥ä¸‹ã®å ´åˆã¯ãã®ã¾ã¾ä½¿ç”¨
+                                        # 2–{ˆÈ‰º‚Ìê‡‚Í‚»‚Ì‚Ü‚Üg—p
                                         walls_in_rect_filtered = walls_in_rect_check
                                 except Exception:
                                     walls_in_rect_filtered = walls_in_rect_check
@@ -4110,14 +4110,14 @@ def main():
 
 
                                 if len(walls_in_rect_filtered) in (2, 3):
-                                    # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§2æœ¬æ¤œå‡ºã•ã‚ŒãŸå ´åˆã€ç¢ºå®šé›†åˆã«ã‚‚åæ˜ ã—ã¦è¡¨ç¤ºã‚’æ•´åˆã•ã›ã‚‹
+                                    # ƒvƒŒƒrƒ…[‚Å2–{ŒŸo‚³‚ê‚½ê‡AŠm’èW‡‚É‚à”½‰f‚µ‚Ä•\¦‚ğ®‡‚³‚¹‚é
                                     try:
                                         walls_in_rect_confirmed = walls_in_rect_filtered
-                                        # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§2æœ¬æ¤œå‡ºã•ã‚ŒãŸå››è§’å½¢æƒ…å ±ã¨IDã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜
+                                        # ƒvƒŒƒrƒ…[‚Å2–{ŒŸo‚³‚ê‚½lŠpŒ`î•ñ‚ÆID‚ğƒZƒbƒVƒ‡ƒ“‚É•Û‘¶
                                         try:
                                             st.session_state['last_preview_pair'] = [walls_in_rect_filtered[0]['id'], walls_in_rect_filtered[1]['id']]
                                             st.session_state['last_preview_rect'] = rect_preview
-                                            # æ¤œå‡º/ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿IDã‚‚ã‚»ãƒƒã‚·ãƒ§ãƒ³ä¿å­˜ã—ã¦å®Ÿè¡Œæ™‚ã«å„ªå…ˆã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+                                            # ŒŸo/ƒtƒBƒ‹ƒ^Ï‚İID‚àƒZƒbƒVƒ‡ƒ“•Û‘¶‚µ‚ÄÀs‚É—Dæ‚Å‚«‚é‚æ‚¤‚É‚·‚é
                                             try:
                                                 st.session_state['last_preview_detected_ids'] = [w.get('id') for w in walls_in_rect_check]
                                                 st.session_state['last_preview_filtered_ids'] = [w.get('id') for w in walls_in_rect_filtered]
@@ -4127,7 +4127,7 @@ def main():
                                             pass
                                     except Exception:
                                         pass
-                                    # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç¢ºå®šè¡¨ç¤ºã¯ä¸è¦ã«ãªã£ãŸãŸã‚UIéè¡¨ç¤ºï¼ˆå†…éƒ¨ãƒ‡ãƒ¼ã‚¿ã¯ä¿æŒï¼‰
+                                    # ƒvƒŒƒrƒ…[Šm’è•\¦‚Í•s—v‚É‚È‚Á‚½‚½‚ßUI”ñ•\¦i“à•”ƒf[ƒ^‚Í•Ûj
                                     try:
                                         preview_debug_confirm = []
                                         for w in walls_check:
@@ -4147,89 +4147,89 @@ def main():
                                             pass
                                     except Exception:
                                         pass
-                                    # ãƒ‡ãƒãƒƒã‚°: é¸æŠã•ã‚ŒãŸå£ã®è©³ç´°æƒ…å ±ã‚’è¡¨ç¤º
+                                    # ƒfƒoƒbƒO: ‘I‘ğ‚³‚ê‚½•Ç‚ÌÚ×î•ñ‚ğ•\¦
                                     try:
                                         wall_details = []
                                         for w in walls_in_rect_filtered:
                                             dx = abs(w['end'][0] - w['start'][0])
                                             dy = abs(w['end'][1] - w['start'][1])
-                                            direction = "ç¸¦" if dx < dy else "æ¨ª"
+                                            direction = "c" if dx < dy else "‰¡"
                                             wall_details.append(f"ID{w['id']}({direction}, dx={dx:.2f}, dy={dy:.2f})")
-                                        st.info(f"ğŸ¯ ã“ã®ç¯„å›²ã«2æœ¬ã®å£ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸ\næ¤œå‡ºæ•°: {len(walls_in_rect_check)}æœ¬ â†’ ãƒ•ã‚£ãƒ«ã‚¿å¾Œ: {len(walls_in_rect_filtered)}æœ¬\né¸æŠã•ã‚ŒãŸå£: {', '.join(wall_details)}")
+                                        st.info(f"?? ‚±‚Ì”ÍˆÍ‚É2–{‚Ì•Ç‚ªŒŸo‚³‚ê‚Ü‚µ‚½\nŒŸo”: {len(walls_in_rect_check)}–{ ¨ ƒtƒBƒ‹ƒ^Œã: {len(walls_in_rect_filtered)}–{\n‘I‘ğ‚³‚ê‚½•Ç: {', '.join(wall_details)}")
                                     except Exception:
-                                        st.info(f"ğŸ¯ ã“ã®ç¯„å›²ã«2æœ¬ã®å£ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸï¼ˆID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}ï¼‰\næ¤œå‡ºæ•°: {len(walls_in_rect_check)}æœ¬ â†’ ãƒ•ã‚£ãƒ«ã‚¿å¾Œ: {len(walls_in_rect_filtered)}æœ¬")
+                                        st.info(f"?? ‚±‚Ì”ÍˆÍ‚É2–{‚Ì•Ç‚ªŒŸo‚³‚ê‚Ü‚µ‚½iID: {walls_in_rect_filtered[0]['id']}, {walls_in_rect_filtered[1]['id']}j\nŒŸo”: {len(walls_in_rect_check)}–{ ¨ ƒtƒBƒ‹ƒ^Œã: {len(walls_in_rect_filtered)}–{")
                                 elif len(walls_in_rect_filtered) == 0:
-                                    st.error("âŒ **ã“ã®ç¯„å›²ã«å£ãŒæ¤œå‡ºã•ã‚Œã¾ã›ã‚“ã§ã—ãŸã€‚**\n\nğŸ’¡ **çª“ã§åˆ†æ–­ã•ã‚ŒãŸ2æœ¬ã®å£ã‚’ä¸¡æ–¹å«ã‚€ã‚ˆã†ã«**ã€ã‚‚ã†å°‘ã—åºƒã„ç¯„å›²ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚")
+                                    st.error("? **‚±‚Ì”ÍˆÍ‚É•Ç‚ªŒŸo‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B**\n\n?? **‘‹‚Å•ª’f‚³‚ê‚½2–{‚Ì•Ç‚ğ—¼•ûŠÜ‚Ş‚æ‚¤‚É**A‚à‚¤­‚µL‚¢”ÍˆÍ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B")
                                 elif len(walls_in_rect_filtered) == 1:
-                                    st.warning(f"âš ï¸ **ã“ã®ç¯„å›²ã«1æœ¬ã®å£ã—ã‹æ¤œå‡ºã•ã‚Œã¾ã›ã‚“ã€‚**\n\nğŸ’¡ **çª“ã§åˆ†æ–­ã•ã‚ŒãŸ2æœ¬ã®å£ã‚’ä¸¡æ–¹å«ã‚€ã‚ˆã†ã«**é¸æŠã—ã¦ãã ã•ã„ã€‚\n\nçª“ã®ä¸¡å´ï¼ˆä¸Šä¸‹ã¾ãŸã¯å·¦å³ï¼‰ã«ã‚ã‚‹å£ãŒ2æœ¬ã¨ã‚‚ç¯„å›²å†…ã«å…¥ã‚‹ã‚ˆã†ã«ã€é¸æŠç¯„å›²ã‚’åºƒã’ã¦ãã ã•ã„ã€‚")
+                                    st.warning(f"?? **‚±‚Ì”ÍˆÍ‚É1–{‚Ì•Ç‚µ‚©ŒŸo‚³‚ê‚Ü‚¹‚ñB**\n\n?? **‘‹‚Å•ª’f‚³‚ê‚½2–{‚Ì•Ç‚ğ—¼•ûŠÜ‚Ş‚æ‚¤‚É**‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B\n\n‘‹‚Ì—¼‘¤iã‰º‚Ü‚½‚Í¶‰Ej‚É‚ ‚é•Ç‚ª2–{‚Æ‚à”ÍˆÍ“à‚É“ü‚é‚æ‚¤‚ÉA‘I‘ğ”ÍˆÍ‚ğL‚°‚Ä‚­‚¾‚³‚¢B")
                                 else:
-                                    st.warning(f"âš ï¸ **ã“ã®ç¯„å›²ã«{len(walls_in_rect_filtered)}æœ¬ã®å£ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸã€‚**\n\nğŸ’¡ é¸æŠç¯„å›²ã‚’ç‹­ã‚ã¦ä½™åˆ†ãªå£ãŒå«ã¾ã‚Œãªã„ã‚ˆã†ã«èª¿æ•´ã—ã¦ãã ã•ã„ã€‚")
+                                    st.warning(f"?? **‚±‚Ì”ÍˆÍ‚É{len(walls_in_rect_filtered)}–{‚Ì•Ç‚ªŒŸo‚³‚ê‚Ü‚µ‚½B**\n\n?? ‘I‘ğ”ÍˆÍ‚ğ‹·‚ß‚Ä—]•ª‚È•Ç‚ªŠÜ‚Ü‚ê‚È‚¢‚æ‚¤‚É’²®‚µ‚Ä‚­‚¾‚³‚¢B")
                             except Exception:
                                 pass
                     
-                    # ã‚¯ãƒªãƒƒã‚¯å¯èƒ½ãªç”»åƒã‚’è¡¨ç¤ºï¼ˆã‚­ãƒ¼ã‚’å‹•çš„ã«å¤‰æ›´ã—ã¦å€¤ã‚’ãƒªã‚»ãƒƒãƒˆï¼‰
-                    # edit_modeã‚’å«ã‚ã‚‹ã“ã¨ã§ã€ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆæ™‚ã«åº§æ¨™ãŒãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹
-                    # selection_reset_counterã‚’å«ã‚ã‚‹ã“ã¨ã§ã€ãƒªã‚»ãƒƒãƒˆå¾Œã«åº§æ¨™ãŒã‚¯ãƒªã‚¢ã•ã‚Œã‚‹
+                    # ƒNƒŠƒbƒN‰Â”\‚È‰æ‘œ‚ğ•\¦iƒL[‚ğ“®“I‚É•ÏX‚µ‚Ä’l‚ğƒŠƒZƒbƒgj
+                    # edit_mode‚ğŠÜ‚ß‚é‚±‚Æ‚ÅAƒ‚[ƒhØ‚è‘Ö‚¦‚ÉÀ•W‚ªƒŠƒZƒbƒg‚³‚ê‚é
+                    # selection_reset_counter‚ğŠÜ‚ß‚é‚±‚Æ‚ÅAƒŠƒZƒbƒgŒã‚ÉÀ•W‚ªƒNƒŠƒA‚³‚ê‚é
                     reset_counter = st.session_state.get('selection_reset_counter', 0)
                     coord_key = f"image_coords_{edit_mode}_{len(st.session_state.rect_coords_list)}_{len(st.session_state.rect_coords)}_{reset_counter}"
                     
                     st.markdown(
                         """
                         <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                        <b>æ³¨:</b> ç·¨é›†ç”»é¢ãŒè¡¨ç¤ºã•ã‚Œãªã„ã¨ãã¯é¸æŠãƒªã‚»ãƒƒãƒˆã‹è¡¨ç¤ºã‚µã‚¤ã‚ºèª¿æ•´ã‚’æŠ¼ã—ã¦ãã ã•ã„ã€‚
+                        <b>’:</b> •ÒW‰æ–Ê‚ª•\¦‚³‚ê‚È‚¢‚Æ‚«‚Í‘I‘ğƒŠƒZƒbƒg‚©•\¦ƒTƒCƒY’²®‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢B
                         </p>
                         """,
                         unsafe_allow_html=True
                     )
                     
-                    # ã‚ºãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ï¼ˆã‚¹ãƒ†ãƒƒãƒ—3ï¼‰
+                    # ƒY[ƒ€ƒRƒ“ƒgƒ[ƒ‹iƒXƒeƒbƒv3j
                     if 'editor_zoom_level' not in st.session_state:
                         st.session_state.editor_zoom_level = 1.0
                     
                     col_zoom_label, col_zoom1, col_zoom2, col_zoom_space = st.columns([3, 1, 1, 7])
                     with col_zoom_label:
-                        st.markdown(f"è¡¨ç¤ºã‚µã‚¤ã‚ºèª¿æ•´: {st.session_state.editor_zoom_level*100:.0f}%")
+                        st.markdown(f"•\¦ƒTƒCƒY’²®: {st.session_state.editor_zoom_level*100:.0f}%")
                     with col_zoom1:
-                        if st.button("ğŸ”âˆ’", key="step3_zoom_out"):
+                        if st.button("???", key="step3_zoom_out"):
                             st.session_state.editor_zoom_level = max(0.2, st.session_state.editor_zoom_level - 0.2)
                             st.rerun()
                     with col_zoom2:
-                        if st.button("ğŸ”+", key="step3_zoom_in"):
+                        if st.button("??+", key="step3_zoom_in"):
                             st.session_state.editor_zoom_level = min(1.6, st.session_state.editor_zoom_level + 0.2)
                             st.rerun()
                     
-                    # ç”»åƒãƒ‡ãƒ¼ã‚¿ã®æ¤œè¨¼ï¼ˆè¡¨ç¤ºã‚¨ãƒ©ãƒ¼å¯¾ç­–ï¼‰
+                    # ‰æ‘œƒf[ƒ^‚ÌŒŸØi•\¦ƒGƒ‰[‘Îôj
                     if display_img_resized is None:
-                        st.warning("âš ï¸ ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’å†ç”Ÿæˆã—ã¦ã„ã¾ã™...")
+                        st.warning("?? ‰æ‘œƒf[ƒ^‚ğÄ¶¬‚µ‚Ä‚¢‚Ü‚·...")
                         st.rerun()
                     
                     if display_img_resized.size[0] == 0 or display_img_resized.size[1] == 0:
-                        st.warning("âš ï¸ ç”»åƒã‚µã‚¤ã‚ºãŒä¸æ­£ã§ã™ã€‚å†è©¦è¡Œã—ã¦ã„ã¾ã™...")
-                        # ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã‚’ãƒªã‚»ãƒƒãƒˆ
+                        st.warning("?? ‰æ‘œƒTƒCƒY‚ª•s³‚Å‚·BÄs‚µ‚Ä‚¢‚Ü‚·...")
+                        # ƒY[ƒ€ƒŒƒxƒ‹‚ğƒŠƒZƒbƒg
                         st.session_state.editor_zoom_level = 1.0
                         st.rerun()
                     
-                    # ç”»åƒã‚’å…ƒã®ã‚µã‚¤ã‚ºã§è¡¨ç¤ºï¼ˆãƒªã‚µã‚¤ã‚ºãªã—ï¼‰
+                    # ‰æ‘œ‚ğŒ³‚ÌƒTƒCƒY‚Å•\¦iƒŠƒTƒCƒY‚È‚µj
                     value = streamlit_image_coordinates(
                         display_img_resized,
                         key=coord_key
                     )
                     
-                    # ãƒªã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³ã‚’ç”»åƒã®ä¸‹ã«é…ç½®
+                    # ƒŠƒZƒbƒgƒ{ƒ^ƒ“‚ğ‰æ‘œ‚Ì‰º‚É”z’u
                     col_reset, col_space = st.columns([2, 10])
                     with col_reset:
-                        if st.button("ğŸ—‘ï¸ é¸æŠãƒªã‚»ãƒƒãƒˆ"):
+                        if st.button("??? ‘I‘ğƒŠƒZƒbƒg"):
                             _reset_selection_state()
                             st.rerun()
                     
-                    # ãƒªã‚µã‚¤ã‚ºæ™‚ã¨ã‚ºãƒ¼ãƒ æ™‚ã®åº§æ¨™å¤‰æ›
+                    # ƒŠƒTƒCƒY‚ÆƒY[ƒ€‚ÌÀ•W•ÏŠ·
                     if value is not None and value.get("x") is not None:
-                        # ã‚ºãƒ¼ãƒ è£œæ­£ã‚’é©ç”¨
+                        # ƒY[ƒ€•â³‚ğ“K—p
                         zoom_level = st.session_state.get('editor_zoom_level', 1.0)
                         adjusted_x = value["x"] / zoom_level
                         adjusted_y = value["y"] / zoom_level
                         
-                        # å…ƒã®åº§æ¨™ã«å¤‰æ›
+                        # Œ³‚ÌÀ•W‚É•ÏŠ·
                         if scale_ratio != 1.0:
                             ox, oy = _display_to_original(adjusted_x, adjusted_y, scale_ratio)
                             value["x"] = ox
@@ -4238,23 +4238,23 @@ def main():
                             value["x"] = adjusted_x
                             value["y"] = adjusted_y
 
-                    # ãƒ‡ãƒãƒƒã‚°: ã‚¯ãƒªãƒƒã‚¯åº§æ¨™ã‚’è¡¨ç¤º
+                    # ƒfƒoƒbƒO: ƒNƒŠƒbƒNÀ•W‚ğ•\¦
                     #if value is not None and value.get("x") is not None:
                     #    st.caption(
-                    #        f"ã‚¯ãƒªãƒƒã‚¯åº§æ¨™: raw=({value['x']}, {value['y']}) | "
-                    #        f"è¡¨ç¤ºç”»åƒã‚µã‚¤ã‚º={display_img_resized.width}x{display_img_resized.height}px | "
+                    #        f"ƒNƒŠƒbƒNÀ•W: raw=({value['x']}, {value['y']}) | "
+                    #        f"•\¦‰æ‘œƒTƒCƒY={display_img_resized.width}x{display_img_resized.height}px | "
                     #        f"scale_ratio={scale_ratio:.3f}"
                     #    )
                     
-                    # ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸåº§æ¨™ã‚’è¨˜éŒ²ï¼ˆé‡è¤‡ãƒã‚§ãƒƒã‚¯ï¼‰
+                    # ƒNƒŠƒbƒN‚³‚ê‚½À•W‚ğ‹L˜^id•¡ƒ`ƒFƒbƒNj
                     if value is not None and value.get("x") is not None:
                         new_point = (value["x"], value["y"])
                         
-                        if edit_mode == "ç·šã‚’çµåˆ":
-                            # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠï¼ˆæœ€å¤§2æœ¬ï¼‰
-                            # åŒã˜åº§æ¨™ã®é€£ç¶šå‡¦ç†ã‚’é˜²ãï¼ˆç„¡é™ãƒ«ãƒ¼ãƒ—é˜²æ­¢ï¼‰
+                        if edit_mode == "ü‚ğŒ‹‡":
+                            # ü‚ğŒ‹‡ƒ‚[ƒhF•Çü‚ğƒNƒŠƒbƒN‚Å‘I‘ğiÅ‘å2–{j
+                            # “¯‚¶À•W‚Ì˜A‘±ˆ—‚ğ–h‚®i–³ŒÀƒ‹[ƒv–h~j
                             if st.session_state.last_click == new_point:
-                                # æ—¢ã«å‡¦ç†æ¸ˆã¿ã®ã‚¯ãƒªãƒƒã‚¯ãªã®ã§ã‚¹ã‚­ãƒƒãƒ—
+                                # Šù‚Éˆ—Ï‚İ‚ÌƒNƒŠƒbƒN‚È‚Ì‚ÅƒXƒLƒbƒv
                                 pass
                             else:
                                 try:
@@ -4272,7 +4272,7 @@ def main():
                                     margin_merge = 50
                                     img_height_merge = viz_img.height
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡º
+                                    # ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸo
                                     nearest_wall, distance = _find_nearest_wall_from_click(
                                         new_point[0], new_point[1],
                                         walls_merge, scale_merge, margin_merge,
@@ -4281,23 +4281,23 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # å¥‡æ•°æœ¬é¸æŠä¸­ã§ã€æœ€å¾Œã®å£ã¨åŒã˜å ´åˆã®ã¿å‰Šé™¤ï¼ˆã‚„ã‚Šç›´ã—ç”¨ï¼‰
-                                        # ãã‚Œä»¥å¤–ã¯å¸¸ã«è¿½åŠ ï¼ˆåŒã˜å£ã‚’è¤‡æ•°ã®çµåˆãƒšã‚¢ã§ä½¿ç”¨å¯èƒ½ï¼‰
+                                        # Šï”–{‘I‘ğ’†‚ÅAÅŒã‚Ì•Ç‚Æ“¯‚¶ê‡‚Ì‚İíœi‚â‚è’¼‚µ—pj
+                                        # ‚»‚êˆÈŠO‚Íí‚É’Ç‰Ái“¯‚¶•Ç‚ğ•¡”‚ÌŒ‹‡ƒyƒA‚Åg—p‰Â”\j
                                         current_count = len(st.session_state.selected_walls_for_merge)
                                         if (current_count % 2 == 1 and 
                                             current_count > 0 and 
                                             st.session_state.selected_walls_for_merge[-1] == nearest_wall):
-                                            # å¥‡æ•°æœ¬ç›®é¸æŠä¸­ã§ã€æœ€å¾Œã«é¸æŠã—ãŸå£ã¨åŒã˜å ´åˆã®ã¿å‰Šé™¤
+                                            # Šï”–{–Ú‘I‘ğ’†‚ÅAÅŒã‚É‘I‘ğ‚µ‚½•Ç‚Æ“¯‚¶ê‡‚Ì‚İíœ
                                             st.session_state.selected_walls_for_merge.remove(nearest_wall)
                                         else:
-                                            # ãã‚Œä»¥å¤–ã¯å¸¸ã«è¿½åŠ ï¼ˆåŒã˜å£ã‚’åˆ¥ã®çµåˆãƒšã‚¢ã§å†åˆ©ç”¨å¯èƒ½ï¼‰
+                                            # ‚»‚êˆÈŠO‚Íí‚É’Ç‰Ái“¯‚¶•Ç‚ğ•Ê‚ÌŒ‹‡ƒyƒA‚ÅÄ—˜—p‰Â”\j
                                             st.session_state.selected_walls_for_merge.append(nearest_wall)
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
-                                    st.error(f"å£é¸æŠã‚¨ãƒ©ãƒ¼: {e}")
-                        elif edit_mode == "çª“ã‚’è¿½åŠ ":
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠï¼ˆæœ€å¤§2æœ¬ï¼‰
+                                    st.error(f"•Ç‘I‘ğƒGƒ‰[: {e}")
+                        elif edit_mode == "‘‹‚ğ’Ç‰Á":
+                            # ‘‹’Ç‰Áƒ‚[ƒhF•Çü‚ğƒNƒŠƒbƒN‚Å‘I‘ğiÅ‘å2–{j
                             if st.session_state.last_click == new_point:
                                 pass
                             else:
@@ -4316,7 +4316,7 @@ def main():
                                     margin_window = 50
                                     img_height_window = viz_img.height
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡º
+                                    # ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸo
                                     nearest_wall, distance = _find_nearest_wall_from_click(
                                         new_point[0], new_point[1],
                                         walls_window, scale_window, margin_window,
@@ -4325,23 +4325,23 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # å¥‡æ•°æœ¬é¸æŠä¸­ã§ã€æœ€å¾Œã®å£ã¨åŒã˜å ´åˆã®ã¿å‰Šé™¤ï¼ˆã‚„ã‚Šç›´ã—ç”¨ï¼‰
-                                        # ãã‚Œä»¥å¤–ã¯å¸¸ã«è¿½åŠ ï¼ˆåŒã˜å£ã‚’è¤‡æ•°ã®çª“ãƒšã‚¢ã§ä½¿ç”¨å¯èƒ½ï¼‰
+                                        # Šï”–{‘I‘ğ’†‚ÅAÅŒã‚Ì•Ç‚Æ“¯‚¶ê‡‚Ì‚İíœi‚â‚è’¼‚µ—pj
+                                        # ‚»‚êˆÈŠO‚Íí‚É’Ç‰Ái“¯‚¶•Ç‚ğ•¡”‚Ì‘‹ƒyƒA‚Åg—p‰Â”\j
                                         current_count = len(st.session_state.selected_walls_for_window)
                                         if (current_count % 2 == 1 and 
                                             current_count > 0 and 
                                             st.session_state.selected_walls_for_window[-1] == nearest_wall):
-                                            # å¥‡æ•°æœ¬ç›®é¸æŠä¸­ã§ã€æœ€å¾Œã«é¸æŠã—ãŸå£ã¨åŒã˜å ´åˆã®ã¿å‰Šé™¤
+                                            # Šï”–{–Ú‘I‘ğ’†‚ÅAÅŒã‚É‘I‘ğ‚µ‚½•Ç‚Æ“¯‚¶ê‡‚Ì‚İíœ
                                             st.session_state.selected_walls_for_window.remove(nearest_wall)
                                         else:
-                                            # ãã‚Œä»¥å¤–ã¯å¸¸ã«è¿½åŠ ï¼ˆåŒã˜å£ã‚’åˆ¥ã®çª“ãƒšã‚¢ã§å†åˆ©ç”¨å¯èƒ½ï¼‰
+                                            # ‚»‚êˆÈŠO‚Íí‚É’Ç‰Ái“¯‚¶•Ç‚ğ•Ê‚Ì‘‹ƒyƒA‚ÅÄ—˜—p‰Â”\j
                                             st.session_state.selected_walls_for_window.append(nearest_wall)
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
-                                    st.error(f"å£é¸æŠã‚¨ãƒ©ãƒ¼: {e}")
-                        elif edit_mode == "ç·šã‚’å‰Šé™¤":
-                            # ç·šå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ï¼šå£ç·šã‚’ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠï¼ˆè¤‡æ•°æœ¬å¯èƒ½ï¼‰
+                                    st.error(f"•Ç‘I‘ğƒGƒ‰[: {e}")
+                        elif edit_mode == "ü‚ğíœ":
+                            # üíœƒ‚[ƒhF•Çü‚ğƒNƒŠƒbƒN‚Å‘I‘ği•¡”–{‰Â”\j
                             if st.session_state.last_click == new_point:
                                 pass
                             else:
@@ -4360,7 +4360,7 @@ def main():
                                     margin_delete = 50
                                     img_height_delete = viz_img.height
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡º
+                                    # ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸo
                                     nearest_wall, distance = _find_nearest_wall_from_click(
                                         new_point[0], new_point[1],
                                         walls_delete, scale_delete, margin_delete,
@@ -4369,18 +4369,18 @@ def main():
                                     )
                                     
                                     if nearest_wall is not None:
-                                        # æ—¢ã«é¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã¯é¸æŠè§£é™¤
+                                        # Šù‚É‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡‚Í‘I‘ğ‰ğœ
                                         if nearest_wall in st.session_state.selected_walls_for_delete:
                                             st.session_state.selected_walls_for_delete.remove(nearest_wall)
                                         else:
-                                            # è¤‡æ•°æœ¬é¸æŠå¯èƒ½
+                                            # •¡”–{‘I‘ğ‰Â”\
                                             st.session_state.selected_walls_for_delete.append(nearest_wall)
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
-                                    st.error(f"å£é¸æŠã‚¨ãƒ©ãƒ¼: {e}")
-                        elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤":
-                            # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ï¼šã‚¯ãƒªãƒƒã‚¯ã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é¸æŠ
+                                    st.error(f"•Ç‘I‘ğƒGƒ‰[: {e}")
+                        elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ":
+                            # ƒIƒuƒWƒFƒNƒgíœƒ‚[ƒhFƒNƒŠƒbƒN‚ÅƒIƒuƒWƒFƒNƒg‚ğ‘I‘ğ
                             if st.session_state.last_click == new_point:
                                 pass
                             else:
@@ -4388,7 +4388,7 @@ def main():
                                     json_data_furn = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                     furniture_list = json_data_furn.get('furniture', [])
                                     
-                                    # ã‚¹ã‚±ãƒ¼ãƒ«æƒ…å ±ã‚’å–å¾—ï¼ˆå£ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰ï¼‰
+                                    # ƒXƒP[ƒ‹î•ñ‚ğæ“¾i•Çƒf[ƒ^‚©‚çj
                                     json_data_walls_t = json_data_furn.get('walls', [])
                                     all_x_t = [w['start'][0] for w in json_data_walls_t] + [w['end'][0] for w in json_data_walls_t]
                                     all_y_t = [w['start'][1] for w in json_data_walls_t] + [w['end'][1] for w in json_data_walls_t]
@@ -4398,17 +4398,17 @@ def main():
                                     margin_t = 50
                                     img_height_t = viz_img.height
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã«ã‚ã‚‹å®¶å…·ã‚’æ¢ç´¢
+                                    # ƒNƒŠƒbƒNˆÊ’u‚É‚ ‚é‰Æ‹ï‚ğ’Tõ
                                     item, idx = _find_furniture_at_click(
                                         new_point[0], new_point[1],
                                         furniture_list, scale_t, margin_t, img_height_t, min_x_t, min_y_t
                                     )
                                     
                                     if item is not None:
-                                        # æ—¢ã«é¸æŠã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆè¾æ›¸ã®æ¯”è¼ƒã¯==ã§å‹•ä½œã™ã‚‹ï¼‰
+                                        # Šù‚É‘I‘ğ‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒNi«‘‚Ì”äŠr‚Í==‚Å“®ì‚·‚éj
                                         already_selected = False
                                         for sel in st.session_state.selected_furniture_to_delete:
-                                            # positionã¨boundsãªã©ä¸»è¦ãªã‚­ãƒ¼ã§æ¯”è¼ƒ
+                                            # position‚Æbounds‚È‚Çå—v‚ÈƒL[‚Å”äŠr
                                             if (sel.get('position') == item.get('position') and 
                                                 sel.get('bounds') == item.get('bounds')):
                                                 already_selected = True
@@ -4421,13 +4421,13 @@ def main():
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
-                                    st.error(f"å®¶å…·é¸æŠã‚¨ãƒ©ãƒ¼: {e}")
+                                    st.error(f"‰Æ‹ï‘I‘ğƒGƒ‰[: {e}")
 
-                        elif edit_mode == "ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£":
-                            # ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ãƒ¢ãƒ¼ãƒ‰ï¼šå£ã‚’1ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠ
+                        elif edit_mode == "ƒXƒP[ƒ‹Z³":
+                            # ƒXƒP[ƒ‹Z³ƒ‚[ƒhF•Ç‚ğ1ƒNƒŠƒbƒN‚Å‘I‘ğ
                             if st.session_state.last_click != new_point:
                                 try:
-                                    # å£ãƒ‡ãƒ¼ã‚¿ã¨åº§æ¨™ç¯„å›²ã‚’å–å¾—
+                                    # •Çƒf[ƒ^‚ÆÀ•W”ÍˆÍ‚ğæ“¾
                                     json_data_calib = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                     walls_calib = json_data_calib.get("walls", [])
                                     
@@ -4448,7 +4448,7 @@ def main():
                                         margin_calib = 50
                                         img_height_calib = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
                                         
-                                        # ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‹ã‚‰æœ€ã‚‚è¿‘ã„å£ã‚’æ¤œå‡º
+                                        # ƒNƒŠƒbƒNˆÊ’u‚©‚çÅ‚à‹ß‚¢•Ç‚ğŒŸo
                                         nearest_wall, distance = _find_nearest_wall_from_click(
                                             click_point[0], click_point[1],
                                             walls_calib, scale_calib, margin_calib,
@@ -4457,27 +4457,27 @@ def main():
                                         )
                                         
                                         if nearest_wall:
-                                            # å£ã‚’é¸æŠ
+                                            # •Ç‚ğ‘I‘ğ
                                             st.session_state.selected_wall_for_calibration = nearest_wall
                                         else:
-                                            # é–¾å€¤å¤–ã®å ´åˆã¯é¸æŠè§£é™¤
+                                            # è‡’lŠO‚Ìê‡‚Í‘I‘ğ‰ğœ
                                             st.session_state.selected_wall_for_calibration = None
                                         
                                         st.session_state.last_click = new_point
                                         st.rerun()
                                 except Exception as e:
-                                    st.error(f"å£é¸æŠã‚¨ãƒ©ãƒ¼: {e}")
+                                    st.error(f"•Ç‘I‘ğƒGƒ‰[: {e}")
                         else:
-                            # ãã®ä»–ã®ãƒ¢ãƒ¼ãƒ‰ï¼š2ç‚¹é¸æŠ
+                            # ‚»‚Ì‘¼‚Ìƒ‚[ƒhF2“_‘I‘ğ
                             if len(st.session_state.rect_coords) < 2:
                                 if len(st.session_state.rect_coords) == 0 or st.session_state.last_click != new_point:
                                     st.session_state.rect_coords.append(new_point)
                                     st.session_state.last_click = new_point
                                     
-                                    # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã€ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã€ã¾ãŸã¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ãƒ¢ãƒ¼ãƒ‰ã§2ç‚¹ç›®ã‚¯ãƒªãƒƒã‚¯æ™‚ï¼š
-                                    # 2æœ¬ã®å£ãŒæ¤œå‡ºã•ã‚ŒãŸã‚‰è‡ªå‹•è¿½åŠ ï¼ˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ã§ã¯å››è§’å½¢ã‚’ãã®ã¾ã¾è¿½åŠ ï¼‰
-                                    # æ³¨ï¼šç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã¯å£ç·šã‚¯ãƒªãƒƒã‚¯é¸æŠã®ãŸã‚é™¤å¤–
-                                    if (edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’è¿½åŠ ", "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®", "éšæ®µã‚’é…ç½®")) and len(st.session_state.rect_coords) == 2:
+                                    # ‘‹’Ç‰Áƒ‚[ƒhAü‚ğ’Ç‰Áƒ‚[ƒhA‚Ü‚½‚ÍƒIƒuƒWƒFƒNƒg”z’uƒ‚[ƒh‚Å2“_–ÚƒNƒŠƒbƒNF
+                                    # 2–{‚Ì•Ç‚ªŒŸo‚³‚ê‚½‚ç©“®’Ç‰ÁiƒIƒuƒWƒFƒNƒg”z’u‚Å‚ÍlŠpŒ`‚ğ‚»‚Ì‚Ü‚Ü’Ç‰Áj
+                                    # ’Fü‚ğŒ‹‡ƒ‚[ƒh‚Í•ÇüƒNƒŠƒbƒN‘I‘ğ‚Ì‚½‚ßœŠO
+                                    if (edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğ’Ç‰Á", "ƒIƒuƒWƒFƒNƒg‚ğ”z’u", "ŠK’i‚ğ”z’u")) and len(st.session_state.rect_coords) == 2:
                                         try:
                                             json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                             walls_auto = json_data_auto['walls']
@@ -4502,22 +4502,22 @@ def main():
                                                 'height': y2_auto - y1_auto
                                             }
                                             
-                                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¨ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã¯ç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ã§æ¤œå‡ºï¼ˆç«¯ç‚¹ã ã‘å›²ã‚€æ“ä½œã«å¯¾å¿œï¼‰
-                                            if edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’çµåˆ"):
+                                            # ‘‹’Ç‰Áƒ‚[ƒh‚Æü‚ğŒ‹‡ƒ‚[ƒh‚Í’[“_/Œğ·ƒx[ƒX‚ÅŒŸoi’[“_‚¾‚¯ˆÍ‚Ş‘€ì‚É‘Î‰j
+                                            if edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğŒ‹‡"):
                                                 walls_in_rect_auto = _filter_walls_by_endpoints_in_rect(
                                                     walls_auto, rect_auto, scale_auto, margin_auto,
                                                     img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto,
                                                     tolerance=0, debug=False
                                                 )
                                             else:
-                                                # é€šå¸¸ã®ç·šçµåˆãªã©ã¯å¾“æ¥é€šã‚Šå³å¯†åˆ¤å®š
+                                                # ’Êí‚ÌüŒ‹‡‚È‚Ç‚Í]—ˆ’Ê‚èŒµ–§”»’è
                                                 walls_in_rect_auto = _filter_walls_strictly_in_rect(
                                                     walls_auto, rect_auto, scale_auto, margin_auto,
                                                     img_height_auto, min_x_auto, min_y_auto, max_x_auto, max_y_auto
                                                 )
 
-                                            # 2æœ¬ã®å£ãŒæ¤œå‡ºã•ã‚ŒãŸå ´åˆã®ã¿è‡ªå‹•è¿½åŠ ï¼ˆçª“è¿½åŠ ã®ã¿ã€ç·šã‚’çµåˆã¯é™¤å¤–ï¼‰
-                                            if edit_mode == "çª“ã‚’è¿½åŠ ":
+                                            # 2–{‚Ì•Ç‚ªŒŸo‚³‚ê‚½ê‡‚Ì‚İ©“®’Ç‰Ái‘‹’Ç‰Á‚Ì‚İAü‚ğŒ‹‡‚ÍœŠOj
+                                            if edit_mode == "‘‹‚ğ’Ç‰Á":
                                                 if len(walls_in_rect_auto) == 2:
                                                     st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                     st.session_state.rect_coords = []
@@ -4528,7 +4528,7 @@ def main():
                                                         pass
                                                     st.rerun()
                                                 else:
-                                                    # ç«¯ç‚¹ãŒå¤šã2æœ¬ã«çµã‚Œãªã„å ´åˆã€è§’åº¦ãƒ•ã‚£ãƒ«ã‚¿ã§2æœ¬ã«çµã‚Œã‚Œã°è‡ªå‹•è¿½åŠ ã™ã‚‹
+                                                    # ’[“_‚ª‘½‚­2–{‚Éi‚ê‚È‚¢ê‡AŠp“xƒtƒBƒ‹ƒ^‚Å2–{‚Éi‚ê‚ê‚Î©“®’Ç‰Á‚·‚é
                                                     try:
                                                         if len(walls_in_rect_auto) >= 2:
                                                             angle_threshold_preview = 30.0
@@ -4542,7 +4542,7 @@ def main():
 
                                                             kept_preview = [w for w in walls_in_rect_auto if _angle_diff_deg(_wall_angle_deg(w), avg_angle) < angle_threshold_preview]
                                                             if len(kept_preview) == 2:
-                                                                # æ¡ä»¶ã‚’æº€ãŸã™ã®ã§è‡ªå‹•ã§é¸æŠã‚’è¿½åŠ 
+                                                                # ğŒ‚ğ–‚½‚·‚Ì‚Å©“®‚Å‘I‘ğ‚ğ’Ç‰Á
                                                                 st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                                 st.session_state.rect_coords = []
                                                                 st.session_state.last_click = None
@@ -4554,12 +4554,12 @@ def main():
                                                     except Exception:
                                                         pass
                                             else:
-                                                # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ãƒ¢ãƒ¼ãƒ‰ã¨ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ã¯å››è§’å½¢ã‚’ãã®ã¾ã¾è¿½åŠ ï¼ˆå£æ¤œå‡ºã¯ä¸è¦ï¼‰
+                                                # ƒIƒuƒWƒFƒNƒg”z’uƒ‚[ƒh‚Æü‚ğ’Ç‰Áƒ‚[ƒh‚Å‚ÍlŠpŒ`‚ğ‚»‚Ì‚Ü‚Ü’Ç‰Ái•ÇŒŸo‚Í•s—vj
                                                 st.session_state.rect_coords_list.append((p1_auto, p2_auto))
                                                 st.session_state.rect_coords = []
                                                 st.session_state.last_click = None
                                                 try:
-                                                    if edit_mode == "ç·šã‚’è¿½åŠ ":
+                                                    if edit_mode == "ü‚ğ’Ç‰Á":
                                                         append_debug(f"Auto-added line-placement selection: rect=({p1_auto},{p2_auto})")
                                                     else:
                                                         append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
@@ -4569,50 +4569,50 @@ def main():
                                         except Exception:
                                             pass
                                     
-                                    st.rerun()  # ç”»åƒã‚’å†æç”»ã—ã¦é¸æŠç‚¹ã‚’è¡¨ç¤º
+                                    st.rerun()  # ‰æ‘œ‚ğÄ•`‰æ‚µ‚Ä‘I‘ğ“_‚ğ•\¦
                     
-                    # é¸æŠå®Œäº†æ™‚ã®UI
-                    if edit_mode == "ç·šã‚’å‰Šé™¤" and len(st.session_state.rect_coords) == 2:
-                        # å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ï¼š2ç‚¹é¸æŠå®Œäº†ï¼ˆå››è§’å½¢ï¼‰
+                    # ‘I‘ğŠ®—¹‚ÌUI
+                    if edit_mode == "ü‚ğíœ" and len(st.session_state.rect_coords) == 2:
+                        # íœƒ‚[ƒhF2“_‘I‘ğŠ®—¹ilŠpŒ`j
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        st.success(f"âœ… 2ç‚¹é¸æŠå®Œäº†: ({x1}, {y1}) - ({x2}, {y2})")
+                        st.success(f"? 2“_‘I‘ğŠ®—¹: ({x1}, {y1}) - ({x2}, {y2})")
                     
                         with col_add:
-                            if st.button("â• ã“ã®é¸æŠã‚’è¿½åŠ ", type="primary"):
-                                # ç¾åœ¨ã®2ç‚¹ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
+                            if st.button("? ‚±‚Ì‘I‘ğ‚ğ’Ç‰Á", type="primary"):
+                                # Œ»İ‚Ì2“_‚ğƒŠƒXƒg‚É’Ç‰Á
                                 st.session_state.rect_coords_list.append((p1, p2))
-                                # ç¾åœ¨ã®é¸æŠã‚’ã‚¯ãƒªã‚¢
+                                # Œ»İ‚Ì‘I‘ğ‚ğƒNƒŠƒA
                                 st.session_state.rect_coords = []
                                 st.session_state.last_click = None
                                 st.rerun()
-                    elif edit_mode != "ç·šã‚’å‰Šé™¤" and edit_mode != "ç·šã‚’çµåˆ" and len(st.session_state.rect_coords) == 2:
-                        # è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼ˆç·šã‚’çµåˆä»¥å¤–ï¼‰ï¼š2ç‚¹é¸æŠå®Œäº†
+                    elif edit_mode != "ü‚ğíœ" and edit_mode != "ü‚ğŒ‹‡" and len(st.session_state.rect_coords) == 2:
+                        # ’Ç‰Áƒ‚[ƒhiü‚ğŒ‹‡ˆÈŠOjF2“_‘I‘ğŠ®—¹
                         p1, p2 = st.session_state.rect_coords
                         x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                        st.success(f"âœ… 2ç‚¹é¸æŠå®Œäº†: ({x1}, {y1}) - ({x2}, {y2})")
+                        st.success(f"? 2“_‘I‘ğŠ®—¹: ({x1}, {y1}) - ({x2}, {y2})")
                     
                         with col_add:
-                            if st.button("â• ã“ã®é¸æŠã‚’è¿½åŠ ", type="primary"):
-                                # ç¾åœ¨ã®2ç‚¹ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
+                            if st.button("? ‚±‚Ì‘I‘ğ‚ğ’Ç‰Á", type="primary"):
+                                # Œ»İ‚Ì2“_‚ğƒŠƒXƒg‚É’Ç‰Á
                                 st.session_state.rect_coords_list.append((p1, p2))
-                                # ç¾åœ¨ã®é¸æŠã‚’ã‚¯ãƒªã‚¢
+                                # Œ»İ‚Ì‘I‘ğ‚ğƒNƒŠƒA
                                 st.session_state.rect_coords = []
                                 st.session_state.last_click = None
                                 st.rerun()
                     
-                    # ç¢ºå®šæ¸ˆã¿é¸æŠã®è¡¨ç¤º
-                    # NOTE: ãƒ¦ãƒ¼ã‚¶ãƒ¼è¦æœ›ã«ã‚ˆã‚Šã€ç·šã‚’çµåˆï¼ç·šã‚’å‰Šé™¤ï¼ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ã¯è¿½åŠ æ¸ˆã¿ã®é¸æŠç¯„å›²è¡¨ç¤ºã‚’æŠ‘åˆ¶ã™ã‚‹
-                    if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("ç·šã‚’çµåˆ", "ç·šã‚’å‰Šé™¤", "ç·šã‚’è¿½åŠ ", "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®", "éšæ®µã‚’é…ç½®"):
-                        if edit_mode == "ç·šã‚’å‰Šé™¤":
-                            st.markdown("### ğŸ“‹ è¿½åŠ æ¸ˆã¿ã®å‰Šé™¤å¯¾è±¡")
+                    # Šm’èÏ‚İ‘I‘ğ‚Ì•\¦
+                    # NOTE: ƒ†[ƒU[—v–]‚É‚æ‚èAü‚ğŒ‹‡^ü‚ğíœ^ü‚ğ’Ç‰Áƒ‚[ƒh‚Å‚Í’Ç‰ÁÏ‚İ‚Ì‘I‘ğ”ÍˆÍ•\¦‚ğ—}§‚·‚é
+                    if len(st.session_state.rect_coords_list) > 0 and edit_mode not in ("ü‚ğŒ‹‡", "ü‚ğíœ", "ü‚ğ’Ç‰Á", "ƒIƒuƒWƒFƒNƒg‚ğ”z’u", "ŠK’i‚ğ”z’u"):
+                        if edit_mode == "ü‚ğíœ":
+                            st.markdown("### ?? ’Ç‰ÁÏ‚İ‚Ìíœ‘ÎÛ")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
-                                color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][idx % 6]
-                                st.write(f"#{idx+1}ï¼ˆ{color_name}ï¼‰: ({p1[0]}, {p1[1]})")
-                        elif edit_mode == "çª“ã‚’è¿½åŠ ":
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã€å„é¸æŠç¯„å›²ã®å£æ¤œå‡ºçŠ¶æ³ã‚’è¡¨ç¤º
+                                color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][idx % 6]
+                                st.write(f"#{idx+1}i{color_name}j: ({p1[0]}, {p1[1]})")
+                        elif edit_mode == "‘‹‚ğ’Ç‰Á":
+                            # ‘‹’Ç‰Áƒ‚[ƒh‚Ìê‡AŠe‘I‘ğ”ÍˆÍ‚Ì•ÇŒŸoó‹µ‚ğ•\¦
                             try:
                                 json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls = json_data['walls']
@@ -4625,14 +4625,14 @@ def main():
                                 img_width = int((max_x - min_x) * scale) + 2 * margin
                                 img_height = int((max_y - min_y) * scale) + 2 * margin
                                 
-                                # å…¨ã¦ã®é¸æŠãŒæˆåŠŸã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+                                # ‘S‚Ä‚Ì‘I‘ğ‚ª¬Œ÷‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
                                 all_successful = True
                                 for p1, p2 in st.session_state.rect_coords_list:
                                     x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                     x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                                     rect = {'left': x1, 'top': y1, 'width': x2 - x1, 'height': y2 - y1}
-                                    # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ãŠã‚ˆã³ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ã§æ¤œå‡ºï¼ˆç«¯ç‚¹ã ã‘å›²ã‚€æ“ä½œã«å¯¾å¿œï¼‰
-                                    if edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’çµåˆ"):
+                                    # ‘‹’Ç‰Áƒ‚[ƒh‚¨‚æ‚Ñü‚ğŒ‹‡ƒ‚[ƒh‚Å‚Í’[“_/Œğ·ƒx[ƒX‚ÅŒŸoi’[“_‚¾‚¯ˆÍ‚Ş‘€ì‚É‘Î‰j
+                                    if edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğŒ‹‡"):
                                         walls_in_rect = _filter_walls_by_endpoints_in_rect(
                                             walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y,
                                             tolerance=0, debug=False
@@ -4645,18 +4645,18 @@ def main():
                                         all_successful = False
                                         break
                                 
-                                # å¤±æ•—ãŒã‚ã‚‹å ´åˆã®ã¿è¦‹å‡ºã—ã‚’è¡¨ç¤º
+                                # ¸”s‚ª‚ ‚éê‡‚Ì‚İŒ©o‚µ‚ğ•\¦
                                 #if not all_successful:
-                                #    st.markdown("### ğŸ“‹ è¿½åŠ æ¸ˆã¿ã®é¸æŠç¯„å›²ï¼ˆçª“ï¼‰")
+                                #    st.markdown("### ?? ’Ç‰ÁÏ‚İ‚Ì‘I‘ğ”ÍˆÍi‘‹j")
                                 
                                 #for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                                 #    x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 #    x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                                #    color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][idx % 6]
+                                #    color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][idx % 6]
                                     
                                 #    rect = {'left': x1, 'top': y1, 'width': x2 - x1, 'height': y2 - y1}
-                                    # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ãŠã‚ˆã³ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ç«¯ç‚¹/äº¤å·®ãƒ™ãƒ¼ã‚¹ã§æ¤œå‡ºï¼ˆä»¥å‰ã¯å³å¯†ãƒ•ã‚£ãƒ«ã‚¿ãŒä½¿ã‚ã‚Œã¦ã„ãŸãŸã‚è¡¨ç¤ºãŒä¸æ•´åˆã«ãªã£ã¦ã„ãŸï¼‰
-                                #    if edit_mode in ("çª“ã‚’è¿½åŠ ", "ç·šã‚’çµåˆ"):
+                                    # ‘‹’Ç‰Áƒ‚[ƒh‚¨‚æ‚Ñü‚ğŒ‹‡ƒ‚[ƒh‚Å‚Í’[“_/Œğ·ƒx[ƒX‚ÅŒŸoiˆÈ‘O‚ÍŒµ–§ƒtƒBƒ‹ƒ^‚ªg‚í‚ê‚Ä‚¢‚½‚½‚ß•\¦‚ª•s®‡‚É‚È‚Á‚Ä‚¢‚½j
+                                #    if edit_mode in ("‘‹‚ğ’Ç‰Á", "ü‚ğŒ‹‡"):
                                 #        walls_in_rect = _filter_walls_by_endpoints_in_rect(
                                 #            walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y,
                                 #            tolerance=0, debug=False
@@ -4666,28 +4666,28 @@ def main():
                                 #            walls, rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                 #        )
                                     
-                                    # ãƒã‚¤ãƒ©ã‚¤ãƒˆè¡¨ç¤ºï¼ˆå¤±æ•—ã®å ´åˆã®ã¿ï¼‰
+                                    # ƒnƒCƒ‰ƒCƒg•\¦i¸”s‚Ìê‡‚Ì‚İj
                                 #    if len(walls_in_rect) != 2:
                                 #        if len(walls_in_rect) == 0:
-                                #            st.error(f"#{idx+1}ï¼ˆ{color_name}ï¼‰: ({x1}, {y1}) - ({x2}, {y2})\n\nâŒ å£ãªã— â†’ ç¯„å›²ã‚’åºƒã’ã¦ãã ã•ã„")
+                                #            st.error(f"#{idx+1}i{color_name}j: ({x1}, {y1}) - ({x2}, {y2})\n\n? •Ç‚È‚µ ¨ ”ÍˆÍ‚ğL‚°‚Ä‚­‚¾‚³‚¢")
                                 #        elif len(walls_in_rect) == 1:
-                                #            st.warning(f"#{idx+1}ï¼ˆ{color_name}ï¼‰: ({x1}, {y1}) - ({x2}, {y2})\n\nâš ï¸ 1æœ¬ã®ã¿ â†’ çª“ã®ä¸¡å´ã®å£ãŒå…¥ã‚‹ã‚ˆã†ã«ç¯„å›²ã‚’åºƒã’ã¦ãã ã•ã„")
+                                #            st.warning(f"#{idx+1}i{color_name}j: ({x1}, {y1}) - ({x2}, {y2})\n\n?? 1–{‚Ì‚İ ¨ ‘‹‚Ì—¼‘¤‚Ì•Ç‚ª“ü‚é‚æ‚¤‚É”ÍˆÍ‚ğL‚°‚Ä‚­‚¾‚³‚¢")
                                 #        else:
-                                #            st.warning(f"#{idx+1}ï¼ˆ{color_name}ï¼‰: ({x1}, {y1}) - ({x2}, {y2})\n\nâš ï¸ {len(walls_in_rect)}æœ¬ï¼ˆå¤šã™ãï¼‰ â†’ ç¯„å›²ã‚’ç‹­ã‚ã¦ãã ã•ã„")
+                                #            st.warning(f"#{idx+1}i{color_name}j: ({x1}, {y1}) - ({x2}, {y2})\n\n?? {len(walls_in_rect)}–{i‘½‚·‚¬j ¨ ”ÍˆÍ‚ğ‹·‚ß‚Ä‚­‚¾‚³‚¢")
                             except Exception as e:
-                                st.error(f"å£æ¤œå‡ºã‚¨ãƒ©ãƒ¼: {e}")
+                                st.error(f"•ÇŒŸoƒGƒ‰[: {e}")
                             
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰: å„çª“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å…¥åŠ›ãƒ•ã‚©ãƒ¼ãƒ ã‚’è¡¨ç¤º
+                            # ‘‹’Ç‰Áƒ‚[ƒh: Še‘‹‚Ìƒpƒ‰ƒ[ƒ^“ü—ÍƒtƒH[ƒ€‚ğ•\¦
                             if len(st.session_state.rect_coords_list) > 0:
                                 st.markdown("---")
-                                st.markdown("### ğŸªŸ çª“ã®ã‚µã‚¤ã‚ºã‚’å…¥åŠ›")
-                                st.info("ğŸ’¡ çª“è¿½åŠ ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç”»é¢ä¸Šéƒ¨ã§å…¥åŠ›ã—ã¦ãã ã•ã„ï¼ˆå‹ç•ªé¸æŠâ†’çª“é«˜ã•ç­‰ï¼‰ã€‚")
+                                st.markdown("### ?? ‘‹‚ÌƒTƒCƒY‚ğ“ü—Í")
+                                st.info("?? ‘‹’Ç‰Á‚Ìƒpƒ‰ƒ[ƒ^‚ğ‰æ–Êã•”‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢iŒ^”Ô‘I‘ğ¨‘‹‚‚³“™jB")
                                 
-                                # çª“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’åˆæœŸåŒ–
+                                # ‘‹ƒpƒ‰ƒ[ƒ^‚ÌƒfƒtƒHƒ‹ƒg’l‚ğ‰Šú‰»
                                 if 'window_params_list' not in st.session_state:
                                     st.session_state.window_params_list = []
                                 
-                                # ãƒªã‚¹ãƒˆã®ã‚µã‚¤ã‚ºã‚’èª¿æ•´
+                                # ƒŠƒXƒg‚ÌƒTƒCƒY‚ğ’²®
                                 while len(st.session_state.window_params_list) < len(st.session_state.rect_coords_list):
                                     st.session_state.window_params_list.append({
                                         'model': 'J4415/JF4415',
@@ -4695,30 +4695,30 @@ def main():
                                         'base_mm': 1677
                                     })
                                 
-                                # å„çª“ã®å…¥åŠ›ãƒ•ã‚©ãƒ¼ãƒ 
+                                # Še‘‹‚Ì“ü—ÍƒtƒH[ƒ€
                                 for idx in range(len(st.session_state.rect_coords_list)):
-                                    with st.expander(f"ğŸªŸ çª“ #{idx+1} ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿", expanded=True):
+                                    with st.expander(f"?? ‘‹ #{idx+1} ‚Ìƒpƒ‰ƒ[ƒ^", expanded=True):
                                         col1, col2, col3 = st.columns([2, 1, 1])
                                         
-                                        # å‹ç•ªé¸æŠ
+                                        # Œ^”Ô‘I‘ğ
                                         with col1:
                                             catalog_keys = sorted(list(WINDOW_CATALOG.keys()))
-                                            catalog_keys.append("ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰")
+                                            catalog_keys.append("ƒJƒXƒ^ƒ€iè“ü—Íj")
                                             current_model = st.session_state.window_params_list[idx].get('model', 'J4415/JF4415')
                                             if current_model not in catalog_keys and current_model is not None:
-                                                current_model = 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰'
+                                                current_model = 'ƒJƒXƒ^ƒ€iè“ü—Íj'
                                             
                                             selected_model = st.selectbox(
-                                                "å‹ç•ªï¼ˆçª“ã‚«ã‚¿ãƒ­ã‚°ï¼‰",
+                                                "Œ^”Ôi‘‹ƒJƒ^ƒƒOj",
                                                 catalog_keys,
                                                 index=catalog_keys.index(current_model) if current_model in catalog_keys else 0,
                                                 key=f"window_model_{idx}"
                                             )
                                             
-                                            # å‹ç•ªãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã€ã‚«ã‚¿ãƒ­ã‚°å€¤ã§æ›´æ–°ã—ã¦rerun
+                                            # Œ^”Ô‚ª•ÏX‚³‚ê‚½ê‡AƒJƒ^ƒƒO’l‚ÅXV‚µ‚Ärerun
                                             if selected_model != current_model:
                                                 st.session_state.window_params_list[idx]['model'] = selected_model
-                                                if selected_model != "ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰" and selected_model in WINDOW_CATALOG:
+                                                if selected_model != "ƒJƒXƒ^ƒ€iè“ü—Íj" and selected_model in WINDOW_CATALOG:
                                                     catalog_entry = WINDOW_CATALOG[selected_model]
                                                     if isinstance(catalog_entry, dict):
                                                         st.session_state.window_params_list[idx]['height_mm'] = int(catalog_entry.get('height', 1200))
@@ -4730,14 +4730,14 @@ def main():
                                             
                                             st.session_state.window_params_list[idx]['model'] = selected_model
                                         
-                                        # çª“é«˜ã•
+                                        # ‘‹‚‚³
                                         with col2:
-                                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‹ã‚‰ç¾åœ¨ã®å€¤ã‚’å–å¾—
+                                            # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚©‚çŒ»İ‚Ì’l‚ğæ“¾
                                             current_h_mm = st.session_state.window_params_list[idx].get('height_mm', 1200)
                                             
-                                            # ç·¨é›†å¯èƒ½ãªnumber_inputï¼ˆå‹ç•ªã‚‚å«ã‚ãŸkeyã§ä¸€æ„æ€§ã‚’ç¢ºä¿ï¼‰
+                                            # •ÒW‰Â”\‚Ènumber_inputiŒ^”Ô‚àŠÜ‚ß‚½key‚ÅˆêˆÓ«‚ğŠm•Ûj
                                             height_mm = st.number_input(
-                                                "çª“é•·ã•(é«˜ã•) (mm)",
+                                                "‘‹’·‚³(‚‚³) (mm)",
                                                 min_value=50,
                                                 max_value=3000,
                                                 value=current_h_mm,
@@ -4746,14 +4746,14 @@ def main():
                                             )
                                             st.session_state.window_params_list[idx]['height_mm'] = height_mm
                                         
-                                        # åºŠã‹ã‚‰çª“ä¸‹ç«¯
+                                        # °‚©‚ç‘‹‰º’[
                                         with col3:
-                                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‹ã‚‰ç¾åœ¨ã®å€¤ã‚’å–å¾—
+                                            # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚©‚çŒ»İ‚Ì’l‚ğæ“¾
                                             current_base_mm = st.session_state.window_params_list[idx].get('base_mm', 900)
                                             
-                                            # ç·¨é›†å¯èƒ½ãªnumber_inputï¼ˆå‹ç•ªã‚‚å«ã‚ãŸkeyã§ä¸€æ„æ€§ã‚’ç¢ºä¿ï¼‰
+                                            # •ÒW‰Â”\‚Ènumber_inputiŒ^”Ô‚àŠÜ‚ß‚½key‚ÅˆêˆÓ«‚ğŠm•Ûj
                                             base_mm = st.number_input(
-                                                "åºŠã‹ã‚‰çª“ä¸‹ç«¯ (mm)",
+                                                "°‚©‚ç‘‹‰º’[ (mm)",
                                                 min_value=0,
                                                 max_value=5000,
                                                 value=current_base_mm,
@@ -4762,34 +4762,34 @@ def main():
                                             )
                                             st.session_state.window_params_list[idx]['base_mm'] = base_mm
                                         
-                                        # ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’è¡¨ç¤º
-                                        st.caption(f"ğŸ’¡ ç¾åœ¨ã®è¨­å®š: é«˜ã•={st.session_state.window_params_list[idx]['height_mm']}mm, "
-                                                f"åºŠã‹ã‚‰={st.session_state.window_params_list[idx]['base_mm']}mm, "
-                                                f"åˆè¨ˆ={st.session_state.window_params_list[idx]['height_mm'] + st.session_state.window_params_list[idx]['base_mm']}mm "
+                                        # ƒfƒoƒbƒOî•ñ‚ğ•\¦
+                                        st.caption(f"?? Œ»İ‚Ìİ’è: ‚‚³={st.session_state.window_params_list[idx]['height_mm']}mm, "
+                                                f"°‚©‚ç={st.session_state.window_params_list[idx]['base_mm']}mm, "
+                                                f"‡Œv={st.session_state.window_params_list[idx]['height_mm'] + st.session_state.window_params_list[idx]['base_mm']}mm "
                                                 f"({(st.session_state.window_params_list[idx]['height_mm'] + st.session_state.window_params_list[idx]['base_mm'])/1000:.3f}m)")
                                 
-                                if st.button("ğŸªŸ çª“è¿½åŠ å®Ÿè¡Œ", type="primary", key="window_batch_exec"):
+                                if st.button("?? ‘‹’Ç‰ÁÀs", type="primary", key="window_batch_exec"):
                                     st.session_state.execute_window_batch = True
                                     st.rerun()
                         else:
-                            st.markdown("### ğŸ“‹ è¿½åŠ æ¸ˆã¿ã®é¸æŠç¯„å›²")
+                            st.markdown("### ?? ’Ç‰ÁÏ‚İ‚Ì‘I‘ğ”ÍˆÍ")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
                                 x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
                                 x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
-                                color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][idx % 6]
-                                st.write(f"#{idx+1}ï¼ˆ{color_name}ï¼‰: ({x1}, {y1}) - ({x2}, {y2})")
+                                color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][idx % 6]
+                                st.write(f"#{idx+1}i{color_name}j: ({x1}, {y1}) - ({x2}, {y2})")
                     
-                    # æ°¸ç¶šãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°è¡¨ç¤ºï¼ˆrerun ã—ã¦ã‚‚æ®‹ã‚‹ï¼‰
-                    # æ°¸ç¶šãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã®UIè¡¨ç¤ºã¯ä¸è¦ã«ãªã£ãŸãŸã‚å‰Šé™¤ï¼ˆãƒ­ã‚°ã¯ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿æŒï¼‰
+                    # ‰i‘±ƒfƒoƒbƒOƒƒO•\¦irerun ‚µ‚Ä‚àc‚éj
+                    # ‰i‘±ƒfƒoƒbƒOƒƒO‚ÌUI•\¦‚Í•s—v‚É‚È‚Á‚½‚½‚ßíœiƒƒO‚ÍƒZƒbƒVƒ‡ƒ“‚É•Ûj
                     
-                    # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã§ã‚¯ãƒªãƒƒã‚¯é¸æŠå®Ÿè¡Œã®å‡¦ç†ï¼ˆé¸æŠãƒªã‚»ãƒƒãƒˆã®æ¨ªã®ãƒœã‚¿ãƒ³ã¯å‰Šé™¤æ¸ˆã¿ï¼‰
-                    # å®Ÿè¡Œãƒˆãƒªã‚¬ãƒ¼ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¸‹ã®ãƒœã‚¿ãƒ³ã®ã¿
+                    # ü‚ğŒ‹‡ƒ‚[ƒh‚ÅƒNƒŠƒbƒN‘I‘ğÀs‚Ìˆ—i‘I‘ğƒŠƒZƒbƒg‚Ì‰¡‚Ìƒ{ƒ^ƒ“‚ÍíœÏ‚İj
+                    # ÀsƒgƒŠƒK[‚ÍƒƒbƒZ[ƒW‰º‚Ìƒ{ƒ^ƒ“‚Ì‚İ
                     
-                    if edit_mode == "çª“ã‚’è¿½åŠ ":
-                        # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šå³å´ã«é‡è¤‡ã—ã¦è¡¨ç¤ºã—ã¦ã„ãŸå…¥åŠ›ã¯å‰Šé™¤
-                        # å››è§’å½¢ãŒé¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã§ã‚‚ã€ç”»é¢ä¸Šéƒ¨ã®ãƒ•ã‚©ãƒ¼ãƒ ã§å…¥åŠ›ã—ã¦ãã ã•ã„
+                    if edit_mode == "‘‹‚ğ’Ç‰Á":
+                        # ‘‹’Ç‰Áƒ‚[ƒhF‰E‘¤‚Éd•¡‚µ‚Ä•\¦‚µ‚Ä‚¢‚½“ü—Í‚Ííœ
+                        # lŠpŒ`‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡‚Å‚àA‰æ–Êã•”‚ÌƒtƒH[ƒ€‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢
                         if len(st.session_state.rect_coords_list) > 0:
-                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰ç¾åœ¨ã®çª“é«˜ã•ã‚’æ±ºå®šï¼ˆmm->m å¤‰æ›ã‚’å„ªå…ˆï¼‰
+                            # ƒZƒbƒVƒ‡ƒ“‚©‚çŒ»İ‚Ì‘‹‚‚³‚ğŒˆ’èimm->m •ÏŠ·‚ğ—Dæj
                             if st.session_state.get('window_execution_params'):
                                 cur_wh_m = st.session_state['window_execution_params'].get('window_height', 1.2)
                             elif st.session_state.get('window_height_input_mm'):
@@ -4799,7 +4799,7 @@ def main():
                             else:
                                 cur_wh_m = 1.2
                             
-                            # å®Ÿè¡Œã¯ç”»é¢ä¸Šéƒ¨ã®ãƒ•ã‚©ãƒ¼ãƒ ã§è¡Œã†ãŸã‚ã€ã“ã“ã§ã¯å…¥åŠ›å€¤ã®ç¢ºèªã®ã¿è¡¨ç¤º
+                            # Às‚Í‰æ–Êã•”‚ÌƒtƒH[ƒ€‚Ås‚¤‚½‚ßA‚±‚±‚Å‚Í“ü—Í’l‚ÌŠm”F‚Ì‚İ•\¦
                             params_preview = st.session_state.get('window_execution_params', None)
                             if params_preview is not None:
                                 wh = params_preview.get('window_height', cur_wh_m)
@@ -4807,13 +4807,13 @@ def main():
                                 bh_mm = params_preview.get('base_height_mm', int(bh * 1000))
                                 rh = params_preview.get('room_height', 2.4)
                                 ceiling_height = rh - (bh + wh)
-                                st.info(f"ğŸ“ åºŠå´ã®å£: {bh:.2f}m ({bh_mm}mm)ã€å¤©äº•å´ã®å£: {ceiling_height:.2f}m")
+                                st.info(f"?? °‘¤‚Ì•Ç: {bh:.2f}m ({bh_mm}mm)A“Vˆä‘¤‚Ì•Ç: {ceiling_height:.2f}m")
                                 if ceiling_height < 0:
-                                    st.error("âš ï¸ çª“ã®ã‚µã‚¤ã‚ºãŒéƒ¨å±‹ã®é«˜ã•ã‚’è¶…ãˆã¦ã„ã¾ã™")
+                                    st.error("?? ‘‹‚ÌƒTƒCƒY‚ª•”‰®‚Ì‚‚³‚ğ’´‚¦‚Ä‚¢‚Ü‚·")
 
-                        # è¿½åŠ : ç¾åœ¨ã®2ç‚¹é¸æŠãŒã‚ã‚‹å ´åˆã€å®Ÿè¡Œå‰ã«ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’è¡¨ç¤º
+                        # ’Ç‰Á: Œ»İ‚Ì2“_‘I‘ğ‚ª‚ ‚éê‡AÀs‘O‚ÉƒfƒoƒbƒOî•ñ‚ğ•\¦
                         if len(st.session_state.get('rect_coords', [])) == 2:
-                            # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼æ™‚ã®è©³ç´°ãƒ‡ãƒãƒƒã‚°è¡¨ç¤ºã¯ä¸è¦ã«ãªã£ãŸãŸã‚éè¡¨ç¤ºã«ã—ã¾ã™
+                            # ƒvƒŒƒrƒ…[‚ÌÚ×ƒfƒoƒbƒO•\¦‚Í•s—v‚É‚È‚Á‚½‚½‚ß”ñ•\¦‚É‚µ‚Ü‚·
                             try:
                                 p1, p2 = tuple(st.session_state['rect_coords'])
                                 if st.session_state.get('json_bytes'):
@@ -4832,7 +4832,7 @@ def main():
                                         'width': abs(p2[0] - p1[0]),
                                         'height': abs(p2[1] - p1[1])
                                     }
-                                    # å†…éƒ¨æ¤œè¨¼ã¯è¡Œã†ãŒè¡¨ç¤ºã¯è¡Œã‚ãªã„ï¼ˆå¿…è¦ãªã‚‰ãƒ­ã‚°ã«å‡ºã™ï¼‰
+                                    # “à•”ŒŸØ‚Ís‚¤‚ª•\¦‚Ís‚í‚È‚¢i•K—v‚È‚çƒƒO‚Éo‚·j
                                     walls_hit, debug_info_preview = _filter_walls_by_endpoints_in_rect(
                                         walls_preview, rect_preview, scale_preview, margin_preview, img_height_preview,
                                         min_x, min_y, max_x, max_y, tolerance=0, debug=True
@@ -4844,9 +4844,9 @@ def main():
                             except Exception:
                                 pass
                     
-                    # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ä¸€æ‹¬å®Ÿè¡Œãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸå ´åˆã®å‡¦ç†
-                    if edit_mode == "çª“ã‚’è¿½åŠ " and (st.session_state.get('execute_window_now') or st.session_state.get('execute_window_batch')):
-                            # ãƒ•ãƒ©ã‚°ã‚’ã‚¯ãƒªã‚¢
+                    # ‘‹’Ç‰Áƒ‚[ƒh‚ÅˆêŠ‡Àsƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½ê‡‚Ìˆ—
+                    if edit_mode == "‘‹‚ğ’Ç‰Á" and (st.session_state.get('execute_window_now') or st.session_state.get('execute_window_batch')):
+                            # ƒtƒ‰ƒO‚ğƒNƒŠƒA
                             st.session_state.execute_window_now = False
                             st.session_state.execute_window_batch = False
                             
@@ -4856,23 +4856,23 @@ def main():
                                 except Exception:
                                     pass
                                 
-                                # å‡¦ç†å¯¾è±¡ã®å››è§’å½¢ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+                                # ˆ—‘ÎÛ‚ÌlŠpŒ`ƒŠƒXƒg‚ğì¬
                                 target_rects = list(st.session_state.rect_coords_list)
                                 window_params_list = st.session_state.get('window_params_list', [])
                                 
                                 if len(target_rects) == 0:
-                                    st.error("âš ï¸ çª“ã®ç¯„å›²ã‚’é¸æŠã—ã¦ãã ã•ã„")
+                                    st.error("?? ‘‹‚Ì”ÍˆÍ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢")
                                     st.stop()
                                 
                                 if len(window_params_list) < len(target_rects):
-                                    st.error("âš ï¸ ã™ã¹ã¦ã®çª“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„")
+                                    st.error("?? ‚·‚×‚Ä‚Ì‘‹‚Ìƒpƒ‰ƒ[ƒ^‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢")
                                     st.stop()
                             
-                                # JSONãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿
+                                # JSONƒf[ƒ^‚ğ“Ç‚İ‚İ
                                 json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                                 walls = json_data['walls']
                             
-                                # å¯è¦–åŒ–ç”»åƒã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                                # ‰Â‹‰»‰æ‘œ‚Ìƒpƒ‰ƒ[ƒ^‚ğæ“¾
                                 all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
                                 all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
                                 min_x, max_x = min(all_x), max(all_x)
@@ -4883,31 +4883,31 @@ def main():
                                 img_width = int((max_x - min_x) * scale) + 2 * margin
                                 img_height = int((max_y - min_y) * scale) + 2 * margin
                             
-                                # ç·¨é›†å‰ã®ç”»åƒã‚’ä¿å­˜ï¼ˆæ¯”è¼ƒç”¨ï¼‰
+                                # •ÒW‘O‚Ì‰æ‘œ‚ğ•Û‘¶i”äŠr—pj
                                 original_viz_bytes = st.session_state.viz_bytes
                             
-                                # å…ƒãƒ‡ãƒ¼ã‚¿ã‚’ä¿è­·ã™ã‚‹ãŸã‚ãƒ‡ã‚£ãƒ¼ãƒ—ã‚³ãƒ”ãƒ¼
+                                # Œ³ƒf[ƒ^‚ğ•ÛŒì‚·‚é‚½‚ßƒfƒB[ƒvƒRƒs[
                                 import copy
                                 original_json_data = copy.deepcopy(json_data)
                                 updated_json = json_data
                                 
-                                # è¿½åŠ ã—ãŸå£ã®IDï¼ˆèµ¤è‰²è¡¨ç¤ºç”¨ï¼‰
+                                # ’Ç‰Á‚µ‚½•Ç‚ÌIDiÔF•\¦—pj
                                 added_wall_ids = []
                                 
-                                # å¤©äº•é«˜ã•ï¼ˆéƒ¨å±‹ã®é«˜ã•ï¼‰ã‚’å–å¾—
+                                # “Vˆä‚‚³i•”‰®‚Ì‚‚³j‚ğæ“¾
                                 heights = [w.get('height', 2.4) for w in walls if 'height' in w]
                                 room_height = max(heights) if heights else 2.4
                                 
-                                # ===== çª“ã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ =====
-                                # ãƒ‡ãƒãƒƒã‚°ãŒå¿…è¦ãªãŸã‚ã€è©³ç´°ãƒ­ã‚°ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§å±•é–‹è¡¨ç¤ºã™ã‚‹
-                                with st.expander("ğŸ” çª“è¿½åŠ å‡¦ç†ã®è©³ç´°ãƒ­ã‚°", expanded=True):
+                                # ===== ‘‹‚ğ’Ç‰Áƒ‚[ƒh =====
+                                # ƒfƒoƒbƒO‚ª•K—v‚È‚½‚ßAÚ×ƒƒO‚ÍƒfƒtƒHƒ‹ƒg‚Å“WŠJ•\¦‚·‚é
+                                with st.expander("?? ‘‹’Ç‰Áˆ—‚ÌÚ×ƒƒO", expanded=True):
                                     total_added_count = 0
                                     window_details = []
                     
                                     for rect_idx, (p1, p2) in enumerate(target_rects):
-                                        st.markdown(f"---\n\n**çª“#{rect_idx+1}ã®å‡¦ç†:**")
+                                        st.markdown(f"---\n\n**‘‹#{rect_idx+1}‚Ìˆ—:**")
                                         
-                                        # ã“ã®çª“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                                        # ‚±‚Ì‘‹‚Ìƒpƒ‰ƒ[ƒ^‚ğæ“¾
                                         if rect_idx < len(window_params_list):
                                             window_param = window_params_list[rect_idx]
                                             window_height_mm = window_param.get('height_mm', 1200)
@@ -4917,11 +4917,11 @@ def main():
                                             window_height = float(window_height_mm) / 1000.0
                                             base_height = float(base_height_mm) / 1000.0
                                             
-                                            st.info(f"ğŸ“ å‹ç•ª: {window_model if window_model and window_model != 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰' else 'ã‚«ã‚¹ã‚¿ãƒ '}, "
-                                                f"é«˜ã•={window_height}m ({window_height_mm}mm), "
-                                                f"åºŠã‹ã‚‰={base_height}m ({base_height_mm}mm)")
+                                            st.info(f"?? Œ^”Ô: {window_model if window_model and window_model != 'ƒJƒXƒ^ƒ€iè“ü—Íj' else 'ƒJƒXƒ^ƒ€'}, "
+                                                f"‚‚³={window_height}m ({window_height_mm}mm), "
+                                                f"°‚©‚ç={base_height}m ({base_height_mm}mm)")
                                         else:
-                                            st.error(f"âš ï¸ çª“#{rect_idx+1}ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“")
+                                            st.error(f"?? ‘‹#{rect_idx+1}‚Ìƒpƒ‰ƒ[ƒ^‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ")
                                             continue
                                         
                                         rect = {
@@ -4931,14 +4931,14 @@ def main():
                                             'height': abs(p2[1] - p1[1])
                                         }
                                     
-                                        # å››è§’å½¢å†…ã«ç«¯ç‚¹ãŒã‚ã‚‹å£ç·šã‚’æŠ½å‡ºï¼ˆçª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼šç«¯ç‚¹2ã¤ã ã‘ã‚’å›²ã‚ã°OKï¼‰
-                                        # ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰ã§è©³ç´°æƒ…å ±ã‚’å–å¾—
+                                        # lŠpŒ`“à‚É’[“_‚ª‚ ‚é•Çü‚ğ’Šoi‘‹’Ç‰Áƒ‚[ƒhF’[“_2‚Â‚¾‚¯‚ğˆÍ‚ß‚ÎOKj
+                                        # ƒfƒoƒbƒOƒ‚[ƒh‚ÅÚ×î•ñ‚ğæ“¾
                                         walls_in_rect, debug_info = _filter_walls_by_endpoints_in_rect(
                                             updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y, 
                                             tolerance=0, debug=True
                                         )
                                         
-                                        # ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã¯UIè¡¨ç¤ºã‚’æ§ãˆã€ã‚»ãƒƒã‚·ãƒ§ãƒ³ãƒ­ã‚°ã¸å‡ºåŠ›
+                                        # ƒfƒoƒbƒOî•ñ‚ÍUI•\¦‚ğT‚¦AƒZƒbƒVƒ‡ƒ“ƒƒO‚Öo—Í
                                         try:
                                             append_debug(f"Window rect #{rect_idx+1}: coords=({p1},{p2}), walls_hit_count={len(walls_in_rect)}")
                                             append_debug(f"Window rect coords: p1={p1}, p2={p2}")
@@ -4947,14 +4947,14 @@ def main():
                                         except Exception:
                                             pass
                                         
-                                        # å…¨ã¦ã®å£ã®IDãƒªã‚¹ãƒˆã‚‚è¡¨ç¤ºï¼ˆå‚è€ƒç”¨ï¼‰
+                                        # ‘S‚Ä‚Ì•Ç‚ÌIDƒŠƒXƒg‚à•\¦iQl—pj
                                         all_wall_ids = [w.get('id', '?') for w in updated_json['walls']]
-                                        st.write(f"**å…¨å£IDä¸€è¦§:** {all_wall_ids[:20]}{'...' if len(all_wall_ids) > 20 else ''} (åˆè¨ˆ{len(all_wall_ids)}æœ¬)")
+                                        st.write(f"**‘S•ÇIDˆê——:** {all_wall_ids[:20]}{'...' if len(all_wall_ids) > 20 else ''} (‡Œv{len(all_wall_ids)}–{)")
                                     
-                                        st.write(f"**é¸æŠç¯„å›²å†…ã®å£:** {len(walls_in_rect)}æœ¬")
+                                        st.write(f"**‘I‘ğ”ÍˆÍ“à‚Ì•Ç:** {len(walls_in_rect)}–{")
                                         if walls_in_rect:
-                                            st.write(f"æ¤œå‡ºã•ã‚ŒãŸå£ID: {[w['id'] for w in walls_in_rect]}")
-                                        # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: ç«¯ç‚¹ã§è¤‡æ•°æ¤œå‡ºã•ã‚ŒãŸå ´åˆã€è§’åº¦ãƒ•ã‚£ãƒ«ã‚¿ã§2æœ¬ã«çµã‚Œã‚‹ãªã‚‰ãã‚Œã‚’ä½¿ã†
+                                            st.write(f"ŒŸo‚³‚ê‚½•ÇID: {[w['id'] for w in walls_in_rect]}")
+                                        # ƒtƒH[ƒ‹ƒoƒbƒN: ’[“_‚Å•¡”ŒŸo‚³‚ê‚½ê‡AŠp“xƒtƒBƒ‹ƒ^‚Å2–{‚Éi‚ê‚é‚È‚ç‚»‚ê‚ğg‚¤
                                         if len(walls_in_rect) != 2 and len(walls_in_rect) >= 2:
                                             try:
                                                 angle_threshold_preview = 30.0
@@ -4972,16 +4972,16 @@ def main():
                                                     except Exception:
                                                         pass
                                                     walls_in_rect = kept
-                                                    # è¡¨ç¤ºã‚‚æ›´æ–°ã—ã¦ãŠã
-                                                    st.write(f"æ¤œå‡ºã•ã‚ŒãŸå£ID(ãƒ•ã‚£ãƒ«ã‚¿å¾Œ): {[w['id'] for w in walls_in_rect]}")
+                                                    # •\¦‚àXV‚µ‚Ä‚¨‚­
+                                                    st.write(f"ŒŸo‚³‚ê‚½•ÇID(ƒtƒBƒ‹ƒ^Œã): {[w['id'] for w in walls_in_rect]}")
                                             except Exception:
                                                 pass
                                     
                                         if len(walls_in_rect) == 2:
-                                            # 2æœ¬ã®å£ã®é–“ã«åºŠå´ã¨å¤©äº•å´ã®å£ã‚’è¿½åŠ 
-                                            st.success(f"âœ… 2æœ¬ã®å£ã‚’æ¤œå‡ºã€çª“è¿½åŠ å‡¦ç†ã‚’å®Ÿè¡Œã—ã¾ã™")
-                                            st.write(f"**ãƒ‡ãƒãƒƒã‚°:** window_height={window_height}m ({window_height_mm}mm), base_height={base_height}m ({base_height_mm}mm), room_height={room_height}m")
-                                            st.write(f"**è¨ˆç®—:** ceiling_height = {room_height} - ({base_height} + {window_height}) = {room_height - (base_height + window_height)}m")
+                                            # 2–{‚Ì•Ç‚ÌŠÔ‚É°‘¤‚Æ“Vˆä‘¤‚Ì•Ç‚ğ’Ç‰Á
+                                            st.success(f"? 2–{‚Ì•Ç‚ğŒŸoA‘‹’Ç‰Áˆ—‚ğÀs‚µ‚Ü‚·")
+                                            st.write(f"**ƒfƒoƒbƒO:** window_height={window_height}m ({window_height_mm}mm), base_height={base_height}m ({base_height_mm}mm), room_height={room_height}m")
+                                            st.write(f"**ŒvZ:** ceiling_height = {room_height} - ({base_height} + {window_height}) = {room_height - (base_height + window_height)}m")
                                             updated_json, added_walls = add_window_walls(
                                                 updated_json,
                                                 walls_in_rect[0],
@@ -4989,28 +4989,28 @@ def main():
                                                 window_height,
                                                 base_height,
                                                 room_height,
-                                                window_model if window_model != 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰' else None,
+                                                window_model if window_model != 'ƒJƒXƒ^ƒ€iè“ü—Íj' else None,
                                                 window_height_mm
                                             )
                                             total_added_count += len(added_walls)
-                                            #st.success(f"âœ… {len(added_walls)}æœ¬ã®å£ã‚’è¿½åŠ ã—ã¾ã—ãŸï¼ˆID: {[w['id'] for w in added_walls]}ï¼‰")
+                                            #st.success(f"? {len(added_walls)}–{‚Ì•Ç‚ğ’Ç‰Á‚µ‚Ü‚µ‚½iID: {[w['id'] for w in added_walls]}j")
                                             
-                                            # è¿½åŠ ã—ãŸå£ã®è©³ç´°ã‚’è¡¨ç¤º
+                                            # ’Ç‰Á‚µ‚½•Ç‚ÌÚ×‚ğ•\¦
                                             #for aw in added_walls:
-                                            #    st.write(f"  è¿½åŠ å£ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
+                                            #    st.write(f"  ’Ç‰Á•ÇID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
                                             #            f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
                                             
-                                            # è¿½åŠ ã—ãŸå£ã®IDã‚’è¨˜éŒ²ï¼ˆèµ¤è‰²è¡¨ç¤ºç”¨ï¼‰
+                                            # ’Ç‰Á‚µ‚½•Ç‚ÌID‚ğ‹L˜^iÔF•\¦—pj
                                             added_wall_ids.extend([w['id'] for w in added_walls])
                                         
-                                            color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][rect_idx % 6]
+                                            color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][rect_idx % 6]
                                             window_details.append({
                                                 'rect_idx': rect_idx,
                                                 'color_name': color_name,
                                                 'wall_ids': [w['id'] for w in added_walls],
                                                 'window_height': window_height,
                                                 'window_height_mm': window_height_mm,
-                                                'window_model': window_model if window_model != 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰' else None,
+                                                'window_model': window_model if window_model != 'ƒJƒXƒ^ƒ€iè“ü—Íj' else None,
                                                 'base_height': base_height,
                                                 'base_height_mm': base_height_mm
                                             })
@@ -5019,84 +5019,84 @@ def main():
                                                 append_debug(f"Window rect #{rect_idx+1} skipped during execution: found {len(walls_in_rect)} walls")
                                             except Exception:
                                                 pass
-                                            st.warning(f"âš ï¸ å››è§’å½¢#{rect_idx+1}: 2æœ¬ã®å£ãŒå¿…è¦ã§ã™ãŒã€{len(walls_in_rect)}æœ¬ã—ã‹è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“")
+                                            st.warning(f"?? lŠpŒ`#{rect_idx+1}: 2–{‚Ì•Ç‚ª•K—v‚Å‚·‚ªA{len(walls_in_rect)}–{‚µ‚©Œ©‚Â‚©‚è‚Ü‚¹‚ñ")
                                         else:
-                                            st.warning(f"âš ï¸ å››è§’å½¢#{rect_idx+1}: 2æœ¬ã®å£ã‚’é¸æŠã—ã¦ãã ã•ã„ï¼ˆ{len(walls_in_rect)}æœ¬é¸æŠã•ã‚Œã¦ã„ã¾ã™ï¼‰")
+                                            st.warning(f"?? lŠpŒ`#{rect_idx+1}: 2–{‚Ì•Ç‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢i{len(walls_in_rect)}–{‘I‘ğ‚³‚ê‚Ä‚¢‚Ü‚·j")
                     
                                     #if total_added_count > 0:
-                                    #    st.success(f"âœ…âœ… åˆè¨ˆ {total_added_count} æœ¬ã®å£ã‚’è¿½åŠ ã—ã¾ã—ãŸï¼ˆçª“{len(window_details)}ç®‡æ‰€ï¼‰")
+                                    #    st.success(f"?? ‡Œv {total_added_count} –{‚Ì•Ç‚ğ’Ç‰Á‚µ‚Ü‚µ‚½i‘‹{len(window_details)}‰ÓŠj")
                                     
-                                    #    # è¿½åŠ è©³ç´°ã‚’è¡¨ç¤º
-                                    #    st.markdown("**çª“è¿½åŠ çµæœ:**")
+                                    #    # ’Ç‰ÁÚ×‚ğ•\¦
+                                    #    st.markdown("**‘‹’Ç‰ÁŒ‹‰Ê:**")
                                     #    for detail in window_details:
                                     #        st.write(
-                                    #            f"#{detail['rect_idx']+1}ï¼ˆ{detail['color_name']}ï¼‰: "
-                                    #            f"å£({detail['wall_ids'][0]}, {detail['wall_ids'][1]}) ã‚’è¿½åŠ  - "
-                                    #            f"çª“é«˜ã•: {detail['window_height']}m ({detail.get('window_height_mm', int(detail['window_height']*1000))}mm), åºŠã‹ã‚‰: {detail['base_height']}m ({int(detail.get('base_height_mm', detail['base_height']*1000))}mm)"
+                                    #            f"#{detail['rect_idx']+1}i{detail['color_name']}j: "
+                                    #            f"•Ç({detail['wall_ids'][0]}, {detail['wall_ids'][1]}) ‚ğ’Ç‰Á - "
+                                    #            f"‘‹‚‚³: {detail['window_height']}m ({detail.get('window_height_mm', int(detail['window_height']*1000))}mm), °‚©‚ç: {detail['base_height']}m ({int(detail.get('base_height_mm', detail['base_height']*1000))}mm)"
                                     #        )
                                     #else:
-                                    #    st.warning("âš ï¸ è¿½åŠ å¯èƒ½ãªçª“ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“")
+                                    #    st.warning("?? ’Ç‰Á‰Â”\‚È‘‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ")
                                         #st.stop()
-                                # ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
+                                # ˆêƒtƒ@ƒCƒ‹‚É•Û‘¶
                                 temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                                 with open(temp_json_path, 'w', encoding='utf-8') as f:
                                     json.dump(updated_json, f, indent=2, ensure_ascii=False)
                                 
-                                # å†å¯è¦–åŒ–ï¼ˆå…ƒã®å¤‰æ›ã¨åŒã˜ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ä½¿ç”¨ï¼‰
-                                # è¿½åŠ ã—ãŸå£ã‚’èµ¤è‰²ã§è¡¨ç¤º
+                                # Ä‰Â‹‰»iŒ³‚Ì•ÏŠ·‚Æ“¯‚¶ƒXƒP[ƒ‹‚ğg—pj
+                                # ’Ç‰Á‚µ‚½•Ç‚ğÔF‚Å•\¦
                                 temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
                                 visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=added_wall_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
                             
-                                # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢ç”Ÿæˆ
+                                # 3Dƒrƒ…[ƒA¶¬
                                 temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                                 _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
                             
-                                # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã¯è‡ªå‹•ä¿å­˜
-                                # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’æ›´æ–°ï¼ˆJSONãƒ»ç”»åƒãƒ»3Dãƒ“ãƒ¥ãƒ¼ã‚¢ï¼‰
+                                # ‘‹’Ç‰Áƒ‚[ƒh‚Í©“®•Û‘¶
+                                # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚ğXViJSONE‰æ‘œE3Dƒrƒ…[ƒAj
                                 st.session_state.json_bytes = temp_json_path.read_bytes()
                                 st.session_state.json_name = "walls_3d_edited.json"
                                 st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                 
-                                # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLã‚‚æ›´æ–°
+                                # 3Dƒrƒ…[ƒAHTML‚àXV
                                 st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                 st.session_state.viewer_html_name = temp_viewer_path.name
                                 
-                                # ç·¨é›†çŠ¶æ…‹ã‚’å®Œå…¨ã«ã‚¯ãƒªã‚¢ï¼ˆçµ±ä¸€é–¢æ•°ã‚’ä½¿ç”¨ï¼‰
+                                # •ÒWó‘Ô‚ğŠ®‘S‚ÉƒNƒŠƒAi“ˆêŠÖ”‚ğg—pj
                                 _reset_selection_state()
-                                st.session_state.reset_flag = False  # ã“ã®ãƒ•ãƒ©ã‚°ã ã‘ã¯Falseã«è¨­å®š
+                                st.session_state.reset_flag = False  # ‚±‚Ìƒtƒ‰ƒO‚¾‚¯‚ÍFalse‚Éİ’è
                                 
-                                st.success("âœ… çª“è¿½åŠ å®Œäº†ï¼è‡ªå‹•ä¿å­˜ã—ã¾ã—ãŸã€‚ã•ã‚‰ã«ç·¨é›†ã‚’ç¶šã‘ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚")
+                                st.success("? ‘‹’Ç‰ÁŠ®—¹I©“®•Û‘¶‚µ‚Ü‚µ‚½B‚³‚ç‚É•ÒW‚ğ‘±‚¯‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B")
                                 time.sleep(0.5)
                                 st.rerun()
                         
                             except Exception as e:
-                                st.error(f"ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: {e}")
+                                st.error(f"ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {e}")
                                 import traceback
                                 st.code(traceback.format_exc())
                     
-                    # å‡¦ç†ãƒˆãƒªã‚¬ãƒ¼ã®ãƒã‚§ãƒƒã‚¯ï¼ˆãƒœã‚¿ãƒ³è¡¨ç¤ºãªã—ã€å®Ÿè¡Œãƒ•ãƒ©ã‚°ã®ã¿ï¼‰
+                    # ˆ—ƒgƒŠƒK[‚Ìƒ`ƒFƒbƒNiƒ{ƒ^ƒ“•\¦‚È‚µAÀsƒtƒ‰ƒO‚Ì‚İj
                     should_execute = False
                     
-                    if edit_mode == "ç·šã‚’çµåˆ" and st.session_state.get('merge_walls_to_process'):
-                        # å‰å›ã®rerunã§ä¿å­˜ã•ã‚ŒãŸå£ã‚’å‡¦ç†
+                    if edit_mode == "ü‚ğŒ‹‡" and st.session_state.get('merge_walls_to_process'):
+                        # ‘O‰ñ‚Ìrerun‚Å•Û‘¶‚³‚ê‚½•Ç‚ğˆ—
                         should_execute = True
-                    elif edit_mode == "çª“ã‚’è¿½åŠ " and st.session_state.get('window_walls_to_process'):
-                        # å‰å›ã®rerunã§ä¿å­˜ã•ã‚ŒãŸå£ã‚’å‡¦ç†
+                    elif edit_mode == "‘‹‚ğ’Ç‰Á" and st.session_state.get('window_walls_to_process'):
+                        # ‘O‰ñ‚Ìrerun‚Å•Û‘¶‚³‚ê‚½•Ç‚ğˆ—
                         should_execute = True
-                    elif edit_mode == "ç·šã‚’å‰Šé™¤" and st.session_state.get('delete_walls_to_process'):
-                        # å‰å›ã®rerunã§ä¿å­˜ã•ã‚ŒãŸå£ã‚’å‡¦ç†
+                    elif edit_mode == "ü‚ğíœ" and st.session_state.get('delete_walls_to_process'):
+                        # ‘O‰ñ‚Ìrerun‚Å•Û‘¶‚³‚ê‚½•Ç‚ğˆ—
                         should_execute = True
-                    elif edit_mode == "ç·šã‚’è¿½åŠ " and st.session_state.get('add_line_execute'):
-                        # ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã®å®Ÿè¡Œ
+                    elif edit_mode == "ü‚ğ’Ç‰Á" and st.session_state.get('add_line_execute'):
+                        # ü‚ğ’Ç‰Áƒ‚[ƒh‚ÌÀs
                         st.session_state.add_line_execute = False
                         should_execute = True
-                    elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®" and st.session_state.get('execute_furniture_placement'):
+                    elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğ”z’u" and st.session_state.get('execute_furniture_placement'):
                         st.session_state.execute_furniture_placement = False
                         should_execute = True
-                    elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤" and st.session_state.get('execute_furniture_deletion'):
+                    elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ" and st.session_state.get('execute_furniture_deletion'):
                         st.session_state.execute_furniture_deletion = False
                         should_execute = True
-                    elif edit_mode == "éšæ®µã‚’é…ç½®" and st.session_state.get('execute_stair_placement'):
+                    elif edit_mode == "ŠK’i‚ğ”z’u" and st.session_state.get('execute_stair_placement'):
                         st.session_state.execute_stair_placement = False
                         should_execute = True
                     
@@ -5106,31 +5106,31 @@ def main():
                         except:
                             pass
                         try:
-                            # å‡¦ç†å¯¾è±¡ã®å››è§’å½¢ãƒªã‚¹ãƒˆã‚’ä½œæˆï¼ˆç¢ºå®šæ¸ˆã¿é¸æŠ + ç¾åœ¨é¸æŠä¸­ã®2ç‚¹ï¼‰
-                            # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ä½¿ç”¨ã—ãªã„
-                            # çª“ã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ã‚¯ãƒªãƒƒã‚¯é¸æŠã®å ´åˆã‚‚ä½¿ç”¨ã—ãªã„
-                            # ç·šã‚’å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã‚‚ã‚¯ãƒªãƒƒã‚¯é¸æŠãªã®ã§ä½¿ç”¨ã—ãªã„
-                            if edit_mode == "ç·šã‚’çµåˆ":
-                                target_rects = []  # ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ä¸ä½¿ç”¨
-                            elif edit_mode == "ç·šã‚’å‰Šé™¤":
-                                target_rects = []  # ç·šã‚’å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ã§ã¯ä¸ä½¿ç”¨ï¼ˆã‚¯ãƒªãƒƒã‚¯é¸æŠï¼‰
-                            elif edit_mode == "çª“ã‚’è¿½åŠ " and st.session_state.get('window_walls_to_process'):
-                                target_rects = []  # çª“ã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼ˆã‚¯ãƒªãƒƒã‚¯é¸æŠï¼‰ã§ã¯ä¸ä½¿ç”¨
+                            # ˆ—‘ÎÛ‚ÌlŠpŒ`ƒŠƒXƒg‚ğì¬iŠm’èÏ‚İ‘I‘ğ + Œ»İ‘I‘ğ’†‚Ì2“_j
+                            # ü‚ğŒ‹‡ƒ‚[ƒh‚Ìê‡‚Íg—p‚µ‚È‚¢
+                            # ‘‹‚ğ’Ç‰Áƒ‚[ƒh‚ÅƒNƒŠƒbƒN‘I‘ğ‚Ìê‡‚àg—p‚µ‚È‚¢
+                            # ü‚ğíœƒ‚[ƒh‚àƒNƒŠƒbƒN‘I‘ğ‚È‚Ì‚Åg—p‚µ‚È‚¢
+                            if edit_mode == "ü‚ğŒ‹‡":
+                                target_rects = []  # ü‚ğŒ‹‡ƒ‚[ƒh‚Å‚Í•sg—p
+                            elif edit_mode == "ü‚ğíœ":
+                                target_rects = []  # ü‚ğíœƒ‚[ƒh‚Å‚Í•sg—piƒNƒŠƒbƒN‘I‘ğj
+                            elif edit_mode == "‘‹‚ğ’Ç‰Á" and st.session_state.get('window_walls_to_process'):
+                                target_rects = []  # ‘‹‚ğ’Ç‰Áƒ‚[ƒhiƒNƒŠƒbƒN‘I‘ğj‚Å‚Í•sg—p
                             else:
                                 target_rects = list(st.session_state.rect_coords_list)
                                 if len(st.session_state.rect_coords) == 2:
                                     target_rects.append(tuple(st.session_state.rect_coords))
                             
                             try:
-                                append_debug(f"target_rectsç”Ÿæˆå®Œäº†: count={len(target_rects)}, edit_mode={edit_mode}")
+                                append_debug(f"target_rects¶¬Š®—¹: count={len(target_rects)}, edit_mode={edit_mode}")
                             except:
                                 pass
                             
-                            # JSONãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿
+                            # JSONƒf[ƒ^‚ğ“Ç‚İ‚İ
                             json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
                             walls = json_data['walls']
                             
-                            # å¯è¦–åŒ–ç”»åƒã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                            # ‰Â‹‰»‰æ‘œ‚Ìƒpƒ‰ƒ[ƒ^‚ğæ“¾
                             all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
                             all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
                             min_x, max_x = min(all_x), max(all_x)
@@ -5141,18 +5141,18 @@ def main():
                             img_width = int((max_x - min_x) * scale) + 2 * margin
                             img_height = int((max_y - min_y) * scale) + 2 * margin
                             
-                            # ç·¨é›†å‰ã®ç”»åƒã‚’ä¿å­˜ï¼ˆæ¯”è¼ƒç”¨ï¼‰
+                            # •ÒW‘O‚Ì‰æ‘œ‚ğ•Û‘¶i”äŠr—pj
                             original_viz_bytes = st.session_state.viz_bytes
                             
-                            # å…ƒãƒ‡ãƒ¼ã‚¿ã‚’ä¿è­·ã™ã‚‹ãŸã‚ãƒ‡ã‚£ãƒ¼ãƒ—ã‚³ãƒ”ãƒ¼
+                            # Œ³ƒf[ƒ^‚ğ•ÛŒì‚·‚é‚½‚ßƒfƒB[ƒvƒRƒs[
                             import copy
                             original_json_data = copy.deepcopy(json_data)
                             updated_json = json_data
                             
-                            # è¿½åŠ ã—ãŸå£ã®IDï¼ˆçª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ä½¿ç”¨ï¼‰
+                            # ’Ç‰Á‚µ‚½•Ç‚ÌIDi‘‹’Ç‰Áƒ‚[ƒh‚Åg—pj
                             added_wall_ids = []
                             
-                            # å„ãƒ¢ãƒ¼ãƒ‰ç”¨ã®å¤‰æ•°ã‚’äº‹å‰åˆæœŸåŒ–
+                            # Šeƒ‚[ƒh—p‚Ì•Ï”‚ğ–‘O‰Šú‰»
                             total_merged_count = 0
                             merge_details = []
                             total_added_count = 0
@@ -5162,24 +5162,24 @@ def main():
                             total_floor_count = 0
                             floor_details = []
                             
-                            if edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®":
-                                # ===== ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®ãƒ¢ãƒ¼ãƒ‰ =====
-                                # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‹ã‚‰å®¶å…·ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                            if edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğ”z’u":
+                                # ===== ƒIƒuƒWƒFƒNƒg‚ğ”z’uƒ‚[ƒh =====
+                                # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒg‚©‚ç‰Æ‹ïƒpƒ‰ƒ[ƒ^‚ğæ“¾
                                 furniture_params = st.session_state.get('furniture_params', {})
-                                color_option = furniture_params.get('color_option', 'ãƒ€ãƒ¼ã‚¯')
+                                color_option = furniture_params.get('color_option', 'ƒ_[ƒN')
                                 furniture_height = furniture_params.get('selected_height', 0.85)
                                 furniture_offset = furniture_params.get('offset_height', 0.0)
                                 
-                                # å„å››è§’å½¢ã‚’ãƒ«ãƒ¼ãƒ—ã—ã¦å‡¦ç†
+                                # ŠelŠpŒ`‚ğƒ‹[ƒv‚µ‚Äˆ—
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
-                                    # å››è§’å½¢ç¯„å›²ã‚’ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›
+                                    # lŠpŒ`”ÍˆÍ‚ğƒ[ƒgƒ‹À•W‚É•ÏŠ·
                                     x_start, y_start, width, depth = _snap_to_grid(
                                         (p1[0], p1[1], p2[0], p2[1]),
                                         json_data,
                                         scale
                                     )
                                     
-                                    # å®¶å…·ã‚’è¿½åŠ ï¼ˆã‚ªãƒ•ã‚»ãƒƒãƒˆã‚‚æŒ‡å®šï¼‰
+                                    # ‰Æ‹ï‚ğ’Ç‰ÁiƒIƒtƒZƒbƒg‚àw’èj
                                     updated_json = _add_furniture_to_json(
                                         updated_json,
                                         furniture_height,
@@ -5191,7 +5191,7 @@ def main():
                                         offset_m=furniture_offset
                                     )
                                 
-                                # è‡ªå‹•ä¿å­˜: ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®çµæœã‚’ JSON/å¯è¦–åŒ–/3Dãƒ“ãƒ¥ãƒ¼ã‚¢ã«åæ˜ 
+                                # ©“®•Û‘¶: ƒIƒuƒWƒFƒNƒg”z’uŒ‹‰Ê‚ğ JSON/‰Â‹‰»/3Dƒrƒ…[ƒA‚É”½‰f
                                 try:
                                     temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                                     with open(temp_json_path, 'w', encoding='utf-8') as f:
@@ -5203,33 +5203,33 @@ def main():
                                     temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                                     _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
 
-                                    # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã—ã¦ UI ä¸Šã§ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰å¯èƒ½ã«ã™ã‚‹
+                                    # ƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚µ‚Ä UI ã‚Åƒ_ƒEƒ“ƒ[ƒh‰Â”\‚É‚·‚é
                                     st.session_state.json_bytes = temp_json_path.read_bytes()
                                     st.session_state.json_name = temp_json_path.name
                                     st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                     st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                     st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                    # é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ï¼ˆçµ±ä¸€é–¢æ•°ã‚’ä½¿ç”¨ï¼‰
+                                    # ‘I‘ğó‘Ô‚ğƒNƒŠƒAi“ˆêŠÖ”‚ğg—pj
                                     _reset_selection_state()
                                 except Exception as e:
-                                    st.error(f"ä¿å­˜ã‚¨ãƒ©ãƒ¼: {e}")
+                                    st.error(f"•Û‘¶ƒGƒ‰[: {e}")
                             
-                            elif edit_mode == "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤":
-                                # ===== ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ =====
+                            elif edit_mode == "ƒIƒuƒWƒFƒNƒg‚ğíœ":
+                                # ===== ƒIƒuƒWƒFƒNƒgíœƒ‚[ƒh =====
                                 targets = st.session_state.selected_furniture_to_delete
                                 if not targets:
-                                    st.warning("å‰Šé™¤å¯¾è±¡ãŒé¸æŠã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚")
+                                    st.warning("íœ‘ÎÛ‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB")
                                 else:
                                     current_furniture = updated_json.get('furniture', [])
                                     new_furniture = []
                                     deleted_count = 0
                                     
-                                    # å‰Šé™¤å¯¾è±¡ã«å«ã¾ã‚Œãªã„ã‚‚ã®ã ã‘ã‚’æ®‹ã™
+                                    # íœ‘ÎÛ‚ÉŠÜ‚Ü‚ê‚È‚¢‚à‚Ì‚¾‚¯‚ğc‚·
                                     for item in current_furniture:
                                         is_target = False
                                         for target in targets:
-                                            # positionã¨boundsã§ä¸€è‡´åˆ¤å®š
+                                            # position‚Æbounds‚Åˆê’v”»’è
                                             if (item.get('position') == target.get('position') and 
                                                 item.get('bounds') == target.get('bounds')):
                                                 is_target = True
@@ -5242,7 +5242,7 @@ def main():
                                     
                                     updated_json['furniture'] = new_furniture
                                     
-                                    # è‡ªå‹•ä¿å­˜
+                                    # ©“®•Û‘¶
                                     try:
                                         temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                                         with open(temp_json_path, 'w', encoding='utf-8') as f:
@@ -5254,73 +5254,73 @@ def main():
                                         temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                                         _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
 
-                                        # ã‚»ãƒƒã‚·ãƒ§ãƒ³æ›´æ–°
+                                        # ƒZƒbƒVƒ‡ƒ“XV
                                         st.session_state.json_bytes = temp_json_path.read_bytes()
                                         st.session_state.json_name = temp_json_path.name
                                         st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                         st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                         st.session_state.viewer_html_name = temp_viewer_path.name
                                         
-                                        # é¸æŠã‚¯ãƒªã‚¢
+                                        # ‘I‘ğƒNƒŠƒA
                                         st.session_state.selected_furniture_to_delete = []
                                         _reset_selection_state()
                                         
-                                        st.success(f"âœ… {deleted_count}å€‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤ã—ã¾ã—ãŸã€‚")
+                                        st.success(f"? {deleted_count}ŒÂ‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚µ‚½B")
                                         time.sleep(0.5)
                                         st.rerun()
                                     except Exception as e:
-                                        st.error(f"å‰Šé™¤ä¿å­˜ã‚¨ãƒ©ãƒ¼: {e}")
+                                        st.error(f"íœ•Û‘¶ƒGƒ‰[: {e}")
 
-                            elif edit_mode == "éšæ®µã‚’é…ç½®":
-                                # ===== éšæ®µã‚’é…ç½®ãƒ¢ãƒ¼ãƒ‰ =====
-                                # é¸æŠç¯„å›²ãŒãªã„å ´åˆã®ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯
+                            elif edit_mode == "ŠK’i‚ğ”z’u":
+                                # ===== ŠK’i‚ğ”z’uƒ‚[ƒh =====
+                                # ‘I‘ğ”ÍˆÍ‚ª‚È‚¢ê‡‚ÌƒGƒ‰[ƒ`ƒFƒbƒN
                                 if len(target_rects) == 0:
-                                    st.error("âŒ éšæ®µé…ç½®ç¯„å›²ãŒé¸æŠã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ç”»åƒä¸Šã§2ç‚¹ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ç¯„å›²ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚")
-                                    # å‡¦ç†ã‚’ä¸­æ–­ã›ãšã€ã‚¨ãƒ©ãƒ¼è¡¨ç¤ºã®ã¿
+                                    st.error("? ŠK’i”z’u”ÍˆÍ‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB‰æ‘œã‚Å2“_‚ğƒNƒŠƒbƒN‚µ‚Ä”ÍˆÍ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B")
+                                    # ˆ—‚ğ’†’f‚¹‚¸AƒGƒ‰[•\¦‚Ì‚İ
                                     st.session_state.execute_stair_placement = False
                                 else:
-                                    # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‹ã‚‰éšæ®µãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å–å¾—
-                                    stair_pattern_key = st.session_state.get('selected_stair_pattern', 'ã‚³ã®å­—_æ™‚è¨ˆå›ã‚Š_åŒ—')
-                                    stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['ã‚³ã®å­—_æ™‚è¨ˆå›ã‚Š_åŒ—'])
+                                    # ƒZƒbƒVƒ‡ƒ“ƒXƒe[ƒg‚©‚çŠK’iƒpƒ^[ƒ“‚ğæ“¾
+                                    stair_pattern_key = st.session_state.get('selected_stair_pattern', 'ƒR‚Ìš_Œv‰ñ‚è_–k')
+                                    stair_pattern = STAIR_PATTERNS.get(stair_pattern_key, STAIR_PATTERNS['ƒR‚Ìš_Œv‰ñ‚è_–k'])
                                     
-                                    # å„å››è§’å½¢ï¼ˆéšæ®µé…ç½®ç¯„å›²ï¼‰ã‚’ãƒ«ãƒ¼ãƒ—ã—ã¦å‡¦ç†
+                                    # ŠelŠpŒ`iŠK’i”z’u”ÍˆÍj‚ğƒ‹[ƒv‚µ‚Äˆ—
                                     for rect_idx, (p1, p2) in enumerate(target_rects):
-                                        # ãƒ”ã‚¯ã‚»ãƒ«åº§æ¨™â†’ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™å¤‰æ›ï¼ˆ_snap_to_gridã¨åŒã˜ãƒ­ã‚¸ãƒƒã‚¯ï¼‰
+                                        # ƒsƒNƒZƒ‹À•W¨ƒ[ƒgƒ‹À•W•ÏŠ·i_snap_to_grid‚Æ“¯‚¶ƒƒWƒbƒNj
                                         x_min_px = min(p1[0], p2[0])
                                         x_max_px = max(p1[0], p2[0])
                                         y_min_px = min(p1[1], p2[1])
                                         y_max_px = max(p1[1], p2[1])
                                         
-                                        # å·¦ä¸‹éš…ã®åº§æ¨™ã‚’è¨ˆç®—ï¼ˆYè»¸ã¯åè»¢ã™ã‚‹ãŸã‚ã€y_max_pxã‚’ä½¿ç”¨ï¼‰
+                                        # ¶‰º‹÷‚ÌÀ•W‚ğŒvZiY²‚Í”½“]‚·‚é‚½‚ßAy_max_px‚ğg—pj
                                         base_x = (x_min_px - margin) / scale + min_x
                                         base_y = (img_height - y_max_px - margin) / scale + min_y
                                         
-                                        # èµ¤æ ã®ã‚µã‚¤ã‚ºã‚’ãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½ã§è¨ˆç®—
+                                        # Ô˜g‚ÌƒTƒCƒY‚ğƒ[ƒgƒ‹’PˆÊ‚ÅŒvZ
                                         rect_width_m = (x_max_px - x_min_px) / scale
                                         rect_height_m = (y_max_px - y_min_px) / scale
                                         
-                                        # JSONã«éšæ®µãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ 
+                                        # JSON‚ÉŠK’iƒf[ƒ^‚ğ’Ç‰Á
                                         if 'stairs' not in updated_json:
                                             updated_json['stairs'] = []
                                         
-                                        # å„ã‚¹ãƒ†ãƒƒãƒ—ã‚’è¿½åŠ ï¼ˆãƒ‘ã‚¿ãƒ¼ãƒ³å®šç¾©ã®x_len, y_lenã‚’ç›´æ¥ä½¿ç”¨ï¼‰
+                                        # ŠeƒXƒeƒbƒv‚ğ’Ç‰Áiƒpƒ^[ƒ“’è‹`‚Ìx_len, y_len‚ğ’¼Úg—pj
                                         for step in stair_pattern['steps']:
                                             
-                                            # ãƒ‘ã‚¿ãƒ¼ãƒ³å®šç¾©ã®x_len, y_lenã‚’ä½¿ç”¨ã—ã¦ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
-                                            # x_len, y_lenã¯0-1ã®æ­£è¦åŒ–åº§æ¨™ãªã®ã§ã€å®Ÿéš›ã®çŸ©å½¢ã‚µã‚¤ã‚ºã§æ›ã‘ç®—
+                                            # ƒpƒ^[ƒ“’è‹`‚Ìx_len, y_len‚ğg—p‚µ‚ÄƒTƒCƒY‚ğŒvZ
+                                            # x_len, y_len‚Í0-1‚Ì³‹K‰»À•W‚È‚Ì‚ÅAÀÛ‚Ì‹éŒ`ƒTƒCƒY‚ÅŠ|‚¯Z
                                             width_m = rect_width_m * step['x_len']
                                             depth_m = rect_height_m * step['y_len']
                                             height_m = step['z_len']
-                                            rotation = 0  # å…¨ã¦åŒã˜æ–¹å‘
+                                            rotation = 0  # ‘S‚Ä“¯‚¶•ûŒü
                                             
-                                            # ä½ç½®è¨ˆç®—ï¼šãƒ‘ã‚¿ãƒ¼ãƒ³å®šç¾©ã®x, yã‚’ãã®ã¾ã¾ä½¿ç”¨
-                                            # x, yã¯çŸ©å½¢å†…ã®æ­£è¦åŒ–åº§æ¨™ï¼ˆ0-1ï¼‰ãªã®ã§ã€å®Ÿéš›ã®çŸ©å½¢ã‚µã‚¤ã‚ºã§æ›ã‘ç®—
-                                            # éšæ®µã®ä¸­å¿ƒåº§æ¨™ã‚’è¨ˆç®—ï¼ˆThree.jsã®BoxGeometryã¯ä¸­å¿ƒåŸºæº–ï¼‰
+                                            # ˆÊ’uŒvZFƒpƒ^[ƒ“’è‹`‚Ìx, y‚ğ‚»‚Ì‚Ü‚Üg—p
+                                            # x, y‚Í‹éŒ`“à‚Ì³‹K‰»À•Wi0-1j‚È‚Ì‚ÅAÀÛ‚Ì‹éŒ`ƒTƒCƒY‚ÅŠ|‚¯Z
+                                            # ŠK’i‚Ì’†SÀ•W‚ğŒvZiThree.js‚ÌBoxGeometry‚Í’†SŠî€j
                                             pos_x = base_x + step['x'] * rect_width_m + width_m / 2
                                             pos_y = base_y + step['y'] * rect_height_m + depth_m / 2
 
                                             
-                                            # positionã‚’ä¸­å¿ƒåº§æ¨™ã¨ã—ã¦è¨­å®šï¼ˆThree.jsã®BoxGeometryã¯ä¸­å¿ƒåŸºæº–ï¼‰
+                                            # position‚ğ’†SÀ•W‚Æ‚µ‚Äİ’èiThree.js‚ÌBoxGeometry‚Í’†SŠî€j
                                             stair_data = {
                                                 'name': f"{step['name']}_rect{rect_idx+1}",
                                                 'position': [
@@ -5333,13 +5333,13 @@ def main():
                                                     round(depth_m, 3),
                                                     round(height_m, 3)
                                                 ],
-                                                'rotation': 0,  # å…¨ã¦åŒã˜æ–¹å‘
-                                                'color': 'Tan',  # åºŠã¨åŒã˜è‰²
+                                                'rotation': 0,  # ‘S‚Ä“¯‚¶•ûŒü
+                                                'color': 'Tan',  # °‚Æ“¯‚¶F
                                                 'pattern': stair_pattern_key
                                             }
                                             updated_json['stairs'].append(stair_data)
                                 
-                                    # è‡ªå‹•ä¿å­˜: éšæ®µé…ç½®çµæœã‚’ JSON/å¯è¦–åŒ–/3Dãƒ“ãƒ¥ãƒ¼ã‚¢ã«åæ˜ 
+                                    # ©“®•Û‘¶: ŠK’i”z’uŒ‹‰Ê‚ğ JSON/‰Â‹‰»/3Dƒrƒ…[ƒA‚É”½‰f
                                     try:
                                         stair_count = len(updated_json.get('stairs', []))
                                         
@@ -5347,55 +5347,55 @@ def main():
                                         with open(temp_json_path, 'w', encoding='utf-8') as f:
                                             json.dump(updated_json, f, ensure_ascii=False, indent=2)
 
-                                        # éšæ®µé…ç½®ã§ã¯å£ã‚’è¿½åŠ ã—ãªã„ãŸã‚ã€highlight_wall_idsã¯ç©ºãƒªã‚¹ãƒˆ
+                                        # ŠK’i”z’u‚Å‚Í•Ç‚ğ’Ç‰Á‚µ‚È‚¢‚½‚ßAhighlight_wall_ids‚Í‹óƒŠƒXƒg
                                         temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
                                         visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=[], wall_color=(0, 0, 0), bg_color=(255, 255, 255))
 
                                         temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                                         _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
 
-                                        # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã—ã¦ UI ä¸Šã§ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰å¯èƒ½ã«ã™ã‚‹
+                                        # ƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚µ‚Ä UI ã‚Åƒ_ƒEƒ“ƒ[ƒh‰Â”\‚É‚·‚é
                                         st.session_state.json_bytes = temp_json_path.read_bytes()
                                         st.session_state.json_name = temp_json_path.name
                                         st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                         st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                         st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                        # é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ï¼ˆçµ±ä¸€é–¢æ•°ã‚’ä½¿ç”¨ï¼‰
+                                        # ‘I‘ğó‘Ô‚ğƒNƒŠƒAi“ˆêŠÖ”‚ğg—pj
                                         _reset_selection_state()
                                         st.session_state.last_click = None
                                         st.session_state.execute_stair_placement = False
                                         st.session_state.selected_stair_pattern = None
                                         
-                                        # æˆåŠŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-                                        st.success(f"âœ… éšæ®µã‚’{stair_count}ã‚¹ãƒ†ãƒƒãƒ—é…ç½®ã—ã¾ã—ãŸï¼")
+                                        # ¬Œ÷ƒƒbƒZ[ƒW
+                                        st.success(f"? ŠK’i‚ğ{stair_count}ƒXƒeƒbƒv”z’u‚µ‚Ü‚µ‚½I")
                                         
-                                        # ç”»é¢ã‚’å†æç”»ã—ã¦æ›´æ–°ã‚’åæ˜ 
+                                        # ‰æ–Ê‚ğÄ•`‰æ‚µ‚ÄXV‚ğ”½‰f
                                         st.rerun()
                                     except Exception as e:
-                                        st.error(f"âŒ éšæ®µé…ç½®ã‚¨ãƒ©ãƒ¼: {e}")
+                                        st.error(f"? ŠK’i”z’uƒGƒ‰[: {e}")
                                         import traceback
                                         st.error(traceback.format_exc())
                                         try:
-                                            append_debug(f"ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿ: {e}")
-                                            append_debug(f"ãƒˆãƒ¬ãƒ¼ã‚¹ãƒãƒƒã‚¯: {traceback.format_exc()}")
+                                            append_debug(f"ƒGƒ‰[”­¶: {e}")
+                                            append_debug(f"ƒgƒŒ[ƒXƒoƒbƒN: {traceback.format_exc()}")
                                         except:
                                             pass
                                 
-                            elif edit_mode == "ç·šã‚’çµåˆ":
-                                # ===== ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ï¼ˆè¤‡æ•°ãƒšã‚¢ä¸€æ‹¬å¯¾å¿œï¼‰ =====
-                                # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã•ã‚ŒãŸå£ã‚’ä½¿ç”¨ï¼ˆãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã«ä¿å­˜æ¸ˆã¿ï¼‰
+                            elif edit_mode == "ü‚ğŒ‹‡":
+                                # ===== ü‚ğŒ‹‡ƒ‚[ƒhi•¡”ƒyƒAˆêŠ‡‘Î‰j =====
+                                # ƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚³‚ê‚½•Ç‚ğg—piƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚É•Û‘¶Ï‚İj
                                 total_merged_count = 0
                                 merge_details = []
                                 
                                 if st.session_state.get('merge_walls_to_process'):
-                                    # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰å£ãƒªã‚¹ãƒˆã‚’å–å¾—
+                                    # ƒZƒbƒVƒ‡ƒ“‚©‚ç•ÇƒŠƒXƒg‚ğæ“¾
                                     walls_list = st.session_state.merge_walls_to_process
                                     
-                                    # å‡¦ç†å®Œäº†å¾Œã«ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰å‰Šé™¤
+                                    # ˆ—Š®—¹Œã‚ÉƒZƒbƒVƒ‡ƒ“‚©‚çíœ
                                     del st.session_state.merge_walls_to_process
                                     
-                                    # 2æœ¬ãšã¤ãƒšã‚¢ã«ã—ã¦å‡¦ç†
+                                    # 2–{‚¸‚ÂƒyƒA‚É‚µ‚Äˆ—
                                     merge_count = len(walls_list) // 2
                                     success_count = 0
                                     
@@ -5408,11 +5408,11 @@ def main():
                                         except Exception:
                                             pass
                                         
-                                        # ã‚¯ãƒªãƒƒã‚¯é¸æŠã—ãŸ2æœ¬ã®å£ã‚’ç›´æ¥çµåˆå‡¦ç†
+                                        # ƒNƒŠƒbƒN‘I‘ğ‚µ‚½2–{‚Ì•Ç‚ğ’¼ÚŒ‹‡ˆ—
                                         walls_to_use = [wall1, wall2]
                                         selected_walls = [wall1, wall2]
                                         
-                                        # çµåˆå€™è£œã‚’æ¢ã™
+                                        # Œ‹‡Œó•â‚ğ’T‚·
                                         merge_angle_threshold = 30
                                         candidates = _find_mergeable_walls(
                                             walls_to_use,
@@ -5420,7 +5420,7 @@ def main():
                                             angle_threshold=merge_angle_threshold
                                         )
                                         
-                                        # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°é–¾å€¤ã‚’ç·©ã‚ã¦å†æ¢ç´¢
+                                        # ƒtƒH[ƒ‹ƒoƒbƒN: Œó•â‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚Îè‡’l‚ğŠÉ‚ß‚ÄÄ’Tõ
                                         if not candidates:
                                             try:
                                                 fallback_dist = max(distance_threshold * 2, 0.5)
@@ -5435,7 +5435,7 @@ def main():
                                             except Exception:
                                                 pass
                                         
-                                        # æœ€çµ‚ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: ãã‚Œã§ã‚‚è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã€å¼·åˆ¶çš„ã«å€™è£œã‚’ä½œæˆ
+                                        # ÅIƒtƒH[ƒ‹ƒoƒbƒN: ‚»‚ê‚Å‚àŒ©‚Â‚©‚ç‚È‚¢ê‡A‹­§“I‚ÉŒó•â‚ğì¬
                                         if not candidates:
                                             try:
                                                 endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
@@ -5451,7 +5451,7 @@ def main():
                                                 
                                                 angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
                                                 
-                                                # æ¥ç¶šã‚¿ã‚¤ãƒ—ã‚’æ±ºå®š
+                                                # Ú‘±ƒ^ƒCƒv‚ğŒˆ’è
                                                 p1, p2 = min_pair
                                                 w1 = selected_walls[0]
                                                 w2 = selected_walls[1]
@@ -5494,7 +5494,7 @@ def main():
                                                 append_debug(f"Merge {pair_idx + 1}: Exception in forced candidate creation: {e}")
                                                 pass
                                         
-                                        # çµåˆå®Ÿè¡Œ
+                                        # Œ‹‡Às
                                         if candidates:
                                             top_candidate = candidates[0]
                                             try:
@@ -5505,11 +5505,11 @@ def main():
                                                 
                                                 merge_details.append({
                                                     'rect_idx': pair_idx,
-                                                    'color_name': f'çµåˆ{pair_idx + 1}',
+                                                    'color_name': f'Œ‹‡{pair_idx + 1}',
                                                     'is_chain': False,
                                                     'walls': [wall1['id'], wall2['id']],
                                                     'distance': top_candidate['distance'],
-                                                    'direction': 'ã‚¯ãƒªãƒƒã‚¯é¸æŠ',
+                                                    'direction': 'ƒNƒŠƒbƒN‘I‘ğ',
                                                     'deleted_walls': []
                                                 })
                                             except Exception as e:
@@ -5517,14 +5517,14 @@ def main():
                                         else:
                                             append_debug(f"Merge {pair_idx + 1}: No candidates found")
                                     
-                                    # ã™ã¹ã¦ã®çµåˆãŒå®Œäº†ã—ãŸã‚‰é¸æŠçŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢
+                                    # ‚·‚×‚Ä‚ÌŒ‹‡‚ªŠ®—¹‚µ‚½‚ç‘I‘ğó‘Ô‚ğƒNƒŠƒA
                                     _reset_selection_state()
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯é¸æŠå‡¦ç†ã‚’å®Œäº†ã—ãŸã®ã§ã€å››è§’å½¢ãƒ™ãƒ¼ã‚¹å‡¦ç†ã¯ã‚¹ã‚­ãƒƒãƒ—
-                                    # ï¼ˆã‚¯ãƒªãƒƒã‚¯é¸æŠãƒ¢ãƒ¼ãƒ‰ã§ã¯å››è§’å½¢ãƒ™ãƒ¼ã‚¹å‡¦ç†ã¯ä¸è¦ï¼‰
+                                    # ƒNƒŠƒbƒN‘I‘ğˆ—‚ğŠ®—¹‚µ‚½‚Ì‚ÅAlŠpŒ`ƒx[ƒXˆ—‚ÍƒXƒLƒbƒv
+                                    # iƒNƒŠƒbƒN‘I‘ğƒ‚[ƒh‚Å‚ÍlŠpŒ`ƒx[ƒXˆ—‚Í•s—vj
                                 
                                 else:
-                                    # ä»¥ä¸‹ã€æ—¢å­˜ã®å››è§’å½¢ãƒ™ãƒ¼ã‚¹å‡¦ç†ï¼ˆå‰Šé™¤äºˆå®š - å¾Œæ–¹äº’æ›ã®ãŸã‚æ®‹ã™ï¼‰
+                                    # ˆÈ‰ºAŠù‘¶‚ÌlŠpŒ`ƒx[ƒXˆ—iíœ—\’è - Œã•ûŒİŠ·‚Ì‚½‚ßc‚·j
                                     for rect_idx, (p1, p2) in enumerate(target_rects):
                                         rect = {
                                             'left': min(p1[0], p2[0]),
@@ -5537,12 +5537,12 @@ def main():
                                         except Exception:
                                             pass
                                     
-                                        # é¸æŠç¯„å›²å†…ã®å£ç·šã‚’æŠ½å‡º
-                                        # ã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ç‰ˆã¨åŒæ§˜ã«ã€Œå®Œå…¨ã«å«ã¾ã‚Œã‚‹ã€åˆ¤å®šã‚’ã¾ãšè©¦ã™ï¼ˆç«¯ç‚¹ãƒ™ãƒ¼ã‚¹ï¼‰
+                                        # ‘I‘ğ”ÍˆÍ“à‚Ì•Çü‚ğ’Šo
+                                        # ƒXƒP[ƒ‹Z³”Å‚Æ“¯—l‚ÉuŠ®‘S‚ÉŠÜ‚Ü‚ê‚év”»’è‚ğ‚Ü‚¸‚·i’[“_ƒx[ƒXj
                                         walls_in_selection = _filter_walls_strictly_in_rect(
                                             updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                         )
-                                        # ç«¯ç‚¹ãƒ™ãƒ¼ã‚¹ã§ä½•ã‚‚è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°ã€äº¤å·®/è¿‘æ¥ãƒ™ãƒ¼ã‚¹ã§ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼ˆã“ã‚Œã‚’ç„¡åŠ¹ã«ã™ã‚‹å ´åˆã¯å‰Šé™¤ï¼‰
+                                        # ’[“_ƒx[ƒX‚Å‰½‚àŒ©‚Â‚©‚ç‚È‚¯‚ê‚ÎAŒğ·/‹ßÚƒx[ƒX‚ÅƒtƒH[ƒ‹ƒoƒbƒNi‚±‚ê‚ğ–³Œø‚É‚·‚éê‡‚Ííœj
                                         if len(walls_in_selection) == 0:
                                             walls_in_selection = [
                                                 wall for wall in updated_json['walls']
@@ -5553,8 +5553,8 @@ def main():
                                         except Exception:
                                             pass
 
-                                        # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿IDãŒã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã•ã‚Œã¦ã„ã‚‹å ´åˆã€
-                                        # å››è§’å½¢ãŒä¸€è‡´ã™ã‚Œã° execution å´ã®æ¤œå‡ºé›†åˆã‚’ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã®ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿é›†åˆã«åˆã‚ã›ã‚‹ã€‚
+                                        # ƒvƒŒƒrƒ…[‚ÅƒtƒBƒ‹ƒ^Ï‚İID‚ªƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚³‚ê‚Ä‚¢‚éê‡A
+                                        # lŠpŒ`‚ªˆê’v‚·‚ê‚Î execution ‘¤‚ÌŒŸoW‡‚ğƒvƒŒƒrƒ…[‚ÌƒtƒBƒ‹ƒ^Ï‚İW‡‚É‡‚í‚¹‚éB
                                         try:
                                             last_filtered = st.session_state.get('last_preview_filtered_ids')
                                             last_rect = st.session_state.get('last_preview_rect')
@@ -5563,11 +5563,11 @@ def main():
                                                     abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
                                                     abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
                                                     abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
-                                                    # updated_json ã® walls ã‹ã‚‰è©²å½“IDã‚’æŠ½å‡ºï¼ˆå››è§’å½¢å¤–ã§ã‚‚ preview ãŒè¦‹ã¦ã„ãŸIDã‚’å„ªå…ˆï¼‰
+                                                    # updated_json ‚Ì walls ‚©‚çŠY“–ID‚ğ’ŠoilŠpŒ`ŠO‚Å‚à preview ‚ªŒ©‚Ä‚¢‚½ID‚ğ—Dæj
                                                     id_set = set(last_filtered)
                                                     walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
                                                     try:
-                                                        st.write(f"ğŸ”§ ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã®ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿IDã‚’å„ªå…ˆã—ã¦ walls_in_selection ã‚’ç½®æ›ã—ã¾ã—ãŸ: {list(id_set)}")
+                                                        st.write(f"?? ƒvƒŒƒrƒ…[‚ÌƒtƒBƒ‹ƒ^Ï‚İID‚ğ—Dæ‚µ‚Ä walls_in_selection ‚ğ’uŠ·‚µ‚Ü‚µ‚½: {list(id_set)}")
                                                     except Exception:
                                                         pass
                                                     try:
@@ -5577,18 +5577,18 @@ def main():
                                         except Exception:
                                             pass
                                     
-                                        # ã¾ãšã€ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§é¸ã°ã‚ŒãŸãƒšã‚¢ãŒã‚ã‚‹ã‹ã‚’ç¢ºèªã—ã€å››è§’å½¢ãŒä¸€è‡´ã™ã‚Œã°ãã‚Œã‚’å„ªå…ˆã™ã‚‹
+                                        # ‚Ü‚¸AƒvƒŒƒrƒ…[‚Å‘I‚Î‚ê‚½ƒyƒA‚ª‚ ‚é‚©‚ğŠm”F‚µAlŠpŒ`‚ªˆê’v‚·‚ê‚Î‚»‚ê‚ğ—Dæ‚·‚é
                                         walls_to_use = None
                                         try:
                                             last_pair = st.session_state.get('last_preview_pair')
                                             last_rect = st.session_state.get('last_preview_rect')
                                             if last_pair and last_rect:
-                                                # rect ã¨åŒã˜ãªã‚‰ preview ã®ãƒšã‚¢ã‚’åˆ©ç”¨
+                                                # rect ‚Æ“¯‚¶‚È‚ç preview ‚ÌƒyƒA‚ğ—˜—p
                                                 if (abs(last_rect.get('left',0) - rect.get('left',0)) < 1 and
                                                     abs(last_rect.get('top',0) - rect.get('top',0)) < 1 and
                                                     abs(last_rect.get('width',0) - rect.get('width',0)) < 1 and
                                                     abs(last_rect.get('height',0) - rect.get('height',0)) < 1):
-                                                    # updated_json ã® walls ã‹ã‚‰ id ã‚’æ¢ã—ã¦ walls_to_use ã‚’æ§‹ç¯‰
+                                                    # updated_json ‚Ì walls ‚©‚ç id ‚ğ’T‚µ‚Ä walls_to_use ‚ğ\’z
                                                     id_set = set(last_pair)
                                                     walls_to_use = [w for w in walls_in_selection if w.get('id') in id_set]
                                                     if len(walls_to_use) != 2:
@@ -5596,7 +5596,7 @@ def main():
                                         except Exception:
                                             walls_to_use = None
 
-                                        # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼å„ªå…ˆãŒä½¿ãˆãªã„å ´åˆã¯å¾“æ¥é€šã‚Šè§’åº¦ãƒ•ã‚£ãƒ«ã‚¿ã‚’è©¦ã™
+                                        # ƒvƒŒƒrƒ…[—Dæ‚ªg‚¦‚È‚¢ê‡‚Í]—ˆ’Ê‚èŠp“xƒtƒBƒ‹ƒ^‚ğ‚·
                                         if walls_to_use is None:
                                             filtered_by_angle = None
                                             try:
@@ -5625,51 +5625,51 @@ def main():
                                         except Exception:
                                             pass
 
-                                        # ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã«ã‚‚è¿½åŠ 
+                                        # ƒfƒoƒbƒOƒƒO‚É‚à’Ç‰Á
                                         try:
-                                            wall_info = f"é¸æŠç¯„å›²å†…ã®å£: {len(walls_to_use)}æœ¬"
+                                            wall_info = f"‘I‘ğ”ÍˆÍ“à‚Ì•Ç: {len(walls_to_use)}–{"
                                             st.write(f"**{wall_info}**")
                                             append_debug(wall_info)
                                             if walls_to_use:
                                                 wall_ids_in_selection = [w['id'] for w in walls_to_use]
-                                                wall_display = ", ".join([f"å£({wid})" for wid in wall_ids_in_selection])
-                                                wall_list_info = f"å£: {wall_display}"
+                                                wall_display = ", ".join([f"•Ç({wid})" for wid in wall_ids_in_selection])
+                                                wall_list_info = f"•Ç: {wall_display}"
                                                 st.write(wall_list_info)
                                                 append_debug(wall_list_info)
                                         except Exception:
                                             pass
                                         
                                         if len(walls_to_use) >= 2:
-                                            # è¤‡æ•°ç·šãŒé¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã€æ–¹å‘ã‚’åˆ¤å®šã—ã¦æœ€ã‚‚é›¢ã‚ŒãŸ2æœ¬ã®ãƒšã‚¢ã®ã¿ã‚’çµåˆ
-                                            # å››è§’å½¢ã®å¹…ã¨é«˜ã•ã‹ã‚‰æ–¹å‘ã‚’åˆ¤å®š
+                                            # •¡”ü‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡A•ûŒü‚ğ”»’è‚µ‚ÄÅ‚à—£‚ê‚½2–{‚ÌƒyƒA‚Ì‚İ‚ğŒ‹‡
+                                            # lŠpŒ`‚Ì•‚Æ‚‚³‚©‚ç•ûŒü‚ğ”»’è
                                             rect_width = abs(p2[0] - p1[0])
                                             rect_height = abs(p2[1] - p1[1])
                                         
                                             if rect_width > rect_height:
-                                                # Xæ–¹å‘ï¼šxåº§æ¨™ã§æœ€ã‚‚é›¢ã‚ŒãŸ2æœ¬ã‚’é¸æŠ
+                                                # X•ûŒüFxÀ•W‚ÅÅ‚à—£‚ê‚½2–{‚ğ‘I‘ğ
                                                 walls_by_x = sorted(walls_to_use, 
                                                                     key=lambda w: min(w['start'][0], w['end'][0]))
                                                 leftmost_wall = walls_by_x[0]
                                                 rightmost_wall = walls_by_x[-1]
                                             
-                                                # 2æœ¬ã ã‘ã‚’çµåˆå€™è£œã¨ã—ã¦æŠ½å‡º
+                                                # 2–{‚¾‚¯‚ğŒ‹‡Œó•â‚Æ‚µ‚Ä’Šo
                                                 selected_walls = [leftmost_wall, rightmost_wall]
-                                                direction = "Xæ–¹å‘"
+                                                direction = "X•ûŒü"
                                             else:
-                                                # Yæ–¹å‘ï¼šyåº§æ¨™ã§æœ€ã‚‚é›¢ã‚ŒãŸ2æœ¬ã‚’é¸æŠ
+                                                # Y•ûŒüFyÀ•W‚ÅÅ‚à—£‚ê‚½2–{‚ğ‘I‘ğ
                                                 walls_by_y = sorted(walls_to_use,
                                                                 key=lambda w: min(w['start'][1], w['end'][1]))
                                                 bottom_wall = walls_by_y[0]
                                                 top_wall = walls_by_y[-1]
                                             
-                                                # 2æœ¬ã ã‘ã‚’çµåˆå€™è£œã¨ã—ã¦æŠ½å‡º
+                                                # 2–{‚¾‚¯‚ğŒ‹‡Œó•â‚Æ‚µ‚Ä’Šo
                                                 selected_walls = [bottom_wall, top_wall]
-                                                direction = "Yæ–¹å‘"
+                                                direction = "Y•ûŒü"
                                         
-                                            # ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã«ã‚‚è¿½åŠ 
+                                            # ƒfƒoƒbƒOƒƒO‚É‚à’Ç‰Á
                                             try:
-                                                direction_info = f"æ–¹å‘åˆ¤å®š: {direction} (å¹…: {rect_width}px, é«˜ã•: {rect_height}px)"
-                                                merge_target_info = f"çµåˆå¯¾è±¡: å£({selected_walls[0]['id']}) â† â†’ å£({selected_walls[1]['id']})"
+                                                direction_info = f"•ûŒü”»’è: {direction} (•: {rect_width}px, ‚‚³: {rect_height}px)"
+                                                merge_target_info = f"Œ‹‡‘ÎÛ: •Ç({selected_walls[0]['id']}) © ¨ •Ç({selected_walls[1]['id']})"
                                                 st.write(f"**{direction_info}**")
                                                 st.write(f"**{merge_target_info}**")
                                                 append_debug(direction_info)
@@ -5677,10 +5677,10 @@ def main():
                                             except Exception:
                                                 pass
                                         
-                                            # çµåˆå€™è£œã‚’æ¢ã™ï¼ˆé¸æŠã•ã‚ŒãŸ2æœ¬ã ã‘ï¼‰
-                                            # çµåˆå´ã®é–¾å€¤ã¯ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã®è§’åº¦ãƒ•ã‚£ãƒ«ã‚¿ã¨åˆã‚ã›ã¦30åº¦ã«ç·©å’Œ
+                                            # Œ‹‡Œó•â‚ğ’T‚·i‘I‘ğ‚³‚ê‚½2–{‚¾‚¯j
+                                            # Œ‹‡‘¤‚Ìè‡’l‚ÍƒvƒŒƒrƒ…[‚ÌŠp“xƒtƒBƒ‹ƒ^‚Æ‡‚í‚¹‚Ä30“x‚ÉŠÉ˜a
                                             merge_angle_threshold = 30
-                                            # è¿½åŠ ãƒ‡ãƒãƒƒã‚°: é¸æŠé›†åˆå†…ã®å…¨ãƒšã‚¢ã«ã¤ã„ã¦æœ€çŸ­ç«¯ç‚¹è·é›¢ã¨è§’åº¦å·®ã‚’è¡¨ç¤º
+                                            # ’Ç‰ÁƒfƒoƒbƒO: ‘I‘ğW‡“à‚Ì‘SƒyƒA‚É‚Â‚¢‚ÄÅ’Z’[“_‹——£‚ÆŠp“x·‚ğ•\¦
                                             try:
                                                 pair_debug = []
                                                 for i, wa in enumerate(walls_to_use):
@@ -5698,30 +5698,30 @@ def main():
                                                         ang = _calc_angle_diff(wa, wb)
                                                         pair_debug.append({'wall1': wa.get('id'), 'wall2': wb.get('id'), 'min_endpoint_dist_m': round(min_d,4) if min_d is not None else None, 'angle_diff_deg': round(ang,2)})
                                                 pair_debug_str = str(pair_debug)
-                                                st.write('**ãƒ‡ãƒãƒƒã‚° (å…¨ãƒšã‚¢è·é›¢/è§’åº¦):**', pair_debug)
+                                                st.write('**ƒfƒoƒbƒO (‘SƒyƒA‹——£/Šp“x):**', pair_debug)
                                                 try:
-                                                    append_debug(f"å…¨ãƒšã‚¢è·é›¢/è§’åº¦: {pair_debug_str}")
+                                                    append_debug(f"‘SƒyƒA‹——£/Šp“x: {pair_debug_str}")
                                                 except Exception:
                                                     pass
                                             except Exception:
                                                 pass
 
-                                            # ãƒã‚§ãƒ¼ãƒ³æ¤œå‡ºã‚’å«ã‚ã‚‹ãŸã‚ã€é¸æŠã•ã‚ŒãŸ2æœ¬ã®ã¿ã§ã¯ãªã
-                                            # ãƒ•ã‚£ãƒ«ã‚¿æ¸ˆã¿ã® `walls_to_use` å…¨ä½“ã‚’æ¸¡ã™ã€‚
+                                            # ƒ`ƒF[ƒ“ŒŸo‚ğŠÜ‚ß‚é‚½‚ßA‘I‘ğ‚³‚ê‚½2–{‚Ì‚İ‚Å‚Í‚È‚­
+                                            # ƒtƒBƒ‹ƒ^Ï‚İ‚Ì `walls_to_use` ‘S‘Ì‚ğ“n‚·B
                                             candidates = _find_mergeable_walls(
                                                 walls_to_use,
                                                 distance_threshold=distance_threshold,
                                                 angle_threshold=merge_angle_threshold
                                             )
 
-                                            # ãƒ‡ãƒãƒƒã‚°æƒ…å ±: é¸æŠã—ãŸ2æœ¬ã®è§’åº¦å·®ã¨æœ€çŸ­ç«¯ç‚¹è·é›¢ã‚’è¡¨ç¤º
+                                            # ƒfƒoƒbƒOî•ñ: ‘I‘ğ‚µ‚½2–{‚ÌŠp“x·‚ÆÅ’Z’[“_‹——£‚ğ•\¦
                                             try:
                                                 angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                # æœ€çŸ­ç«¯ç‚¹è·é›¢ã‚’è¨ˆç®—
+                                                # Å’Z’[“_‹——£‚ğŒvZ
                                                 endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
                                                 endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
                                                 min_dist = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
-                                                selected_wall_info = f"é¸æŠå£ã®è§’åº¦å·®: {angle_diff_sel:.2f}åº¦, æœ€çŸ­ç«¯ç‚¹è·é›¢: {min_dist:.3f} m"
+                                                selected_wall_info = f"‘I‘ğ•Ç‚ÌŠp“x·: {angle_diff_sel:.2f}“x, Å’Z’[“_‹——£: {min_dist:.3f} m"
                                                 st.write(f"**{selected_wall_info}**")
                                                 try:
                                                     append_debug(selected_wall_info)
@@ -5730,7 +5730,7 @@ def main():
                                             except Exception:
                                                 pass
 
-                                            # å€™è£œã®è©³ç´°ã‚’å¸¸ã«è¡¨ç¤ºï¼ˆç©ºã§ã‚‚æ˜ç¤ºï¼‰
+                                            # Œó•â‚ÌÚ×‚ğí‚É•\¦i‹ó‚Å‚à–¾¦j
                                             try:
                                                 cand_list = []
                                                 for c in candidates:
@@ -5739,20 +5739,20 @@ def main():
                                                     else:
                                                         cand_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
                                                 cand_list_str = str(cand_list)
-                                                st.write("**ãƒ‡ãƒãƒƒã‚° (å€™è£œä¸€è¦§):**", cand_list)
+                                                st.write("**ƒfƒoƒbƒO (Œó•âˆê——):**", cand_list)
                                                 try:
-                                                    append_debug(f"å€™è£œä¸€è¦§: {cand_list_str}")
+                                                    append_debug(f"Œó•âˆê——: {cand_list_str}")
                                                 except Exception:
                                                     pass
                                             except Exception:
                                                 pass
 
-                                            # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°é–¾å€¤ã‚’ç·©ã‚ã¦å†æ¢ç´¢
+                                            # ƒtƒH[ƒ‹ƒoƒbƒN: Œó•â‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚Îè‡’l‚ğŠÉ‚ß‚ÄÄ’Tõ
                                             if not candidates:
                                                 try:
                                                     fallback_dist = max(distance_threshold * 2, 0.5)
                                                     fallback_angle = max(merge_angle_threshold * 2, 45)
-                                                    st.warning(f"å€™è£œãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¾å€¤ã§å†æ¢ç´¢ã—ã¾ã™ (è·é›¢: {fallback_dist}m, è§’åº¦: {fallback_angle}Â°)")
+                                                    st.warning(f"Œó•â‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñBƒtƒH[ƒ‹ƒoƒbƒNè‡’l‚ÅÄ’Tõ‚µ‚Ü‚· (‹——£: {fallback_dist}m, Šp“x: {fallback_angle}‹)")
                                                     candidates_fb = _find_mergeable_walls(
                                                         selected_walls,
                                                         distance_threshold=fallback_dist,
@@ -5764,28 +5764,28 @@ def main():
                                                             cand_fb_list.append({'type': 'chain', 'chain_length': c.get('chain_length'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
                                                         else:
                                                             cand_fb_list.append({'type': 'pair', 'wall1': c.get('wall1', {}).get('id'), 'wall2': c.get('wall2', {}).get('id'), 'distance': c.get('distance'), 'angle_diff': c.get('angle_diff'), 'confidence': c.get('confidence')})
-                                                    st.write("**ãƒ‡ãƒãƒƒã‚° (ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯å€™è£œä¸€è¦§):**", cand_fb_list)
+                                                    st.write("**ƒfƒoƒbƒO (ƒtƒH[ƒ‹ƒoƒbƒNŒó•âˆê——):**", cand_fb_list)
                                                     if candidates_fb:
                                                         candidates = candidates_fb
-                                                        st.info("ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§å€™è£œãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸã€‚çµåˆã‚’å®Ÿè¡Œã—ã¾ã™ã€‚")
+                                                        st.info("ƒtƒH[ƒ‹ƒoƒbƒN‚ÅŒó•â‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½BŒ‹‡‚ğÀs‚µ‚Ü‚·B")
                                                         try:
                                                             append_debug(f"Fallback candidates: {cand_fb_list}")
                                                         except Exception:
                                                             pass
                                                     else:
-                                                        st.warning("ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§ã‚‚å€™è£œãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚å››è§’å½¢é¸æŠã‚„é–¾å€¤ã‚’ç¢ºèªã—ã¦ãã ã•ã„ã€‚")
+                                                        st.warning("ƒtƒH[ƒ‹ƒoƒbƒN‚Å‚àŒó•â‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½BlŠpŒ`‘I‘ğ‚âè‡’l‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢B")
                                                 except Exception:
                                                     pass
 
-                                            # è¿½åŠ : 2ç‚¹é¸æŠæ™‚ã«å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã€å‘¨è¾ºã®å£ã‚’å«ã‚ãŸãƒã‚§ãƒ¼ãƒ³æ¤œç´¢ã‚’è©¦ã¿ã‚‹
+                                            # ’Ç‰Á: 2“_‘I‘ğ‚ÉŒó•â‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡Aü•Ó‚Ì•Ç‚ğŠÜ‚ß‚½ƒ`ƒF[ƒ“ŒŸõ‚ğ‚İ‚é
                                             if not candidates:
                                                 try:
-                                                    # selected_walls ãŒå­˜åœ¨ã—ã€2æœ¬é¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã«ã®ã¿å®Ÿè¡Œ
+                                                    # selected_walls ‚ª‘¶İ‚µA2–{‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡‚É‚Ì‚İÀs
                                                     if 'selected_walls' in locals() and len(selected_walls) == 2:
-                                                        # å‚ç…§è§’åº¦ã¨é–¾å€¤
+                                                        # QÆŠp“x‚Æè‡’l
                                                         ref_angle = _wall_angle_deg(selected_walls[0])
                                                         angle_tol = merge_angle_threshold
-                                                        # å‘¨è¾ºå£ã‚’åé›†ï¼ˆè§’åº¦ãŒè¿‘ãã€ç«¯ç‚¹è·é›¢ãŒè¿‘ã„ã‚‚ã®ï¼‰
+                                                        # ü•Ó•Ç‚ğûWiŠp“x‚ª‹ß‚­A’[“_‹——£‚ª‹ß‚¢‚à‚Ìj
                                                         neighborhood = []
                                                         for w in updated_json.get('walls', []):
                                                             try:
@@ -5793,7 +5793,7 @@ def main():
                                                                     endpoints_sel = [selected_walls[0]['start'], selected_walls[0]['end'], selected_walls[1]['start'], selected_walls[1]['end']]
                                                                     endpoints_w = [w['start'], w['end']]
                                                                     min_d = min(_calc_distance(p1, p2) for p1 in endpoints_sel for p2 in endpoints_w)
-                                                                    # è·é›¢é–¾å€¤ã¯å°‘ã—åºƒã‚ã«è¨­å®šï¼ˆæ—¢å®šé–¾å€¤ã®2å€ã¾ãŸã¯0.5mï¼‰
+                                                                    # ‹——£è‡’l‚Í­‚µL‚ß‚Éİ’èiŠù’èè‡’l‚Ì2”{‚Ü‚½‚Í0.5mj
                                                                     if min_d <= max(distance_threshold * 2, 0.5):
                                                                         neighborhood.append(w)
                                                             except Exception:
@@ -5807,29 +5807,29 @@ def main():
                                                             )
                                                             if candidates_ext:
                                                                 candidates = candidates_ext
-                                                                st.info('å‘¨è¾ºå£ã‚’å«ã‚ãŸæ‹¡å¼µãƒã‚§ãƒ¼ãƒ³æ¤œç´¢ã§å€™è£œã‚’æ¤œå‡ºã—ã¾ã—ãŸã€‚')
+                                                                st.info('ü•Ó•Ç‚ğŠÜ‚ß‚½Šg’£ƒ`ƒF[ƒ“ŒŸõ‚ÅŒó•â‚ğŒŸo‚µ‚Ü‚µ‚½B')
                                                                 try:
                                                                     append_debug(f"Neighborhood-extended candidates found: count={len(candidates_ext)}")
                                                                 except Exception:
                                                                     pass
                                                 except Exception:
                                                     pass
-                                            # è¿½åŠ ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: 2ç‚¹é¸æŠã§è§’åº¦ãŒè¿‘ã„ãŒè·é›¢ãŒå¤§ãã„å ´åˆã€å°ã•ã‚ã®é–¾å€¤ã§è‡ªå‹•å¼·åˆ¶å€™è£œã‚’ä½œæˆã™ã‚‹
+                                            # ’Ç‰ÁƒtƒH[ƒ‹ƒoƒbƒN: 2“_‘I‘ğ‚ÅŠp“x‚ª‹ß‚¢‚ª‹——£‚ª‘å‚«‚¢ê‡A¬‚³‚ß‚Ìè‡’l‚Å©“®‹­§Œó•â‚ğì¬‚·‚é
                                             if not candidates:
                                                 try:
                                                     if 'selected_walls' in locals() and len(selected_walls) == 2:
-                                                        # æœ€çŸ­ç«¯ç‚¹è·é›¢ã¨è§’åº¦å·®ã‚’è¨ˆç®—
+                                                        # Å’Z’[“_‹——£‚ÆŠp“x·‚ğŒvZ
                                                         endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
                                                         endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
                                                         min_dist_tmp = min(_calc_distance(p1, p2) for p1 in endpoints1 for p2 in endpoints2)
                                                         angle_diff_tmp = _calc_angle_diff(selected_walls[0], selected_walls[1])
-                                                        # è¨±å®¹è·é›¢ï¼šã»ã¼ç„¡åˆ¶é™ã«ã™ã‚‹ï¼ˆæ—¢å®šé–¾å€¤ã®100å€ï¼‰
+                                                        # ‹–—e‹——£F‚Ù‚Ú–³§ŒÀ‚É‚·‚éiŠù’èè‡’l‚Ì100”{j
                                                         extended_limit = distance_threshold * 100
                                                         if angle_diff_tmp <= merge_angle_threshold and min_dist_tmp <= extended_limit:
-                                                            # è‡ªå‹•å¼·åˆ¶å€™è£œã‚’ä½œæˆ
+                                                            # ©“®‹­§Œó•â‚ğì¬
                                                             w1 = selected_walls[0]
                                                             w2 = selected_walls[1]
-                                                            # æœ€çŸ­ç«¯ç‚¹çµ„åˆã›ã‹ã‚‰æ¥ç¶šã‚¿ã‚¤ãƒ—ã‚’æ±ºå®š
+                                                            # Å’Z’[“_‘g‡‚¹‚©‚çÚ‘±ƒ^ƒCƒv‚ğŒˆ’è
                                                             min_pair = None
                                                             md = None
                                                             for p1 in endpoints1:
@@ -5848,7 +5848,7 @@ def main():
                                                                 conn = 'start-start'
                                                             elif p1p == w1.get('start') and p2p == w2.get('end'):
                                                                 conn = 'start-end'
-                                                            # new_start/new_end ã‚’æ¥ç¶šã‚¿ã‚¤ãƒ—ã«åˆã‚ã›ã¦è¨­å®š
+                                                            # new_start/new_end ‚ğÚ‘±ƒ^ƒCƒv‚É‡‚í‚¹‚Äİ’è
                                                             if conn == 'end-start':
                                                                 new_start = w1.get('start')
                                                                 new_end = w2.get('end')
@@ -5876,7 +5876,7 @@ def main():
                                                                 'confidence': 0.0
                                                             }
                                                             candidates = [forced_candidate_auto]
-                                                            st.info(f'è‡ªå‹•ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§å¼·åˆ¶å€™è£œã‚’ä½œæˆã—ã¾ã™ï¼ˆè·é›¢={md:.3f}m, è§’åº¦å·®={angle_diff_tmp:.2f}Â°ï¼‰')
+                                                            st.info(f'©“®ƒtƒH[ƒ‹ƒoƒbƒN‚Å‹­§Œó•â‚ğì¬‚µ‚Ü‚·i‹——£={md:.3f}m, Šp“x·={angle_diff_tmp:.2f}‹j')
                                                             try:
                                                                 append_debug(f"Auto-forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={md}, angle_diff={angle_diff_tmp}")
                                                             except Exception:
@@ -5884,14 +5884,14 @@ def main():
                                                 except Exception:
                                                     pass
 
-                                            # å¼·åˆ¶é©ç”¨: ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§é¸ã°ã‚ŒãŸãƒšã‚¢ãŒã‚ã‚‹å ´åˆã€å››è§’å½¢ãŒä¸€è‡´ã™ã‚Œã°å€™è£œãŒç©ºã§ã‚‚å¼·åˆ¶çš„ã«ãƒšã‚¢ã‚’ä½œæˆã—ã¦çµåˆã™ã‚‹
+                                            # ‹­§“K—p: ƒvƒŒƒrƒ…[‚Å‘I‚Î‚ê‚½ƒyƒA‚ª‚ ‚éê‡AlŠpŒ`‚ªˆê’v‚·‚ê‚ÎŒó•â‚ª‹ó‚Å‚à‹­§“I‚ÉƒyƒA‚ğì¬‚µ‚ÄŒ‹‡‚·‚é
                                             if not candidates:
                                                 try:
                                                     last_pair = st.session_state.get('last_preview_pair')
                                                     last_rect = st.session_state.get('last_preview_rect')
                                                     if last_pair:
-                                                                # ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§æŒ‡å®šã•ã‚ŒãŸãƒšã‚¢ãŒç¾åœ¨ã®é¸æŠã¨ä¸€è‡´ã™ã‚Œã°
-                                                                # å››è§’å½¢ã®å®Œå…¨ä¸€è‡´ã«ä¾å­˜ã›ãšå¼·åˆ¶é©ç”¨ã™ã‚‹ï¼ˆãƒ¦ãƒ¼ã‚¶ãŒãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã§é¸æŠã—ãŸæ„å›³ã‚’å°Šé‡ï¼‰
+                                                                # ƒvƒŒƒrƒ…[‚Åw’è‚³‚ê‚½ƒyƒA‚ªŒ»İ‚Ì‘I‘ğ‚Æˆê’v‚·‚ê‚Î
+                                                                # lŠpŒ`‚ÌŠ®‘Sˆê’v‚ÉˆË‘¶‚¹‚¸‹­§“K—p‚·‚éiƒ†[ƒU‚ªƒvƒŒƒrƒ…[‚Å‘I‘ğ‚µ‚½ˆÓ}‚ğ‘¸dj
                                                                 id_set = set(last_pair)
                                                                 sel_ids = {selected_walls[0]['id'], selected_walls[1]['id']}
                                                                 if id_set == sel_ids:
@@ -5899,10 +5899,10 @@ def main():
                                                                         append_debug(f"Preview pair matches selected_walls (ignoring rect): pair={list(id_set)}")
                                                                     except Exception:
                                                                         pass
-                                                                    # æœ€çŸ­ç«¯ç‚¹è·é›¢ã¨è§’åº¦å·®ã‚’å†è¨ˆç®—
-                                                                    # ï¼ˆä»¥ä¸‹ã¯å¾“æ¥ã®å¼·åˆ¶é©ç”¨å‡¦ç†ã¨åŒã˜ï¼‰
+                                                                    # Å’Z’[“_‹——£‚ÆŠp“x·‚ğÄŒvZ
+                                                                    # iˆÈ‰º‚Í]—ˆ‚Ì‹­§“K—pˆ—‚Æ“¯‚¶j
                                                             
-                                                                # æœ€çŸ­ç«¯ç‚¹è·é›¢ã¨è§’åº¦å·®ã‚’å†è¨ˆç®—
+                                                                # Å’Z’[“_‹——£‚ÆŠp“x·‚ğÄŒvZ
                                                                 endpoints1 = [selected_walls[0]['start'], selected_walls[0]['end']]
                                                                 endpoints2 = [selected_walls[1]['start'], selected_walls[1]['end']]
                                                                 min_dist = None
@@ -5916,7 +5916,7 @@ def main():
 
                                                                 angle_diff_sel = _calc_angle_diff(selected_walls[0], selected_walls[1])
 
-                                                                # æ¥ç¶šã‚¿ã‚¤ãƒ—ã‚’æœ€çŸ­ç«¯ç‚¹çµ„åˆã›ã‹ã‚‰æ±ºå®š
+                                                                # Ú‘±ƒ^ƒCƒv‚ğÅ’Z’[“_‘g‡‚¹‚©‚çŒˆ’è
                                                                 conn = None
                                                                 p1, p2 = min_pair
                                                                 if p1 == selected_walls[0]['end'] and p2 == selected_walls[1]['start']:
@@ -5930,7 +5930,7 @@ def main():
                                                                 else:
                                                                     conn = 'end-start'
 
-                                                                # new_start/new_end ã‚’æ¥ç¶šã‚¿ã‚¤ãƒ—ã«åˆã‚ã›ã¦è¨­å®š
+                                                                # new_start/new_end ‚ğÚ‘±ƒ^ƒCƒv‚É‡‚í‚¹‚Äİ’è
                                                                 w1 = selected_walls[0]
                                                                 w2 = selected_walls[1]
                                                                 if conn == 'end-start':
@@ -5961,7 +5961,7 @@ def main():
                                                                     'confidence': 0.0
                                                                 }
                                                                 candidates = [forced_candidate]
-                                                                st.info('ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼é¸æŠãƒšã‚¢ã‚’å¼·åˆ¶é©ç”¨ã—ã¦çµåˆã‚’è©¦ã¿ã¾ã™ï¼ˆè·é›¢é–¾å€¤ã‚’è¶…ãˆã¦ã„ã¾ã™ï¼‰ã€‚')
+                                                                st.info('ƒvƒŒƒrƒ…[‘I‘ğƒyƒA‚ğ‹­§“K—p‚µ‚ÄŒ‹‡‚ğ‚İ‚Ü‚·i‹——£è‡’l‚ğ’´‚¦‚Ä‚¢‚Ü‚·jB')
                                                                 try:
                                                                     append_debug(f"Forced candidate applied: pair={w1.get('id')},{w2.get('id')}, min_dist={min_dist}, angle_diff={angle_diff_sel}")
                                                                 except Exception:
@@ -5970,16 +5970,16 @@ def main():
                                                     pass
                                         
                                             if candidates:
-                                                # æœ€æœ‰åŠ›å€™è£œã®è©³ç´°æƒ…å ±ã‚’è¡¨ç¤ºï¼ˆãƒ‡ãƒãƒƒã‚°ç”¨ï¼‰
+                                                # Å—L—ÍŒó•â‚ÌÚ×î•ñ‚ğ•\¦iƒfƒoƒbƒO—pj
                                                 top_candidate = candidates[0]
-                                                st.write(f"**æ¤œå‡ºã•ã‚ŒãŸãƒšã‚¢ï¼š**")
+                                                st.write(f"**ŒŸo‚³‚ê‚½ƒyƒAF**")
                                                 if top_candidate.get('is_chain', False):
                                                     chain_wall_ids = [w['id'] for w in top_candidate['walls']]
-                                                    st.write(f"ãƒã‚§ãƒ¼ãƒ³: {chain_wall_ids}")
+                                                    st.write(f"ƒ`ƒF[ƒ“: {chain_wall_ids}")
                                                 else:
-                                                    st.write(f"ãƒšã‚¢: å£#{top_candidate['wall1']['id']} + å£#{top_candidate['wall2']['id']}")
+                                                    st.write(f"ƒyƒA: •Ç#{top_candidate['wall1']['id']} + •Ç#{top_candidate['wall2']['id']}")
                                             
-                                                # æœ€æœ‰åŠ›å€™è£œã§çµåˆï¼ˆã‚¨ãƒ©ãƒ¼æ™‚ã¯å‡¦ç†ã‚’ä¸­æ–­ã—ã¦è©³ç´°ã‚’è¡¨ç¤ºï¼‰
+                                                # Å—L—ÍŒó•â‚ÅŒ‹‡iƒGƒ‰[‚Íˆ—‚ğ’†’f‚µ‚ÄÚ×‚ğ•\¦j
                                                 try:
                                                     updated_json = _merge_walls_in_json(updated_json, candidates[:1])
                                                     total_merged_count += 1
@@ -5996,34 +5996,34 @@ def main():
                                                         tb = traceback.format_exc()
                                                     except Exception:
                                                         tb = str(e)
-                                                    st.error(f"çµåˆå®Ÿè¡Œä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: {e}")
-                                                    st.error(f"ãƒˆãƒ¬ãƒ¼ã‚¹ãƒãƒƒã‚¯:\n{tb}")
-                                                    # ç¢ºå®Ÿã«å‡¦ç†ã‚’ä¸­æ–­ã™ã‚‹ï¼ˆSystemExit ã‚’æŠ•ã’ã¦ä¸Šä½ã® broad except ã«æ•ã¾ã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹ï¼‰
+                                                    st.error(f"Œ‹‡Às’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {e}")
+                                                    st.error(f"ƒgƒŒ[ƒXƒoƒbƒN:\n{tb}")
+                                                    # ŠmÀ‚Éˆ—‚ğ’†’f‚·‚éiSystemExit ‚ğ“Š‚°‚ÄãˆÊ‚Ì broad except ‚É•ß‚Ü‚ç‚È‚¢‚æ‚¤‚É‚·‚éj
                                                     import sys
                                                     sys.exit(1)
                                             
-                                                # å››è§’å½¢å†…ã®ä»–ã®ä¸è¦ãªç·šåˆ†ï¼ˆä¸­é–“ç·šï¼‰ã‚’å‰Šé™¤
-                                                # å‰Šé™¤å¯¾è±¡ã¯ã€å®Ÿéš›ã«é¸æŠãƒ»ãƒ•ã‚£ãƒ«ã‚¿ã•ã‚ŒãŸé›†åˆ `walls_to_use` ã‚’åŸºæº–ã¨ã™ã‚‹ã€‚
-                                                # ãŸã ã—ã€çª“è¿½åŠ ãªã©ã§è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸå£ï¼ˆsource=='window_added'ï¼‰ã¯å‰Šé™¤å¯¾è±¡ã‹ã‚‰é™¤å¤–ã™ã‚‹ã€‚
+                                                # lŠpŒ`“à‚Ì‘¼‚Ì•s—v‚Èü•ªi’†ŠÔüj‚ğíœ
+                                                # íœ‘ÎÛ‚ÍAÀÛ‚É‘I‘ğEƒtƒBƒ‹ƒ^‚³‚ê‚½W‡ `walls_to_use` ‚ğŠî€‚Æ‚·‚éB
+                                                # ‚½‚¾‚µA‘‹’Ç‰Á‚È‚Ç‚Å©“®¶¬‚³‚ê‚½•Çisource=='window_added'j‚Ííœ‘ÎÛ‚©‚çœŠO‚·‚éB
                                                 walls_to_delete = []
                                                 try:
                                                     basis_list = walls_to_use if walls_to_use is not None else walls_in_selection
-                                                    # ãƒãƒ¼ã‚¸å€™è£œãŒãƒã‚§ãƒ¼ãƒ³ã‹ãƒšã‚¢ã‹ã§æ®‹ã™IDã‚’æ±ºå®š
+                                                    # ƒ}[ƒWŒó•â‚ªƒ`ƒF[ƒ“‚©ƒyƒA‚©‚Åc‚·ID‚ğŒˆ’è
                                                     keep_ids = set()
                                                     try:
                                                         top_cand = candidates[0]
                                                         if top_cand.get('is_chain'):
-                                                            # ãƒã‚§ãƒ¼ãƒ³ã®æœ€åˆã®å£ã®ã¿æ®‹ã™ï¼ˆ_merge_walls_in_json ã¨æ•´åˆï¼‰
+                                                            # ƒ`ƒF[ƒ“‚ÌÅ‰‚Ì•Ç‚Ì‚İc‚·i_merge_walls_in_json ‚Æ®‡j
                                                             keep_ids.add(top_cand['walls'][0]['id'])
                                                         else:
                                                             keep_ids.add(top_cand['wall1']['id'])
                                                     except Exception:
-                                                        # å€™è£œæƒ…å ±ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯é¸æŠ2æœ¬ã‚’æ®‹ã™
+                                                        # Œó•âî•ñ‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í‘I‘ğ2–{‚ğc‚·
                                                         keep_ids.add(selected_walls[0]['id'])
                                                         keep_ids.add(selected_walls[1]['id'])
 
                                                     for wall in basis_list:
-                                                        # çª“è¿½åŠ ã§ç”Ÿæˆã•ã‚ŒãŸå£ã¯ä¿è­·ã™ã‚‹
+                                                        # ‘‹’Ç‰Á‚Å¶¬‚³‚ê‚½•Ç‚Í•ÛŒì‚·‚é
                                                         try:
                                                             if wall.get('source') == 'window_added':
                                                                 try:
@@ -6036,7 +6036,7 @@ def main():
                                                         if wall['id'] not in keep_ids:
                                                             walls_to_delete.append(wall['id'])
                                                 except Exception:
-                                                    # ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯: ä»¥å‰ã®æŒ™å‹•ã«ä¸€è‡´ã•ã›ã‚‹ãŒã€çª“è¿½åŠ ã§ç”Ÿæˆã•ã‚ŒãŸå£ã¯å‰Šé™¤ã—ãªã„
+                                                    # ƒtƒH[ƒ‹ƒoƒbƒN: ˆÈ‘O‚Ì‹““®‚Éˆê’v‚³‚¹‚é‚ªA‘‹’Ç‰Á‚Å¶¬‚³‚ê‚½•Ç‚Ííœ‚µ‚È‚¢
                                                     for wall in walls_in_selection:
                                                         try:
                                                             if wall.get('source') == 'window_added':
@@ -6047,12 +6047,12 @@ def main():
                                                             walls_to_delete.append(wall['id'])
                                             
                                                 if walls_to_delete:
-                                                    st.write(f"**å‰Šé™¤å¯¾è±¡ã®ä¸­é–“ç·š:** å£#{walls_to_delete}")
+                                                    st.write(f"**íœ‘ÎÛ‚Ì’†ŠÔü:** •Ç#{walls_to_delete}")
                                                     updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                             
-                                                color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][rect_idx % 6]
+                                                color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][rect_idx % 6]
                                             
-                                                # çµåˆè©³ç´°ã‚’è¨˜éŒ²
+                                                # Œ‹‡Ú×‚ğ‹L˜^
                                                 merge_details.append({
                                                     'rect_idx': rect_idx,
                                                     'color_name': color_name,
@@ -6063,53 +6063,53 @@ def main():
                                                     'deleted_walls': walls_to_delete
                                                 })
                                             else:
-                                                st.warning(f"âš ï¸ å››è§’å½¢å†…ã®å£ãŒæ¥ç¶šã•ã‚Œã¦ã„ã¾ã›ã‚“")
+                                                st.warning(f"?? lŠpŒ`“à‚Ì•Ç‚ªÚ‘±‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ")
                                     
                                         if total_merged_count > 0:
-                                            # ã‚¯ãƒªãƒƒã‚¯é¸æŠã®å ´åˆã¯çµ„æ•°ã‚’è¡¨ç¤º
-                                            if st.session_state.get('edit_mode') == "ç·šã‚’çµåˆ" and len(merge_details) > 0 and merge_details[0].get('color_name', '').startswith('çµåˆ'):
-                                                st.success(f"âœ… åˆè¨ˆ {total_merged_count} çµ„ã®çµåˆãŒå®Œäº†ã—ã¾ã—ãŸ")
+                                            # ƒNƒŠƒbƒN‘I‘ğ‚Ìê‡‚Í‘g”‚ğ•\¦
+                                            if st.session_state.get('edit_mode') == "ü‚ğŒ‹‡" and len(merge_details) > 0 and merge_details[0].get('color_name', '').startswith('Œ‹‡'):
+                                                st.success(f"? ‡Œv {total_merged_count} ‘g‚ÌŒ‹‡‚ªŠ®—¹‚µ‚Ü‚µ‚½")
                                             else:
-                                                st.success(f"âœ… åˆè¨ˆ {total_merged_count} å€‹ã®é¸æŠç¯„å›²ã§çµåˆãŒå®Œäº†ã—ã¾ã—ãŸ")
+                                                st.success(f"? ‡Œv {total_merged_count} ŒÂ‚Ì‘I‘ğ”ÍˆÍ‚ÅŒ‹‡‚ªŠ®—¹‚µ‚Ü‚µ‚½")
                                         
-                                            # çµåˆè©³ç´°ã‚’è¡¨ç¤º
-                                            st.markdown("**çµåˆçµæœ:**")
+                                            # Œ‹‡Ú×‚ğ•\¦
+                                            st.markdown("**Œ‹‡Œ‹‰Ê:**")
                                             for detail in merge_details:
                                                 result_text = (
-                                                    f"#{detail['rect_idx']+1}ï¼ˆ{detail['color_name']}ï¼‰: "
-                                                    f"å£({detail['walls'][0]}) â†” å£({detail['walls'][1]}) "
+                                                    f"#{detail['rect_idx']+1}i{detail['color_name']}j: "
+                                                    f"•Ç({detail['walls'][0]}) ? •Ç({detail['walls'][1]}) "
                                                     f"({detail['direction']}) - "
-                                                    f"è·é›¢: {detail['distance']:.3f}m"
+                                                    f"‹——£: {detail['distance']:.3f}m"
                                                 )
                                                 if detail.get('deleted_walls'):
-                                                    deleted_display = ", ".join([f"å£({wid})" for wid in detail['deleted_walls']])
-                                                    result_text += f" | å‰Šé™¤: {deleted_display}"
+                                                    deleted_display = ", ".join([f"•Ç({wid})" for wid in detail['deleted_walls']])
+                                                    result_text += f" | íœ: {deleted_display}"
                                                 st.write(result_text)
                                         else:
-                                            st.warning("âš ï¸ é¸æŠç¯„å›²å†…ã«çµåˆå¯èƒ½ãªå£ç·šãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“")
+                                            st.warning("?? ‘I‘ğ”ÍˆÍ“à‚ÉŒ‹‡‰Â”\‚È•Çü‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ")
                             
-                            elif edit_mode == "çª“ã‚’è¿½åŠ " and st.session_state.get('window_walls_to_process'):
-                                        # ===== çª“ã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ï¼ˆã‚¯ãƒªãƒƒã‚¯é¸æŠãƒ»è¤‡æ•°çª“å¯¾å¿œï¼‰ =====
-                                        # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã•ã‚ŒãŸå£ã‚’ä½¿ç”¨ï¼ˆãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã«ä¿å­˜æ¸ˆã¿ï¼‰
+                            elif edit_mode == "‘‹‚ğ’Ç‰Á" and st.session_state.get('window_walls_to_process'):
+                                        # ===== ‘‹‚ğ’Ç‰Áƒ‚[ƒhiƒNƒŠƒbƒN‘I‘ğE•¡”‘‹‘Î‰j =====
+                                        # ƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚³‚ê‚½•Ç‚ğg—piƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚É•Û‘¶Ï‚İj
                                         walls_list = st.session_state.window_walls_to_process
                                         params_list = st.session_state.get('window_click_params_list_to_process', [])
                                         
                                         window_count = len(walls_list) // 2
                                         
-                                        st.markdown(f"### ğŸªŸ çª“è¿½åŠ å‡¦ç†ï¼ˆ{window_count}çµ„ï¼‰")
+                                        st.markdown(f"### ?? ‘‹’Ç‰Áˆ—i{window_count}‘gj")
                                         
-                                        # å¤©äº•é«˜ã•ï¼ˆéƒ¨å±‹ã®é«˜ã•ï¼‰ã‚’å–å¾—
+                                        # “Vˆä‚‚³i•”‰®‚Ì‚‚³j‚ğæ“¾
                                         heights = [w.get('height', 2.4) for w in walls if 'height' in w]
                                         room_height = max(heights) if heights else 2.4
                                         
-                                        # å„çª“ãƒšã‚¢ã‚’å‡¦ç†
+                                        # Še‘‹ƒyƒA‚ğˆ—
                                         total_windows_added = 0
                                         for window_idx in range(window_count):
                                             wall1 = walls_list[window_idx * 2]
                                             wall2 = walls_list[window_idx * 2 + 1]
                                             window_params = params_list[window_idx] if window_idx < len(params_list) else {}
                                             
-                                            # ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
+                                            # ƒpƒ‰ƒ[ƒ^‚ğæ“¾
                                             window_model = window_params.get('model')
                                             window_width_mm = window_params.get('width_mm', 1200)
                                             window_height_mm = window_params.get('height_mm', 1200)
@@ -6118,12 +6118,12 @@ def main():
                                             window_height = float(window_height_mm) / 1000.0
                                             base_height = float(base_height_mm) / 1000.0
                                             
-                                            st.markdown(f"#### çª“{window_idx + 1}")
-                                            st.info(f"ğŸ“ å‹ç•ª: {window_model if window_model and window_model != 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰' else 'ã‚«ã‚¹ã‚¿ãƒ '}, "
-                                                f"çª“é«˜ã•={window_height}m ({window_height_mm}mm), "
-                                                f"åºŠã‹ã‚‰={base_height}m ({base_height_mm}mm)")
+                                            st.markdown(f"#### ‘‹{window_idx + 1}")
+                                            st.info(f"?? Œ^”Ô: {window_model if window_model and window_model != 'ƒJƒXƒ^ƒ€iè“ü—Íj' else 'ƒJƒXƒ^ƒ€'}, "
+                                                f"‘‹‚‚³={window_height}m ({window_height_mm}mm), "
+                                                f"°‚©‚ç={base_height}m ({base_height_mm}mm)")
                                             
-                                            # é¸æŠã•ã‚ŒãŸ2æœ¬ã®å£ã®é–“ã«çª“ã‚’è¿½åŠ 
+                                            # ‘I‘ğ‚³‚ê‚½2–{‚Ì•Ç‚ÌŠÔ‚É‘‹‚ğ’Ç‰Á
                                             try:
                                                 updated_json, added_walls = add_window_walls(
                                                     updated_json,
@@ -6132,25 +6132,25 @@ def main():
                                                     window_height,
                                                     base_height,
                                                     room_height,
-                                                    window_model if window_model != 'ã‚«ã‚¹ã‚¿ãƒ ï¼ˆæ‰‹å…¥åŠ›ï¼‰' else None,
+                                                    window_model if window_model != 'ƒJƒXƒ^ƒ€iè“ü—Íj' else None,
                                                     window_height_mm
                                                 )
                                                 
                                                 added_wall_ids.extend([w['id'] for w in added_walls])
-                                                #st.success(f"âœ… {len(added_walls)}æœ¬ã®å£ã‚’è¿½åŠ ã—ã¾ã—ãŸï¼ˆID: {[w['id'] for w in added_walls]}ï¼‰")
+                                                #st.success(f"? {len(added_walls)}–{‚Ì•Ç‚ğ’Ç‰Á‚µ‚Ü‚µ‚½iID: {[w['id'] for w in added_walls]}j")
                                                 
-                                                # è¿½åŠ ã—ãŸå£ã®è©³ç´°ã‚’è¡¨ç¤º
+                                                # ’Ç‰Á‚µ‚½•Ç‚ÌÚ×‚ğ•\¦
                                                 #for aw in added_walls:
-                                                #    st.write(f"  è¿½åŠ å£ID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
+                                                #    st.write(f"  ’Ç‰Á•ÇID#{aw['id']}: height={aw.get('height')}m ({aw.get('height')*1000:.0f}mm), "
                                                 #            f"base_height={aw.get('base_height')}m ({aw.get('base_height')*1000:.0f}mm)")
                                                 
                                                 total_windows_added += 1
                                             except Exception as e:
-                                                st.error(f"çª“{window_idx + 1}è¿½åŠ ã‚¨ãƒ©ãƒ¼: {e}")
+                                                st.error(f"‘‹{window_idx + 1}’Ç‰ÁƒGƒ‰[: {e}")
                                                 import traceback
                                                 st.code(traceback.format_exc())
                                         
-                                        # å‡¦ç†æˆåŠŸå¾Œã«ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰å‰Šé™¤
+                                        # ˆ—¬Œ÷Œã‚ÉƒZƒbƒVƒ‡ƒ“‚©‚çíœ
                                         if 'window_walls_to_process' in st.session_state:
                                             del st.session_state.window_walls_to_process
                                         if 'window_click_params_list_to_process' in st.session_state:
@@ -6159,10 +6159,10 @@ def main():
                                             del st.session_state.window_click_params_list
                                         
                                         if total_windows_added > 0:
-                                            st.success(f"ğŸ‰ åˆè¨ˆ{total_windows_added}çµ„ã®çª“ã‚’è¿½åŠ ã—ã¾ã—ãŸï¼")
+                                            st.success(f"?? ‡Œv{total_windows_added}‘g‚Ì‘‹‚ğ’Ç‰Á‚µ‚Ü‚µ‚½I")
                             
-                            elif edit_mode == "ç·šã‚’è¿½åŠ ":
-                                # ===== ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ =====
+                            elif edit_mode == "ü‚ğ’Ç‰Á":
+                                # ===== ü‚ğ’Ç‰Áƒ‚[ƒh =====
                                 total_added_count = 0
                                 add_details = []
                             
@@ -6174,17 +6174,17 @@ def main():
                                         'height': abs(p2[1] - p1[1])
                                     }
                                 
-                                    # é¸æŠç¯„å›²å†…ã®å£ç·šã‚’æŠ½å‡º
+                                    # ‘I‘ğ”ÍˆÍ“à‚Ì•Çü‚ğ’Šo
                                     walls_in_selection = [
                                         wall for wall in updated_json['walls']
                                         if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
                                     ]
                                 
-                                    # æ—¢å­˜ã®å…¨ã¦ã®å£ã‹ã‚‰å¹³å‡é«˜ã•ã‚’å–å¾—ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ2.4mï¼‰
+                                    # Šù‘¶‚Ì‘S‚Ä‚Ì•Ç‚©‚ç•½‹Ï‚‚³‚ğæ“¾iƒfƒtƒHƒ‹ƒg2.4mj
                                     all_heights = [w.get('height', 2.4) for w in updated_json['walls'] if 'height' in w]
                                     wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
                                 
-                                    # ç·šã‚’è¿½åŠ ï¼ˆã‚¹ã‚±ãƒ¼ãƒ«ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‹ã‚‰å–å¾—ï¼‰
+                                    # ü‚ğ’Ç‰ÁiƒXƒP[ƒ‹‚ğƒZƒbƒVƒ‡ƒ“ó‘Ô‚©‚çæ“¾j
                                     updated_json, direction, new_wall = _add_line_to_json(
                                         updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
                                     )
@@ -6198,56 +6198,56 @@ def main():
                                     })
                                 
                                 #if total_added_count > 0:
-                                #    st.success(f"ğŸ‰ åˆè¨ˆ{total_added_count}æœ¬ã®å£ã‚’è¿½åŠ ã—ã¾ã—ãŸï¼")
+                                #    st.success(f"?? ‡Œv{total_added_count}–{‚Ì•Ç‚ğ’Ç‰Á‚µ‚Ü‚µ‚½I")
                                 #    for detail in add_details:
-                                #        st.write(f"  å£ID#{detail['wall_id']}: æ–¹å‘={detail['direction']}, é•·ã•={detail['length']:.2f}m")
+                                #        st.write(f"  •ÇID#{detail['wall_id']}: •ûŒü={detail['direction']}, ’·‚³={detail['length']:.2f}m")
                             
-                            elif edit_mode == "ç·šã‚’å‰Šé™¤":
-                                # ===== ç·šã‚’å‰Šé™¤ãƒ¢ãƒ¼ãƒ‰ =====
+                            elif edit_mode == "ü‚ğíœ":
+                                # ===== ü‚ğíœƒ‚[ƒh =====
                                 total_deleted_count = 0
                                 delete_details = []
-                                walls_to_delete = []  # å‰Šé™¤å¯¾è±¡ã®å£IDãƒªã‚¹ãƒˆ
+                                walls_to_delete = []  # íœ‘ÎÛ‚Ì•ÇIDƒŠƒXƒg
                                 
-                                # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã«ä¿å­˜ã•ã‚ŒãŸå£ã‚’ä½¿ç”¨ï¼ˆãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã«ä¿å­˜æ¸ˆã¿ï¼‰
+                                # ƒZƒbƒVƒ‡ƒ“‚É•Û‘¶‚³‚ê‚½•Ç‚ğg—piƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚É•Û‘¶Ï‚İj
                                 if st.session_state.get('delete_walls_to_process'):
-                                    # ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰å£ãƒªã‚¹ãƒˆã‚’å–å¾—
+                                    # ƒZƒbƒVƒ‡ƒ“‚©‚ç•ÇƒŠƒXƒg‚ğæ“¾
                                     walls_list = st.session_state.delete_walls_to_process
                                     
-                                    # å‡¦ç†å®Œäº†å¾Œã«ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‹ã‚‰å‰Šé™¤
+                                    # ˆ—Š®—¹Œã‚ÉƒZƒbƒVƒ‡ƒ“‚©‚çíœ
                                     del st.session_state.delete_walls_to_process
                                     
-                                    # ã‚¯ãƒªãƒƒã‚¯é¸æŠã•ã‚ŒãŸå£ã‚’å‰Šé™¤
+                                    # ƒNƒŠƒbƒN‘I‘ğ‚³‚ê‚½•Ç‚ğíœ
                                     for wall in walls_list:
                                         walls_to_delete.append(wall['id'])
                                         delete_details.append({
-                                            'method': 'ã‚¯ãƒªãƒƒã‚¯é¸æŠ',
+                                            'method': 'ƒNƒŠƒbƒN‘I‘ğ',
                                             'wall_id': wall['id']
                                         })
                                     total_deleted_count = len(walls_to_delete)
                                     
-                                    # å£ã‚’å‰Šé™¤
+                                    # •Ç‚ğíœ
                                     if len(walls_to_delete) > 0:
                                         updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                     
-                                    # å…¨ä½“ã®ãƒªã‚»ãƒƒãƒˆã¯å¾Œã®å…±é€šå‡¦ç†ã§å®Ÿè¡Œã•ã‚Œã‚‹
+                                    # ‘S‘Ì‚ÌƒŠƒZƒbƒg‚ÍŒã‚Ì‹¤’Êˆ—‚ÅÀs‚³‚ê‚é
                                 
-                                # ã‚¯ãƒªãƒƒã‚¯é¸æŠã•ã‚ŒãŸå£ã‚’å‰Šé™¤ï¼ˆå¾Œæ–¹äº’æ›æ€§ã®ãŸã‚æ®‹ã™ï¼‰
+                                # ƒNƒŠƒbƒN‘I‘ğ‚³‚ê‚½•Ç‚ğíœiŒã•ûŒİŠ·«‚Ì‚½‚ßc‚·j
                                 elif len(st.session_state.selected_walls_for_delete) > 0:
                                     for wall in st.session_state.selected_walls_for_delete:
                                         walls_to_delete.append(wall['id'])
                                         delete_details.append({
-                                            'method': 'ã‚¯ãƒªãƒƒã‚¯é¸æŠ',
+                                            'method': 'ƒNƒŠƒbƒN‘I‘ğ',
                                             'wall_id': wall['id']
                                         })
                                     total_deleted_count = len(walls_to_delete)
                                     
-                                    # å£ã‚’å‰Šé™¤
+                                    # •Ç‚ğíœ
                                     if len(walls_to_delete) > 0:
                                         updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
-                                        # å‰Šé™¤æˆåŠŸå¾Œã€é¸æŠãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢ï¼ˆæ³¨ï¼šå…¨ä½“ã®ãƒªã‚»ãƒƒãƒˆã¯å¾Œã®å…±é€šå‡¦ç†ã§å®Ÿè¡Œã•ã‚Œã‚‹ï¼‰
+                                        # íœ¬Œ÷ŒãA‘I‘ğƒŠƒXƒg‚ğƒNƒŠƒAi’F‘S‘Ì‚ÌƒŠƒZƒbƒg‚ÍŒã‚Ì‹¤’Êˆ—‚ÅÀs‚³‚ê‚éj
                                         st.session_state.selected_walls_for_delete = []
                                 
-                                # å››è§’å½¢ãƒ™ãƒ¼ã‚¹ã®å‰Šé™¤ï¼ˆå¾Œæ–¹äº’æ›æ€§ã®ãŸã‚æ®‹ã™ï¼‰
+                                # lŠpŒ`ƒx[ƒX‚ÌíœiŒã•ûŒİŠ·«‚Ì‚½‚ßc‚·j
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
                                     rect = {
                                         'left': min(p1[0], p2[0]),
@@ -6256,16 +6256,16 @@ def main():
                                         'height': abs(p2[1] - p1[1])
                                     }
                                 
-                                    # å››è§’å½¢å†…ã«å®Œå…¨ã«å«ã¾ã‚Œã‚‹å£ç·šã‚’æŠ½å‡º
+                                    # lŠpŒ`“à‚ÉŠ®‘S‚ÉŠÜ‚Ü‚ê‚é•Çü‚ğ’Šo
                                     walls_in_rect = _filter_walls_strictly_in_rect(
                                         updated_json['walls'], rect, scale, margin, img_height, min_x, min_y, max_x, max_y
                                     )
                                 
                                     if walls_in_rect:
-                                        # å››è§’å½¢å†…ã®å£ã‚’ã™ã¹ã¦å‰Šé™¤å¯¾è±¡ã«è¿½åŠ 
-                                        color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][rect_idx % 6]
+                                        # lŠpŒ`“à‚Ì•Ç‚ğ‚·‚×‚Äíœ‘ÎÛ‚É’Ç‰Á
+                                        color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][rect_idx % 6]
                                         for wall in walls_in_rect:
-                                            if wall['id'] not in walls_to_delete:  # é‡è¤‡ã‚’é¿ã‘ã‚‹
+                                            if wall['id'] not in walls_to_delete:  # d•¡‚ğ”ğ‚¯‚é
                                                 walls_to_delete.append(wall['id'])
                                                 delete_details.append({
                                                     'rect_idx': rect_idx,
@@ -6275,28 +6275,28 @@ def main():
                                                 total_deleted_count += 1
                                     
                                         if len(walls_to_delete) > 0:
-                                            # å£ã‚’å‰Šé™¤
+                                            # •Ç‚ğíœ
                                             updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
                                         else:
-                                            st.warning("âš ï¸ å‰Šé™¤å¯¾è±¡ã®å£ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“")
+                                            st.warning("?? íœ‘ÎÛ‚Ì•Ç‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ")
                             
-                            elif edit_mode == "åºŠã‚’è¿½åŠ ":
-                                # ===== åºŠã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ =====
+                            elif edit_mode == "°‚ğ’Ç‰Á":
+                                # ===== °‚ğ’Ç‰Áƒ‚[ƒh =====
                                 total_floor_count = 0
                                 floor_details = []
                                 
-                                # JSONã« floors ã‚­ãƒ¼ãŒãªã‘ã‚Œã°åˆæœŸåŒ–
+                                # JSON‚É floors ƒL[‚ª‚È‚¯‚ê‚Î‰Šú‰»
                                 if 'floors' not in updated_json:
                                     updated_json['floors'] = []
                                 
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
-                                    # å››è§’å½¢ç¯„å›²ã‚’ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›
+                                    # lŠpŒ`”ÍˆÍ‚ğƒ[ƒgƒ‹À•W‚É•ÏŠ·
                                     px_x1, px_y1 = p1
                                     px_x2, px_y2 = p2
                                     
-                                    # ç”»åƒåº§æ¨™ã‹ã‚‰ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã«å¤‰æ›
+                                    # ‰æ‘œÀ•W‚©‚çƒ[ƒgƒ‹À•W‚É•ÏŠ·
                                     def px_to_meter(px_x, px_y):
-                                        # ç”»åƒåº§æ¨™ã‹ã‚‰ãƒ¡ãƒ¼ãƒˆãƒ«åº§æ¨™ã¸ã®å¤‰æ›
+                                        # ‰æ‘œÀ•W‚©‚çƒ[ƒgƒ‹À•W‚Ö‚Ì•ÏŠ·
                                         meter_x = min_x + (px_x - margin) / scale
                                         meter_y = min_y + (img_height - px_y - margin) / scale
                                         return meter_x, meter_y
@@ -6304,13 +6304,13 @@ def main():
                                     m_x1, m_y1 = px_to_meter(px_x1, px_y1)
                                     m_x2, m_y2 = px_to_meter(px_x2, px_y2)
                                     
-                                    # åº§æ¨™ã‚’æ­£è¦åŒ–ï¼ˆx1 < x2, y1 < y2ï¼‰
+                                    # À•W‚ğ³‹K‰»ix1 < x2, y1 < y2j
                                     floor_x1 = min(m_x1, m_x2)
                                     floor_x2 = max(m_x1, m_x2)
                                     floor_y1 = min(m_y1, m_y2)
                                     floor_y2 = max(m_y1, m_y2)
                                     
-                                    # åºŠãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ 
+                                    # °ƒf[ƒ^‚ğ’Ç‰Á
                                     floor_data = {
                                         'x1': floor_x1,
                                         'y1': floor_y1,
@@ -6320,7 +6320,7 @@ def main():
                                     updated_json['floors'].append(floor_data)
                                     total_floor_count += 1
                                     
-                                    color_name = ["èµ¤", "ç·‘", "é’", "é»„", "ãƒã‚¼ãƒ³ã‚¿", "ã‚·ã‚¢ãƒ³"][rect_idx % 6]
+                                    color_name = ["Ô", "—Î", "Â", "‰©", "ƒ}ƒ[ƒ“ƒ^", "ƒVƒAƒ“"][rect_idx % 6]
                                     floor_details.append({
                                         'rect_idx': rect_idx,
                                         'color_name': color_name,
@@ -6333,77 +6333,77 @@ def main():
                                     })
                                 
                                 if total_floor_count > 0:
-                                    st.success(f"âœ… åˆè¨ˆ {total_floor_count} å€‹ã®åºŠã‚’è¿½åŠ ã—ã¾ã—ãŸ")
+                                    st.success(f"? ‡Œv {total_floor_count} ŒÂ‚Ì°‚ğ’Ç‰Á‚µ‚Ü‚µ‚½")
                                     
-                                    # è¿½åŠ è©³ç´°ã‚’è¡¨ç¤º
-                                    st.markdown("**è¿½åŠ çµæœ:**")
+                                    # ’Ç‰ÁÚ×‚ğ•\¦
+                                    st.markdown("**’Ç‰ÁŒ‹‰Ê:**")
                                     for detail in floor_details:
                                         st.write(
-                                            f"#{detail['rect_idx']+1}ï¼ˆ{detail['color_name']}ï¼‰: "
-                                            f"å¹… {detail['width']:.2f}m Ã— å¥¥è¡Œã {detail['depth']:.2f}m"
+                                            f"#{detail['rect_idx']+1}i{detail['color_name']}j: "
+                                            f"• {detail['width']:.2f}m ~ ‰œs‚« {detail['depth']:.2f}m"
                                         )
                                 else:
-                                    st.warning("âš ï¸ åºŠã®è¿½åŠ ã«å¤±æ•—ã—ã¾ã—ãŸ")
+                                    st.warning("?? °‚Ì’Ç‰Á‚É¸”s‚µ‚Ü‚µ‚½")
                             
-                            # ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
+                            # ˆêƒtƒ@ƒCƒ‹‚É•Û‘¶
                             temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
                             with open(temp_json_path, 'w', encoding='utf-8') as f:
                                 json.dump(updated_json, f, indent=2, ensure_ascii=False)
                             
-                            # å†å¯è¦–åŒ–ï¼ˆå…ƒã®å¤‰æ›ã¨åŒã˜ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ä½¿ç”¨ï¼‰
-                            # çª“è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯è¿½åŠ ã—ãŸå£ã‚’èµ¤è‰²ã§è¡¨ç¤º
+                            # Ä‰Â‹‰»iŒ³‚Ì•ÏŠ·‚Æ“¯‚¶ƒXƒP[ƒ‹‚ğg—pj
+                            # ‘‹’Ç‰Áƒ‚[ƒh‚Ìê‡‚Í’Ç‰Á‚µ‚½•Ç‚ğÔF‚Å•\¦
                             temp_viz_path = Path(st.session_state.out_dir) / "visualization_edited.png"
-                            highlight_ids = added_wall_ids if edit_mode == "çª“ã‚’è¿½åŠ " else None
+                            highlight_ids = added_wall_ids if edit_mode == "‘‹‚ğ’Ç‰Á" else None
                             visualize_3d_walls(str(temp_json_path), str(temp_viz_path), scale=int(viz_scale), highlight_wall_ids=highlight_ids, wall_color=(0, 0, 0), bg_color=(255, 255, 255))
                             
-                            # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢ç”Ÿæˆ
+                            # 3Dƒrƒ…[ƒA¶¬
                             temp_viewer_path = Path(st.session_state.out_dir) / "viewer_3d_edited.html"
                             _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
                             
-                            # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’æ›´æ–°ï¼ˆã‚¹ã‚±ãƒ¼ãƒ«æ ¡æ­£ã§æœ€æ–°å›³ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ï¼‰
+                            # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚ğXViƒXƒP[ƒ‹Z³‚ÅÅV}‚ğg—p‚·‚é‚½‚ßj
                             st.session_state.json_bytes = temp_json_path.read_bytes()
                             st.session_state.viz_bytes = temp_viz_path.read_bytes()
                             
-                            # ç·¨é›†å¾Œã®ç”»åƒã‚’èª­ã¿è¾¼ã¿
+                            # •ÒWŒã‚Ì‰æ‘œ‚ğ“Ç‚İ‚İ
                             edited_viz_bytes = temp_viz_path.read_bytes()
                             viewer_html_bytes = temp_viewer_path.read_bytes()
                             
-                            # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ãƒ¢ãƒ¼ãƒ‰ã€éšæ®µã‚’é…ç½®ãƒ¢ãƒ¼ãƒ‰ã€ç·šã‚’çµåˆãƒ¢ãƒ¼ãƒ‰ã€ç·šã‚’è¿½åŠ ãƒ¢ãƒ¼ãƒ‰ã§ã¯ã€æ¯”è¼ƒè¡¨ç¤ºã‚’ã›ãšå³åº§ã«ã‚»ãƒƒã‚·ãƒ§ãƒ³ã¸åæ˜ ã—ã¦ç¶šè¡Œã™ã‚‹
-                            if edit_mode in ("ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…ç½®", "éšæ®µã‚’é…ç½®", "ç·šã‚’çµåˆ", "ç·šã‚’è¿½åŠ ", "ç·šã‚’å‰Šé™¤", "çª“ã‚’è¿½åŠ "):
+                            # ƒIƒuƒWƒFƒNƒg”z’uƒ‚[ƒhAŠK’i‚ğ”z’uƒ‚[ƒhAü‚ğŒ‹‡ƒ‚[ƒhAü‚ğ’Ç‰Áƒ‚[ƒh‚Å‚ÍA”äŠr•\¦‚ğ‚¹‚¸‘¦À‚ÉƒZƒbƒVƒ‡ƒ“‚Ö”½‰f‚µ‚Ä‘±s‚·‚é
+                            if edit_mode in ("ƒIƒuƒWƒFƒNƒg‚ğ”z’u", "ŠK’i‚ğ”z’u", "ü‚ğŒ‹‡", "ü‚ğ’Ç‰Á", "ü‚ğíœ", "‘‹‚ğ’Ç‰Á"):
                                 try:
-                                    # æ›´æ–°æ¸ˆã¿JSON/å¯è¦–åŒ–/ãƒ“ãƒ¥ãƒ¼ã‚¢ã¯æ—¢ã«ç”Ÿæˆæ¸ˆã¿ã®å ´åˆãŒã‚ã‚‹
-                                    # ã“ã“ã§ã¯æœ€æ–°ã® temp_* ãŒå­˜åœ¨ã™ã‚Œã°ãã‚Œã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³ã¸åæ˜ ã™ã‚‹
+                                    # XVÏ‚İJSON/‰Â‹‰»/ƒrƒ…[ƒA‚ÍŠù‚É¶¬Ï‚İ‚Ìê‡‚ª‚ ‚é
+                                    # ‚±‚±‚Å‚ÍÅV‚Ì temp_* ‚ª‘¶İ‚·‚ê‚Î‚»‚ê‚ğƒZƒbƒVƒ‡ƒ“‚Ö”½‰f‚·‚é
                                     st.session_state.json_bytes = temp_json_path.read_bytes()
                                     st.session_state.json_name = temp_json_path.name
                                     st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                     st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                     st.session_state.viewer_html_name = temp_viewer_path.name
 
-                                    # çŠ¶æ…‹ã‚’å®Œå…¨ã«ã‚¯ãƒªã‚¢ã—ã¦ç¶šè¡Œï¼ˆçµ±ä¸€é–¢æ•°ã‚’ä½¿ç”¨ï¼‰
+                                    # ó‘Ô‚ğŠ®‘S‚ÉƒNƒŠƒA‚µ‚Ä‘±si“ˆêŠÖ”‚ğg—pj
                                     _reset_selection_state()
                                     
                                     time.sleep(0.3)
                                     st.rerun()
                                 except Exception as e:
-                                    st.error(f"ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…ç½®ã®ä¿å­˜ä¸­ã«ã‚¨ãƒ©ãƒ¼: {e}")
+                                    st.error(f"ƒIƒuƒWƒFƒNƒg”z’u‚Ì•Û‘¶’†‚ÉƒGƒ‰[: {e}")
                                     import traceback
                                     st.code(traceback.format_exc())
                             else:
-                                # ç·¨é›†çµæœã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«ä¿å­˜ï¼ˆæ¯”è¼ƒè¡¨ç¤ºç”¨ï¼‰
-                                if edit_mode == "ç·šã‚’çµåˆ":
+                                # •ÒWŒ‹‰Ê‚ğƒZƒbƒVƒ‡ƒ“ó‘Ô‚É•Û‘¶i”äŠr•\¦—pj
+                                if edit_mode == "ü‚ğŒ‹‡":
                                     edit_count = total_merged_count
                                     edit_details = merge_details
-                                elif edit_mode == "ç·šã‚’è¿½åŠ ":
+                                elif edit_mode == "ü‚ğ’Ç‰Á":
                                     edit_count = total_added_count
                                     edit_details = add_details
-                                elif edit_mode == "åºŠã‚’è¿½åŠ ":
+                                elif edit_mode == "°‚ğ’Ç‰Á":
                                     edit_count = total_floor_count
                                     edit_details = floor_details
-                                else:  # ç·šã‚’å‰Šé™¤
+                                else:  # ü‚ğíœ
                                     edit_count = total_deleted_count
                                     edit_details = delete_details
 
-                                # ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’ä¿å­˜
+                                # ƒfƒoƒbƒOƒƒO‚ğ•Û‘¶
                                 debug_log = st.session_state.get('debug_log', [])
                                 
                                 st.session_state.merge_result = {
@@ -6417,44 +6417,44 @@ def main():
                                     'viewer_html_bytes': viewer_html_bytes,
                                     'edit_count': edit_count,
                                     'edit_details': edit_details,
-                                    'debug_log': debug_log.copy()  # ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ä¿å­˜
+                                    'debug_log': debug_log.copy()  # ƒfƒoƒbƒOƒƒO‚ğƒRƒs[‚µ‚Ä•Û‘¶
                                 }
-                                # ç·¨é›†çŠ¶æ…‹ã‚’ãƒªã‚»ãƒƒãƒˆ
+                                # •ÒWó‘Ô‚ğƒŠƒZƒbƒg
                                 st.session_state.rect_coords = []
                                 st.session_state.rect_coords_list = []
-                                # çª“è¿½åŠ ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚‚ã‚¯ãƒªã‚¢
+                                # ‘‹’Ç‰Áƒpƒ‰ƒ[ƒ^‚àƒNƒŠƒA
                                 if 'window_execution_params' in st.session_state:
                                     del st.session_state.window_execution_params
                                 st.rerun()
                         
                         except Exception as e:
-                            st.error(f"ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: {e}")
+                            st.error(f"ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {e}")
                             import traceback
                             st.code(traceback.format_exc())
                 
-                # æ‰‹å‹•ç·¨é›†ãƒ¢ãƒ¼ãƒ‰ã®æœ€å¾Œï¼šç·¨é›†æ¸ˆã¿htmlã¨ç…§æ˜ä»˜ãhtmlã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãƒœã‚¿ãƒ³
+                # è“®•ÒWƒ‚[ƒh‚ÌÅŒãF•ÒWÏ‚İhtml‚ÆÆ–¾•t‚«html‚Ìƒ_ƒEƒ“ƒ[ƒhƒ{ƒ^ƒ“
                 #st.divider()
-                #st.subheader(" ç·¨é›†æ¸ˆã¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰")
+                #st.subheader(" •ÒWÏ‚İƒtƒ@ƒCƒ‹‚Ìƒ_ƒEƒ“ƒ[ƒh")
                 
                 
-                # ç·¨é›†æ¸ˆã¿3Dãƒ“ãƒ¥ãƒ¼ã‚¢HTMLï¼ˆviewer_html_bytesã‚’å¸¸ã«è¡¨ç¤ºï¼‰
+                # •ÒWÏ‚İ3Dƒrƒ…[ƒAHTMLiviewer_html_bytes‚ğí‚É•\¦j
                 if st.session_state.viewer_html_bytes:
                     pass
                 else:
-                    # å¯è¦–åŒ–ç”»åƒãŒãªã„å ´åˆã®ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-                    st.warning("âš ï¸ æ‰‹å‹•ç·¨é›†ç”»é¢ã‚’è¡¨ç¤ºã™ã‚‹ã«ã¯ã€ã¾ãšStep 1ã§å›³é¢ã‚’å¤‰æ›ã—ã¦ãã ã•ã„ã€‚")
-                    if st.button("ğŸ“„ Step 1ã«æˆ»ã‚‹", type="primary"):
+                    # ‰Â‹‰»‰æ‘œ‚ª‚È‚¢ê‡‚ÌƒGƒ‰[ƒƒbƒZ[ƒW
+                    st.warning("?? è“®•ÒW‰æ–Ê‚ğ•\¦‚·‚é‚É‚ÍA‚Ü‚¸Step 1‚Å}–Ê‚ğ•ÏŠ·‚µ‚Ä‚­‚¾‚³‚¢B")
+                    if st.button("?? Step 1‚É–ß‚é", type="primary"):
                         st.session_state.workflow_step = 1
                         st.rerun()
 
-    # ============= 3Dãƒ“ãƒ¥ãƒ¼è¡¨ç¤ºï¼ˆStep3ã®ä¸‹ï¼‰ =============
-    with st.expander("ğŸ”­ 3Dãƒ“ãƒ¥ãƒ¼", expanded=st.session_state.get('open_3d_expander', False)):
+    # ============= 3Dƒrƒ…[•\¦iStep3‚Ì‰ºj =============
+    with st.expander("?? 3Dƒrƒ…[", expanded=st.session_state.get('open_3d_expander', False)):
 
         if st.session_state.get('processed', False) and st.session_state.get('viz_bytes'):
             
-            # 3Dãƒ“ãƒ¥ãƒ¼ã‚¢åŸ‹ã‚è¾¼ã¿è¡¨ç¤º
+            # 3Dƒrƒ…[ƒA–„‚ß‚İ•\¦
             if st.session_state.get('viewer_html_bytes'):
-                st.markdown("### ğŸ¨ 3Dãƒ“ãƒ¥ãƒ¼ã‚¢")
+                st.markdown("### ?? 3Dƒrƒ…[ƒA")
                 import streamlit.components.v1 as components
                 components.html(
                     st.session_state.viewer_html_bytes.decode('utf-8'),
@@ -6464,9 +6464,9 @@ def main():
                 
                 st.divider()
                 
-                # ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãƒœã‚¿ãƒ³
+                # ƒ_ƒEƒ“ƒ[ƒhƒ{ƒ^ƒ“
                 st.download_button(
-                    label="ğŸ“¥ 3Dãƒ¢ãƒ‡ãƒ«ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰",
+                    label="?? 3Dƒ‚ƒfƒ‹‚ğƒ_ƒEƒ“ƒ[ƒh",
                     data=st.session_state.viewer_html_bytes,
                     type="primary",
                     file_name=st.session_state.viewer_html_name,
@@ -6474,97 +6474,97 @@ def main():
                     #use_container_width=True
                 )
         else:
-            st.info("ğŸ’¡ Step 1ã§å›³é¢ã‚’å¤‰æ›ã™ã‚‹ã¨ã€ã“ã“ã«3Dãƒ“ãƒ¥ãƒ¼ãŒè¡¨ç¤ºã•ã‚Œã¾ã™ã€‚")
+            st.info("?? Step 1‚Å}–Ê‚ğ•ÏŠ·‚·‚é‚ÆA‚±‚±‚É3Dƒrƒ…[‚ª•\¦‚³‚ê‚Ü‚·B")
     
-    # ============= ãƒ•ãƒƒã‚¿ãƒ¼ï¼ˆå…¨ã‚¹ãƒ†ãƒƒãƒ—å…±é€šï¼‰ =============
+    # ============= ƒtƒbƒ^[i‘SƒXƒeƒbƒv‹¤’Êj =============
     st.divider()
-    with st.expander("ğŸ“‹ åˆ©ç”¨è¦ç´„", expanded=False):
+    with st.expander("?? —˜—p‹K–ñ", expanded=False):
         st.markdown("""
-        ## åˆ©ç”¨è¦ç´„
+        ## —˜—p‹K–ñ
         
-        **æœ€çµ‚æ›´æ–°æ—¥ï¼š2026å¹´2æœˆ1æ—¥**
+        **ÅIXV“úF2026”N2Œ1“ú**
         
-        æœ¬åˆ©ç”¨è¦ç´„ï¼ˆä»¥ä¸‹ã€Œæœ¬è¦ç´„ã€ã¨ã„ã„ã¾ã™ï¼‰ã¯ã€ichijo-3dmakerï¼ˆä»¥ä¸‹ã€Œæœ¬ã‚µãƒ¼ãƒ“ã‚¹ã€ã¨ã„ã„ã¾ã™ï¼‰ã®åˆ©ç”¨æ¡ä»¶ã‚’å®šã‚ã‚‹ã‚‚ã®ã§ã™ã€‚  
-        æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã‚’åˆ©ç”¨ã™ã‚‹ã™ã¹ã¦ã®æ–¹ï¼ˆä»¥ä¸‹ã€Œãƒ¦ãƒ¼ã‚¶ãƒ¼ã€ã¨ã„ã„ã¾ã™ï¼‰ã¯ã€æœ¬è¦ç´„ã«åŒæ„ã—ãŸã‚‚ã®ã¨ã¿ãªã•ã‚Œã¾ã™ã€‚
-        
-        ---
-        
-        ### ç¬¬1æ¡ï¼ˆæœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®ä½ç½®ã¥ã‘ï¼‰
-        
-        1. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ã€2Då›³é¢ç­‰ã‚’ã‚‚ã¨ã«ç°¡æ˜“çš„ãª3Dã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ç”Ÿæˆãƒ»è¡¨ç¤ºã™ã‚‹ã“ã¨ã‚’ç›®çš„ã¨ã—ãŸã€å€‹äººã¾ãŸã¯å°è¦æ¨¡é–‹ç™ºè€…ã«ã‚ˆã‚‹éå…¬å¼ã‚µãƒ¼ãƒ“ã‚¹ã§ã™ã€‚
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ã€æ ªå¼ä¼šç¤¾ä¸€æ¡å·¥å‹™åº—ãŠã‚ˆã³ãã®é–¢é€£ä¼šç¤¾ãŒå…¬å¼ã«æä¾›ãƒ»é‹å–¶ãƒ»ç›£ä¿®ã™ã‚‹ã‚‚ã®ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
-        3. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ã€æ¤œè¨¼ãƒ»è©¦é¨“é‹ç”¨ã‚’ç›®çš„ã¨ã—ãŸãƒ™ãƒ¼ã‚¿ç‰ˆã¨ã—ã¦æä¾›ã•ã‚Œã‚‹å ´åˆãŒã‚ã‚Šã¾ã™ã€‚
+        –{—˜—p‹K–ñiˆÈ‰ºu–{‹K–ñv‚Æ‚¢‚¢‚Ü‚·j‚ÍAichijo-3dmakeriˆÈ‰ºu–{ƒT[ƒrƒXv‚Æ‚¢‚¢‚Ü‚·j‚Ì—˜—pğŒ‚ğ’è‚ß‚é‚à‚Ì‚Å‚·B  
+        –{ƒT[ƒrƒX‚ğ—˜—p‚·‚é‚·‚×‚Ä‚Ì•ûiˆÈ‰ºuƒ†[ƒU[v‚Æ‚¢‚¢‚Ü‚·j‚ÍA–{‹K–ñ‚É“¯ˆÓ‚µ‚½‚à‚Ì‚Æ‚İ‚È‚³‚ê‚Ü‚·B
         
         ---
         
-        ### ç¬¬2æ¡ï¼ˆåˆ©ç”¨æ¡ä»¶ï¼‰
+        ### ‘æ1ği–{ƒT[ƒrƒX‚ÌˆÊ’u‚Ã‚¯j
         
-        1. ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ã€è‡ªå·±ã®è²¬ä»»ã«ãŠã„ã¦æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã‚’åˆ©ç”¨ã™ã‚‹ã‚‚ã®ã¨ã—ã¾ã™ã€‚
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®åˆ©ç”¨ã«ã‚ãŸã‚Šã€ç‰¹åˆ¥ãªåˆ©ç”¨ç™»éŒ²ã‚’å¿…è¦ã¨ã—ãªã„å ´åˆãŒã‚ã‚Šã¾ã™ã€‚
-        3. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®åˆ©ç”¨ã«å¿…è¦ãªæ©Ÿå™¨ã€é€šä¿¡ç’°å¢ƒãŠã‚ˆã³é€šä¿¡è²»ç”¨ç­‰ã¯ã€ã™ã¹ã¦ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è² æ‹…ã¨ã—ã¾ã™ã€‚
-        
-        ---
-        
-        ### ç¬¬3æ¡ï¼ˆæœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®å†…å®¹ï¼‰
-        
-        1. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ã€ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã‚’ã‚‚ã¨ã«ã€ç°¡æ˜“çš„ãª3Dè¡¨ç¾ã‚„å¯è¦–åŒ–çµæœã‚’æä¾›ã—ã¾ã™ã€‚
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã§ç”Ÿæˆã•ã‚Œã‚‹3Dã‚¤ãƒ¡ãƒ¼ã‚¸ã€æ•°å€¤ã€åˆ¤å®šçµæœç­‰ã¯ã€ã‚ãã¾ã§å‚è€ƒæƒ…å ±ã§ã‚ã‚Šã€è¨­è¨ˆãƒ»æ–½å·¥ãƒ»å¥‘ç´„ç­‰ã‚’ä¿è¨¼ã™ã‚‹ã‚‚ã®ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
-        3. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®ä¸€éƒ¨æ©Ÿèƒ½ã¯ã€åˆ©ç”¨ç™»éŒ²ã‚’è¡Œã£ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã«ã®ã¿æä¾›ã•ã‚Œã‚‹å ´åˆãŒã‚ã‚Šã¾ã™ã€‚
-        4. æä¾›ã•ã‚Œã‚‹æ©Ÿèƒ½ã®å†…å®¹ã€ä»•æ§˜ã€è¡¨ç¤ºæ–¹æ³•ç­‰ã¯ã€äºˆå‘Šãªãå¤‰æ›´ã¾ãŸã¯åœæ­¢ã•ã‚Œã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã™ã€‚
+        1. –{ƒT[ƒrƒX‚ÍA2D}–Ê“™‚ğ‚à‚Æ‚ÉŠÈˆÕ“I‚È3DƒCƒ[ƒW‚ğ¶¬E•\¦‚·‚é‚±‚Æ‚ğ–Ú“I‚Æ‚µ‚½AŒÂl‚Ü‚½‚Í¬‹K–ÍŠJ”­Ò‚É‚æ‚é”ñŒö®ƒT[ƒrƒX‚Å‚·B
+        2. –{ƒT[ƒrƒX‚ÍAŠ”®‰ïĞˆêğH–±“X‚¨‚æ‚Ñ‚»‚ÌŠÖ˜A‰ïĞ‚ªŒö®‚É’ñ‹ŸE‰^‰cEŠÄC‚·‚é‚à‚Ì‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+        3. –{ƒT[ƒrƒX‚ÍAŒŸØEŒ±‰^—p‚ğ–Ú“I‚Æ‚µ‚½ƒx[ƒ^”Å‚Æ‚µ‚Ä’ñ‹Ÿ‚³‚ê‚éê‡‚ª‚ ‚è‚Ü‚·B
         
         ---
         
-        ### ç¬¬4æ¡ï¼ˆç¦æ­¢äº‹é …ï¼‰
+        ### ‘æ2ği—˜—pğŒj
         
-        ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ã€æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®åˆ©ç”¨ã«ã‚ãŸã‚Šã€ä»¥ä¸‹ã®è¡Œç‚ºã‚’è¡Œã£ã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
-        
-        1. æ³•ä»¤ã¾ãŸã¯å…¬åºè‰¯ä¿—ã«é•åã™ã‚‹è¡Œç‚º
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®é‹å–¶ã‚’å¦¨å®³ã™ã‚‹è¡Œç‚º
-        3. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®ä¸å…·åˆã‚„ä»•æ§˜ã‚’æ‚ªç”¨ã™ã‚‹è¡Œç‚º
-        4. ç¬¬ä¸‰è€…ã¾ãŸã¯é‹å–¶è€…ã®æ¨©åˆ©ãƒ»åˆ©ç›Šã‚’ä¾µå®³ã™ã‚‹è¡Œç‚º
-        5. ãã®ä»–ã€é‹å–¶è€…ãŒä¸é©åˆ‡ã¨åˆ¤æ–­ã™ã‚‹è¡Œç‚º
+        1. ƒ†[ƒU[‚ÍA©ŒÈ‚ÌÓ”C‚É‚¨‚¢‚Ä–{ƒT[ƒrƒX‚ğ—˜—p‚·‚é‚à‚Ì‚Æ‚µ‚Ü‚·B
+        2. –{ƒT[ƒrƒX‚Ì—˜—p‚É‚ ‚½‚èA“Á•Ê‚È—˜—p“o˜^‚ğ•K—v‚Æ‚µ‚È‚¢ê‡‚ª‚ ‚è‚Ü‚·B
+        3. –{ƒT[ƒrƒX‚Ì—˜—p‚É•K—v‚È‹@ŠíA’ÊMŠÂ‹«‚¨‚æ‚Ñ’ÊM”ï—p“™‚ÍA‚·‚×‚Äƒ†[ƒU[‚Ì•‰’S‚Æ‚µ‚Ü‚·B
         
         ---
         
-        ### ç¬¬5æ¡ï¼ˆçŸ¥çš„è²¡ç”£æ¨©ï¼‰
+        ### ‘æ3ği–{ƒT[ƒrƒX‚Ì“à—ej
         
-        1. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã«é–¢ã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã€UIã€æ–‡ç« ã€ãƒ­ã‚´ç­‰ã®è‘—ä½œæ¨©ãŠã‚ˆã³çŸ¥çš„è²¡ç”£æ¨©ã¯ã€é‹å–¶è€…ã¾ãŸã¯æ­£å½“ãªæ¨©åˆ©è€…ã«å¸°å±ã—ã¾ã™ã€‚
-        2. ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ã€æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®å†…å®¹ã‚’ã€ç§çš„åˆ©ç”¨ã®ç¯„å›²ã‚’è¶…ãˆã¦ç„¡æ–­ã§è¤‡è£½ãƒ»è»¢è¼‰ãƒ»é…å¸ƒã—ã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
-        
-        ---
-        
-        ### ç¬¬6æ¡ï¼ˆå…è²¬äº‹é …ï¼‰
-        
-        1. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ã€æ­£ç¢ºæ€§ãƒ»å®Œå…¨æ€§ãƒ»æœ‰ç”¨æ€§ã‚’ä¿è¨¼ã™ã‚‹ã‚‚ã®ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®åˆ©ç”¨ã¾ãŸã¯åˆ©ç”¨ä¸èƒ½ã«ã‚ˆã‚Šç”Ÿã˜ãŸæå®³ã«ã¤ã„ã¦ã€é‹å–¶è€…ã¯ä¸€åˆ‡ã®è²¬ä»»ã‚’è² ã„ã¾ã›ã‚“ã€‚
-        3. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®å†…å®¹ã¯ã€äºˆå‘Šãªãå¤‰æ›´ã€ä¸­æ–­ã€çµ‚äº†ã•ã‚Œã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã™ã€‚
-        4. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã‚’åˆ©ç”¨ã—ãŸã“ã¨ã«ã‚ˆã‚‹è¨­è¨ˆåˆ¤æ–­ã€æ–½å·¥åˆ¤æ–­ã€é‡‘éŠ­çš„åˆ¤æ–­ã«ã¤ã„ã¦ã€é‹å–¶è€…ã¯è²¬ä»»ã‚’è² ã„ã¾ã›ã‚“ã€‚
+        1. –{ƒT[ƒrƒX‚ÍAƒAƒbƒvƒ[ƒh‚³‚ê‚½ƒf[ƒ^‚ğ‚à‚Æ‚ÉAŠÈˆÕ“I‚È3D•\Œ»‚â‰Â‹‰»Œ‹‰Ê‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+        2. –{ƒT[ƒrƒX‚Å¶¬‚³‚ê‚é3DƒCƒ[ƒWA”’lA”»’èŒ‹‰Ê“™‚ÍA‚ ‚­‚Ü‚ÅQlî•ñ‚Å‚ ‚èAİŒvE{HEŒ_–ñ“™‚ğ•ÛØ‚·‚é‚à‚Ì‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+        3. –{ƒT[ƒrƒX‚Ìˆê•”‹@”\‚ÍA—˜—p“o˜^‚ğs‚Á‚½ƒ†[ƒU[‚É‚Ì‚İ’ñ‹Ÿ‚³‚ê‚éê‡‚ª‚ ‚è‚Ü‚·B
+        4. ’ñ‹Ÿ‚³‚ê‚é‹@”\‚Ì“à—eAd—lA•\¦•û–@“™‚ÍA—\‚È‚­•ÏX‚Ü‚½‚Í’â~‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
         
         ---
         
-        ### ç¬¬7æ¡ï¼ˆã‚µãƒ¼ãƒ“ã‚¹ã®åœæ­¢ãƒ»çµ‚äº†ï¼‰
+        ### ‘æ4ği‹Ö~–€j
         
-        é‹å–¶è€…ã¯ã€ä»¥ä¸‹ã®å ´åˆã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¸ã®äº‹å‰é€šçŸ¥ãªãæœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®å…¨éƒ¨ã¾ãŸã¯ä¸€éƒ¨ã‚’åœæ­¢ã¾ãŸã¯çµ‚äº†ã™ã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã™ã€‚
+        ƒ†[ƒU[‚ÍA–{ƒT[ƒrƒX‚Ì—˜—p‚É‚ ‚½‚èAˆÈ‰º‚Ìsˆ×‚ğs‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
         
-        1. ã‚·ã‚¹ãƒ†ãƒ ä¿å®ˆã¾ãŸã¯éšœå®³å¯¾å¿œãŒå¿…è¦ãªå ´åˆ
-        2. æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®ç¶™ç¶šãŒå›°é›£ã¨åˆ¤æ–­ã•ã‚ŒãŸå ´åˆ
-        3. ãã®ä»–ã€é‹å–¶è€…ãŒå¿…è¦ã¨åˆ¤æ–­ã—ãŸå ´åˆ
-        
-        ---
-        
-        ### ç¬¬8æ¡ï¼ˆè¦ç´„ã®å¤‰æ›´ï¼‰
-        
-        1. é‹å–¶è€…ã¯ã€å¿…è¦ã«å¿œã˜ã¦æœ¬è¦ç´„ã‚’å¤‰æ›´ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
-        2. å¤‰æ›´å¾Œã®è¦ç´„ã¯ã€æœ¬ã‚µãƒ¼ãƒ“ã‚¹ä¸Šã«è¡¨ç¤ºã•ã‚ŒãŸæ™‚ç‚¹ã§åŠ¹åŠ›ã‚’ç”Ÿã˜ã‚‹ã‚‚ã®ã¨ã—ã¾ã™ã€‚
+        1. –@—ß‚Ü‚½‚ÍŒö˜—Ç‘­‚Éˆá”½‚·‚ésˆ×
+        2. –{ƒT[ƒrƒX‚Ì‰^‰c‚ğ–WŠQ‚·‚ésˆ×
+        3. –{ƒT[ƒrƒX‚Ì•s‹ï‡‚âd—l‚ğˆ«—p‚·‚ésˆ×
+        4. ‘æOÒ‚Ü‚½‚Í‰^‰cÒ‚ÌŒ —˜E—˜‰v‚ğNŠQ‚·‚ésˆ×
+        5. ‚»‚Ì‘¼A‰^‰cÒ‚ª•s“KØ‚Æ”»’f‚·‚ésˆ×
         
         ---
         
-        ### ç¬¬9æ¡ï¼ˆæº–æ‹ æ³•ãƒ»ç®¡è½„ï¼‰
+        ### ‘æ5ği’m“IàYŒ j
         
-        æœ¬è¦ç´„ã¯æ—¥æœ¬æ³•ã‚’æº–æ‹ æ³•ã¨ã—ã€æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã«é–¢ã—ã¦ç”Ÿã˜ãŸç´›äº‰ã«ã¤ã„ã¦ã¯ã€æ—¥æœ¬å›½å†…ã®è£åˆ¤æ‰€ã‚’å°‚å±çš„åˆæ„ç®¡è½„ã¨ã—ã¾ã™ã€‚
+        1. –{ƒT[ƒrƒX‚ÉŠÖ‚·‚éƒvƒƒOƒ‰ƒ€AUIA•¶ÍAƒƒS“™‚Ì’˜ìŒ ‚¨‚æ‚Ñ’m“IàYŒ ‚ÍA‰^‰cÒ‚Ü‚½‚Í³“–‚ÈŒ —˜Ò‚É‹A‘®‚µ‚Ü‚·B
+        2. ƒ†[ƒU[‚ÍA–{ƒT[ƒrƒX‚Ì“à—e‚ğA„“I—˜—p‚Ì”ÍˆÍ‚ğ’´‚¦‚Ä–³’f‚Å•¡»E“]ÚE”z•z‚µ‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
+        
+        ---
+        
+        ### ‘æ6ği–ÆÓ–€j
+        
+        1. –{ƒT[ƒrƒX‚ÍA³Šm«EŠ®‘S«E—L—p«‚ğ•ÛØ‚·‚é‚à‚Ì‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+        2. –{ƒT[ƒrƒX‚Ì—˜—p‚Ü‚½‚Í—˜—p•s”\‚É‚æ‚è¶‚¶‚½‘¹ŠQ‚É‚Â‚¢‚ÄA‰^‰cÒ‚ÍˆêØ‚ÌÓ”C‚ğ•‰‚¢‚Ü‚¹‚ñB
+        3. –{ƒT[ƒrƒX‚Ì“à—e‚ÍA—\‚È‚­•ÏXA’†’fAI—¹‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+        4. –{ƒT[ƒrƒX‚ğ—˜—p‚µ‚½‚±‚Æ‚É‚æ‚éİŒv”»’fA{H”»’fA‹à‘K“I”»’f‚É‚Â‚¢‚ÄA‰^‰cÒ‚ÍÓ”C‚ğ•‰‚¢‚Ü‚¹‚ñB
+        
+        ---
+        
+        ### ‘æ7ğiƒT[ƒrƒX‚Ì’â~EI—¹j
+        
+        ‰^‰cÒ‚ÍAˆÈ‰º‚Ìê‡Aƒ†[ƒU[‚Ö‚Ì–‘O’Ê’m‚È‚­–{ƒT[ƒrƒX‚Ì‘S•”‚Ü‚½‚Íˆê•”‚ğ’â~‚Ü‚½‚ÍI—¹‚·‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+        
+        1. ƒVƒXƒeƒ€•Ûç‚Ü‚½‚ÍáŠQ‘Î‰‚ª•K—v‚Èê‡
+        2. –{ƒT[ƒrƒX‚ÌŒp‘±‚ª¢“ï‚Æ”»’f‚³‚ê‚½ê‡
+        3. ‚»‚Ì‘¼A‰^‰cÒ‚ª•K—v‚Æ”»’f‚µ‚½ê‡
+        
+        ---
+        
+        ### ‘æ8ği‹K–ñ‚Ì•ÏXj
+        
+        1. ‰^‰cÒ‚ÍA•K—v‚É‰‚¶‚Ä–{‹K–ñ‚ğ•ÏX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+        2. •ÏXŒã‚Ì‹K–ñ‚ÍA–{ƒT[ƒrƒXã‚É•\¦‚³‚ê‚½“_‚ÅŒø—Í‚ğ¶‚¶‚é‚à‚Ì‚Æ‚µ‚Ü‚·B
+        
+        ---
+        
+        ### ‘æ9ği€‹’–@EŠÇŠj
+        
+        –{‹K–ñ‚Í“ú–{–@‚ğ€‹’–@‚Æ‚µA–{ƒT[ƒrƒX‚ÉŠÖ‚µ‚Ä¶‚¶‚½•´‘ˆ‚É‚Â‚¢‚Ä‚ÍA“ú–{‘“à‚ÌÙ”»Š‚ğê‘®“I‡ˆÓŠÇŠ‚Æ‚µ‚Ü‚·B
         """)
     
-    # ãƒ•ãƒƒã‚¿ãƒ¼æƒ…å ±
+    # ƒtƒbƒ^[î•ñ
     try:
         import ichijo_core
         version_info = f"v{ichijo_core.__version__}"
@@ -6574,9 +6574,9 @@ def main():
     st.markdown(
         f"""
         <div style='text-align: center; color: #888; padding: 20px; margin-top: 20px; border-top: 1px solid #ddd;'>
-            <p style='margin: 5px 0; font-size: 0.9em;'>Â© 2026 Ichijo 3D Maker {version_info}</p>
-            <p style='margin: 5px 0; font-size: 0.9em;'>â€» æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã¯ä¸€æ¡å·¥å‹™åº—ã®å…¬å¼ã‚¢ãƒ—ãƒªã§ã¯ã‚ã‚Šã¾ã›ã‚“</p>
-            <p style='margin: 5px 0; font-size: 0.8em;'>æœ¬ã‚µãƒ¼ãƒ“ã‚¹ã®ã”åˆ©ç”¨ã«ã¯ã€ä¸Šè¨˜ã®åˆ©ç”¨è¦ç´„ã¸ã®åŒæ„ãŒå¿…è¦ã§ã™ã€‚</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>c 2026 Ichijo 3D Maker {version_info}</p>
+            <p style='margin: 5px 0; font-size: 0.9em;'>¦ –{ƒT[ƒrƒX‚ÍˆêğH–±“X‚ÌŒö®ƒAƒvƒŠ‚Å‚Í‚ ‚è‚Ü‚¹‚ñ</p>
+            <p style='margin: 5px 0; font-size: 0.8em;'>–{ƒT[ƒrƒX‚Ì‚²—˜—p‚É‚ÍAã‹L‚Ì—˜—p‹K–ñ‚Ö‚Ì“¯ˆÓ‚ª•K—v‚Å‚·B</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -6591,8 +6591,8 @@ if __name__ == "__main__":
         import traceback
         try:
             import streamlit as _st
-            _st.set_page_config(page_title="èµ·å‹•ã‚¨ãƒ©ãƒ¼")
-            _st.error("ã‚¢ãƒ—ãƒªèµ·å‹•æ™‚ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚ä¸‹ã«ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒ¬ãƒ¼ã‚¹ã‚’è¡¨ç¤ºã—ã¾ã™ã€‚")
+            _st.set_page_config(page_title="‹N“®ƒGƒ‰[")
+            _st.error("ƒAƒvƒŠ‹N“®‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B‰º‚ÉƒXƒ^ƒbƒNƒgƒŒ[ƒX‚ğ•\¦‚µ‚Ü‚·B")
             _st.code(traceback.format_exc())
         except Exception:
             # If Streamlit is not available or fails, print to stderr
