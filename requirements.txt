@@ -1,11 +1,19 @@
-
-streamlit
+﻿streamlit
+stripe
 numpy
 Pillow
 PyMuPDF
 streamlit-image-coordinates
 opencv-python-headless
 
+# Webhook receiver
+Flask
+fastapi
+uvicorn
+requests
+
 # Image processing
 scikit-image
 scipy
+supabase
+beautifulsoup4
