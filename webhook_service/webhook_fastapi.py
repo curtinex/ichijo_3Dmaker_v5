@@ -61,7 +61,8 @@ def handle_checkout_session(session: dict):
     payload = {
         'email': email,
         'plan': 'paid',
-        'status': 'active',
+        'is_active': True,
+        'payment_status': 'active',
         'stripe_customer_id': customer_id,
     }
 
@@ -119,7 +120,8 @@ def handle_invoice_paid(invoice: dict):
     email = invoice.get('customer_email')
     payload = {
         'plan': 'paid',
-        'status': 'active',
+        'is_active': True,
+        'payment_status': 'active',
         'stripe_customer_id': customer_id,
     }
     if subscription_id:
@@ -140,7 +142,8 @@ def handle_subscription_deleted(sub: dict):
     customer_id = sub.get('customer')
     payload = {
         'plan': 'free',
-        'status': 'inactive',
+        'is_active': False,
+        'payment_status': 'inactive',
         'stripe_subscription_id': None,
     }
     if supabase and customer_id:
@@ -206,7 +209,8 @@ async def webhook(request: Request, stripe_signature: Optional[str] = Header(Non
             # Build payload
             payload = {
                 'plan': 'paid',
-                'status': sub.get('status'),
+                'is_active': True,
+                'payment_status': sub.get('status'),
                 'stripe_subscription_id': sub.get('id'),
                 'stripe_customer_id': sub.get('customer'),
             }
