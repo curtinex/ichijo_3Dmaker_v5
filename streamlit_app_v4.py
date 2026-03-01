@@ -474,11 +474,12 @@ with st.sidebar.expander("アカウント設定"):
                             upsert_payload["user_id"] = user_id
 
                         try:
-                            # emailを基準に既存データがあれば上書き（upsert）するよう明示
-                            supabase.table('members').upsert(upsert_payload, on_conflict='email').execute()
+                            # 権限(RLS)の影響を避けるため管理者権限(service_role等)が必要な場合があるが、
+                            # 今回はクライアントアクセスなのでダメだった場合はそのままエラーを出力
+                            res_upsert = supabase.table('members').upsert(upsert_payload, on_conflict='email').execute()
                             st.info("トライアル情報を記録しました。")
                         except Exception as e:
-                            st.warning("トライアルは作成されましたが、members テーブルへの記録に失敗しました。管理者に連絡してください。")
+                            st.warning(f"トライアルは作成されましたが、members テーブルへの記録に失敗しました。管理者に連絡してください。\nエラー詳細: {type(e).__name__}: {e}")
                     except Exception as e:
                         st.error(f"Sign up failed: {type(e).__name__}: {e}")
         elif auth_mode == "ログイン":
