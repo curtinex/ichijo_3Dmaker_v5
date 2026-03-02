@@ -229,5 +229,9 @@ README.md
 # Allow window catalog JSON to be tracked despite general *.json ignore
 !window_catalog.json
 
+# Allow docs/ HTML files for GitHub Pages
+!docs/*.html
+!docs/**/*.html
+
 # Streamlit secrets
 .streamlit/secrets.toml
