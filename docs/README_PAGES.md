@@ -3,7 +3,7 @@
 - この `docs/` フォルダは GitHub Pages の公開ルートとして使うことを想定しています。
 - 置き換えるべきプレースホルダ:
   - `https://your-username.github.io/your-repo/` → 実際の GitHub Pages URL（またはカスタムドメイン）に変更
-  - `https://your-streamlit-app-url` → Streamlit アプリの公開 URL
+  - `https://ichijo-3dmaker.streamlit.app/` → Streamlit アプリの公開 URL
   - `YOUR_FORM_ID` → Google Form の埋め込み用 ID
 
 デプロイ手順（簡単）:
