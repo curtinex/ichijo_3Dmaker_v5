@@ -447,7 +447,13 @@ with st.sidebar.expander("アカウント設定"):
                     st.error("メールとパスワードを入力してください。")
                 else:
                     try:
-                        res = supabase.auth.sign_up({"email": su_email, "password": su_pwd})
+                        res = supabase.auth.sign_up({
+                            "email": su_email,
+                            "password": su_pwd,
+                            "options": {
+                                "email_redirect_to": "https://curtinex.github.io/ichijo_3Dmaker_v5/auth-confirmed.html"
+                            }
+                        })
                         st.success("確認メールを送信しました。メールのリンクでアカウントを有効化してください。\n同時に無料トライアル（15日間）を付与しました。")
                         # Compute trial expiry
                         trial_expires = (datetime.utcnow() + timedelta(days=15)).isoformat()
