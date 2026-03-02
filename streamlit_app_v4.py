@@ -206,7 +206,7 @@ def create_checkout_session(email=None):
             st.error("STRIPE_PRICE_ID が price_... の形式ではありません。Stripe の Price ID（price_...）を確認してください。")
         return None
 
-    success_url = f"{base_url}/?session_id={{CHECKOUT_SESSION_ID}}"
+    success_url = "https://curtinex.github.io/ichijo_3Dmaker_v5/payment-success.html"
     cancel_url = f"{base_url}/?canceled=1"
 
     try:
