@@ -2528,8 +2528,11 @@ def main():
                                             
                                             # 高さは2.4m固定（スケール変換しない）
                                             # 一条工務店の標準天井高は2.4mで固定
-                                            if "height" not in wall or wall.get("height") != 2.4:
-                                                wall["height"] = 2.4
+                                            # ただし窓追加壁（source='window_added'）は床側・天井側の
+                                            # 小壁として固有の高さを持つため、上書きしない
+                                            if wall.get("source") != "window_added":
+                                                if "height" not in wall or wall.get("height") != 2.4:
+                                                    wall["height"] = 2.4
                                             
                                             # 厚さは10cm固定（スケール変換しない）
                                             # 一条工務店の標準壁厚は10cmで固定
