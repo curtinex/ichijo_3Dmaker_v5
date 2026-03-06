@@ -190,6 +190,19 @@ def get_stripe_config():
 
     return secret, price, base
 
+def _is_admin_email(email: str) -> bool:
+    """ADMIN_EMAILS（カンマ区切り）に含まれるメールアドレスは管理者として扱う。"""
+    if not email:
+        return False
+    try:
+        raw = st.secrets.get("ADMIN_EMAILS", "") or ""
+    except Exception:
+        raw = ""
+    if not raw:
+        raw = os.environ.get("ADMIN_EMAILS", "")
+    admins = [e.strip() for e in raw.split(",") if e.strip()]
+    return email in admins
+
 def create_checkout_session(email=None):
     secret, price_id, base_url = get_stripe_config()
     if not secret or not price_id:
@@ -275,8 +288,13 @@ def _render_logged_in_sidebar(user_email, supabase):
     stripe_sub_id = None
     cancel_at_period_end = False
     current_period_end = None
-    
-    if supabase and user_email:
+
+    # 管理者メールアドレスは決済チェックをスキップ
+    if _is_admin_email(user_email):
+        is_paid = True
+        user_status_text = "管理者"
+
+    if not is_paid and supabase and user_email:
         try:
             res = supabase.table('members').select('plan, trial_expires, stripe_subscription_id').eq('email', user_email).limit(1).execute()
             data = res.data if hasattr(res, 'data') else res.get('data', [])
@@ -1814,6 +1832,9 @@ def check_membership_status_v2(supabase, user):
             u = getattr(user, 'user', None)
             if u: email = getattr(u, 'email', None)
         if email:
+            # 管理者メールアドレスは決済チェックをスキップ
+            if _is_admin_email(email):
+                return True
             res = supabase.table('members').select('plan').eq('email', email).limit(1).execute()
             data = res.data if hasattr(res, 'data') else res.get('data', [])
             if data and len(data) > 0: return data[0].get('plan') == 'paid'
