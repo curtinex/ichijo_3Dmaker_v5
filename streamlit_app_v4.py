@@ -3764,8 +3764,7 @@ def main():
                                 st.session_state.merge_walls_to_process = list(st.session_state.selected_walls_for_merge)
                                 st.session_state.selected_walls_for_merge = []
                                 st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                     elif edit_mode == "窓を追加":
                         # 窓追加モード：壁線クリック選択（2本ずつペアで複数窓追加可能）
                         num_selected = len(st.session_state.selected_walls_for_window)
@@ -3865,8 +3864,7 @@ def main():
                                 st.session_state.window_click_params_list_to_process = window_params_to_save
                                 st.session_state.selected_walls_for_window = []
                                 st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                     elif edit_mode == "線を削除":
                         # 線削除モード：壁線クリック選択（複数本可能）
                         num_selected = len(st.session_state.selected_walls_for_delete)
@@ -3883,8 +3881,7 @@ def main():
                                 st.session_state.delete_walls_to_process = list(st.session_state.selected_walls_for_delete)
                                 st.session_state.selected_walls_for_delete = []
                                 st.session_state.skip_click_processing = True  # クリック処理をスキップ
-                                # 即座にrerunして選択状態をクリア（次のrerunで実際の処理を実行）
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                     elif edit_mode == "オブジェクトを削除":
                         # オブジェクト削除モード
                         num_selected = len(st.session_state.selected_furniture_to_delete)
@@ -3893,7 +3890,7 @@ def main():
                             st.success(f"✅ **{num_selected}個のオブジェクトを選択中**")
                             if st.button("🗑️ 削除実行", type="primary", key="btn_furn_delete_exec"):
                                 st.session_state.execute_furniture_deletion = True
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                     elif edit_mode == "階段を配置":
                         # 階段追加モード：2点選択
                         if len(st.session_state.rect_coords_list) > 0:
@@ -3930,7 +3927,7 @@ def main():
                             if st.button("🪜 階段配置実行", type="primary", key="stair_exec"):
                                 st.session_state.execute_stair_placement = True
                                 st.session_state.selected_stair_pattern = stair_pattern_key
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                         else:
                             pass
                             #st.write("💡 画像をクリックして四角形の対角線上の2点を指定してください")
@@ -3949,7 +3946,7 @@ def main():
                             if st.button("➕ 線追加実行", type="primary", key="btn_add_line_exec_top"):
                                 # 実行フラグを立てて処理実行
                                 st.session_state.add_line_execute = True
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                         
                         if len(st.session_state.rect_coords) == 1:
                             pass
@@ -4032,7 +4029,7 @@ def main():
                             
                             if st.button("🪑 オブジェクト配置実行", type="primary", key="furniture_exec"):
                                 st.session_state.execute_furniture_placement = True
-                                st.rerun()
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                         
                         # モード別の説明メッセージ
                         #if edit_mode == "線を追加":
@@ -4760,7 +4757,7 @@ def main():
                                 
                                 if st.button("🪟 窓追加実行", type="primary", key="window_batch_exec"):
                                     st.session_state.execute_window_batch = True
-                                    st.rerun()
+                                    # 処理は同じrun内のexecute_window_batchブロックで実行される（中間rerun不要）
                         else:
                             st.markdown("### 📋 追加済みの選択範囲")
                             for idx, (p1, p2) in enumerate(st.session_state.rect_coords_list):
@@ -5068,13 +5065,13 @@ def main():
                     should_execute = False
                     
                     if edit_mode == "線を結合" and st.session_state.get('merge_walls_to_process'):
-                        # 前回のrerunで保存された壁を処理
+                        # ボタン押下時に保存した壁を処理（同じrun内で実行）
                         should_execute = True
                     elif edit_mode == "窓を追加" and st.session_state.get('window_walls_to_process'):
-                        # 前回のrerunで保存された壁を処理
+                        # ボタン押下時に保存した壁を処理（同じrun内で実行）
                         should_execute = True
                     elif edit_mode == "線を削除" and st.session_state.get('delete_walls_to_process'):
-                        # 前回のrerunで保存された壁を処理
+                        # ボタン押下時に保存した壁を処理（同じrun内で実行）
                         should_execute = True
                     elif edit_mode == "線を追加" and st.session_state.get('add_line_execute'):
                         # 線を追加モードの実行
