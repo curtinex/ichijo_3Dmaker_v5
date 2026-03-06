@@ -327,6 +327,11 @@ def _render_logged_in_sidebar(user_email, supabase):
     st.markdown(f"ステータス: {user_status_text}")
 
     if not is_paid:
+        st.info(
+            "🎉 **今ならベータ版特別価格！**\n\n"
+            "月額 **500円** でご利用いただけます。\n"
+            "（β期間終了後は価格変更の可能性があります）"
+        )
         if st.button("有料登録", key="pay_btn_logged_in"):
             checkout_url = create_checkout_session(user_email)
             if checkout_url:
