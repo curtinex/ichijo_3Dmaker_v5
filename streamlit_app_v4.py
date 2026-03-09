@@ -2028,7 +2028,8 @@ def main():
         )
 
         uploaded = st.file_uploader("図面PDF/画像をアップロード", type=["pdf", "jpg", "jpeg", "png"], accept_multiple_files=False)
-    
+        st.caption("※PDF図面は一条工務店アプリのMYポストからダウンロードできます")
+
         # PDFの場合、ページ数を確認してページ選択UIを表示
         page_number = 0  # デフォルト
         if uploaded is not None and uploaded.name.lower().endswith('.pdf'):
