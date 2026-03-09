@@ -217,6 +217,11 @@ data/
 *.html
 *.zip
 
+# Keep docs/assets images for GitHub Pages
+!docs/assets/*.png
+!docs/assets/*.jpg
+!docs/assets/*.jpeg
+
 # Keep example files (if needed)
 !example.pdf
 
