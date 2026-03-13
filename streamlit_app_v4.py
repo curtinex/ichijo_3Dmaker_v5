@@ -1862,6 +1862,41 @@ def extract_json_from_html_v2(html_bytes):
     except: pass
     return None
 
+
+# ============================================================
+# パフォーマンス最適化: キャッシュ関数
+# json_bytes / viz_bytes が変わっていない限り再計算をスキップする
+# ============================================================
+
+@st.cache_data(max_entries=8)
+def _parse_json_cached(json_bytes: bytes) -> dict:
+    """json_bytes をデコード・パースしてキャッシュ。
+    同一 bytes の間は再計算しない。"""
+    return json.loads(json_bytes.decode("utf-8"))
+
+
+@st.cache_data(max_entries=8)
+def _get_wall_bounds_cached(json_bytes: bytes):
+    """壁座標の境界値 (min_x, max_x, min_y, max_y) をキャッシュ。
+    ハイライト描画・クリック判定で繰り返し使われる計算を1回に削減。"""
+    data = json.loads(json_bytes.decode("utf-8"))
+    walls = data.get("walls", [])
+    if not walls:
+        return 0.0, 1.0, 0.0, 1.0
+    all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
+    all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
+    return min(all_x), max(all_x), min(all_y), max(all_y)
+
+
+@st.cache_data(max_entries=4)
+def _open_viz_image_cached(viz_bytes: bytes) -> Image.Image:
+    """viz_bytes から PIL Image を開いてキャッシュ。
+    毎フレームの bytes→PIL 変換を抑制する。"""
+    img = Image.open(io.BytesIO(viz_bytes))
+    img.load()  # ファイルハンドルを閉じるため事前ロード
+    return img
+
+
 def main():
     st.set_page_config(page_title="一条工務店 CAD図面3D化アプリ (β)", layout="wide")
     st.title("一条工務店 CAD図面3D化アプリ (β)")
@@ -2151,7 +2186,7 @@ def main():
                 # ピクセル→メートル係数: スケール校正済みの値があればそれを使用、なければデフォルト値
                 if "json_bytes" in st.session_state and st.session_state.json_bytes:
                     try:
-                        json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                        json_data = _parse_json_cached(st.session_state.json_bytes)
                         pixel_to_meter = json_data.get("metadata", {}).get("pixel_to_meter", 0.005) or 0.005
                         if pixel_to_meter != 0.005:
                             st.info(f"📐 スケール校正済みの値を使用: pixel_to_meter = {pixel_to_meter:.6f}")
@@ -2437,28 +2472,13 @@ def main():
                     )
 
                     # 壁データ読み込みと座標変換（streamlit_app.pyと同じロジック）
-                    json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                    json_data = _parse_json_cached(st.session_state.json_bytes)
                     walls = json_data.get("walls", [])
                     scale_px = int(st.session_state.viz_scale)
                     margin = 50  # streamlit_app.pyと同じマージン
-                    all_x, all_y = [], []
-                    for w in walls:
-                        s = w.get("start", [])
-                        e = w.get("end", [])
-                        if len(s) >= 2 and len(e) >= 2:
-                            all_x.extend([s[0], e[0]])
-                            all_y.extend([s[1], e[1]])
-                    if all_x and all_y:
-                        min_x, max_x = min(all_x), max(all_x)
-                        min_y, max_y = min(all_y), max(all_y)
-                        # visualization画像のサイズを計算（Y座標反転を考慮）
-                        img_width_calc = int((max_x - min_x) * scale_px) + 2 * margin
-                        img_height_calc = int((max_y - min_y) * scale_px) + 2 * margin
-                    else:
-                        min_x = min_y = 0
-                        max_x = max_y = 1
-                        img_width_calc = orig_w
-                        img_height_calc = orig_h
+                    min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                    img_width_calc = int((max_x - min_x) * scale_px) + 2 * margin
+                    img_height_calc = int((max_y - min_y) * scale_px) + 2 * margin
 
                     # オーバーレイ描画用にコピー
                     overlay = disp_img.copy()
@@ -2533,7 +2553,7 @@ def main():
                                     import copy
                                     out_dir = Path(st.session_state.out_dir)
                                     json_path = out_dir / st.session_state.json_name
-                                    json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data = _parse_json_cached(st.session_state.json_bytes)
                                     old_pixel_to_meter = json_data.get("metadata", {}).get("pixel_to_meter", 0.005) or 0.005
                                     
                                     # 新しいpixel_to_meterを計算
@@ -2881,7 +2901,7 @@ def main():
             # 窓追加用の入力フォーム（画面上部にまとめて表示）
             if edit_mode == "窓を追加":
                 try:
-                    json_data_tmp = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                    json_data_tmp = _parse_json_cached(st.session_state.json_bytes)
                     walls_tmp = json_data_tmp.get('walls', [])
                     heights_tmp = [w.get('height', 2.4) for w in walls_tmp if 'height' in w]
                     default_room_height = min(max(heights_tmp) if heights_tmp else 2.4, 10.0)
@@ -2995,7 +3015,7 @@ def main():
                 
                 # 可視化画像を読み込み
                 if st.session_state.viz_bytes:
-                    viz_img = Image.open(io.BytesIO(st.session_state.viz_bytes))
+                    viz_img = _open_viz_image_cached(st.session_state.viz_bytes)
                     
                     # 選択範囲を描画した画像を作成
                     import cv2
@@ -3014,13 +3034,10 @@ def main():
                     elif edit_mode == "オブジェクトを削除" and len(st.session_state.selected_furniture_to_delete) > 0:
                         # 削除対象として選択された家具をハイライト
                         try:
-                            json_data_del = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            json_data_del = _parse_json_cached(st.session_state.json_bytes)
                             furniture_list = json_data_del.get('furniture', [])
                             
-                            all_x = [w['start'][0] for w in json_data_del.get('walls', [])] + [w['end'][0] for w in json_data_del.get('walls', [])]
-                            all_y = [w['start'][1] for w in json_data_del.get('walls', [])] + [w['end'][1] for w in json_data_del.get('walls', [])]
-                            min_x = min(all_x)
-                            min_y = min(all_y)
+                            min_x, _mx, min_y, _my = _get_wall_bounds_cached(st.session_state.json_bytes)
                             scale_val = int(st.session_state.viz_scale)
                             margin_val = 50
                             img_height_val = viz_img.height
@@ -3053,15 +3070,10 @@ def main():
 
                     if len(selected_walls_to_highlight) > 0:
                         try:
-                            json_data_highlight = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            json_data_highlight = _parse_json_cached(st.session_state.json_bytes)
                             walls_highlight = json_data_highlight.get('walls', [])
                             
-                            all_x_highlight = [w['start'][0] for w in walls_highlight] + [w['end'][0] for w in walls_highlight]
-                            all_y_highlight = [w['start'][1] for w in walls_highlight] + [w['end'][1] for w in walls_highlight]
-                            min_x_highlight = min(all_x_highlight)
-                            min_y_highlight = min(all_y_highlight)
-                            max_x_highlight = max(all_x_highlight)
-                            max_y_highlight = max(all_y_highlight)
+                            min_x_highlight, max_x_highlight, min_y_highlight, max_y_highlight = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                             scale_highlight = int(st.session_state.viz_scale)
                             margin_highlight = 50
@@ -3350,15 +3362,10 @@ def main():
                         # 線削除モードの場合は四角形内の壁を色変更
                         if edit_mode == "線を削除":
                             try:
-                                json_data_del = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data_del = _parse_json_cached(st.session_state.json_bytes)
                                 walls_del = json_data_del.get('walls', [])
                                 
-                                all_x_del = [w['start'][0] for w in walls_del] + [w['end'][0] for w in walls_del]
-                                all_y_del = [w['start'][1] for w in walls_del] + [w['end'][1] for w in walls_del]
-                                min_x_del = min(all_x_del)
-                                min_y_del = min(all_y_del)
-                                max_x_del = max(all_x_del)
-                                max_y_del = max(all_y_del)
+                                min_x_del, max_x_del, min_y_del, max_y_del = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_del = int(st.session_state.viz_scale)
                                 margin_del = 50
@@ -3407,15 +3414,10 @@ def main():
                         # 窓追加モードまたは線を結合モードの場合は四角形ではなく追加予定の壁を線で表示
                         elif edit_mode == "窓を追加" or edit_mode == "線を結合":
                             try:
-                                json_data_confirmed = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data_confirmed = _parse_json_cached(st.session_state.json_bytes)
                                 walls_confirmed = json_data_confirmed.get('walls', [])
                                 
-                                all_x_confirmed = [w['start'][0] for w in walls_confirmed] + [w['end'][0] for w in walls_confirmed]
-                                all_y_confirmed = [w['start'][1] for w in walls_confirmed] + [w['end'][1] for w in walls_confirmed]
-                                min_x_confirmed = min(all_x_confirmed)
-                                min_y_confirmed = min(all_y_confirmed)
-                                max_x_confirmed = max(all_x_confirmed)
-                                max_y_confirmed = max(all_y_confirmed)
+                                min_x_confirmed, max_x_confirmed, min_y_confirmed, max_y_confirmed = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_confirmed = int(st.session_state.viz_scale)
                                 margin_confirmed = 50
@@ -3581,16 +3583,11 @@ def main():
                         # 窓追加モードまたは線を結合モードの場合、追加予定の壁を線で表示
                         if edit_mode == "窓を追加" or edit_mode == "線を結合":
                             try:
-                                json_data_preview = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data_preview = _parse_json_cached(st.session_state.json_bytes)
                                 walls_preview = json_data_preview.get('walls', [])
                                 
                                 # 可視化画像のパラメータを取得
-                                all_x_preview = [w['start'][0] for w in walls_preview] + [w['end'][0] for w in walls_preview]
-                                all_y_preview = [w['start'][1] for w in walls_preview] + [w['end'][1] for w in walls_preview]
-                                min_x_preview = min(all_x_preview)
-                                min_y_preview = min(all_y_preview)
-                                max_x_preview = max(all_x_preview)
-                                max_y_preview = max(all_y_preview)
+                                min_x_preview, max_x_preview, min_y_preview, max_y_preview = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_preview = int(st.session_state.viz_scale)
                                 margin_preview = 50
@@ -4042,7 +4039,7 @@ def main():
                             if len(st.session_state.rect_coords_list) > 0:
                                 rect = st.session_state.rect_coords_list[0]
                                 p1, p2 = rect
-                                json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data = _parse_json_cached(st.session_state.json_bytes)
                                 x_start, y_start, width, depth = _snap_to_grid(
                                     (p1[0], p1[1], p2[0], p2[1]), 
                                     json_data, 
@@ -4062,13 +4059,10 @@ def main():
                         # 窓追加モードで2点選択完了時：壁検出結果をハイライト表示（線を結合モードは除外）
                         if edit_mode == "窓を追加" and len(st.session_state.rect_coords) == 2:
                             try:
-                                json_data_check = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data_check = _parse_json_cached(st.session_state.json_bytes)
                                 walls_check = json_data_check['walls']
                                 
-                                all_x_check = [w['start'][0] for w in walls_check] + [w['end'][0] for w in walls_check]
-                                all_y_check = [w['start'][1] for w in walls_check] + [w['end'][1] for w in walls_check]
-                                min_x_check, max_x_check = min(all_x_check), max(all_x_check)
-                                min_y_check, max_y_check = min(all_y_check), max(all_y_check)
+                                min_x_check, max_x_check, min_y_check, max_y_check = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_check = int(viz_scale)
                                 margin_check = 50
@@ -4267,15 +4261,10 @@ def main():
                                 pass
                             else:
                                 try:
-                                    json_data_merge = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data_merge = _parse_json_cached(st.session_state.json_bytes)
                                     walls_merge = json_data_merge.get('walls', [])
                                     
-                                    all_x_merge = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
-                                    all_y_merge = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
-                                    min_x_merge = min(all_x_merge)
-                                    min_y_merge = min(all_y_merge)
-                                    max_x_merge = max(all_x_merge)
-                                    max_y_merge = max(all_y_merge)
+                                    min_x_merge, max_x_merge, min_y_merge, max_y_merge = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_merge = int(st.session_state.viz_scale)
                                     margin_merge = 50
@@ -4311,15 +4300,10 @@ def main():
                                 pass
                             else:
                                 try:
-                                    json_data_window = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data_window = _parse_json_cached(st.session_state.json_bytes)
                                     walls_window = json_data_window.get('walls', [])
                                     
-                                    all_x_window = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
-                                    all_y_window = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
-                                    min_x_window = min(all_x_window)
-                                    min_y_window = min(all_y_window)
-                                    max_x_window = max(all_x_window)
-                                    max_y_window = max(all_y_window)
+                                    min_x_window, max_x_window, min_y_window, max_y_window = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_window = int(st.session_state.viz_scale)
                                     margin_window = 50
@@ -4355,15 +4339,10 @@ def main():
                                 pass
                             else:
                                 try:
-                                    json_data_delete = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data_delete = _parse_json_cached(st.session_state.json_bytes)
                                     walls_delete = json_data_delete.get('walls', [])
                                     
-                                    all_x_delete = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
-                                    all_y_delete = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
-                                    min_x_delete = min(all_x_delete)
-                                    min_y_delete = min(all_y_delete)
-                                    max_x_delete = max(all_x_delete)
-                                    max_y_delete = max(all_y_delete)
+                                    min_x_delete, max_x_delete, min_y_delete, max_y_delete = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_delete = int(st.session_state.viz_scale)
                                     margin_delete = 50
@@ -4394,15 +4373,11 @@ def main():
                                 pass
                             else:
                                 try:
-                                    json_data_furn = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data_furn = _parse_json_cached(st.session_state.json_bytes)
                                     furniture_list = json_data_furn.get('furniture', [])
                                     
                                     # スケール情報を取得（壁データから）
-                                    json_data_walls_t = json_data_furn.get('walls', [])
-                                    all_x_t = [w['start'][0] for w in json_data_walls_t] + [w['end'][0] for w in json_data_walls_t]
-                                    all_y_t = [w['start'][1] for w in json_data_walls_t] + [w['end'][1] for w in json_data_walls_t]
-                                    min_x_t = min(all_x_t)
-                                    min_y_t = min(all_y_t)
+                                    min_x_t, _mx_t, min_y_t, _my_t = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     scale_t = int(st.session_state.viz_scale)
                                     margin_t = 50
                                     img_height_t = viz_img.height
@@ -4437,25 +4412,14 @@ def main():
                             if st.session_state.last_click != new_point:
                                 try:
                                     # 壁データと座標範囲を取得
-                                    json_data_calib = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                    json_data_calib = _parse_json_cached(st.session_state.json_bytes)
                                     walls_calib = json_data_calib.get("walls", [])
                                     
-                                    all_x_calib = []
-                                    all_y_calib = []
-                                    for w in walls_calib:
-                                        if "start" in w and "end" in w:
-                                            all_x_calib.extend([w["start"][0], w["end"][0]])
-                                            all_y_calib.extend([w["start"][1], w["end"][1]])
-                                    
-                                    if all_x_calib and all_y_calib:
-                                        min_x_calib = min(all_x_calib)
-                                        max_x_calib = max(all_x_calib)
-                                        min_y_calib = min(all_y_calib)
-                                        max_y_calib = max(all_y_calib)
-                                        
+                                    min_x_calib, max_x_calib, min_y_calib, max_y_calib = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    if walls_calib:
                                         scale_calib = int(st.session_state.viz_scale)
                                         margin_calib = 50
-                                        img_height_calib = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
+                                        img_height_calib = _open_viz_image_cached(st.session_state.viz_bytes).height
                                         
                                         # クリック位置から最も近い壁を検出
                                         nearest_wall, distance = _find_nearest_wall_from_click(
@@ -4488,17 +4452,14 @@ def main():
                                     # 注：線を結合モードは壁線クリック選択のため除外
                                     if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を配置")) and len(st.session_state.rect_coords) == 2:
                                         try:
-                                            json_data_auto = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                            json_data_auto = _parse_json_cached(st.session_state.json_bytes)
                                             walls_auto = json_data_auto['walls']
                                             
-                                            all_x_auto = [w['start'][0] for w in walls_auto] + [w['end'][0] for w in walls_auto]
-                                            all_y_auto = [w['start'][1] for w in walls_auto] + [w['end'][1] for w in walls_auto]
-                                            min_x_auto, max_x_auto = min(all_x_auto), max(all_x_auto)
-                                            min_y_auto, max_y_auto = min(all_y_auto), max(all_y_auto)
+                                            min_x_auto, max_x_auto, min_y_auto, max_y_auto = _get_wall_bounds_cached(st.session_state.json_bytes)
                                             
                                             scale_auto = int(st.session_state.viz_scale)
                                             margin_auto = 50
-                                            img_height_auto = Image.open(io.BytesIO(st.session_state.viz_bytes)).height
+                                            img_height_auto = _open_viz_image_cached(st.session_state.viz_bytes).height
                                             
                                             p1_auto, p2_auto = st.session_state.rect_coords
                                             x1_auto, y1_auto = min(p1_auto[0], p2_auto[0]), min(p1_auto[1], p2_auto[1])
@@ -4623,12 +4584,9 @@ def main():
                         elif edit_mode == "窓を追加":
                             # 窓追加モードの場合、各選択範囲の壁検出状況を表示
                             try:
-                                json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data = _parse_json_cached(st.session_state.json_bytes)
                                 walls = json_data['walls']
-                                all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
-                                all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
-                                min_x, max_x = min(all_x), max(all_x)
-                                min_y, max_y = min(all_y), max(all_y)
+                                min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 scale = int(viz_scale)
                                 margin = 50
                                 img_width = int((max_x - min_x) * scale) + 2 * margin
@@ -4826,12 +4784,9 @@ def main():
                             try:
                                 p1, p2 = tuple(st.session_state['rect_coords'])
                                 if st.session_state.get('json_bytes'):
-                                    json_data_preview = json.loads(st.session_state.json_bytes.decode('utf-8'))
+                                    json_data_preview = _parse_json_cached(st.session_state.json_bytes)
                                     walls_preview = json_data_preview.get('walls', [])
-                                    all_x = [w['start'][0] for w in walls_preview] + [w['end'][0] for w in walls_preview]
-                                    all_y = [w['start'][1] for w in walls_preview] + [w['end'][1] for w in walls_preview]
-                                    min_x, max_x = min(all_x), max(all_x)
-                                    min_y, max_y = min(all_y), max(all_y)
+                                    min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     scale_preview = int(st.session_state.get('viz_scale', 100))
                                     margin_preview = 50
                                     img_height_preview = int((max_y - min_y) * scale_preview) + 2 * margin_preview
@@ -4878,14 +4833,11 @@ def main():
                                     st.stop()
                             
                                 # JSONデータを読み込み
-                                json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                                json_data = _parse_json_cached(st.session_state.json_bytes)
                                 walls = json_data['walls']
                             
                                 # 可視化画像のパラメータを取得
-                                all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
-                                all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
-                                min_x, max_x = min(all_x), max(all_x)
-                                min_y, max_y = min(all_y), max(all_y)
+                                min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                                 scale = int(viz_scale)
                                 margin = 50
@@ -5136,14 +5088,11 @@ def main():
                                 pass
                             
                             # JSONデータを読み込み
-                            json_data = json.loads(st.session_state.json_bytes.decode("utf-8"))
+                            json_data = _parse_json_cached(st.session_state.json_bytes)
                             walls = json_data['walls']
                             
                             # 可視化画像のパラメータを取得
-                            all_x = [w['start'][0] for w in walls] + [w['end'][0] for w in walls]
-                            all_y = [w['start'][1] for w in walls] + [w['end'][1] for w in walls]
-                            min_x, max_x = min(all_x), max(all_x)
-                            min_y, max_y = min(all_y), max(all_y)
+                            min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                             scale = int(viz_scale)
                             margin = 50
