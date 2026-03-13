@@ -2467,8 +2467,8 @@ def main():
                     import math
                     from PIL import ImageDraw
 
-                    disp_img, scale_disp, orig_w, orig_h = _prepare_display_from_bytes(
-                        st.session_state.viz_bytes, max_width=DISPLAY_IMAGE_WIDTH
+                    disp_img, scale_disp, orig_w, orig_h = _prepare_display_from_pil(
+                        _open_viz_image_cached(st.session_state.viz_bytes), max_width=DISPLAY_IMAGE_WIDTH
                     )
 
                     # 壁データ読み込みと座標変換（streamlit_app.pyと同じロジック）
@@ -3625,28 +3625,6 @@ def main():
                                 except Exception:
                                     walls_in_rect_filtered = walls_in_rect_preview
 
-                                # プレビュー時の詳細デバッグ出力（2点目選択直後に表示）
-                                try:
-                                    # プレビュー時の内部マッピングは表示しない（ログのみ残す）
-                                    preview_debug = []
-                                    for w in walls_preview:
-                                        x1w = int((w['start'][0] - min_x_preview) * scale_preview) + margin_preview
-                                        y1w = img_height_preview - (int((w['start'][1] - min_y_preview) * scale_preview) + margin_preview)
-                                        x2w = int((w['end'][0] - min_x_preview) * scale_preview) + margin_preview
-                                        y2w = img_height_preview - (int((w['end'][1] - min_y_preview) * scale_preview) + margin_preview)
-                                        in_rect = (
-                                            (rect_preview['left'] <= x1w <= rect_preview['left'] + rect_preview['width'] and rect_preview['top'] <= y1w <= rect_preview['top'] + rect_preview['height']) or
-                                            (rect_preview['left'] <= x2w <= rect_preview['left'] + rect_preview['width'] and rect_preview['top'] <= y2w <= rect_preview['top'] + rect_preview['height']) or
-                                            _line_intersects_rect(x1w, y1w, x2w, y2w, rect_preview, tolerance=20)
-                                        )
-                                        preview_debug.append({'id': w.get('id'), 'start_px': (x1w, y1w), 'end_px': (x2w, y2w), 'in_rect': in_rect})
-                                    try:
-                                        append_debug(f"Preview mapping: detected={[d['id'] for d in preview_debug if d.get('in_rect')]}, total_checked={len(preview_debug)}")
-                                    except Exception:
-                                        pass
-                                except Exception:
-                                    pass
-
                                 # 検出が2本以上ある場合、追加予定の線を描画
                                 if len(walls_in_rect_filtered) >= 2:
                                     # まず窓パラメータを取得（表示用）
@@ -4088,18 +4066,6 @@ def main():
 
                                 # 端点が重なって複数の壁が検出される場合、縦横を判定して最適な2本を選択
                                 try:
-                                    # デバッグ: 検出された全ての壁の情報を表示
-                                    try:
-                                        all_wall_details = []
-                                        for w in walls_in_rect_check:
-                                            dx = abs(w['end'][0] - w['start'][0])
-                                            dy = abs(w['end'][1] - w['start'][1])
-                                            direction = "縦" if dx < dy else "横"
-                                            all_wall_details.append(f"ID{w['id']}({direction})")
-                                        append_debug(f"Detected walls before filtering: {', '.join(all_wall_details)}")
-                                    except:
-                                        pass
-                                    
                                     if len(walls_in_rect_check) >= 3:
                                         # 3本以上：縦横を分類して最も近い平行な壁のペアを選ぶ
                                         best_pair = _select_best_wall_pair_from_4(walls_in_rect_check)
@@ -4130,27 +4096,7 @@ def main():
                                             pass
                                     except Exception:
                                         pass
-                                    # プレビュー確定表示は不要になったためUI非表示（内部データは保持）
-                                    try:
-                                        preview_debug_confirm = []
-                                        for w in walls_check:
-                                            x1w = int((w['start'][0] - min_x_check) * scale_check) + margin_check
-                                            y1w = img_height_check - (int((w['start'][1] - min_y_check) * scale_check) + margin_check)
-                                            x2w = int((w['end'][0] - min_x_check) * scale_check) + margin_check
-                                            y2w = img_height_check - (int((w['end'][1] - min_y_check) * scale_check) + margin_check)
-                                            in_rect = (
-                                                (rect_check['left'] <= x1w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y1w <= rect_check['top'] + rect_check['height']) or
-                                                (rect_check['left'] <= x2w <= rect_check['left'] + rect_check['width'] and rect_check['top'] <= y2w <= rect_check['top'] + rect_check['height']) or
-                                                _line_intersects_rect(x1w, y1w, x2w, y2w, rect_check, tolerance=20)
-                                            )
-                                            preview_debug_confirm.append({'id': w.get('id'), 'start_px': (x1w, y1w), 'end_px': (x2w, y2w), 'in_rect': in_rect})
-                                        try:
-                                            append_debug(f"Preview confirmed mapping: detected={[d['id'] for d in preview_debug_confirm if d.get('in_rect')]}, total_checked={len(preview_debug_confirm)}")
-                                        except Exception:
-                                            pass
-                                    except Exception:
-                                        pass
-                                    # デバッグ: 選択された壁の詳細情報を表示
+                                    # 選択された壁の詳細情報を表示
                                     try:
                                         wall_details = []
                                         for w in walls_in_rect_filtered:
@@ -4796,15 +4742,11 @@ def main():
                                         'width': abs(p2[0] - p1[0]),
                                         'height': abs(p2[1] - p1[1])
                                     }
-                                    # 内部検証は行うが表示は行わない（必要ならログに出す）
+                                    # 内部検証は行うが表示は行わない
                                     walls_hit, debug_info_preview = _filter_walls_by_endpoints_in_rect(
                                         walls_preview, rect_preview, scale_preview, margin_preview, img_height_preview,
                                         min_x, min_y, max_x, max_y, tolerance=0, debug=True
                                     )
-                                    try:
-                                        append_debug(f"Window-add preview: detected_ids={[w.get('id') for w in walls_hit]}, total_checked={len(debug_info_preview)}")
-                                    except Exception:
-                                        pass
                             except Exception:
                                 pass
                     
