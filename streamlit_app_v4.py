@@ -234,7 +234,7 @@ def create_checkout_session(email=None):
         if email:
             params['customer_email'] = email
 
-        # Decide whether to grant a 15-day trial. If Supabase is configured, check has_had_trial.
+        # Decide whether to grant a 10-day trial. If Supabase is configured, check has_had_trial.
         try:
             supabase_client = get_supabase()
         except Exception:
@@ -255,7 +255,7 @@ def create_checkout_session(email=None):
             give_trial = False
 
         if give_trial:
-            params['subscription_data'] = {'trial_period_days': 15}
+            params['subscription_data'] = {'trial_period_days': 10}
 
         session = stripe.checkout.Session.create(**params)
         return session.url
@@ -477,9 +477,9 @@ with st.sidebar.expander("アカウント設定"):
                                 "email_redirect_to": "https://curtinex.github.io/ichijo_3Dmaker_v5/auth-confirmed.html"
                             }
                         })
-                        st.success("確認メールを送信しました。メールのリンクでアカウントを有効化してください。\n同時に無料トライアル（15日間）を付与しました。")
+                        st.success("確認メールを送信しました。メールのリンクでアカウントを有効化してください。\n同時に無料トライアル（10日間）を付与しました。")
                         # Compute trial expiry
-                        trial_expires = (datetime.utcnow() + timedelta(days=15)).isoformat()
+                        trial_expires = (datetime.utcnow() + timedelta(days=10)).isoformat()
                         # 権限(RLS)によるセキュリティエラーを防ぐため、さらに安全性を高めるため、
                         # テーブルへのデータ登録はSupabase側のデータベーストリガー(handle_new_user)で行う仕様に変更しました。
                         # これによりフロントエンドから他人のデータを意図せず上書きするなどのリスクがゼロになります。
