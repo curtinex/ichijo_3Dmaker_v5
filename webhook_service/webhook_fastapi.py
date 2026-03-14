@@ -73,6 +73,7 @@ def handle_checkout_session(session: dict):
             if sub.get('current_period_end'):
                 dt = datetime.datetime.utcfromtimestamp(sub['current_period_end'])
                 payload['trial_expires'] = dt.isoformat()
+                payload['next_billing_date'] = dt.isoformat()
         except Exception:
             logging.exception('Failed to retrieve subscription')
 
@@ -126,6 +127,14 @@ def handle_invoice_paid(invoice: dict):
     }
     if subscription_id:
         payload['stripe_subscription_id'] = subscription_id
+        # Retrieve subscription to get next billing date
+        try:
+            sub = stripe.Subscription.retrieve(subscription_id)
+            if sub.get('current_period_end'):
+                dt = datetime.datetime.utcfromtimestamp(sub['current_period_end'])
+                payload['next_billing_date'] = dt.isoformat()
+        except Exception:
+            logging.exception('Failed to retrieve subscription for next_billing_date in invoice.paid')
     # If invoice didn't include customer_email, try to lookup email by stripe_customer_id
     if not email and supabase and customer_id:
         try:
@@ -155,6 +164,25 @@ def handle_subscription_deleted(sub: dict):
             return
         except Exception:
             logging.exception('Failed to lookup member by stripe_customer_id')
+
+
+def handle_invoice_payment_failed(invoice: dict):
+    """支払い失敗時: is_active=False, payment_status=past_due に更新してアクセスを停止する"""
+    customer_id = invoice.get('customer')
+    email = invoice.get('customer_email')
+    payload = {
+        'is_active': False,
+        'payment_status': 'past_due',
+    }
+    # メールがない場合は stripe_customer_id で Supabase から引く
+    if not email and supabase and customer_id:
+        try:
+            res = supabase.table('members').select('email').eq('stripe_customer_id', customer_id).limit(1).execute()
+            rows = res.get('data') if isinstance(res, dict) else getattr(res, 'data', None)
+            email = rows[0]['email'] if rows and len(rows) > 0 else None
+        except Exception:
+            logging.exception('Failed to lookup email by stripe_customer_id for payment_failed')
+    upsert_member_by_email(email, payload)
 
 
 @app.post('/webhook')
@@ -221,10 +249,12 @@ async def webhook(request: Request, stripe_signature: Optional[str] = Header(Non
                     payload['trial_expires'] = dt.isoformat()
                 except Exception:
                     pass
-            elif sub.get('current_period_end'):
+            if sub.get('current_period_end'):
                 try:
                     dt = datetime.datetime.utcfromtimestamp(int(sub['current_period_end']))
-                    payload['trial_expires'] = dt.isoformat()
+                    if not sub.get('trial_end'):
+                        payload['trial_expires'] = dt.isoformat()
+                    payload['next_billing_date'] = dt.isoformat()
                 except Exception:
                     pass
 
@@ -241,6 +271,9 @@ async def webhook(request: Request, stripe_signature: Optional[str] = Header(Non
         elif event_type in ('invoice.payment_succeeded', 'invoice.paid'):
             invoice = event['data']['object']
             handle_invoice_paid(invoice)
+        elif event_type == 'invoice.payment_failed':
+            invoice = event['data']['object']
+            handle_invoice_payment_failed(invoice)
         elif event_type in ('customer.subscription.deleted', 'customer.subscription.updated'):
             sub = event['data']['object']
             if event_type == 'customer.subscription.deleted':
@@ -253,6 +286,7 @@ async def webhook(request: Request, stripe_signature: Optional[str] = Header(Non
                     if sub.get('current_period_end'):
                         dt = datetime.datetime.utcfromtimestamp(sub['current_period_end'])
                         payload['trial_expires'] = dt.isoformat()
+                        payload['next_billing_date'] = dt.isoformat()
                     if supabase and customer_id:
                         res = supabase.table('members').select('email').eq('stripe_customer_id', customer_id).limit(1).execute()
                         rows = res.get('data') if isinstance(res, dict) else getattr(res, 'data', None)
