@@ -22,3 +22,27 @@ section{margin:28px 0}
 @media(max-width:600px){.screenshot-gallery{width:100%}}
 .site-footer{background:#fafafa;padding:16px 0;text-align:center;color:#666;font-size:14px}
 .form-wrap{border:1px solid #eee;padding:12px;background:#fff}
+
+/* Plan table */
+.plan-section{margin:36px 0}
+.plan-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.plan-table{width:100%;border-collapse:collapse;font-size:14px;min-width:480px}
+.plan-table th,.plan-table td{border:1px solid #dde3eb;padding:10px 12px;text-align:center;vertical-align:middle}
+.plan-table .feature-col{text-align:left;font-weight:600;background:#f8f9fb;min-width:180px}
+.plan-table thead th{background:#f0f6ff;font-weight:700;font-size:13px;line-height:1.5}
+.plan-table thead .plan-trial{background:#e6f4ea;color:#1a7a3a}
+.plan-table thead .plan-paid{background:#fff3e0;color:#b05800}
+.plan-sub{display:block;font-size:11px;font-weight:400;color:#666;margin-top:3px}
+.plan-table .check{color:#1a7a3a;font-weight:700;font-size:16px}
+.plan-table .cross{color:#aaa;font-size:15px}
+.plan-table .highlight-row td{background:#fffde7}
+.plan-table .highlight-row .feature-col{background:#fffde7}
+.plan-table small{display:block;font-size:11px;color:#888;margin-top:2px}
+
+/* Plan CTA cards */
+.plan-cta-row{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
+.plan-cta-card{flex:1;min-width:220px;border:1px solid #dde3eb;border-radius:10px;padding:20px 20px 18px;background:#fff;display:flex;flex-direction:column;gap:8px}
+.plan-cta-label{margin:0;font-size:15px;font-weight:700;color:#222}
+.plan-cta-desc{margin:0;font-size:13px;color:#555;line-height:1.6}
+.btn.secondary{background:#fff6e0;color:#b05800;border-color:#f0b64a}
+@media(max-width:600px){.plan-cta-row{flex-direction:column}}
