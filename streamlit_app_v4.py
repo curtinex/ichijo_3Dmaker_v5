@@ -341,6 +341,9 @@ def _render_logged_in_sidebar(user_email, supabase):
         except Exception:
             user_status_text = "状態取得エラー"
 
+    # セッションステートにアクセス権を保存（Step2・3のゲートで参照する）
+    st.session_state['is_paid'] = is_paid
+
     st.write(f"ログイン中: {user_email or '（不明なユーザー）'}")
     st.markdown(f"ステータス: {user_status_text}")
 
@@ -404,6 +407,7 @@ def _render_logged_in_sidebar(user_email, supabase):
         except Exception:
             pass
         st.session_state.pop('user', None)
+        st.session_state['is_paid'] = False
         # ensure login form is shown after logout
         st.session_state['hide_login_form'] = False
         st.success("ログアウトしました")
@@ -2203,6 +2207,8 @@ def main():
                 if st.button("⏭️ スキップ", use_container_width=True, key="step1_skip"):
                     if st.session_state.get('user') is None:
                         st.warning("ステップ2はログインが必要です。サイドバーでログインしてください。")
+                    elif not st.session_state.get('is_paid', False):
+                        st.warning("ステップ2は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
                     else:
                         st.session_state.workflow_step = 2
                         st.rerun()
@@ -2440,10 +2446,12 @@ def main():
 
 
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
-        # Gate Step 2 UI behind login: show warning and skip internals when not logged in
+        # Gate Step 2 UI behind login AND paid/trial access
         if st.session_state.get('user') is None:
             st.warning("ステップ2はログインが必要です。サイドバーでログインしてください。")
             #st.stop()
+        elif not st.session_state.get('is_paid', False):
+            st.warning("ステップ2は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
         else:
             if st.session_state.workflow_step >= 2 and st.session_state.processed:
                 st.divider()
@@ -2764,16 +2772,20 @@ def main():
                 if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
                     if st.session_state.get('user') is None:
                         st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
+                    elif not st.session_state.get('is_paid', False):
+                        st.warning("ステップ3は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
                     else:
                         st.session_state.workflow_step = 3
                         st.session_state.open_3d_expander = True
                         st.rerun()
     # ============= ステップ3: 手動編集 =============
     with st.expander("Step 3：手動編集", expanded=(st.session_state.workflow_step == 3)):
-        # Gate Step 3 UI behind login: show warning and skip internals when not logged in
+        # Gate Step 3 UI behind login AND paid/trial access
         if st.session_state.get('user') is None:
             st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
             #st.stop()
+        elif not st.session_state.get('is_paid', False):
+            st.warning("ステップ3は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
         else:
             if st.session_state.workflow_step >= 3 and st.session_state.processed:
                 st.divider()
