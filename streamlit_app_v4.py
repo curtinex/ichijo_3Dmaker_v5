@@ -257,6 +257,11 @@ def create_checkout_session(email=None):
         if give_trial:
             params['subscription_data'] = {'trial_period_days': 10}
 
+        params['custom_text'] = {
+            'submit': {
+                'message': '⚠️ 現在JCBカードは一時停止しております。VISA・Mastercard・American Expressカードをご使用ください。'
+            }
+        }
         session = stripe.checkout.Session.create(**params)
         return session.url
     except Exception as e:
@@ -353,6 +358,7 @@ def _render_logged_in_sidebar(user_email, supabase):
             "月額 **500円** でご利用いただけます。\n"
             "（β期間終了後は価格変更の可能性があります）"
         )
+        st.warning("⚠️ **ご利用可能なカード**: VISA・Mastercard・American Express  \nJCBカードは現在審査中のため一時停止しております。")
         if st.button("有料登録", key="pay_btn_logged_in"):
             checkout_url = create_checkout_session(user_email)
             if checkout_url:
