@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>一条工務店向け 間取り→3D 自動生成デモ | ichijo 3D maker</title>
-  <meta name="description" content="一条工務店の間取りデータから簡単に3Dプレビューを生成するデモアプリ。間取りの可視化・確認・共有に。">
-  <meta name="keywords" content="一条工務店, 間取り, 3D, 3D間取り, 間取り可視化">
+  <title>住宅の間取り図面を3D化する方法｜一条工務店対応の無料3Dパース生成ツール</title>
+  <meta name="description" content="住宅の間取り図面（PDF）をアップロードするだけで3Dモデルを自動生成。一条工務店の間取り図に対応した無料3Dパース作成ツール。CAD不要・ブラウザのみで操作可能。">
+  <meta name="keywords" content="住宅図面 3D化, 間取り 3D, 図面 3D変換, 3Dパース 無料, 一条工務店 間取り 3D, 間取り図 3D化, 間取り可視化, CAD不要 3D, 間取り 3D変換, 住宅 3Dパース">
   <link rel="canonical" href="https://your-username.github.io/your-repo/">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="一条工務店向け 間取り→3D 自動生成デモ | ichijo 3D maker">
-  <meta property="og:description" content="一条工務店の間取りデータから簡単に3Dプレビューを生成するデモアプリ。">
+  <meta property="og:title" content="住宅の間取り図面を3D化する方法｜一条工務店対応の無料3Dパース生成ツール">
+  <meta property="og:description" content="住宅の間取り図面（PDF）をアップロードするだけで3Dモデルを自動生成。一条工務店の間取り図に対応した無料3Dパース作成ツール。CAD不要・ブラウザのみで操作可能。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://your-username.github.io/your-repo/">
   <meta property="og:image" content="/assets/og-image.png">
@@ -24,9 +24,62 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "ichijo 3D maker - 間取りから3D",
-    "url": "https://your-username.github.io/your-repo/"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "ichijo 3D maker - 住宅間取り図面3D化ツール",
+        "url": "https://your-username.github.io/your-repo/"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "ichijo 3D maker",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "description": "住宅の間取り図面（PDF）を3Dモデルに自動変換するWebアプリ。一条工務店の間取り図に対応。CAD不要・無料でお試し可能。",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "JPY"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "無料で使えますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "はい、PDF・画像のアップロードから3Dプレビュー生成・HTMLダウンロードまで、登録不要で無料でご利用いただけます。手動編集などの高度な機能は会員登録（10日間の無料トライアルあり）が必要です。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "CADソフトは必要ですか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "不要です。PDF形式や画像形式（JPG / PNG）の間取り図があれば、ブラウザだけで3D化が完結します。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "どんな図面形式に対応していますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "PDF（推奨）、JPEG、PNGに対応しています。一条工務店の間取り図データに最適化されていますが、他のハウスメーカーの図面でも試していただけます。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "3D化にはどのくらいの時間がかかりますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "通常、アップロードから3D生成完了まで数十秒〜1分程度です。ファイルサイズや図面の複雑さによって多少変わります。"
+            }
+          }
+        ]
+      }
+    ]
   }
   </script>
 </head>
@@ -45,6 +98,20 @@
   </header>
 
   <main class="container">
+
+    <!-- ① 課題提起 -->
+    <section class="problem-section">
+      <h2>住宅の間取り図面を3D化したい方へ</h2>
+      <p>住宅設計・打ち合わせの現場で、こんな課題を感じたことはありませんか？</p>
+      <ul class="problem-list">
+        <li>📄 PDFの図面だけでは、部屋の広さや空間イメージが掴みにくい</li>
+        <li>🤝 施主との打ち合わせで、配置・高さの認識がズレてしまう</li>
+        <li>💸 3Dパース作成に専門ソフト・外注費用がかかる</li>
+        <li>⏱️ CADを習得する時間がなく、手軽に3D化できるツールが見つからない</li>
+      </ul>
+      <p>そんな課題を解決するために、<strong>住宅の間取り図面（PDF）をブラウザだけで3D化できる無料ツール</strong>「<strong>ichijo 3D maker</strong>」を開発しました。<br>一条工務店の間取り図面に対応しており、CAD・専門知識がなくても、PDFをアップロードするだけで数十秒で3Dパースを自動生成します。</p>
+    </section>
+
     <section class="screenshot-section">
       <div class="screenshot-gallery">
         <figure class="screenshot-item">
@@ -59,6 +126,40 @@
         <figure class="screenshot-item">
           <img src="assets/image_4.png" alt="アプリ紹介画像4" loading="lazy" width="100%" style="max-width:100%;width:100%;height:auto;display:block">
         </figure>
+      </div>
+    </section>
+
+    <!-- ② 3D化方法の比較 -->
+    <section class="solution-section">
+      <h2>住宅の図面を3D化する方法の比較</h2>
+      <p>間取り図面を3D化する手段は、一般的に以下の3つがあります。しかしそれぞれに課題があります。</p>
+      <div class="solution-compare">
+        <div class="solution-item">
+          <h3>CADソフト（AutoCAD・Revit など）</h3>
+          <ul>
+            <li>❌ 操作習得に数ヶ月〜1年かかる</li>
+            <li>❌ 高額なライセンス費用が必要</li>
+            <li>❌ 専門知識がないと使いこなせない</li>
+          </ul>
+        </div>
+        <div class="solution-item">
+          <h3>専門業者への3Dパース外注</h3>
+          <ul>
+            <li>❌ 費用が高い（数万円〜10万円以上）</li>
+            <li>❌ 納期がかかる（数日〜1週間）</li>
+            <li>❌ 修正のたびに費用と時間が発生</li>
+          </ul>
+        </div>
+        <div class="solution-item solution-best">
+          <h3>✅ ichijo 3D maker（このアプリ）</h3>
+          <ul>
+            <li>✅ 完全無料でお試し可能</li>
+            <li>✅ CAD・専門知識不要</li>
+            <li>✅ PDFをアップロードするだけで数十秒で3D化</li>
+            <li>✅ ブラウザのみで動作・インストール不要</li>
+            <li>✅ 生成した3DビューアをHTMLとして共有可能</li>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -140,11 +241,34 @@
       </div>
     </section>
 
-    <section>
-      <h2>【主な特徴】</h2>
-      <ul>
-        <li>一条工務店の間取りを簡単に3D化</li>
-        <li>ブラウザでのプレビューと共有</li>
+    <section class="features-section">
+      <h2>住宅図面3D化ツール「ichijo 3D maker」の主な特徴</h2>
+      <p>「ichijo 3D maker」は、住宅の間取り図面を手軽に3D化するために開発されたWebアプリです。一条工務店の間取り図（PDF）に特化した自動認識エンジンを搭載しており、壁・開口部などを高精度で検出して3Dモデルを自動生成します。設計担当者・施主・住宅検討中の方など、幅広い方にご利用いただけます。</p>
+      <ul class="feature-list">
+        <li>
+          <strong>🏠 一条工務店の間取り図面を高精度で3D化</strong><br>
+          一条工務店の間取りPDFに最適化したアルゴリズムで、壁の構造を自動認識して3D変換します。他のハウスメーカーの図面でもお試しいただけます。
+        </li>
+        <li>
+          <strong>📁 PDF・JPEG・PNG 対応</strong><br>
+          PDFはもちろん、スキャンした紙図面の画像（JPEG・PNG）形式にも対応しています。
+        </li>
+        <li>
+          <strong>🔄 ブラウザで360°3Dプレビュー</strong><br>
+          生成した3Dモデルはブラウザ上でインタラクティブに360°回転・ズームして確認できます。特別なソフトウェアは一切不要です。
+        </li>
+        <li>
+          <strong>✏️ 壁・窓・扉・家具の手動編集（会員向け）</strong><br>
+          自動認識結果を細かく修正できる手動編集機能も搭載。スケール校正や壁の追加・削除、窓や扉の配置変更も直感的な操作で行えます。
+        </li>
+        <li>
+          <strong>📤 3DビューアHTMLのダウンロード・共有</strong><br>
+          生成した3DモデルをHTMLファイルとしてダウンロードでき、施主や関係者へのメール共有も簡単です。インターネット接続なしでも3Dビューアを閲覧できます。
+        </li>
+        <li>
+          <strong>🎮 Blender連携対応</strong><br>
+          Blender用のインポートスクリプト（Pythonファイル）もダウンロードでき、プロのレンダリング作業へのステップアップもスムーズです。
+        </li>
       </ul>
     </section>
 
@@ -165,6 +289,40 @@
           allowfullscreen
           loading="lazy">
         </iframe>
+      </div>
+    </section>
+
+    <!-- ⑥ よくある質問 (FAQ) -->
+    <section class="faq-section">
+      <h2>よくある質問（FAQ）</h2>
+      <dl class="faq-list">
+        <dt>Q. 無料で使えますか？</dt>
+        <dd>はい、PDF・画像のアップロードから3Dプレビュー生成・HTMLダウンロードまで、登録不要で無料でご利用いただけます。スケール校正・壁の手動編集・窓や扉の配置編集などの高度な機能は会員登録（10日間の無料トライアルあり）が必要です。</dd>
+
+        <dt>Q. CADソフトは必要ですか？</dt>
+        <dd>不要です。PDF形式や画像形式（JPG / PNG）の間取り図があれば、ブラウザだけで3D化が完結します。AutoCADやRevitなどの専門ソフトは一切不要です。</dd>
+
+        <dt>Q. 一条工務店以外の間取り図にも対応していますか？</dt>
+        <dd>メインの最適化対象は一条工務店の間取り図ですが、他のハウスメーカーや設計事務所の図面でも試すことができます。認識精度は図面の形式・スタイルによって異なります。</dd>
+
+        <dt>Q. どんな図面形式に対応していますか？</dt>
+        <dd>PDF（推奨）、JPEG、PNGに対応しています。スキャンした紙図面の画像でも利用可能です。</dd>
+
+        <dt>Q. 3D化にはどのくらいの時間がかかりますか？</dt>
+        <dd>通常、アップロードから3D生成完了まで数十秒〜1分程度です。ファイルサイズや図面の複雑さによって多少変わります。</dd>
+
+        <dt>Q. 生成した3DデータはBlenderで使えますか？</dt>
+        <dd>はい。Blender用のインポートスクリプト（Pythonファイル）もダウンロードできます。Blenderに読み込むことで、プロ品質のレンダリングや詳細な3Dモデリングにも活用できます。</dd>
+      </dl>
+    </section>
+
+    <!-- ⑦ まとめ -->
+    <section class="summary-section">
+      <h2>まとめ｜住宅の間取り図面を手軽に3D化するなら ichijo 3D maker</h2>
+      <p>住宅の間取り図面を3D化したい場合、これまではCADソフトの習得や専門業者への外注が必要でした。しかし「ichijo 3D maker」なら、<strong>PDFの間取り図をアップロードするだけで、無料かつ即座に3Dパースを自動生成</strong>できます。</p>
+      <p>一条工務店の間取り図面に最適化されており、<strong>施主への説明資料作成・設計確認・内覧シミュレーション</strong>など、さまざまな場面でご活用いただけます。CAD不要・専門知識なしで使える<strong>住宅図面3D変換ツール</strong>として、ぜひお気軽にお試しください。</p>
+      <div class="cta-row" style="margin-top:24px;text-align:center">
+        <a class="btn primary" href="https://ichijo-3dmaker.streamlit.app/" target="_blank" rel="noopener">▶ 無料で間取り図面を3D化してみる</a>
       </div>
     </section>
 

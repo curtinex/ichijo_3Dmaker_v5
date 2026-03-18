@@ -52,3 +52,40 @@ section{margin:28px 0}
 /* Demo video */
 .video-wrapper{position:relative;padding-top:56.25%;margin:16px 0 0;border-radius:10px;overflow:hidden;background:#000}
 .video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+
+/* Problem section */
+.problem-section{background:#fff8f0;border-left:4px solid #f0a040;padding:20px 24px;border-radius:8px}
+.problem-section h2{margin:0 0 12px;color:#b06000;font-size:20px}
+.problem-list{padding-left:0;list-style:none;margin:0 0 16px}
+.problem-list li{padding:6px 0;font-size:15px;border-bottom:1px solid #fce8cc}
+.problem-list li:last-child{border-bottom:none}
+
+/* Solution comparison section */
+.solution-section{margin:36px 0}
+.solution-section h2{font-size:22px;margin-bottom:12px}
+.solution-compare{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+.solution-item{flex:1;min-width:220px;border:1px solid #dde3eb;border-radius:10px;padding:18px;background:#fff}
+.solution-item h3{font-size:15px;margin:0 0 10px;color:#444}
+.solution-item ul{padding-left:0;list-style:none;margin:0;font-size:14px;line-height:1.8}
+.solution-best{border-color:#0070f3;background:#f0f8ff}
+.solution-best h3{color:#0070f3}
+@media(max-width:600px){.solution-compare{flex-direction:column}}
+
+/* Features section */
+.features-section{margin:36px 0}
+.features-section h2{font-size:22px;margin-bottom:8px}
+.feature-list{padding-left:0;list-style:none;margin:16px 0 0;display:flex;flex-direction:column;gap:14px}
+.feature-list li{padding:14px 16px;background:#f8faff;border-radius:8px;font-size:15px;line-height:1.75;border:1px solid #e0eaf8}
+.feature-list li strong{display:block;margin-bottom:4px;font-size:15px}
+
+/* FAQ section */
+.faq-section{margin:36px 0}
+.faq-section h2{font-size:22px;margin-bottom:16px}
+.faq-list{margin:0;padding:0}
+.faq-list dt{font-weight:700;font-size:15px;padding:14px 16px 4px;background:#f0f6ff;border-left:4px solid #0070f3;border-radius:4px 4px 0 0;margin-top:12px}
+.faq-list dd{margin:0;padding:10px 16px 14px;background:#fff;border:1px solid #dde8f8;border-top:none;border-radius:0 0 4px 4px;font-size:14px;line-height:1.75;color:#444}
+
+/* Summary section */
+.summary-section{background:#f0f8ff;border:1px solid #b8d8f8;border-radius:10px;padding:24px;margin:36px 0}
+.summary-section h2{font-size:20px;margin:0 0 14px;color:#0050c0}
+.summary-section p{font-size:15px;line-height:1.8;margin:0 0 12px}
