@@ -1532,9 +1532,11 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     thicknesses = [w.get('thickness', 0.12) for w in walls if 'thickness' in w]
     default_thickness = sum(thicknesses) / len(thicknesses) if thicknesses else 0.12
     
-    # 既存の壁から平均高さを取得（指定がない場合）
+    # 既存の通常壁のみから平均高さを取得（指定がない場合）
+    # window_added壁（窓台・まぐさ壁）は高さが小さいため除外して正しい天井高を使用
     if wall_height is None:
-        heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+        regular_walls_h = [w for w in walls if w.get('source') != 'window_added']
+        heights = [w.get('height', 2.4) for w in regular_walls_h if 'height' in w]
         wall_height = sum(heights) / len(heights) if heights else 2.4
     
     # 四角形の座標を計算
@@ -6098,8 +6100,9 @@ def main():
                                         if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
                                     ]
                                 
-                                    # 既存の全ての壁から平均高さを取得（デフォルト2.4m）
-                                    all_heights = [w.get('height', 2.4) for w in updated_json['walls'] if 'height' in w]
+                                    # 既存の通常壁のみから平均高さを取得（window_added壁は除外: 窓台・まぐさ壁は高さが小さく平均を下げるため）
+                                    regular_walls_for_height = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
+                                    all_heights = [w.get('height', 2.4) for w in regular_walls_for_height if 'height' in w]
                                     wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
                                 
                                     # 線を追加（スケールをセッション状態から取得）
