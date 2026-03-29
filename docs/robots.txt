@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://your-username.github.io/your-repo/sitemap.xml
+Sitemap: https://curtinex.github.io/ichijo_3Dmaker_v5/sitemap.xml
