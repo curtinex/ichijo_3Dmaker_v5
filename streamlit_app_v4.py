@@ -2265,7 +2265,9 @@ def main():
         st.caption("※PDF図面は一条工務店アプリのMYポストからダウンロードできます")
 
         # PDFの場合、ページ数を確認してページ選択UIを表示
-        page_number = 0  # デフォルト
+        page_number = 0    # 1階ページ（デフォルト）
+        enable_2f = False  # 2階あり設定
+        page_number_2f = 0 # 2階ページ（デフォルト）
         if uploaded is not None and uploaded.name.lower().endswith('.pdf'):
             try:
                 # 一時的にPDFを保存してページ数を取得
@@ -2273,17 +2275,34 @@ def main():
                 doc = fitz.open(stream=temp_pdf, filetype="pdf")
                 total_pages = len(doc)
                 doc.close()
-                
+
                 if total_pages > 1:
-                    # st.info(f"📄 このPDFは {total_pages} ページあります。処理するページを選択してください。")
                     page_number = st.selectbox(
-                        "処理するページを選択",
+                        "1階のページを選択",
                         options=list(range(total_pages)),
                         format_func=lambda x: f"ページ {x + 1}",
-                        help="PDFの何ページ目を処理するか選択します（0始まり）"
+                        help="1階の間取りが記載されているページを選択します",
+                        key="page_number_1f_select"
                     )
                 else:
                     st.info("📄 このPDFは 1 ページです。")
+
+                # 2階設定
+                enable_2f = st.checkbox("2階もあり（同一PDFの別ページ）", value=False, key="enable_2f_check")
+                if enable_2f:
+                    if total_pages > 1:
+                        default_2f_idx = min(1, total_pages - 1)
+                        page_number_2f = st.selectbox(
+                            "2階のページを選択",
+                            options=list(range(total_pages)),
+                            index=default_2f_idx,
+                            format_func=lambda x: f"ページ {x + 1}",
+                            key="page_number_2f_select",
+                            help="2階の間取りが記載されているページを選択します"
+                        )
+                    else:
+                        st.warning("⚠️ PDFが1ページのため、2階のページを別途選択できません。")
+                        enable_2f = False
             except Exception as e:
                 st.warning(f"PDFページ数の取得に失敗しました: {e}")
         
@@ -2378,6 +2397,16 @@ def main():
                         step=0.1,
                         help="部屋の天井高さ（床から天井までの高さ）をメートル単位で指定します。一般的な住宅は2.4m程度です。"
                     )
+                    slab_thickness = st.number_input(
+                        "床スラブ厚み(m) ※2階",
+                        min_value=0.0,
+                        max_value=1.0,
+                        value=0.3,
+                        step=0.05,
+                        format="%.2f",
+                        help="1F天井〜2F床面の厚み。2階の壁は「1F壁高さ＋スラブ厚み」の高さから配置されます。後から変更可能です。",
+                        key="slab_thickness_input"
+                    )
                 
                 # PDFレンダリングDPI（固定値に変更）
                 dpi = 300
@@ -2418,8 +2447,11 @@ def main():
             min_thickness = 8
             pixel_to_meter = 0.005
             wall_height = 2.4
+            slab_thickness = 0.3
             margin_vertical = 10
             margin_horizontal = 5
+            enable_2f = False
+            page_number_2f = 0
             run = False
 
         # 途中経過の表示可否（Falseで最終結果のみ表示）
@@ -2499,6 +2531,75 @@ def main():
                 import traceback
                 st.code(traceback.format_exc())
                 return
+
+            # ---- 2階処理（enable_2f が有効な場合） ----
+            if enable_2f:
+                try:
+                    source_image_2f = out_dir / "source_2f.png"
+                    if show_progress:
+                        st.write(f"2階PDFを画像に変換中… (ページ {page_number_2f + 1})")
+                    pdf_to_image(str(input_path), output_path=str(source_image_2f), page_number=page_number_2f, dpi=dpi)
+
+                    refined_img_2f, refined_path_2f_raw = refine_floor_plan_from_image(
+                        str(source_image_2f),
+                        black_threshold=black_threshold,
+                        min_thickness=min_thickness,
+                        remove_corners=False,
+                        margin_vertical=margin_vertical,
+                        margin_horizontal=margin_horizontal
+                    )
+                    refined_path_2f = Path(refined_path_2f_raw)
+                    refined_dest_2f = out_dir / "refined_2f.png"
+                    if refined_path_2f.exists() and refined_path_2f != refined_dest_2f:
+                        refined_path_2f.rename(refined_dest_2f)
+                        refined_path_2f = refined_dest_2f
+
+                    json_path_2f = out_dir / "walls_3d_2f.json"
+                    result_2f = process_image_to_3d(
+                        str(refined_path_2f), str(json_path_2f),
+                        wall_height=wall_height, pixel_to_meter=pixel_to_meter
+                    )
+
+                    if result_2f is not None:
+                        import copy as _copy
+                        json_1f_data = json.loads(json_path.read_text(encoding='utf-8'))
+                        json_2f_data = json.loads(json_path_2f.read_text(encoding='utf-8'))
+
+                        # 2階の床面オフセット（将来的に階別スケール校正にも利用可）
+                        offset_2f = round(wall_height + slab_thickness, 3)
+
+                        # 1階にfloor_levelを付与
+                        for _w in json_1f_data.get('walls', []):
+                            _w['floor_level'] = 1
+
+                        # 2階にfloor_levelとbase_heightオフセットを付与
+                        # IDの衝突を避けるため、1階の最大IDに加算
+                        max_1f_id = max((_w.get('id', 0) for _w in json_1f_data.get('walls', [])), default=0)
+                        for _w in json_2f_data.get('walls', []):
+                            _w['floor_level'] = 2
+                            _w['base_height'] = round(_w.get('base_height', 0) + offset_2f, 3)
+                            if isinstance(_w.get('id'), int):
+                                _w['id'] = _w['id'] + max_1f_id + 1
+
+                        # 1F + 2F を統合した JSON を生成
+                        json_combined = _copy.deepcopy(json_1f_data)
+                        json_combined['walls'] = json_1f_data.get('walls', []) + json_2f_data.get('walls', [])
+                        json_combined.setdefault('metadata', {})
+                        json_combined['metadata']['has_2f'] = True
+                        json_combined['metadata']['floor_count'] = 2
+                        json_combined['metadata']['floor_offset_2f'] = offset_2f
+                        json_combined['metadata']['total_walls'] = len(json_combined['walls'])
+
+                        json_combined_path = out_dir / "walls_3d_combined.json"
+                        json_combined_path.write_text(
+                            json.dumps(json_combined, indent=2, ensure_ascii=False), encoding='utf-8'
+                        )
+                        json_path = json_combined_path  # 以降は統合JSONを使用
+                        st.success(f"✅ 1階＋2階の読み込み完了（2階は {offset_2f:.2f}m の高さに配置）")
+                    else:
+                        st.warning("⚠️ 2階の3D変換に失敗しました。1階のみで続行します。")
+                except Exception as _e2f:
+                    st.warning(f"⚠️ 2階処理でエラーが発生しました（1階のみで続行）: {_e2f}")
 
             # 2D可視化
             if show_progress:
