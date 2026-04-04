@@ -519,9 +519,9 @@ with st.sidebar.expander("アカウント設定"):
             pass
 # --- Handle post-checkout redirect: show paid status when returning from Stripe Checkout ---
 try:
-    params = st.experimental_get_query_params()
+    params = st.query_params
     if 'session_id' in params:
-        session_id = params.get('session_id')[0]
+        session_id = params.get('session_id')
         secret, _, _ = get_stripe_config()
         if secret:
             try:
@@ -615,6 +615,20 @@ try:
             padding: 10px; border-radius: 5px; font-size: 14px;
             z-index: 100;
         }
+        #modeBtn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0,100,200,0.85); color: white;
+            border: none; padding: 10px 16px; border-radius: 5px;
+            font-size: 14px; cursor: pointer; z-index: 200;
+        }
+        #modeBtn:hover { background: rgba(0,80,180,0.95); }
+        #walkOverlay {
+            display: none; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.55); z-index: 150; color: white;
+            flex-direction: column; text-align: center; font-size: 20px;
+        }
+        #walkOverlay .hint { font-size: 14px; margin-top: 10px; opacity: 0.85; }
     </style>
 </head>
 <body>
@@ -623,6 +637,11 @@ try:
         初期化中...
     </div>
     <div id="container"></div>
+    <button id="modeBtn">ウォークスルーモード</button>
+    <div id="walkOverlay">
+        <div>クリックして開始</div>
+        <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
+    </div>
 
     <script type="importmap">
     {
@@ -656,6 +675,92 @@ try:
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+
+            // --- ウォークスルーモード設定 (iframe対応: マウスドラッグ+WASD) ---
+            const EYE_HEIGHT = 1.6;
+            const WALK_SPEED = 0.08;
+            const MOUSE_SENS = 0.003;
+            let isWalkMode = false;
+            let walkStarted = false;
+            const keys = { w: false, a: false, s: false, d: false };
+            let yaw = 0, pitch = 0;
+            let isDragging = false;
+            let lastMouseX = 0, lastMouseY = 0;
+
+            document.addEventListener('keydown', e => {
+                if (!isWalkMode) return;
+                if (e.code === 'KeyW') keys.w = true;
+                if (e.code === 'KeyA') keys.a = true;
+                if (e.code === 'KeyS') keys.s = true;
+                if (e.code === 'KeyD') keys.d = true;
+            });
+            document.addEventListener('keyup', e => {
+                if (e.code === 'KeyW') keys.w = false;
+                if (e.code === 'KeyA') keys.a = false;
+                if (e.code === 'KeyS') keys.s = false;
+                if (e.code === 'KeyD') keys.d = false;
+            });
+
+            renderer.domElement.addEventListener('mousedown', e => {
+                if (!isWalkMode || !walkStarted) return;
+                isDragging = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+            document.addEventListener('mousemove', e => {
+                if (!isDragging || !isWalkMode) return;
+                const dx = e.clientX - lastMouseX;
+                const dy = e.clientY - lastMouseY;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                yaw   -= dx * MOUSE_SENS;
+                pitch -= dy * MOUSE_SENS;
+                pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+                camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+            });
+            document.addEventListener('mouseup', () => { isDragging = false; });
+
+            function switchToOrbitMode() {
+                isWalkMode = false;
+                walkStarted = false;
+                isDragging = false;
+                controls.enabled = true;
+                Object.keys(keys).forEach(k => keys[k] = false);
+                document.getElementById('walkOverlay').style.display = 'none';
+                document.getElementById('modeBtn').textContent = 'ウォークスルーモード';
+                camera.position.set(camDist, camDist * 0.8, camDist);
+                controls.target.set((minX + maxX) / 2 - offsetX, 0, -((minY + maxY) / 2 - offsetY));
+                controls.update();
+                info.innerHTML = `<strong>間取り図 3Dビューア</strong><br>壁数: ${walls.length}<br>マウス: 回転・拡大縮小・移動`;
+            }
+
+            function switchToWalkMode() {
+                isWalkMode = true;
+                walkStarted = false;
+                controls.enabled = false;
+                camera.position.y = EYE_HEIGHT;
+                // 現在のOrbitControlsの視点方向を引き継ぎ、yaw/pitchを初期化
+                const dir = new THREE.Vector3();
+                camera.getWorldDirection(dir);
+                yaw   = Math.atan2(-dir.x, -dir.z);
+                pitch = Math.asin(Math.max(-1, Math.min(1, dir.y)));
+                document.getElementById('walkOverlay').style.display = 'flex';
+                document.getElementById('modeBtn').textContent = '俯瞰モードに切替';
+                info.innerHTML = '<strong>ウォークスルーモード</strong><br>WASD:移動 / ドラッグ:視点';
+            }
+
+            document.getElementById('modeBtn').addEventListener('click', () => {
+                if (!isWalkMode) switchToWalkMode();
+                else switchToOrbitMode();
+            });
+
+            document.getElementById('walkOverlay').addEventListener('click', () => {
+                if (isWalkMode && !walkStarted) {
+                    walkStarted = true;
+                    document.getElementById('walkOverlay').style.display = 'none';
+                }
+            });
+            // --- ウォークスルーモード設定ここまで ---
 
             AMBIENT_LIGHT_PLACEHOLDER
             DIRECTIONAL_LIGHT_PLACEHOLDER
@@ -848,7 +953,18 @@ try:
 
             function animate() {
                 requestAnimationFrame(animate);
-                controls.update();
+                if (isWalkMode && walkStarted) {
+                    const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+                    const right   = new THREE.Vector3( Math.cos(yaw), 0, -Math.sin(yaw));
+                    if (keys.w) camera.position.addScaledVector(forward, WALK_SPEED);
+                    if (keys.s) camera.position.addScaledVector(forward, -WALK_SPEED);
+                    if (keys.d) camera.position.addScaledVector(right, WALK_SPEED);
+                    if (keys.a) camera.position.addScaledVector(right, -WALK_SPEED);
+                    camera.position.y = EYE_HEIGHT;
+                    camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+                } else if (!isWalkMode) {
+                    controls.update();
+                }
                 renderer.render(scene, camera);
             }
             animate();
