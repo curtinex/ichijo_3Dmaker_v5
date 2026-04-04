@@ -133,6 +133,12 @@ from PIL import Image
 import stripe
 import streamlit.components.v1 as components
 
+# --- ローカル開発モード（LOCAL_DEV=1 かつ localhost 発の場合のみ認証・課金をバイパス） ---
+_LOCAL_DEV = (
+    os.environ.get("LOCAL_DEV", "0") == "1"
+    and os.environ.get("STREAMLIT_SERVER_ADDRESS", "localhost") == "localhost"
+)
+
 # --- Supabase helper and simple Auth UI (uses SUPA_URL and SUPA_SERVICE_ROLE from Streamlit secrets or env) ---
 def get_supabase():
     import streamlit as _st
@@ -435,6 +441,8 @@ with st.sidebar.expander("アカウント設定"):
 
     if supabase is None:
         st.write("Supabase not configured.")
+        # Supabase未設定 = ローカル開発環境とみなし、全機能を解放
+        st.session_state['is_paid'] = True
     else:
         # If a session/user was set earlier, show logged-in view first
         auth_mode = None
@@ -622,6 +630,15 @@ try:
             font-size: 14px; cursor: pointer; z-index: 200;
         }
         #modeBtn:hover { background: rgba(0,80,180,0.95); }
+        #ceilingBtn {
+            position: absolute; top: 55px; right: 10px;
+            background: rgba(80,120,60,0.85); color: white;
+            border: none; padding: 10px 16px; border-radius: 5px;
+            font-size: 14px; cursor: pointer; z-index: 200;
+            display: none;
+        }
+        #ceilingBtn:hover { background: rgba(60,100,40,0.95); }
+        #ceilingBtn.active { background: rgba(40,160,60,0.95); }
         #walkOverlay {
             display: none; position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; justify-content: center; align-items: center;
@@ -638,6 +655,7 @@ try:
     </div>
     <div id="container"></div>
     <button id="modeBtn">ウォークスルーモード</button>
+    <button id="ceilingBtn">🏠 天井を表示</button>
     <div id="walkOverlay">
         <div>クリックして開始</div>
         <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
@@ -890,7 +908,51 @@ try:
                 floor.receiveShadow = true;
                 scene.add(floor);
             }
-                
+
+            // 天井オブジェクト（ceilingsデータから生成・デフォルト非表示）
+            const ceilingMeshes = [];
+            if (wallsData.ceilings && wallsData.ceilings.length > 0) {
+                document.getElementById('ceilingBtn').style.display = 'block';
+                wallsData.ceilings.forEach((ceilingData) => {
+                    const cx1 = ceilingData.x1;
+                    const cy1 = ceilingData.y1;
+                    const cx2 = ceilingData.x2;
+                    const cy2 = ceilingData.y2;
+                    const cHeight = ceilingData.height || (walls.length > 0
+                        ? walls.reduce((s, w) => s + (w.base_height || 0) + w.height, 0) / walls.length
+                        : 2.4);
+                    const ceilW = Math.abs(cx2 - cx1);
+                    const ceilD = Math.abs(cy2 - cy1);
+                    const cCenterX = (cx1 + cx2) / 2;
+                    const cCenterY = (cy1 + cy2) / 2;
+                    const ceilingGeometry = new THREE.BoxGeometry(ceilW, 0.08, ceilD);
+                    const ceilingMaterial = new THREE.MeshStandardMaterial({
+                        color: 0xf0ede8,
+                        transparent: true,
+                        opacity: 0.88
+                    });
+                    const ceilingMesh = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+                    ceilingMesh.position.set(cCenterX - offsetX, cHeight - 0.04, -(cCenterY - offsetY));
+                    ceilingMesh.receiveShadow = true;
+                    ceilingMesh.visible = false;
+                    scene.add(ceilingMesh);
+                    ceilingMeshes.push(ceilingMesh);
+                });
+            }
+            let ceilingVisible = false;
+            document.getElementById('ceilingBtn').addEventListener('click', () => {
+                ceilingVisible = !ceilingVisible;
+                ceilingMeshes.forEach(m => { m.visible = ceilingVisible; });
+                const btn = document.getElementById('ceilingBtn');
+                if (ceilingVisible) {
+                    btn.textContent = '🏠 天井を非表示';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = '🏠 天井を表示';
+                    btn.classList.remove('active');
+                }
+            });
+
             WITH_LIGHTS_PLACEHOLDER
 
             // 家具オブジェクト
@@ -2338,7 +2400,11 @@ def main():
                 run = st.button("🚀 変換を実行", type="primary", use_container_width=True, key="step1_run")
             with col_skip:
                 if st.button("⏭️ スキップ", use_container_width=True, key="step1_skip"):
-                    if st.session_state.get('user') is None:
+                    if _LOCAL_DEV:
+                        st.session_state['is_paid'] = True
+                        st.session_state.workflow_step = 2
+                        st.rerun()
+                    elif st.session_state.get('user') is None:
                         st.warning("ステップ2はログインが必要です。サイドバーでログインしてください。")
                     elif not st.session_state.get('is_paid', False):
                         st.warning("ステップ2は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
@@ -2580,7 +2646,9 @@ def main():
 
     with st.expander("Step 2：スケール校正", expanded=(st.session_state.workflow_step == 2)):
         # Gate Step 2 UI behind login AND paid/trial access
-        if st.session_state.get('user') is None:
+        if _LOCAL_DEV:
+            st.session_state['is_paid'] = True
+        if not st.session_state.get('is_paid', False) and st.session_state.get('user') is None:
             st.warning("ステップ2はログインが必要です。サイドバーでログインしてください。")
             #st.stop()
         elif not st.session_state.get('is_paid', False):
@@ -2903,7 +2971,11 @@ def main():
                 
                 # スキップして次へボタンを最後に配置
                 if st.button("⏭️ スキップして次へ", use_container_width=True, key="step3_skip"):
-                    if st.session_state.get('user') is None:
+                    if _LOCAL_DEV:
+                        st.session_state.workflow_step = 3
+                        st.session_state.open_3d_expander = True
+                        st.rerun()
+                    elif st.session_state.get('user') is None:
                         st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
                     elif not st.session_state.get('is_paid', False):
                         st.warning("ステップ3は有料プランまたは無料トライアル中のみご利用いただけます。サイドバーから有料登録してください。")
@@ -2914,7 +2986,7 @@ def main():
     # ============= ステップ3: 手動編集 =============
     with st.expander("Step 3：手動編集", expanded=(st.session_state.workflow_step == 3)):
         # Gate Step 3 UI behind login AND paid/trial access
-        if st.session_state.get('user') is None:
+        if not st.session_state.get('is_paid', False) and st.session_state.get('user') is None:
             st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
             #st.stop()
         elif not st.session_state.get('is_paid', False):
@@ -2935,10 +3007,10 @@ def main():
             edit_mode = st.radio(
                 "編集モードを選択:",
                 #["線を結合", "線を追加", "線を削除", "窓を追加", "照明を配置", "オブジェクトを配置", "床を追加", "階段を配置"],
-                ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置", "オブジェクトを削除", "階段を配置"],
+                ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置", "オブジェクトを削除", "階段を配置", "天井を追加", "天井を削除"],
                 horizontal=True,
                 #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：四角形範囲を選択して床を追加\n\n階段を配置：コの字階段を配置"
-                help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\nオブジェクトを削除：配置した家具をクリックして削除\n\n階段を配置：コの字階段を配置"
+                help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\nオブジェクトを削除：配置した家具をクリックして削除\n\n階段を配置：コの字階段を配置\n\n天井を追加：四角形範囲を選択して天井を追加（天井のない範囲が吹き抜け）\n\n天井を削除：選択範囲の天井を削除"
             )
             
             if edit_mode == "線を結合":
@@ -2955,6 +3027,10 @@ def main():
                 st.write("💡 削除したいオブジェクトをクリックしてください。")
             elif edit_mode == "階段を配置":
                 st.write("💡 階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
+            elif edit_mode == "天井を追加":
+                st.write("💡 天井を配置したい範囲（四角形）の対角線の2点を選択してください。天井のない範囲が吹き抜けになります。3Dビューアの「天井を表示/非表示」ボタンで切り替えできます。")
+            elif edit_mode == "天井を削除":
+                st.write("💡 下の一覧から削除したい天井を選んで「天井削除実行」をクリックしてください。")
             
             with st.expander("💡 使い方", expanded=False):
                 if edit_mode == "線を結合":
@@ -3023,6 +3099,28 @@ def main():
                         "**注意:**\n\n"
                         "- コの字階段は実際の階段形状と異なります。"
                         )
+                elif edit_mode == "天井を追加":
+                    st.markdown(
+                        "**天井追加の手順:**\n\n"
+                        "1. 下の画像上で**2回クリック**して天井を配置したい範囲を四角形で囲む\n\n"
+                        "2. 範囲が自動確定し「🏠 天井追加実行」ボタンが表示される\n\n"
+                        "3. 「🏠 天井追加実行」ボタンをクリックして3Dビューアへ反映\n\n"
+                        "4. 3Dビューアの右上「🏠 天井を表示」ボタンで表示/非表示を切り替え\n\n"
+                        "**ヒント:**\n\n"
+                        "- 天井のない範囲が吹き抜けになります\n\n"
+                        "- 複数の天井を追加したい場合は手順1-2を繰り返してから実行\n\n"
+                        "- 天井の高さは壁の上端（天井高）が自動的に使用されます"
+                    )
+                elif edit_mode == "天井を削除":
+                    st.markdown(
+                        "**天井削除の手順:**\n\n"
+                        "1. 左側に表示される「追加済みの天井一覧」から削除したい天井を選択\n\n"
+                        "   例：天井1（幅 3.5m × 奥行き 4.2m）\n\n"
+                        "2. 複数選択も可能（チェックボックス形式）\n\n"
+                        "3. 「🗑️ 天井削除実行」ボタンをクリック\n\n"
+                        "**ヒント:**\n\n"
+                        "- 天井が追加されていない場合は「天井を追加」モードで先に追加してください"
+                    )
             
             # セッションステートで四角形座標を管理
             if 'rect_coords' not in st.session_state:
@@ -4073,9 +4171,35 @@ def main():
                         else:
                             pass
                             #st.write("💡 画像をクリックして四角形の対角線上の2点を指定してください")
-                    
-                    # 線を結合・窓を追加・線を削除モードは壁線クリック選択なので、ここでのメッセージ表示は不要
-                    elif edit_mode not in ("線を結合", "窓を追加", "線を削除"):
+                    elif edit_mode == "天井を削除":
+                        # 天井削除モード：リストから選択して削除
+                        try:
+                            _json_c = _parse_json_cached(st.session_state.json_bytes)
+                            _ceilings_c = _json_c.get('ceilings', [])
+                        except Exception:
+                            _ceilings_c = []
+                        if len(_ceilings_c) == 0:
+                            st.info("📋 まだ天井が追加されていません。「天井を追加」モードで先に天井を配置してください。")
+                        else:
+                            st.markdown("---")
+                            st.markdown("### 🏠 追加済みの天井一覧")
+                            _ceiling_options = []
+                            for _i, _cd in enumerate(_ceilings_c):
+                                _w = round(_cd['x2'] - _cd['x1'], 2)
+                                _d = round(_cd['y2'] - _cd['y1'], 2)
+                                _ceiling_options.append(f"天井{_i+1}（幅 {_w}m × 奥行き {_d}m）")
+                            _selected_labels = st.multiselect(
+                                "削除する天井を選択（複数選択可）",
+                                _ceiling_options,
+                                key="ceiling_delete_multiselect"
+                            )
+                            _selected_indices = [_i for _i, _lbl in enumerate(_ceiling_options) if _lbl in _selected_labels]
+                            if len(_selected_indices) > 0:
+                                if st.button("🗑️ 天井削除実行", type="primary", key="btn_ceiling_del_exec"):
+                                    st.session_state.execute_ceiling_deletion = True
+                                    st.session_state.ceiling_indices_to_delete = _selected_indices
+                    # 線を結合・窓を追加・線を削除・天井を削除モードは壁線クリック選択なので、ここでのメッセージ表示は不要
+                    elif edit_mode not in ("線を結合", "窓を追加", "線を削除", "天井を削除"):
                         # その他のモード：2点選択
                         
                         # 線を追加モード：rect_coords_listに選択がある場合は実行ボタンを表示
@@ -4088,6 +4212,15 @@ def main():
                             if st.button("➕ 線追加実行", type="primary", key="btn_add_line_exec_top"):
                                 # 実行フラグを立てて処理実行
                                 st.session_state.add_line_execute = True
+                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
+                        
+                        # 天井を追加モード：rect_coords_listに選択がある場合は実行ボタンを表示
+                        elif edit_mode == "天井を追加" and len(st.session_state.rect_coords_list) > 0:
+                            num_rects = len(st.session_state.rect_coords_list)
+                            st.markdown("---")
+                            st.success(f"✅ **{num_rects}箇所の天井範囲を選択中**")
+                            if st.button("🏠 天井追加実行", type="primary", key="btn_ceiling_add_exec"):
+                                st.session_state.execute_ceiling_addition = True
                                 # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                         
                         if len(st.session_state.rect_coords) == 1:
@@ -4541,7 +4674,7 @@ def main():
                                     # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
                                     # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
                                     # 注：線を結合モードは壁線クリック選択のため除外
-                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を配置")) and len(st.session_state.rect_coords) == 2:
+                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を配置", "天井を追加")) and len(st.session_state.rect_coords) == 2:
                                         try:
                                             json_data_auto = _parse_json_cached(st.session_state.json_bytes)
                                             walls_auto = json_data_auto['walls']
@@ -4640,14 +4773,13 @@ def main():
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                         st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
                     
-                        with col_add:
-                            if st.button("➕ この選択を追加", type="primary"):
-                                # 現在の2点をリストに追加
-                                st.session_state.rect_coords_list.append((p1, p2))
-                                # 現在の選択をクリア
-                                st.session_state.rect_coords = []
-                                st.session_state.last_click = None
-                                st.rerun()
+                        if st.button("➕ この選択を追加", type="primary", key="add_sel_del"):
+                            # 現在の2点をリストに追加
+                            st.session_state.rect_coords_list.append((p1, p2))
+                            # 現在の選択をクリア
+                            st.session_state.rect_coords = []
+                            st.session_state.last_click = None
+                            st.rerun()
                     elif edit_mode != "線を削除" and edit_mode != "線を結合" and len(st.session_state.rect_coords) == 2:
                         # 追加モード（線を結合以外）：2点選択完了
                         p1, p2 = st.session_state.rect_coords
@@ -4655,14 +4787,13 @@ def main():
                         x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
                         st.success(f"✅ 2点選択完了: ({x1}, {y1}) - ({x2}, {y2})")
                     
-                        with col_add:
-                            if st.button("➕ この選択を追加", type="primary"):
-                                # 現在の2点をリストに追加
-                                st.session_state.rect_coords_list.append((p1, p2))
-                                # 現在の選択をクリア
-                                st.session_state.rect_coords = []
-                                st.session_state.last_click = None
-                                st.rerun()
+                        if st.button("➕ この選択を追加", type="primary", key="add_sel_add"):
+                            # 現在の2点をリストに追加
+                            st.session_state.rect_coords_list.append((p1, p2))
+                            # 現在の選択をクリア
+                            st.session_state.rect_coords = []
+                            st.session_state.last_click = None
+                            st.rerun()
                     
                     # 確定済み選択の表示
                     # NOTE: ユーザー要望により、線を結合／線を削除／線を追加モードでは追加済みの選択範囲表示を抑制する
@@ -5146,6 +5277,12 @@ def main():
                         should_execute = True
                     elif edit_mode == "階段を配置" and st.session_state.get('execute_stair_placement'):
                         st.session_state.execute_stair_placement = False
+                        should_execute = True
+                    elif edit_mode == "天井を追加" and st.session_state.get('execute_ceiling_addition'):
+                        st.session_state.execute_ceiling_addition = False
+                        should_execute = True
+                    elif edit_mode == "天井を削除" and st.session_state.get('execute_ceiling_deletion'):
+                        st.session_state.execute_ceiling_deletion = False
                         should_execute = True
                     
                     if should_execute:
@@ -6390,6 +6527,88 @@ def main():
                                         )
                                 else:
                                     st.warning("⚠️ 床の追加に失敗しました")
+
+                            elif edit_mode == "天井を追加":
+                                # ===== 天井を追加モード =====
+                                total_ceiling_count = 0
+                                ceiling_details = []
+
+                                # JSONに ceilings キーがなければ初期化
+                                if 'ceilings' not in updated_json:
+                                    updated_json['ceilings'] = []
+
+                                # 通常壁の上端高さ（天井高）を計算
+                                regular_walls_c = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
+                                top_heights = [w.get('base_height', 0) + w.get('height', 2.4) for w in regular_walls_c]
+                                avg_ceiling_h = round(sum(top_heights) / len(top_heights), 3) if top_heights else 2.4
+
+                                for rect_idx, (p1, p2) in enumerate(target_rects):
+                                    px_x1, px_y1 = p1
+                                    px_x2, px_y2 = p2
+
+                                    def _px_to_meter_c(px_x, px_y):
+                                        meter_x = min_x + (px_x - margin) / scale
+                                        meter_y = min_y + (img_height - px_y - margin) / scale
+                                        return meter_x, meter_y
+
+                                    m_x1, m_y1 = _px_to_meter_c(px_x1, px_y1)
+                                    m_x2, m_y2 = _px_to_meter_c(px_x2, px_y2)
+
+                                    ceil_x1 = min(m_x1, m_x2)
+                                    ceil_x2 = max(m_x1, m_x2)
+                                    ceil_y1 = min(m_y1, m_y2)
+                                    ceil_y2 = max(m_y1, m_y2)
+
+                                    ceiling_data = {
+                                        'x1': ceil_x1,
+                                        'y1': ceil_y1,
+                                        'x2': ceil_x2,
+                                        'y2': ceil_y2,
+                                        'height': avg_ceiling_h
+                                    }
+                                    updated_json['ceilings'].append(ceiling_data)
+                                    total_ceiling_count += 1
+
+                                    color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
+                                    ceiling_details.append({
+                                        'rect_idx': rect_idx,
+                                        'color_name': color_name,
+                                        'x1': ceil_x1,
+                                        'y1': ceil_y1,
+                                        'x2': ceil_x2,
+                                        'y2': ceil_y2,
+                                        'width': ceil_x2 - ceil_x1,
+                                        'depth': ceil_y2 - ceil_y1,
+                                        'height': avg_ceiling_h
+                                    })
+
+                                if total_ceiling_count > 0:
+                                    st.success(f"✅ 合計 {total_ceiling_count} 個の天井を追加しました（高さ: {avg_ceiling_h:.2f}m）")
+                                    st.markdown("**追加結果:**")
+                                    for detail in ceiling_details:
+                                        st.write(
+                                            f"#{detail['rect_idx']+1}（{detail['color_name']}）: "
+                                            f"幅 {detail['width']:.2f}m × 奥行き {detail['depth']:.2f}m"
+                                        )
+                                else:
+                                    st.warning("⚠️ 天井の追加に失敗しました")
+
+                            elif edit_mode == "天井を削除":
+                                # ===== 天井を削除モード（リスト選択方式）=====
+                                _indices_to_delete = st.session_state.pop('ceiling_indices_to_delete', [])
+                                if 'ceilings' not in updated_json or len(updated_json['ceilings']) == 0:
+                                    st.warning("⚠️ 削除できる天井がありません")
+                                elif not _indices_to_delete:
+                                    st.warning("⚠️ 削除する天井が選択されていません")
+                                else:
+                                    _idx_set = set(_indices_to_delete)
+                                    _remaining = [_cd for _ci, _cd in enumerate(updated_json['ceilings']) if _ci not in _idx_set]
+                                    _deleted_count = len(updated_json['ceilings']) - len(_remaining)
+                                    updated_json['ceilings'] = _remaining
+                                    if _deleted_count > 0:
+                                        st.success(f"✅ {_deleted_count} 個の天井を削除しました")
+                                    else:
+                                        st.warning("⚠️ 天井の削除に失敗しました")
                             
                             # 一時ファイルに保存
                             temp_json_path = Path(st.session_state.out_dir) / "walls_3d_edited.json"
@@ -6415,7 +6634,7 @@ def main():
                             viewer_html_bytes = temp_viewer_path.read_bytes()
                             
                             # オブジェクト配置モード、階段を配置モード、線を結合モード、線を追加モードでは、比較表示をせず即座にセッションへ反映して続行する
-                            if edit_mode in ("オブジェクトを配置", "階段を配置", "線を結合", "線を追加", "線を削除", "窓を追加"):
+                            if edit_mode in ("オブジェクトを配置", "階段を配置", "線を結合", "線を追加", "線を削除", "窓を追加", "天井を追加", "天井を削除"):
                                 try:
                                     # 更新済みJSON/可視化/ビューアは既に生成済みの場合がある
                                     # ここでは最新の temp_* が存在すればそれをセッションへ反映する
