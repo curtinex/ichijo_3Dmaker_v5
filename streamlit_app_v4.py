@@ -746,7 +746,16 @@ try:
                 pitch = Math.asin(Math.max(-1, Math.min(1, dir.y)));
                 document.getElementById('walkOverlay').style.display = 'flex';
                 document.getElementById('modeBtn').textContent = '俯瞰モードに切替';
-                info.innerHTML = '<strong>ウォークスルーモード</strong><br>WASD:移動 / ドラッグ:視点';
+                info.innerHTML = `<strong>ウォークスルーモード</strong>
+<div style="margin-top:8px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,34px);gap:4px;font-size:12px;text-align:center;">
+  <div></div>
+  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">↑</span><b>W</b><span style="font-size:9px;opacity:.8;">前進</span></div>
+  <div></div>
+  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">←</span><b>A</b><span style="font-size:9px;opacity:.8;">左</span></div>
+  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">↓</span><b>S</b><span style="font-size:9px;opacity:.8;">後退</span></div>
+  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">→</span><b>D</b><span style="font-size:9px;opacity:.8;">右</span></div>
+</div>
+<div style="margin-top:8px;font-size:12px;">🖱 ドラッグ: 視点変更</div>`;
             }
 
             document.getElementById('modeBtn').addEventListener('click', () => {
