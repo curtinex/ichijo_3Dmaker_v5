@@ -678,7 +678,7 @@ try:
 
             // --- ウォークスルーモード設定 (iframe対応: マウスドラッグ+WASD) ---
             const EYE_HEIGHT = 1.6;
-            const WALK_SPEED = 0.08;
+            const WALK_SPEED = 0.05;
             const MOUSE_SENS = 0.003;
             let isWalkMode = false;
             let walkStarted = false;
