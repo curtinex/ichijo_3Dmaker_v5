@@ -7166,10 +7166,11 @@ def main():
 
                                     total_ceiling_count += 1
 
-                                    # 2F床（兼1F天井）をfloors配列に追加
+                                    # 天井板をfloors配列に追加（壁上端の直上に配置）
                                     if 'floors' not in updated_json:
                                         updated_json['floors'] = []
-                                    _2f_floor_h = 2.41  # 2F床面は241cm（1F天井240cmの直上）
+                                    # avg_ceiling_h は選択フロアの壁上端（1F≈2.4m, 2F≈5.1m）
+                                    _2f_floor_h = round(avg_ceiling_h + 0.01, 3)
                                     floor_for_ceiling = {
                                         'x1': ceil_x1,
                                         'y1': ceil_y1,
@@ -7193,7 +7194,7 @@ def main():
                                     })
 
                                 if total_ceiling_count > 0:
-                                    st.success(f"✅ 合計 {total_ceiling_count} 個の天井を追加しました（高さ: {avg_ceiling_h:.2f}m）")
+                                    st.success(f"✅ 合計 {total_ceiling_count} 個の天井を追加しました（配置高さ: {_2f_floor_h:.2f}m）")
                                     st.markdown("**追加結果:**")
                                     for detail in ceiling_details:
                                         st.write(
