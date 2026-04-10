@@ -6088,6 +6088,34 @@ def main():
                                         st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                         st.session_state.viewer_html_name = temp_viewer_path.name
 
+                                        # 2F対応時: viz_1f_bytes / viz_2f_bytes も再生成して編集画面に階段を反映
+                                        if st.session_state.get('viz_1f_bytes') or st.session_state.get('viz_2f_bytes'):
+                                            try:
+                                                import copy as _copy_stair
+                                                _all_walls_s = updated_json.get('walls', [])
+                                                _stairs_s = updated_json.get('stairs', [])
+                                                _walls_1f_s = [w for w in _all_walls_s if w.get('floor_level', 1) != 2]
+                                                _walls_2f_s = [w for w in _all_walls_s if w.get('floor_level') == 2]
+                                                _meta_s = updated_json.get('metadata', {})
+                                                if _walls_1f_s:
+                                                    _j1f = {'walls': _walls_1f_s, 'metadata': _meta_s, 'stairs': _stairs_s}
+                                                    _p1f = Path(st.session_state.out_dir) / "_viz_1f_stair.json"
+                                                    _p1f.write_text(json.dumps(_j1f, ensure_ascii=False), encoding='utf-8')
+                                                    _v1f = Path(st.session_state.out_dir) / "visualization_1f.png"
+                                                    visualize_3d_walls(str(_p1f), str(_v1f), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                    if _v1f.exists():
+                                                        st.session_state['viz_1f_bytes'] = _v1f.read_bytes()
+                                                if _walls_2f_s:
+                                                    _j2f = {'walls': _walls_2f_s, 'metadata': _meta_s, 'stairs': _stairs_s}
+                                                    _p2f = Path(st.session_state.out_dir) / "_viz_2f_stair.json"
+                                                    _p2f.write_text(json.dumps(_j2f, ensure_ascii=False), encoding='utf-8')
+                                                    _v2f = Path(st.session_state.out_dir) / "visualization_2f.png"
+                                                    visualize_3d_walls(str(_p2f), str(_v2f), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                    if _v2f.exists():
+                                                        st.session_state['viz_2f_bytes'] = _v2f.read_bytes()
+                                            except Exception:
+                                                pass
+
                                         # 選択状態をクリア（統一関数を使用）
                                         _reset_selection_state()
                                         st.session_state.last_click = None
