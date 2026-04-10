@@ -651,6 +651,17 @@ try:
         }
         #ceiling2Btn:hover { background: rgba(80,60,140,0.95); }
         #ceiling2Btn.active { background: rgba(130,100,200,0.95); }
+        #floorSelectPanel {
+            position: absolute; bottom: 10px; right: 10px;
+            display: none; flex-direction: row; gap: 8px; z-index: 200;
+        }
+        .floorWalkBtn {
+            background: rgba(60,60,60,0.75); color: white;
+            border: 2px solid rgba(255,255,255,0.3); padding: 10px 20px;
+            border-radius: 5px; font-size: 14px; cursor: pointer;
+        }
+        .floorWalkBtn:hover { background: rgba(0,80,180,0.85); }
+        .floorWalkBtn.active { background: rgba(0,160,80,0.95); border-color: rgba(255,255,255,0.8); }
         #walkOverlay {
             display: none; position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; justify-content: center; align-items: center;
@@ -669,6 +680,10 @@ try:
     <button id="modeBtn">ウォークスルーモード</button>
     <button id="floor2Btn">🏠 2階を非表示</button>
     <button id="ceiling2Btn">🔲 2F天井を非表示</button>
+    <div id="floorSelectPanel">
+        <button id="floor1WalkBtn" class="floorWalkBtn active">🏠 1階</button>
+        <button id="floor2WalkBtn" class="floorWalkBtn">🏠 2階</button>
+    </div>
     <div id="walkOverlay">
         <div>クリックして開始</div>
         <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
@@ -709,6 +724,8 @@ try:
 
             // --- ウォークスルーモード設定 (iframe対応: マウスドラッグ+WASD) ---
             const EYE_HEIGHT = 1.6;
+            const EYE_HEIGHT_2F = 4.0;
+            let currentWalkFloor = 1;
             const WALK_SPEED = 0.05;
             const MOUSE_SENS = 0.003;
             let isWalkMode = false;
@@ -751,6 +768,13 @@ try:
             });
             document.addEventListener('mouseup', () => { isDragging = false; });
 
+            function setWalkFloor(floor) {
+                currentWalkFloor = floor;
+                camera.position.y = (floor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
+                document.getElementById('floor1WalkBtn').classList.toggle('active', floor === 1);
+                document.getElementById('floor2WalkBtn').classList.toggle('active', floor === 2);
+            }
+
             function switchToOrbitMode() {
                 isWalkMode = false;
                 walkStarted = false;
@@ -758,6 +782,7 @@ try:
                 controls.enabled = true;
                 Object.keys(keys).forEach(k => keys[k] = false);
                 document.getElementById('walkOverlay').style.display = 'none';
+                document.getElementById('floorSelectPanel').style.display = 'none';
                 document.getElementById('modeBtn').textContent = 'ウォークスルーモード';
                 camera.position.set(camDist, camDist * 0.8, camDist);
                 controls.target.set((minX + maxX) / 2 - offsetX, 0, -((minY + maxY) / 2 - offsetY));
@@ -769,12 +794,13 @@ try:
                 isWalkMode = true;
                 walkStarted = false;
                 controls.enabled = false;
-                camera.position.y = EYE_HEIGHT;
+                setWalkFloor(1);
                 // 現在のOrbitControlsの視点方向を引き継ぎ、yaw/pitchを初期化
                 const dir = new THREE.Vector3();
                 camera.getWorldDirection(dir);
                 yaw   = Math.atan2(-dir.x, -dir.z);
                 pitch = Math.asin(Math.max(-1, Math.min(1, dir.y)));
+                document.getElementById('floorSelectPanel').style.display = 'flex';
                 document.getElementById('walkOverlay').style.display = 'flex';
                 document.getElementById('modeBtn').textContent = '俯瞰モードに切替';
                 info.innerHTML = `<strong>ウォークスルーモード</strong>
@@ -788,6 +814,9 @@ try:
 </div>
 <div style="margin-top:8px;font-size:12px;">🖱 ドラッグ: 視点変更</div>`;
             }
+
+            document.getElementById('floor1WalkBtn').addEventListener('click', () => { if (isWalkMode) setWalkFloor(1); });
+            document.getElementById('floor2WalkBtn').addEventListener('click', () => { if (isWalkMode) setWalkFloor(2); });
 
             document.getElementById('modeBtn').addEventListener('click', () => {
                 if (!isWalkMode) switchToWalkMode();
