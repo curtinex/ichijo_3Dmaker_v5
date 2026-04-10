@@ -62,8 +62,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（4b31a05: v0.0.14 floor_level保存対応）を指定
-        commit_hash = "4b31a05"
+        # 最新コミット（94018a5: stair z-height 2.4/15 fix, floor_level preserve）を指定
+        commit_hash = "94018a5"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
