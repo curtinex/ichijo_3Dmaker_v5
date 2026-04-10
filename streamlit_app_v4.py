@@ -7264,8 +7264,10 @@ def main():
                                         _s3e_1f = [w for w in _s3e_walls if w.get('floor_level', 1) != 2]
                                         _s3e_2f = [w for w in _s3e_walls if w.get('floor_level') == 2]
                                         import tempfile as _tmpfile2
+                                        _s3e_stairs = updated_json.get('stairs', [])
+                                        _s3e_meta = updated_json.get('metadata', {})
                                         if _s3e_1f and st.session_state.get('viz_1f_bytes'):
-                                            _s3ej1 = {'walls': _s3e_1f, 'furniture': updated_json.get('furniture', [])}
+                                            _s3ej1 = {'walls': _s3e_1f, 'furniture': updated_json.get('furniture', []), 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
                                             with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe1:
                                                 json.dump(_s3ej1, _tfe1, ensure_ascii=False)
                                                 _tfe1_path = _tfe1.name
@@ -7274,7 +7276,7 @@ def main():
                                             if Path(_vpe_1f).exists():
                                                 st.session_state['viz_1f_bytes'] = Path(_vpe_1f).read_bytes()
                                         if _s3e_2f and st.session_state.get('viz_2f_bytes'):
-                                            _s3ej2 = {'walls': _s3e_2f, 'furniture': updated_json.get('furniture', [])}
+                                            _s3ej2 = {'walls': _s3e_2f, 'furniture': updated_json.get('furniture', []), 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
                                             with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe2:
                                                 json.dump(_s3ej2, _tfe2, ensure_ascii=False)
                                                 _tfe2_path = _tfe2.name
