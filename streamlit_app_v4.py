@@ -642,6 +642,15 @@ try:
         }
         #floor2Btn:hover { background: rgba(60,100,40,0.95); }
         #floor2Btn.active { background: rgba(40,160,60,0.95); }
+        #ceiling2Btn {
+            position: absolute; top: 100px; right: 10px;
+            background: rgba(100,80,160,0.85); color: white;
+            border: none; padding: 10px 16px; border-radius: 5px;
+            font-size: 14px; cursor: pointer; z-index: 200;
+            display: none;
+        }
+        #ceiling2Btn:hover { background: rgba(80,60,140,0.95); }
+        #ceiling2Btn.active { background: rgba(130,100,200,0.95); }
         #walkOverlay {
             display: none; position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; justify-content: center; align-items: center;
@@ -659,6 +668,7 @@ try:
     <div id="container"></div>
     <button id="modeBtn">ウォークスルーモード</button>
     <button id="floor2Btn">🏠 2階を非表示</button>
+    <button id="ceiling2Btn">🔲 2F天井を非表示</button>
     <div id="walkOverlay">
         <div>クリックして開始</div>
         <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
@@ -859,6 +869,7 @@ try:
 
             // 2Fオブジェクト管理リスト（壁・床・天井・家具・階段）
             const floor2Meshes = [];
+            const ceiling2Meshes = [];
 
             walls.forEach(wall => {
                 const x1 = wall.start[0];
@@ -917,9 +928,13 @@ try:
                     floor.castShadow = true;   // 2F床が1F床への影を遮断
                     floor.receiveShadow = true;
                     scene.add(floor);
-                    // height>0の床（2F床）はfloor2Meshesに登録
+                    // height>0の床（2F床/2F天井）はfloor2Meshesに登録
                     if (floorData.height && floorData.height > 0) {
                         floor2Meshes.push(floor);
+                    }
+                    // type=ceiling または height>4.0 の板は2F天井として ceiling2Meshes にも登録
+                    if (floorData.type === 'ceiling' || (floorData.height && floorData.height > 4.0)) {
+                        ceiling2Meshes.push(floor);
                     }
                 });
 
@@ -952,6 +967,10 @@ try:
             if (has2F) {
                 document.getElementById('floor2Btn').style.display = 'block';
             }
+            // 2F天井判定
+            if (ceiling2Meshes.length > 0) {
+                document.getElementById('ceiling2Btn').style.display = 'block';
+            }
 
             // 2F表示切替ボタン
             let floor2Visible = true;
@@ -964,6 +983,21 @@ try:
                     btn.classList.remove('active');
                 } else {
                     btn.textContent = '🏠 2階を表示';
+                    btn.classList.add('active');
+                }
+            });
+
+            // 2F天井表示切替ボタン
+            let ceiling2Visible = true;
+            document.getElementById('ceiling2Btn').addEventListener('click', () => {
+                ceiling2Visible = !ceiling2Visible;
+                ceiling2Meshes.forEach(m => { m.visible = ceiling2Visible; });
+                const btn = document.getElementById('ceiling2Btn');
+                if (ceiling2Visible) {
+                    btn.textContent = '🔲 2F天井を非表示';
+                    btn.classList.remove('active');
+                } else {
+                    btn.textContent = '🔲 2F天井を表示';
                     btn.classList.add('active');
                 }
             });
@@ -4668,7 +4702,7 @@ def main():
                         elif edit_mode == "天井を追加" and len(st.session_state.rect_coords_list) > 0:
                             num_rects = len(st.session_state.rect_coords_list)
                             st.markdown("---")
-                            st.success(f"✅ **{num_rects}箇所の天井範囲を選択中**（天井と同じ範囲に2F床も生成されます）")
+                            st.success(f"✅ **{num_rects}箇所の天井範囲を選択中**")
                             if st.button("🏠 天井追加実行", type="primary", key="btn_ceiling_add_exec"):
                                 st.session_state.execute_ceiling_addition = True
                         
@@ -7189,7 +7223,8 @@ def main():
                                         'y1': ceil_y1,
                                         'x2': ceil_x2,
                                         'y2': ceil_y2,
-                                        'height': round(_2f_floor_h, 3)
+                                        'height': round(_2f_floor_h, 3),
+                                        'type': 'ceiling'
                                     }
                                     updated_json['floors'].append(floor_for_ceiling)
 
