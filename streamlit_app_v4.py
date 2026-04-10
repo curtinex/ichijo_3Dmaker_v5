@@ -36,8 +36,8 @@ def install_ichijo_core():
     try:
         import ichijo_core
         
-        # バージョンが期待値と一致するかチェック（0.0.13系を許可）
-        if ichijo_core.__version__.startswith("0.0.13"):
+        # バージョンが期待値と一致するかチェック（0.0.14系を許可）
+        if ichijo_core.__version__.startswith("0.0.14"):
             return True, None
         else:
             # 強制的に再インストール
@@ -630,15 +630,15 @@ try:
             font-size: 14px; cursor: pointer; z-index: 200;
         }
         #modeBtn:hover { background: rgba(0,80,180,0.95); }
-        #ceilingBtn {
+        #floor2Btn {
             position: absolute; top: 55px; right: 10px;
             background: rgba(80,120,60,0.85); color: white;
             border: none; padding: 10px 16px; border-radius: 5px;
             font-size: 14px; cursor: pointer; z-index: 200;
             display: none;
         }
-        #ceilingBtn:hover { background: rgba(60,100,40,0.95); }
-        #ceilingBtn.active { background: rgba(40,160,60,0.95); }
+        #floor2Btn:hover { background: rgba(60,100,40,0.95); }
+        #floor2Btn.active { background: rgba(40,160,60,0.95); }
         #walkOverlay {
             display: none; position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; justify-content: center; align-items: center;
@@ -655,7 +655,7 @@ try:
     </div>
     <div id="container"></div>
     <button id="modeBtn">ウォークスルーモード</button>
-    <button id="ceilingBtn">🏠 天井を表示</button>
+    <button id="floor2Btn">🏠 2階を非表示</button>
     <div id="walkOverlay">
         <div>クリックして開始</div>
         <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
@@ -854,6 +854,9 @@ try:
             });
             const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xbbbbbb, linewidth: 0.05 });
 
+            // 2Fオブジェクト管理リスト（壁・床・天井・家具・階段）
+            const floor2Meshes = [];
+
             walls.forEach(wall => {
                 const x1 = wall.start[0];
                 const y1 = wall.start[1];
@@ -862,7 +865,9 @@ try:
                 const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
                 const centerX = (x1 + x2) / 2;
                 const centerY = (y1 + y2) / 2;
-                const baseHeight = wall.base_height || 0;
+                // 2F通常壁はbase_heightに関わらず1F天井(2.4m)から開始してギャップをなくす
+                // ただしwindow_added壁は絶対Z高さが保存済みのためそのまま使用
+                const baseHeight = (wall.floor_level === 2 && wall.source !== 'window_added') ? 2.4 : (wall.base_height || 0);
                 const centerZ = baseHeight + (wall.height / 2);
 
                 const geometry = new THREE.BoxGeometry(length, wall.height, wall.thickness);
@@ -879,9 +884,18 @@ try:
                 line.position.copy(mesh.position);
                 line.rotation.copy(mesh.rotation);
                 scene.add(line);
+
+                // 2F壁はfloor2Meshesに登録（表示切替対象）
+                if (wall.floor_level === 2) {
+                    floor2Meshes.push(mesh);
+                    floor2Meshes.push(line);
+                }
             });
 
             if (wallsData.floors && wallsData.floors.length > 0) {
+                // floors配列の中に1F床（height=0または未定義）が含まれているか確認
+                const has1FFloor = wallsData.floors.some(f => !f.height || f.height === 0);
+
                 wallsData.floors.forEach((floorData, idx) => {
                     const x1 = floorData.x1;
                     const y1 = floorData.y1;
@@ -894,10 +908,30 @@ try:
                     const floorGeometry = new THREE.BoxGeometry(floorW, 0.1, floorD);
                     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
                     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-                    floor.position.set(centerX - offsetX, -0.05, -(centerY - offsetY));
+                    // heightフィールドがあればそのZ高さに配置（2F床面など）、なければY=-0.05（1F床面）
+                    const floorY = (floorData.height !== undefined) ? floorData.height - 0.05 : -0.05;
+                    floor.position.set(centerX - offsetX, floorY, -(centerY - offsetY));
+                    floor.castShadow = true;   // 2F床が1F床への影を遮断
                     floor.receiveShadow = true;
                     scene.add(floor);
+                    // height>0の床（2F床）はfloor2Meshesに登録
+                    if (floorData.height && floorData.height > 0) {
+                        floor2Meshes.push(floor);
+                    }
                 });
+
+                // floorsに1F床が含まれていない場合は自動で1F床を追加描画
+                if (!has1FFloor && walls.length > 0) {
+                    const floorW = maxX - minX;
+                    const floorD = maxY - minY;
+                    const floorGeometry = new THREE.BoxGeometry(floorW, 0.1, floorD);
+                    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
+                    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+                    floor.position.set((minX + maxX) / 2 - offsetX, -0.05, -((minY + maxY) / 2 - offsetY));
+                    floor.castShadow = true;
+                    floor.receiveShadow = true;
+                    scene.add(floor);
+                }
             } else if (walls.length > 0) {
                 const floorW = maxX - minX;
                 const floorD = maxY - minY;
@@ -905,51 +939,29 @@ try:
                 const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
                 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
                 floor.position.set((minX + maxX) / 2 - offsetX, -0.05, -((minY + maxY) / 2 - offsetY));
+                floor.castShadow = true;
                 floor.receiveShadow = true;
                 scene.add(floor);
             }
 
-            // 天井オブジェクト（ceilingsデータから生成・デフォルト非表示）
-            const ceilingMeshes = [];
-            if (wallsData.ceilings && wallsData.ceilings.length > 0) {
-                document.getElementById('ceilingBtn').style.display = 'block';
-                wallsData.ceilings.forEach((ceilingData) => {
-                    const cx1 = ceilingData.x1;
-                    const cy1 = ceilingData.y1;
-                    const cx2 = ceilingData.x2;
-                    const cy2 = ceilingData.y2;
-                    const cHeight = ceilingData.height || (walls.length > 0
-                        ? walls.reduce((s, w) => s + (w.base_height || 0) + w.height, 0) / walls.length
-                        : 2.4);
-                    const ceilW = Math.abs(cx2 - cx1);
-                    const ceilD = Math.abs(cy2 - cy1);
-                    const cCenterX = (cx1 + cx2) / 2;
-                    const cCenterY = (cy1 + cy2) / 2;
-                    const ceilingGeometry = new THREE.BoxGeometry(ceilW, 0.08, ceilD);
-                    const ceilingMaterial = new THREE.MeshStandardMaterial({
-                        color: 0xf0ede8,
-                        transparent: true,
-                        opacity: 0.88
-                    });
-                    const ceilingMesh = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-                    ceilingMesh.position.set(cCenterX - offsetX, cHeight - 0.04, -(cCenterY - offsetY));
-                    ceilingMesh.receiveShadow = true;
-                    ceilingMesh.visible = false;
-                    scene.add(ceilingMesh);
-                    ceilingMeshes.push(ceilingMesh);
-                });
+            // 2Fの存在判定（floors に height>0 のものがあれば2F有り）
+            const has2F = wallsData.floors && wallsData.floors.some(f => f.height && f.height > 0);
+            if (has2F) {
+                document.getElementById('floor2Btn').style.display = 'block';
             }
-            let ceilingVisible = false;
-            document.getElementById('ceilingBtn').addEventListener('click', () => {
-                ceilingVisible = !ceilingVisible;
-                ceilingMeshes.forEach(m => { m.visible = ceilingVisible; });
-                const btn = document.getElementById('ceilingBtn');
-                if (ceilingVisible) {
-                    btn.textContent = '🏠 天井を非表示';
-                    btn.classList.add('active');
-                } else {
-                    btn.textContent = '🏠 天井を表示';
+
+            // 2F表示切替ボタン
+            let floor2Visible = true;
+            document.getElementById('floor2Btn').addEventListener('click', () => {
+                floor2Visible = !floor2Visible;
+                floor2Meshes.forEach(m => { m.visible = floor2Visible; });
+                const btn = document.getElementById('floor2Btn');
+                if (floor2Visible) {
+                    btn.textContent = '🏠 2階を非表示';
                     btn.classList.remove('active');
+                } else {
+                    btn.textContent = '🏠 2階を表示';
+                    btn.classList.add('active');
                 }
             });
 
@@ -977,7 +989,8 @@ try:
                 
                 // オフセット（床からの高さ）を取得（デフォルト0）
                 // JSONに保存された offset フィールドを使用
-                const offset = item.offset || 0;
+                // z_offset: 2F家具の場合は2F床面Z高さを加算
+                const offset = (item.offset || 0) + (item.z_offset || 0);
                 
                 // 位置設定（床からのオフセット + 高さの半分の位置）
                 furnitureMesh.position.set(
@@ -989,6 +1002,10 @@ try:
                 furnitureMesh.castShadow = true;
                 furnitureMesh.receiveShadow = true;
                 scene.add(furnitureMesh);
+                // 2F家具（z_offset > 0 または floor_level === 2）は floor2Meshes に登録
+                if (item.floor_level === 2 || (item.z_offset && item.z_offset > 0)) {
+                    floor2Meshes.push(furnitureMesh);
+                }
             });
 
             // 階段オブジェクト
@@ -1020,6 +1037,11 @@ try:
                 stairEdgeLine.position.copy(stairMesh.position);
                 stairEdgeLine.rotation.copy(stairMesh.rotation);
                 scene.add(stairEdgeLine);
+                // 2F階段（高さ z > 2m）は floor2Meshes に登録
+                if (z > 2.0) {
+                    floor2Meshes.push(stairMesh);
+                    floor2Meshes.push(stairEdgeLine);
+                }
             });
 
             function animate() {
@@ -1124,8 +1146,12 @@ try:
             out_path.write_text(html_content, encoding='utf-8')
             return out_path
         
-        def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None):
-            """窓で分断された2本の壁の間に、床側と天井側の壁を追加（フォールバック版）"""
+        def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None, floor_level=None, floor_z_offset=0.0):
+            """窓で分断された2本の壁の間に、床側と天井側の壁を追加（フォールバック版）
+            
+            floor_level: 1 or 2 (Noneの場合はwall1から継承)
+            floor_z_offset: 2F床面Z高さ（base_heightの絶対値オフセット。2F壁の場合に使用）
+            """
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
             endpoints = [
@@ -1155,16 +1181,21 @@ try:
                     pass
             max_id = max(existing_ids) if existing_ids else 0
             
+            # floor_levelが指定されていない場合はwall1から継承
+            _fl = floor_level if floor_level is not None else wall1.get('floor_level', 1)
+            _fz = floor_z_offset  # 2F床面の絶対Z高さ（1Fなら0.0）
+
             added_walls = []
             floor_wall = {
                 'id': max_id + 1,
                 'start': [round(window_start[0], 3), round(window_start[1], 3)],
                 'end': [round(window_end[0], 3), round(window_end[1], 3)],
                 'height': round(base_height, 3),
-                'base_height': 0.0,
+                'base_height': round(_fz, 3),  # 2F時は2F床面高さ、1F時は0.0
                 'length': round(min_dist, 3),
                 'thickness': round(default_thickness, 3),
                 'source': 'window_added',
+                'floor_level': _fl,
                 'window_model': window_model,
                 'window_height_mm': window_height_mm,
                 'window_base_m': round(base_height, 3),
@@ -1178,10 +1209,11 @@ try:
                 'start': [round(window_start[0], 3), round(window_start[1], 3)],
                 'end': [round(window_end[0], 3), round(window_end[1], 3)],
                 'height': round(ceiling_height, 3),
-                'base_height': round(base_height + window_height, 3),
+                'base_height': round(_fz + base_height + window_height, 3),  # 2F時はオフセット込み
                 'length': round(min_dist, 3),
                 'thickness': round(default_thickness, 3),
                 'source': 'window_added',
+                'floor_level': _fl,
                 'window_model': window_model,
                 'window_height_mm': window_height_mm,
                 'window_base_m': round(base_height + window_height, 3),
@@ -1616,7 +1648,7 @@ def _reset_selection_state():
 # - FURNITURE_HEIGHT_OPTIONS, FURNITURE_COLOR_OPTIONS
 
 
-def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
+def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45, ref_walls=None):
     """
     ピクセル座標の四角形をメートル座標に変換（グリッドスナップなし）
     
@@ -1625,15 +1657,17 @@ def _snap_to_grid(rect_pixel, json_data, scale, grid_size=0.45):
         json_data: JSON壁データ（座標変換用）
         scale: 可視化スケール (px/m)
         grid_size: グリッド間隔（m）※未使用
+        ref_walls: 座標変換の基準にする壁リスト（Noneの場合はjson_data['walls']全体）
     
     Returns:
         (x_start_m, y_start_m, width_m, depth_m): メートル座標での配置情報
     """
     x1_px, y1_px, x2_px, y2_px = rect_pixel
     
-    # 座標変換パラメータを取得
-    all_x = [w['start'][0] for w in json_data['walls']] + [w['end'][0] for w in json_data['walls']]
-    all_y = [w['start'][1] for w in json_data['walls']] + [w['end'][1] for w in json_data['walls']]
+    # 座標変換パラメータを取得（ref_walls引数がある場合はその壁を使用）
+    _ref = ref_walls if ref_walls is not None else json_data['walls']
+    all_x = [w['start'][0] for w in _ref] + [w['end'][0] for w in _ref]
+    all_y = [w['start'][1] for w in _ref] + [w['end'][1] for w in _ref]
     min_x, max_x = min(all_x), max(all_x)
     min_y, max_y = min(all_y), max(all_y)
     
@@ -1707,8 +1741,11 @@ def _add_furniture_to_json(json_data, height_m, color_name, x_start, y_start, wi
     return updated_data
 
 
-def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
-    """四角形選択から線を追加（2点から自動判定した方向で線を生成）"""
+def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50, ref_walls=None):
+    """四角形選択から線を追加（2点から自動判定した方向で線を生成）
+    
+    ref_walls: 座標変換の基準にする壁リスト（Noneの場合はjson_data['walls']全体を使用）
+    """
     import copy
     
     # 元データを保護するためディープコピー
@@ -1730,9 +1767,10 @@ def _add_line_to_json(json_data, p1, p2, wall_height=None, scale=50):
     x1, y1 = min(p1[0], p2[0]), min(p1[1], p2[1])
     x2, y2 = max(p1[0], p2[0]), max(p1[1], p2[1])
     
-    # 可視化画像のメートル座標変換パラメータを取得
-    all_x = [w['start'][0] for w in json_data['walls']] + [w['end'][0] for w in json_data['walls']]
-    all_y = [w['start'][1] for w in json_data['walls']] + [w['end'][1] for w in json_data['walls']]
+    # 可視化画像のメートル座標変換パラメータを取得（ref_walls指定時はそれを使用）
+    _ref = ref_walls if ref_walls is not None else json_data['walls']
+    all_x = [w['start'][0] for w in _ref] + [w['end'][0] for w in _ref]
+    all_y = [w['start'][1] for w in _ref] + [w['end'][1] for w in _ref]
     min_x, max_x = min(all_x), max(all_x)
     min_y, max_y = min(all_y), max(all_y)
     
@@ -2265,7 +2303,9 @@ def main():
         st.caption("※PDF図面は一条工務店アプリのMYポストからダウンロードできます")
 
         # PDFの場合、ページ数を確認してページ選択UIを表示
-        page_number = 0  # デフォルト
+        page_number = 0    # 1階ページ（デフォルト）
+        enable_2f = False  # 2階あり設定
+        page_number_2f = 0 # 2階ページ（デフォルト）
         if uploaded is not None and uploaded.name.lower().endswith('.pdf'):
             try:
                 # 一時的にPDFを保存してページ数を取得
@@ -2273,17 +2313,34 @@ def main():
                 doc = fitz.open(stream=temp_pdf, filetype="pdf")
                 total_pages = len(doc)
                 doc.close()
-                
+
                 if total_pages > 1:
-                    # st.info(f"📄 このPDFは {total_pages} ページあります。処理するページを選択してください。")
                     page_number = st.selectbox(
-                        "処理するページを選択",
+                        "1階のページを選択",
                         options=list(range(total_pages)),
                         format_func=lambda x: f"ページ {x + 1}",
-                        help="PDFの何ページ目を処理するか選択します（0始まり）"
+                        help="1階の間取りが記載されているページを選択します",
+                        key="page_number_1f_select"
                     )
                 else:
                     st.info("📄 このPDFは 1 ページです。")
+
+                # 2階設定
+                enable_2f = st.checkbox("2階もあり", value=False, key="enable_2f_check")
+                if enable_2f:
+                    if total_pages > 1:
+                        default_2f_idx = min(1, total_pages - 1)
+                        page_number_2f = st.selectbox(
+                            "2階のページを選択",
+                            options=list(range(total_pages)),
+                            index=default_2f_idx,
+                            format_func=lambda x: f"ページ {x + 1}",
+                            key="page_number_2f_select",
+                            help="2階の間取りが記載されているページを選択します"
+                        )
+                    else:
+                        st.warning("⚠️ PDFが1ページのため、2階のページを別途選択できません。")
+                        enable_2f = False
             except Exception as e:
                 st.warning(f"PDFページ数の取得に失敗しました: {e}")
         
@@ -2378,6 +2435,16 @@ def main():
                         step=0.1,
                         help="部屋の天井高さ（床から天井までの高さ）をメートル単位で指定します。一般的な住宅は2.4m程度です。"
                     )
+                    slab_thickness = st.number_input(
+                        "床スラブ厚み(m) ※2階",
+                        min_value=0.0,
+                        max_value=1.0,
+                        value=0.3,
+                        step=0.05,
+                        format="%.2f",
+                        help="1F天井〜2F床面の厚み。2階の壁は「1F壁高さ＋スラブ厚み」の高さから配置されます。後から変更可能です。",
+                        key="slab_thickness_input"
+                    )
                 
                 # PDFレンダリングDPI（固定値に変更）
                 dpi = 300
@@ -2420,6 +2487,9 @@ def main():
             wall_height = 2.4
             margin_vertical = 10
             margin_horizontal = 5
+            enable_2f = False
+            page_number_2f = 0
+            slab_thickness = 0.3
             run = False
 
         # 途中経過の表示可否（Falseで最終結果のみ表示）
@@ -2500,6 +2570,95 @@ def main():
                 st.code(traceback.format_exc())
                 return
 
+            # ---- 2階処理（enable_2f が有効な場合） ----
+            if enable_2f:
+                try:
+                    source_image_2f = out_dir / "source_2f.png"
+                    if show_progress:
+                        st.write(f"2階PDFを画像に変換中… (ページ {page_number_2f + 1})")
+                    pdf_to_image(str(input_path), output_path=str(source_image_2f), page_number=page_number_2f, dpi=dpi)
+
+                    refined_img_2f, refined_path_2f_raw = refine_floor_plan_from_image(
+                        str(source_image_2f),
+                        black_threshold=black_threshold,
+                        min_thickness=min_thickness,
+                        remove_corners=False,
+                        margin_vertical=margin_vertical,
+                        margin_horizontal=margin_horizontal
+                    )
+                    refined_path_2f = Path(refined_path_2f_raw)
+                    refined_dest_2f = out_dir / "refined_2f.png"
+                    if refined_path_2f.exists() and refined_path_2f != refined_dest_2f:
+                        refined_path_2f.rename(refined_dest_2f)
+                        refined_path_2f = refined_dest_2f
+
+                    json_path_2f = out_dir / "walls_3d_2f.json"
+                    result_2f = process_image_to_3d(
+                        str(refined_path_2f), str(json_path_2f),
+                        wall_height=wall_height, pixel_to_meter=pixel_to_meter
+                    )
+
+                    if result_2f is not None:
+                        import copy as _copy
+                        json_1f_data = json.loads(json_path.read_text(encoding='utf-8'))
+                        json_2f_data = json.loads(json_path_2f.read_text(encoding='utf-8'))
+
+                        # 2階の床面オフセット（将来的に階別スケール校正にも利用可）
+                        offset_2f = round(wall_height + slab_thickness, 3)
+
+                        # 1階にfloor_levelを付与
+                        for _w in json_1f_data.get('walls', []):
+                            _w['floor_level'] = 1
+
+                        # 2階にfloor_levelとbase_heightオフセットを付与
+                        # IDの衝突を避けるため、1階の最大IDに加算
+                        max_1f_id = max((_w.get('id', 0) for _w in json_1f_data.get('walls', [])), default=0)
+                        for _w in json_2f_data.get('walls', []):
+                            _w['floor_level'] = 2
+                            _w['base_height'] = round(_w.get('base_height', 0) + offset_2f, 3)
+                            if isinstance(_w.get('id'), int):
+                                _w['id'] = _w['id'] + max_1f_id + 1
+
+                        # 1F + 2F を統合した JSON を生成
+                        json_combined = _copy.deepcopy(json_1f_data)
+                        json_combined['walls'] = json_1f_data.get('walls', []) + json_2f_data.get('walls', [])
+                        json_combined.setdefault('metadata', {})
+                        json_combined['metadata']['has_2f'] = True
+                        json_combined['metadata']['floor_count'] = 2
+                        json_combined['metadata']['floor_offset_2f'] = offset_2f
+                        json_combined['metadata']['total_walls'] = len(json_combined['walls'])
+
+                        json_combined_path = out_dir / "walls_3d_combined.json"
+                        json_combined_path.write_text(
+                            json.dumps(json_combined, indent=2, ensure_ascii=False), encoding='utf-8'
+                        )
+                        json_path = json_combined_path  # 以降は統合JSONを使用
+                        st.success(f"✅ 1階＋2階の読み込み完了")
+
+                        # 1F・2F 個別の可視化画像を生成
+                        try:
+                            _viz_1f_path = out_dir / "visualization_1f.png"
+                            _viz_2f_path = out_dir / "visualization_2f.png"
+                            visualize_3d_walls(str(out_dir / "walls_3d.json"), str(_viz_1f_path), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                            visualize_3d_walls(str(json_path_2f), str(_viz_2f_path), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                            st.session_state['viz_1f_bytes'] = _viz_1f_path.read_bytes() if _viz_1f_path.exists() else None
+                            st.session_state['viz_2f_bytes'] = _viz_2f_path.read_bytes() if _viz_2f_path.exists() else None
+                        except Exception:
+                            st.session_state['viz_1f_bytes'] = None
+                            st.session_state['viz_2f_bytes'] = None
+                    else:
+                        st.warning("⚠️ 2階の3D変換に失敗しました。1階のみで続行します。")
+                        st.session_state['viz_1f_bytes'] = None
+                        st.session_state['viz_2f_bytes'] = None
+                except Exception as _e2f:
+                    st.warning(f"⚠️ 2階処理でエラーが発生しました（1階のみで続行）: {_e2f}")
+                    st.session_state['viz_1f_bytes'] = None
+                    st.session_state['viz_2f_bytes'] = None
+            else:
+                # 2F無効の場合は個別vizのセッションデータをリセット
+                st.session_state['viz_1f_bytes'] = None
+                st.session_state['viz_2f_bytes'] = None
+
             # 2D可視化
             if show_progress:
                 st.write("2D可視化画像を生成中…")
@@ -2545,9 +2704,49 @@ def main():
                 merged_json_path = out_dir / "walls_3d_merged.json"
                 merged_viz_path = out_dir / "visualization_merged.png"
                 
+                # 2F有効時は 1F壁のみを auto-merge に渡す（2F壁は XY座標が重なるため誤結合する）
+                _current_json_data = json.loads(json_path.read_text(encoding='utf-8'))
+                _walls_2f_saved = [_w for _w in _current_json_data.get('walls', []) if _w.get('floor_level') == 2]
+                if _walls_2f_saved:
+                    import copy as _copy_merge
+                    _json_1f_only = _copy_merge.deepcopy(_current_json_data)
+                    _json_1f_only['walls'] = [_w for _w in _current_json_data.get('walls', []) if _w.get('floor_level', 1) != 2]
+                    _json_1f_only_path = out_dir / "_merge_1f_only.json"
+                    _json_1f_only_path.write_text(json.dumps(_json_1f_only, ensure_ascii=False), encoding='utf-8')
+                    _merge_input_path = _json_1f_only_path
+                else:
+                    _walls_2f_saved = []
+                    _merge_input_path = json_path
+
                 # (表示削除) 自動結合で使用するパラメータの情報表示を削除しました
                 merger = WallAutoMerger(search_radius=merge_radius, angle_tolerance=merge_angle)
-                merger.process(str(refined_path), str(json_path), str(merged_json_path))
+                merger.process(str(refined_path), str(_merge_input_path), str(merged_json_path))
+
+                # 2F壁を個別に auto-merge して merged JSON に追記
+                if _walls_2f_saved:
+                    _refined_2f_path = out_dir / "refined_2f.png"
+                    _merged_data = json.loads(merged_json_path.read_text(encoding='utf-8'))
+                    if _refined_2f_path.exists():
+                        try:
+                            # 2F壁専用の一時 JSON を作成（base_height オフセット除去 → 2F画像の XY に一致させる）
+                            _offset_2f = _current_json_data.get('metadata', {}).get('floor_offset_2f', 0)
+                            _json_2f_for_merge = _copy_merge.deepcopy(_current_json_data)
+                            _json_2f_for_merge['walls'] = _walls_2f_saved
+                            _json_2f_tmp_path = out_dir / "_merge_2f_only.json"
+                            _json_2f_tmp_path.write_text(json.dumps(_json_2f_for_merge, ensure_ascii=False), encoding='utf-8')
+                            _merged_2f_tmp_path = out_dir / "_merged_2f_only.json"
+                            merger2f = WallAutoMerger(search_radius=merge_radius, angle_tolerance=merge_angle)
+                            merger2f.process(str(_refined_2f_path), str(_json_2f_tmp_path), str(_merged_2f_tmp_path))
+                            _merged_2f_data = json.loads(_merged_2f_tmp_path.read_text(encoding='utf-8'))
+                            _walls_2f_merged = _merged_2f_data.get('walls', _walls_2f_saved)
+                        except Exception:
+                            # auto-merge 失敗時は元の 2F 壁をそのまま使用
+                            _walls_2f_merged = _walls_2f_saved
+                    else:
+                        _walls_2f_merged = _walls_2f_saved
+                    _merged_data['walls'] = _merged_data.get('walls', []) + _walls_2f_merged
+                    _merged_data.setdefault('metadata', {})['total_walls'] = len(_merged_data['walls'])
+                    merged_json_path.write_text(json.dumps(_merged_data, indent=2, ensure_ascii=False), encoding='utf-8')
                 
                 visualize_3d_walls(
                     str(merged_json_path),
@@ -2556,7 +2755,35 @@ def main():
                     wall_color=(0, 0, 0),
                     bg_color=(255, 255, 255)
                 )
-                
+
+                # マージ後に1F/2F個別vizを再生成（タブ表示を最新のマージ結果に更新）
+                if st.session_state.get('viz_1f_bytes') or st.session_state.get('viz_2f_bytes'):
+                    try:
+                        _merged_all = json.loads(merged_json_path.read_text(encoding='utf-8'))
+                        _merged_walls_1f = [_w for _w in _merged_all.get('walls', []) if _w.get('floor_level', 1) != 2]
+                        _merged_walls_2f = [_w for _w in _merged_all.get('walls', []) if _w.get('floor_level') == 2]
+                        if _merged_walls_1f:
+                            import copy as _copy_viz
+                            _tmp_1f = _copy_viz.deepcopy(_merged_all)
+                            _tmp_1f['walls'] = _merged_walls_1f
+                            _tmp_1f_path = out_dir / "_viz_1f_merged.json"
+                            _tmp_1f_path.write_text(json.dumps(_tmp_1f, ensure_ascii=False), encoding='utf-8')
+                            _viz_1f_merged_path = out_dir / "visualization_1f.png"
+                            visualize_3d_walls(str(_tmp_1f_path), str(_viz_1f_merged_path), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                            if _viz_1f_merged_path.exists():
+                                st.session_state['viz_1f_bytes'] = _viz_1f_merged_path.read_bytes()
+                        if _merged_walls_2f:
+                            _tmp_2f = _copy_viz.deepcopy(_merged_all)
+                            _tmp_2f['walls'] = _merged_walls_2f
+                            _tmp_2f_path = out_dir / "_viz_2f_merged.json"
+                            _tmp_2f_path.write_text(json.dumps(_tmp_2f, ensure_ascii=False), encoding='utf-8')
+                            _viz_2f_merged_path = out_dir / "visualization_2f.png"
+                            visualize_3d_walls(str(_tmp_2f_path), str(_viz_2f_merged_path), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                            if _viz_2f_merged_path.exists():
+                                st.session_state['viz_2f_bytes'] = _viz_2f_merged_path.read_bytes()
+                    except Exception:
+                        pass
+
                 merged_viewer_path = out_dir / "viewer_3d_merged.html"
                 _generate_3d_viewer_html(merged_json_path, merged_viewer_path)
                 
@@ -2606,10 +2833,27 @@ def main():
                 # 3Dモデル用イメージを先に表示
                 st.subheader("📊 3Dモデル用イメージ")
                 if st.session_state.viz_bytes is not None:
-                    # 画面サイズの50%に縮小表示（左寄せ）
-                    col1, col2 = st.columns([0.5, 0.5])
-                    with col1:
-                        st.image(st.session_state.viz_bytes, use_container_width=True)
+                    _v1f = st.session_state.get('viz_1f_bytes')
+                    _v2f = st.session_state.get('viz_2f_bytes')
+                    if _v1f and _v2f:
+                        _tab1f, _tab2f, _taball = st.tabs(["🏠 1階", "🏗️ 2階", "📌 1F+2F（合成）"])
+                        with _tab1f:
+                            col1, col2 = st.columns([0.5, 0.5])
+                            with col1:
+                                st.image(_v1f, use_container_width=True)
+                        with _tab2f:
+                            col1, col2 = st.columns([0.5, 0.5])
+                            with col1:
+                                st.image(_v2f, use_container_width=True)
+                        with _taball:
+                            col1, col2 = st.columns([0.5, 0.5])
+                            with col1:
+                                st.image(st.session_state.viz_bytes, use_container_width=True)
+                    else:
+                        # 画面サイズの50%に縮小表示（左寄せ）
+                        col1, col2 = st.columns([0.5, 0.5])
+                        with col1:
+                            st.image(st.session_state.viz_bytes, use_container_width=True)
 
                 # 壁線抽出結果はexpanderの中に格納（デフォルトで閉じる）
                 with st.expander("🖼️ 壁線抽出結果（CAD図面参照）", expanded=False):
@@ -2657,6 +2901,9 @@ def main():
             if st.session_state.workflow_step >= 2 and st.session_state.processed:
                 st.divider()
                 st.markdown("## ステップ ②  スケール校正")
+            # 校正後rerunで戻ってきたときのログイン警告を表示
+            if st.session_state.pop('_step3_login_warning', False):
+                st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
             st.info(
                 "基準となる壁を選択して、修正スケール値を入力して実行してください。(一条CAD図面 1マス = 編集画面 2マス推奨)\n\n"
                 "変更ない場合は「スキップして次へ」を選択してください"
@@ -2671,21 +2918,68 @@ def main():
             if "scale_last_click" not in st.session_state:
                 st.session_state.scale_last_click = None
 
+            # 校正対象フロア選択（2F有効時のみ表示）
+            _has_2f_viz = bool(st.session_state.get('viz_1f_bytes') and st.session_state.get('viz_2f_bytes'))
+            if _has_2f_viz:
+                _calib_floor = st.radio(
+                    "🏠 校正対象フロアを選択",
+                    options=["🏠 1階（全体校正）", "🏗️ 2階（2階のみ校正）"],
+                    key="step2_calib_floor",
+                    horizontal=True
+                )
+                with st.expander("💡 校正対象フロアの説明", expanded=False):
+                    st.markdown(
+                        "**🏠 1階（全体校正）**\n\n"
+                        "1階基準で校正します（1階・2階両方に適用）。"
+                        "同一PDFから読み取った1階・2階は同じスケールのため、"
+                        "1階の壁を基準に校正することで両階に反映されます。通常はこちらを選択してください。\n\n"
+                        "---\n\n"
+                        "**🏗️ 2階（2階のみ校正）**\n\n"
+                        "2階の壁座標のみ校正します（1階は変更しません）。"
+                        "1階を先に校正済みの場合に、2階を個別に微調整したいときにご利用ください。校正 A は2階の壁のみに適用されます。"
+                    )
+            else:
+                _calib_floor = "🏠 1階（全体校正）"
+
             if st.session_state.viz_bytes:
                 try:
                     import math
                     from PIL import ImageDraw
 
+                    # 表示画像・壁データ・boundsを選択フロアに応じて切替
+                    _all_walls_raw = _parse_json_cached(st.session_state.json_bytes).get("walls", [])
+                    if _has_2f_viz and _calib_floor != "🏠 1階（全体校正）":
+                        # 2F選択: 2F専用画像・2F壁のみ
+                        _step2_viz_bytes = st.session_state.get('viz_2f_bytes') or st.session_state.viz_bytes
+                        walls = [_w for _w in _all_walls_raw if _w.get('floor_level') == 2]
+                        _bxs = [c for _w in walls for c in [_w['start'][0], _w['end'][0]] if 'start' in _w and 'end' in _w]
+                        _bys = [c for _w in walls for c in [_w['start'][1], _w['end'][1]] if 'start' in _w and 'end' in _w]
+                        if _bxs and _bys:
+                            min_x, max_x, min_y, max_y = min(_bxs), max(_bxs), min(_bys), max(_bys)
+                        else:
+                            min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                    elif _has_2f_viz:
+                        # 1F選択（2F有効）: 1F専用画像・1F壁のみ
+                        _step2_viz_bytes = st.session_state.get('viz_1f_bytes') or st.session_state.viz_bytes
+                        walls = [_w for _w in _all_walls_raw if _w.get('floor_level', 1) == 1]
+                        _bxs = [c for _w in walls for c in [_w['start'][0], _w['end'][0]] if 'start' in _w and 'end' in _w]
+                        _bys = [c for _w in walls for c in [_w['start'][1], _w['end'][1]] if 'start' in _w and 'end' in _w]
+                        if _bxs and _bys:
+                            min_x, max_x, min_y, max_y = min(_bxs), max(_bxs), min(_bys), max(_bys)
+                        else:
+                            min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                    else:
+                        # 2F無効: 合成画像・全壁
+                        _step2_viz_bytes = st.session_state.viz_bytes
+                        walls = _all_walls_raw
+                        min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+
                     disp_img, scale_disp, orig_w, orig_h = _prepare_display_from_pil(
-                        _open_viz_image_cached(st.session_state.viz_bytes), max_width=DISPLAY_IMAGE_WIDTH
+                        _open_viz_image_cached(_step2_viz_bytes), max_width=DISPLAY_IMAGE_WIDTH
                     )
 
-                    # 壁データ読み込みと座標変換（streamlit_app.pyと同じロジック）
-                    json_data = _parse_json_cached(st.session_state.json_bytes)
-                    walls = json_data.get("walls", [])
                     scale_px = int(st.session_state.viz_scale)
-                    margin = 50  # streamlit_app.pyと同じマージン
-                    min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                    margin = 50
                     img_width_calc = int((max_x - min_x) * scale_px) + 2 * margin
                     img_height_calc = int((max_y - min_y) * scale_px) + 2 * margin
 
@@ -2770,8 +3064,12 @@ def main():
                                     
                                     # 各壁の座標をスケール変換
                                     calibrated_json = copy.deepcopy(json_data)
+                                    _apply_2f_only = (_has_2f_viz and _calib_floor != "🏠 1階（全体校正）")
                                     for wall in calibrated_json.get("walls", []):
                                         if "start" in wall and "end" in wall:
+                                            # 2F校正モードの場合は2F壁のみ更新
+                                            if _apply_2f_only and wall.get('floor_level') != 2:
+                                                continue
                                             # 座標をスケール変換（X-Y平面のみ）
                                             wall["start"] = [round(wall["start"][0] * scale_ratio, 3),
                                                         round(wall["start"][1] * scale_ratio, 3)]
@@ -2794,8 +3092,9 @@ def main():
                                             # 一条工務店の標準壁厚は10cmで固定
                                             wall["thickness"] = 0.1
                                     
-                                    # メタデータを更新
-                                    calibrated_json.setdefault("metadata", {})["pixel_to_meter"] = new_pixel_to_meter
+                                    # メタデータを更新（2Fのみ校正時はpixel_to_meterは更新しない）
+                                    if not _apply_2f_only:
+                                        calibrated_json.setdefault("metadata", {})["pixel_to_meter"] = new_pixel_to_meter
                                     
                                     # デバッグ情報：校正後の座標範囲を計算
                                     all_x_after = []
@@ -2843,6 +3142,38 @@ def main():
                                             st.session_state.viz_bytes = viz_path.read_bytes()
                                     except Exception:
                                         st.session_state.setdefault('debug_log', []).append('viz regen failed: ' + traceback.format_exc())
+
+                                    # 階別可視化画像を再生成（2F有効時）
+                                    if st.session_state.get('viz_1f_bytes') or st.session_state.get('viz_2f_bytes'):
+                                        import copy as _copy2
+                                        import traceback as _tb2
+                                        _calib_json = _copy2.deepcopy(calibrated_json)
+                                        _walls_1f = [_w for _w in _calib_json.get('walls', []) if _w.get('floor_level', 1) == 1]
+                                        _walls_2f = [_w for _w in _calib_json.get('walls', []) if _w.get('floor_level') == 2]
+                                        _json_1f_tmp = out_dir / "_tmp_viz_1f.json"
+                                        _json_2f_tmp = out_dir / "_tmp_viz_2f.json"
+                                        _viz_1f_path = out_dir / "visualization_1f.png"
+                                        _viz_2f_path = out_dir / "visualization_2f.png"
+                                        if _walls_1f:
+                                            try:
+                                                _j1 = _copy2.deepcopy(_calib_json)
+                                                _j1['walls'] = _walls_1f
+                                                _json_1f_tmp.write_text(json.dumps(_j1, ensure_ascii=False), encoding='utf-8')
+                                                visualize_3d_walls(str(_json_1f_tmp), str(_viz_1f_path), scale=int(st.session_state.viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                if _viz_1f_path.exists():
+                                                    st.session_state['viz_1f_bytes'] = _viz_1f_path.read_bytes()
+                                            except Exception as _e1f:
+                                                st.session_state.setdefault('debug_log', []).append(f'viz_1f regen failed: {_e1f}')
+                                        if _walls_2f:
+                                            try:
+                                                _j2 = _copy2.deepcopy(_calib_json)
+                                                _j2['walls'] = _walls_2f
+                                                _json_2f_tmp.write_text(json.dumps(_j2, ensure_ascii=False), encoding='utf-8')
+                                                visualize_3d_walls(str(_json_2f_tmp), str(_viz_2f_path), scale=int(st.session_state.viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                if _viz_2f_path.exists():
+                                                    st.session_state['viz_2f_bytes'] = _viz_2f_path.read_bytes()
+                                            except Exception as _e2f:
+                                                st.session_state.setdefault('debug_log', []).append(f'viz_2f regen failed: {_e2f}')
                                     # 後続用に状態更新
                                     st.session_state.scale_calibration_done = True
                                     st.session_state.selected_wall_for_calibration = None
@@ -2852,10 +3183,11 @@ def main():
                                     st.session_state.open_3d_expander = True
                                     # 手動編集へ遷移
                                     if st.session_state.get('user') is None:
-                                        st.warning("ステップ3はログインが必要です。サイドバーでログインしてください。")
+                                        # 警告はsession_stateに保存してrerun後に表示（rerunしないと画像が更新されない）
+                                        st.session_state['_step3_login_warning'] = True
                                     else:
                                         st.session_state.workflow_step = 3
-                                        st.rerun()
+                                    st.rerun()
                             except Exception as e:
                                 st.error(f"❌ スケール更新でエラーが発生しました: {e}")
                                 import traceback
@@ -3002,15 +3334,43 @@ def main():
             cur_merge_angle = 15
             merged_flag = st.session_state.get('merged_processed', False)
             # st.write("壁線を手動で編集・調整します。")
-            
+
+            # フロア選択プルダウン（2F有効時のみ表示）
+            _step3_has_2f = bool(st.session_state.get('viz_1f_bytes') and st.session_state.get('viz_2f_bytes'))
+            if _step3_has_2f:
+                _step3_floor_options = ["🏠 1階", "🏗️ 2階"]
+                _step3_floor = st.selectbox(
+                    "表示フロアを選択",
+                    options=_step3_floor_options,
+                    key="step3_floor_select",
+                    help="編集対象のフロアを切り替えます。壁の選択・追加・削除がそのフロアのみに適用されます。"
+                )
+                # フロア切替時は選択状態をリセット
+                _prev_floor = st.session_state.get('_step3_floor_prev')
+                if _prev_floor != _step3_floor:
+                    for _k in ('selected_walls_for_merge', 'selected_walls_for_window', 'selected_walls_for_delete'):
+                        if _k in st.session_state:
+                            st.session_state[_k] = []
+                    st.session_state['rect_coords'] = []
+                    st.session_state['rect_coords_list'] = []
+                    st.session_state['last_click'] = None
+                    st.session_state['_step3_floor_prev'] = _step3_floor
+                # 表示用の viz と bounds をフロアに応じて決定
+                _step3_viz_bytes = st.session_state.get('viz_1f_bytes') if _step3_floor == "🏠 1階" else st.session_state.get('viz_2f_bytes')
+                if not _step3_viz_bytes:
+                    _step3_viz_bytes = st.session_state.viz_bytes
+                _step3_floor_level = 1 if _step3_floor == "🏠 1階" else 2
+            else:
+                _step3_floor = None
+                _step3_viz_bytes = st.session_state.viz_bytes
+                _step3_floor_level = None  # フィルタなし（全壁）
+
             # モード選択タブ
             edit_mode = st.radio(
                 "編集モードを選択:",
-                #["線を結合", "線を追加", "線を削除", "窓を追加", "照明を配置", "オブジェクトを配置", "床を追加", "階段を配置"],
                 ["線を結合", "線を追加", "線を削除", "窓を追加", "オブジェクトを配置", "オブジェクトを削除", "階段を配置", "天井を追加", "天井を削除"],
                 horizontal=True,
-                #help="線を結合：2つの壁線を繋ぐ\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n照明を配置：クリック位置にスポットライトを配置\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\n床を追加：四角形範囲を選択して床を追加\n\n階段を配置：コの字階段を配置"
-                help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\nオブジェクトを削除：配置した家具をクリックして削除\n\n階段を配置：コの字階段を配置\n\n天井を追加：四角形範囲を選択して天井を追加（天井のない範囲が吹き抜け）\n\n天井を削除：選択範囲の天井を削除"
+                help="線を結合：2つの壁線を繋ぐ\n\n線を追加：新しい壁線を追加\n\n線を削除：選択範囲の壁を削除\n\n窓を追加：窓で分断された2本の壁を上下の壁で繋ぐ\n\nオブジェクトを配置：キッチンボードなどの家具を配置\n\nオブジェクトを削除：配置した家具をクリックして削除\n\n階段を配置：コの字階段を配置\n\n天井を追加：四角形範囲を選択して天井（＋2F床）を追加\n\n天井を削除：選択範囲の天井を削除"
             )
             
             if edit_mode == "線を結合":
@@ -3027,8 +3387,10 @@ def main():
                 st.write("💡 削除したいオブジェクトをクリックしてください。")
             elif edit_mode == "階段を配置":
                 st.write("💡 階段を配置したい範囲を2点クリックして選択し、階段パターンをプルダウンから選んでください")
+            elif edit_mode == "床を追加":
+                st.write("💡 床を配置したい範囲（四角形）の対角線の2点を選択してください。2F床面は高さ240cmが標準です。")
             elif edit_mode == "天井を追加":
-                st.write("💡 天井を配置したい範囲（四角形）の対角線の2点を選択してください。天井のない範囲が吹き抜けになります。3Dビューアの「天井を表示/非表示」ボタンで切り替えできます。")
+                st.write("💡 天井を配置したい範囲（四角形）の対角線の2点を選択してください。天井のない範囲が吹き抜けになります。")
             elif edit_mode == "天井を削除":
                 st.write("💡 下の一覧から削除したい天井を選んで「天井削除実行」をクリックしてください。")
             
@@ -3099,13 +3461,24 @@ def main():
                         "**注意:**\n\n"
                         "- コの字階段は実際の階段形状と異なります。"
                         )
+                elif edit_mode == "床を追加":
+                    st.markdown(
+                        "**床追加の手順:**\n\n"
+                        "1. 下の画像上で**2回クリック**して床を配置したい範囲を四角形で囲む\n\n"
+                        "2. 床の高さを入力（デフォルト270cm = 2F床面 / 510cm = 2F天井）\n\n"
+                        "3. 「🏙️ 床追加実行」ボタンをクリックして3Dビューアへ反映\n\n"
+                        "**ヒント:**\n\n"
+                        "- 1F床面：0cm\n\n"
+                        "- 一般的な2F床面：270cm（1F天井高）\n\n"
+                        "- 2F天井：510cm（270 + 240）\n\n"
+                        "- 複数の床を追加したい場合は手順1を繰り返してから実行"
+                    )
                 elif edit_mode == "天井を追加":
                     st.markdown(
                         "**天井追加の手順:**\n\n"
                         "1. 下の画像上で**2回クリック**して天井を配置したい範囲を四角形で囲む\n\n"
                         "2. 範囲が自動確定し「🏠 天井追加実行」ボタンが表示される\n\n"
                         "3. 「🏠 天井追加実行」ボタンをクリックして3Dビューアへ反映\n\n"
-                        "4. 3Dビューアの右上「🏠 天井を表示」ボタンで表示/非表示を切り替え\n\n"
                         "**ヒント:**\n\n"
                         "- 天井のない範囲が吹き抜けになります\n\n"
                         "- 複数の天井を追加したい場合は手順1-2を繰り返してから実行\n\n"
@@ -3146,7 +3519,12 @@ def main():
                 try:
                     json_data_tmp = _parse_json_cached(st.session_state.json_bytes)
                     walls_tmp = json_data_tmp.get('walls', [])
-                    heights_tmp = [w.get('height', 2.4) for w in walls_tmp if 'height' in w]
+                    # フロア選択時はそのフロアの壁のみから部屋の高さを計算
+                    if _step3_floor_level is not None:
+                        walls_tmp_fl = [w for w in walls_tmp if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                    else:
+                        walls_tmp_fl = [w for w in walls_tmp if w.get('source') != 'window_added']
+                    heights_tmp = [w.get('height', 2.4) for w in walls_tmp_fl if 'height' in w]
                     default_room_height = min(max(heights_tmp) if heights_tmp else 2.4, 10.0)
                 except Exception:
                     default_room_height = 2.4
@@ -3217,6 +3595,33 @@ def main():
                         st.session_state.viewer_html_bytes = result['viewer_html_bytes']
                         st.session_state.viewer_html_name = result['temp_viewer_path'].name
 
+                        # フロア別 viz も更新
+                        try:
+                            _s3_merged = _parse_json_cached(st.session_state.json_bytes).get('walls', [])
+                            _s3_walls_1f = [w for w in _s3_merged if w.get('floor_level', 1) != 2]
+                            _s3_walls_2f = [w for w in _s3_merged if w.get('floor_level') == 2]
+                            import tempfile as _tmpfile
+                            if _s3_walls_1f and st.session_state.get('viz_1f_bytes'):
+                                _s3j_1f = {'walls': _s3_walls_1f, 'furniture': result['updated_json'].get('furniture', [])}
+                                with _tmpfile.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tf:
+                                    json.dump(_s3j_1f, _tf, ensure_ascii=False)
+                                    _tf_path = _tf.name
+                                _vp_1f = _tf_path.replace('.json', '_viz.png')
+                                visualize_3d_walls(_tf_path, _vp_1f, scale=int(st.session_state.get('viz_scale', 100)), wall_color=(0,0,0), bg_color=(255,255,255))
+                                if Path(_vp_1f).exists():
+                                    st.session_state['viz_1f_bytes'] = Path(_vp_1f).read_bytes()
+                            if _s3_walls_2f and st.session_state.get('viz_2f_bytes'):
+                                _s3j_2f = {'walls': _s3_walls_2f, 'furniture': result['updated_json'].get('furniture', [])}
+                                with _tmpfile.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tf2:
+                                    json.dump(_s3j_2f, _tf2, ensure_ascii=False)
+                                    _tf2_path = _tf2.name
+                                _vp_2f = _tf2_path.replace('.json', '_viz.png')
+                                visualize_3d_walls(_tf2_path, _vp_2f, scale=int(st.session_state.get('viz_scale', 100)), wall_color=(0,0,0), bg_color=(255,255,255))
+                                if Path(_vp_2f).exists():
+                                    st.session_state['viz_2f_bytes'] = Path(_vp_2f).read_bytes()
+                        except Exception:
+                            pass
+
                         # 3D表示を開く
                         st.session_state.open_3d_expander = True
 
@@ -3256,9 +3661,12 @@ def main():
             else:
                 # 編集結果がない場合のみ、編集UIを表示
                 
-                # 可視化画像を読み込み
-                if st.session_state.viz_bytes:
-                    viz_img = _open_viz_image_cached(st.session_state.viz_bytes)
+                # 可視化画像を読み込み（フロア選択に応じて切替）
+                _step3_display_bytes = _step3_viz_bytes if '_step3_viz_bytes' in dir() else st.session_state.viz_bytes
+                if not _step3_display_bytes:
+                    _step3_display_bytes = st.session_state.viz_bytes
+                if _step3_display_bytes:
+                    viz_img = _open_viz_image_cached(_step3_display_bytes)
                     
                     # 選択範囲を描画した画像を作成
                     import cv2
@@ -3316,7 +3724,18 @@ def main():
                             json_data_highlight = _parse_json_cached(st.session_state.json_bytes)
                             walls_highlight = json_data_highlight.get('walls', [])
                             
-                            min_x_highlight, max_x_highlight, min_y_highlight, max_y_highlight = _get_wall_bounds_cached(st.session_state.json_bytes)
+                            # フロア選択時はそのフロアの壁のみの bounds を使用
+                            if _step3_floor_level is not None:
+                                _hl_walls = [w for w in walls_highlight if w.get('floor_level', 1) == _step3_floor_level]
+                            else:
+                                _hl_walls = walls_highlight
+                            if _hl_walls:
+                                _hl_xs = [w['start'][0] for w in _hl_walls] + [w['end'][0] for w in _hl_walls]
+                                _hl_ys = [w['start'][1] for w in _hl_walls] + [w['end'][1] for w in _hl_walls]
+                                min_x_highlight, max_x_highlight = min(_hl_xs), max(_hl_xs)
+                                min_y_highlight, max_y_highlight = min(_hl_ys), max(_hl_ys)
+                            else:
+                                min_x_highlight, max_x_highlight, min_y_highlight, max_y_highlight = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                             scale_highlight = int(st.session_state.viz_scale)
                             margin_highlight = 50
@@ -3607,8 +4026,16 @@ def main():
                             try:
                                 json_data_del = _parse_json_cached(st.session_state.json_bytes)
                                 walls_del = json_data_del.get('walls', [])
+                                if _step3_floor_level is not None:
+                                    walls_del = [w for w in walls_del if w.get('floor_level', 1) == _step3_floor_level]
                                 
-                                min_x_del, max_x_del, min_y_del, max_y_del = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                if walls_del:
+                                    _dl_xs = [w['start'][0] for w in walls_del] + [w['end'][0] for w in walls_del]
+                                    _dl_ys = [w['start'][1] for w in walls_del] + [w['end'][1] for w in walls_del]
+                                    min_x_del, max_x_del = min(_dl_xs), max(_dl_xs)
+                                    min_y_del, max_y_del = min(_dl_ys), max(_dl_ys)
+                                else:
+                                    min_x_del, max_x_del, min_y_del, max_y_del = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_del = int(st.session_state.viz_scale)
                                 margin_del = 50
@@ -3659,8 +4086,16 @@ def main():
                             try:
                                 json_data_confirmed = _parse_json_cached(st.session_state.json_bytes)
                                 walls_confirmed = json_data_confirmed.get('walls', [])
+                                if _step3_floor_level is not None:
+                                    walls_confirmed = [w for w in walls_confirmed if w.get('floor_level', 1) == _step3_floor_level]
                                 
-                                min_x_confirmed, max_x_confirmed, min_y_confirmed, max_y_confirmed = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                if walls_confirmed:
+                                    _cf_xs = [w['start'][0] for w in walls_confirmed] + [w['end'][0] for w in walls_confirmed]
+                                    _cf_ys = [w['start'][1] for w in walls_confirmed] + [w['end'][1] for w in walls_confirmed]
+                                    min_x_confirmed, max_x_confirmed = min(_cf_xs), max(_cf_xs)
+                                    min_y_confirmed, max_y_confirmed = min(_cf_ys), max(_cf_ys)
+                                else:
+                                    min_x_confirmed, max_x_confirmed, min_y_confirmed, max_y_confirmed = _get_wall_bounds_cached(st.session_state.json_bytes)
                                 
                                 scale_confirmed = int(st.session_state.viz_scale)
                                 margin_confirmed = 50
@@ -4175,14 +4610,14 @@ def main():
                         # 天井削除モード：リストから選択して削除
                         try:
                             _json_c = _parse_json_cached(st.session_state.json_bytes)
-                            _ceilings_c = _json_c.get('ceilings', [])
+                            _ceilings_c = [f for f in _json_c.get('floors', []) if f.get('height', 0) > 0]
                         except Exception:
                             _ceilings_c = []
                         if len(_ceilings_c) == 0:
-                            st.info("📋 まだ天井が追加されていません。「天井を追加」モードで先に天井を配置してください。")
+                            st.info("📋 まだ天井（2F床）が追加されていません。「天井を追加」モードで先に配置してください。")
                         else:
                             st.markdown("---")
-                            st.markdown("### 🏠 追加済みの天井一覧")
+                            st.markdown("### 🏠 追加済みの天井（2F床）一覧")
                             _ceiling_options = []
                             for _i, _cd in enumerate(_ceilings_c):
                                 _w = round(_cd['x2'] - _cd['x1'], 2)
@@ -4218,11 +4653,33 @@ def main():
                         elif edit_mode == "天井を追加" and len(st.session_state.rect_coords_list) > 0:
                             num_rects = len(st.session_state.rect_coords_list)
                             st.markdown("---")
-                            st.success(f"✅ **{num_rects}箇所の天井範囲を選択中**")
+                            st.success(f"✅ **{num_rects}箇所の天井範囲を選択中**（天井と同じ範囲に2F床も生成されます）")
                             if st.button("🏠 天井追加実行", type="primary", key="btn_ceiling_add_exec"):
                                 st.session_state.execute_ceiling_addition = True
-                                # 処理は同じrun内のshould_executeブロックで実行される（中間rerun不要）
                         
+                        # 床を追加モード：rect_coords_listに候補がある場合は実行ボタンを表示
+                        elif edit_mode == "床を追加" and len(st.session_state.rect_coords_list) > 0:
+                            num_rects = len(st.session_state.rect_coords_list)
+                            st.markdown("---")
+                            st.success(f"✅ **{num_rects}箇所の床候補を選択中**（追加したい場合は引き続き2点選択してください）")
+                            if st.button("🏘️ 床追加実行", type="primary", key="btn_floor_add_exec"):
+                                _h_cm = st.session_state.get('floor_add_height_cm', 270)
+                                st.session_state.floor_add_height_m = _h_cm / 100.0
+                                st.session_state.execute_floor_addition = True
+
+                        # 床を追加モード：候補があれば実行ボタンを表示
+                        elif edit_mode == "床を追加" and len(st.session_state.rect_coords_list) > 0:
+                            num_rects = len(st.session_state.rect_coords_list)
+                            st.markdown("---")
+                            st.success(f"✅ **{num_rects}箇所の床候補を選択中**（引き続き2点選択すると追加できます）")
+                            if st.button("🏘️ 床追加実行", type="primary", key="btn_floor_add_exec"):
+                                _h_cm = st.session_state.get('floor_add_height_cm', 270)
+                                st.session_state.floor_add_height_m = _h_cm / 100.0
+                                st.session_state.execute_floor_addition = True
+
+                        # 床を追加モード：高さ入力は常時（上部）表示のためここでは省略
+                        # （自動実行のため実行ボタン不要）
+
                         if len(st.session_state.rect_coords) == 1:
                             pass
                             #st.info(f"✓ 1点目選択: ({st.session_state.rect_coords[0][0]}, {st.session_state.rect_coords[0][1]})")
@@ -4487,8 +4944,16 @@ def main():
                                 try:
                                     json_data_merge = _parse_json_cached(st.session_state.json_bytes)
                                     walls_merge = json_data_merge.get('walls', [])
+                                    if _step3_floor_level is not None:
+                                        walls_merge = [w for w in walls_merge if w.get('floor_level', 1) == _step3_floor_level]
                                     
-                                    min_x_merge, max_x_merge, min_y_merge, max_y_merge = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    if walls_merge:
+                                        _m_xs = [w['start'][0] for w in walls_merge] + [w['end'][0] for w in walls_merge]
+                                        _m_ys = [w['start'][1] for w in walls_merge] + [w['end'][1] for w in walls_merge]
+                                        min_x_merge, max_x_merge = min(_m_xs), max(_m_xs)
+                                        min_y_merge, max_y_merge = min(_m_ys), max(_m_ys)
+                                    else:
+                                        min_x_merge, max_x_merge, min_y_merge, max_y_merge = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_merge = int(st.session_state.viz_scale)
                                     margin_merge = 50
@@ -4526,8 +4991,16 @@ def main():
                                 try:
                                     json_data_window = _parse_json_cached(st.session_state.json_bytes)
                                     walls_window = json_data_window.get('walls', [])
+                                    if _step3_floor_level is not None:
+                                        walls_window = [w for w in walls_window if w.get('floor_level', 1) == _step3_floor_level]
                                     
-                                    min_x_window, max_x_window, min_y_window, max_y_window = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    if walls_window:
+                                        _w_xs = [w['start'][0] for w in walls_window] + [w['end'][0] for w in walls_window]
+                                        _w_ys = [w['start'][1] for w in walls_window] + [w['end'][1] for w in walls_window]
+                                        min_x_window, max_x_window = min(_w_xs), max(_w_xs)
+                                        min_y_window, max_y_window = min(_w_ys), max(_w_ys)
+                                    else:
+                                        min_x_window, max_x_window, min_y_window, max_y_window = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_window = int(st.session_state.viz_scale)
                                     margin_window = 50
@@ -4565,8 +5038,16 @@ def main():
                                 try:
                                     json_data_delete = _parse_json_cached(st.session_state.json_bytes)
                                     walls_delete = json_data_delete.get('walls', [])
+                                    if _step3_floor_level is not None:
+                                        walls_delete = [w for w in walls_delete if w.get('floor_level', 1) == _step3_floor_level]
                                     
-                                    min_x_delete, max_x_delete, min_y_delete, max_y_delete = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    if walls_delete:
+                                        _d_xs = [w['start'][0] for w in walls_delete] + [w['end'][0] for w in walls_delete]
+                                        _d_ys = [w['start'][1] for w in walls_delete] + [w['end'][1] for w in walls_delete]
+                                        min_x_delete, max_x_delete = min(_d_xs), max(_d_xs)
+                                        min_y_delete, max_y_delete = min(_d_ys), max(_d_ys)
+                                    else:
+                                        min_x_delete, max_x_delete, min_y_delete, max_y_delete = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     
                                     scale_delete = int(st.session_state.viz_scale)
                                     margin_delete = 50
@@ -4638,12 +5119,20 @@ def main():
                                     # 壁データと座標範囲を取得
                                     json_data_calib = _parse_json_cached(st.session_state.json_bytes)
                                     walls_calib = json_data_calib.get("walls", [])
+                                    if _step3_floor_level is not None:
+                                        walls_calib = [w for w in walls_calib if w.get('floor_level', 1) == _step3_floor_level]
                                     
-                                    min_x_calib, max_x_calib, min_y_calib, max_y_calib = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    if walls_calib:
+                                        _c_xs = [w['start'][0] for w in walls_calib] + [w['end'][0] for w in walls_calib]
+                                        _c_ys = [w['start'][1] for w in walls_calib] + [w['end'][1] for w in walls_calib]
+                                        min_x_calib, max_x_calib = min(_c_xs), max(_c_xs)
+                                        min_y_calib, max_y_calib = min(_c_ys), max(_c_ys)
+                                    else:
+                                        min_x_calib, max_x_calib, min_y_calib, max_y_calib = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     if walls_calib:
                                         scale_calib = int(st.session_state.viz_scale)
                                         margin_calib = 50
-                                        img_height_calib = _open_viz_image_cached(st.session_state.viz_bytes).height
+                                        img_height_calib = _open_viz_image_cached(_step3_display_bytes).height
                                         
                                         # クリック位置から最も近い壁を検出
                                         nearest_wall, distance = _find_nearest_wall_from_click(
@@ -4674,16 +5163,24 @@ def main():
                                     # 窓追加モード、線を追加モード、またはオブジェクト配置モードで2点目クリック時：
                                     # 2本の壁が検出されたら自動追加（オブジェクト配置では四角形をそのまま追加）
                                     # 注：線を結合モードは壁線クリック選択のため除外
-                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を配置", "天井を追加")) and len(st.session_state.rect_coords) == 2:
+                                    if (edit_mode in ("窓を追加", "線を追加", "オブジェクトを配置", "階段を配置", "天井を追加", "床を追加")) and len(st.session_state.rect_coords) == 2:
                                         try:
                                             json_data_auto = _parse_json_cached(st.session_state.json_bytes)
                                             walls_auto = json_data_auto['walls']
+                                            if _step3_floor_level is not None:
+                                                walls_auto = [w for w in walls_auto if w.get('floor_level', 1) == _step3_floor_level]
                                             
-                                            min_x_auto, max_x_auto, min_y_auto, max_y_auto = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                            if walls_auto:
+                                                _a_xs = [w['start'][0] for w in walls_auto] + [w['end'][0] for w in walls_auto]
+                                                _a_ys = [w['start'][1] for w in walls_auto] + [w['end'][1] for w in walls_auto]
+                                                min_x_auto, max_x_auto = min(_a_xs), max(_a_xs)
+                                                min_y_auto, max_y_auto = min(_a_ys), max(_a_ys)
+                                            else:
+                                                min_x_auto, max_x_auto, min_y_auto, max_y_auto = _get_wall_bounds_cached(st.session_state.json_bytes)
                                             
                                             scale_auto = int(st.session_state.viz_scale)
                                             margin_auto = 50
-                                            img_height_auto = _open_viz_image_cached(st.session_state.viz_bytes).height
+                                            img_height_auto = _open_viz_image_cached(_step3_display_bytes).height
                                             
                                             p1_auto, p2_auto = st.session_state.rect_coords
                                             x1_auto, y1_auto = min(p1_auto[0], p2_auto[0]), min(p1_auto[1], p2_auto[1])
@@ -4755,6 +5252,8 @@ def main():
                                                 try:
                                                     if edit_mode == "線を追加":
                                                         append_debug(f"Auto-added line-placement selection: rect=({p1_auto},{p2_auto})")
+                                                    elif edit_mode == "床を追加":
+                                                        append_debug(f"Auto-added floor candidate: rect=({p1_auto},{p2_auto})")
                                                     else:
                                                         append_debug(f"Auto-added object-placement selection: rect=({p1_auto},{p2_auto})")
                                                 except Exception:
@@ -5073,9 +5572,18 @@ def main():
                                 # 追加した壁のID（赤色表示用）
                                 added_wall_ids = []
                                 
-                                # 天井高さ（部屋の高さ）を取得
-                                heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                                # 天井高さ（部屋の高さ）を取得（フロア選択時は選択フロアの壁のみ）
+                                if _step3_floor_level is not None:
+                                    _rh_walls = [w for w in walls if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                else:
+                                    _rh_walls = [w for w in walls if w.get('source') != 'window_added']
+                                heights = [w.get('height', 2.4) for w in _rh_walls if 'height' in w]
                                 room_height = max(heights) if heights else 2.4
+                                # 2F床面のZ高さを取得（窓追加の base_height オフセット用）
+                                if _step3_floor_level == 2:
+                                    _win_floor_z = 2.4  # 2F床面は240cm固定
+                                else:
+                                    _win_floor_z = 0.0
                                 
                                 # ===== 窓を追加モード =====
                                 # デバッグが必要なため、詳細ログはデフォルトで展開表示する
@@ -5169,7 +5677,9 @@ def main():
                                                 base_height,
                                                 room_height,
                                                 window_model if window_model != 'カスタム（手入力）' else None,
-                                                window_height_mm
+                                                window_height_mm,
+                                                floor_level=_step3_floor_level,
+                                                floor_z_offset=_win_floor_z
                                             )
                                             total_added_count += len(added_walls)
                                             #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
@@ -5281,6 +5791,9 @@ def main():
                     elif edit_mode == "天井を追加" and st.session_state.get('execute_ceiling_addition'):
                         st.session_state.execute_ceiling_addition = False
                         should_execute = True
+                    elif edit_mode == "床を追加" and st.session_state.get('execute_floor_addition'):
+                        st.session_state.execute_floor_addition = False
+                        should_execute = True
                     elif edit_mode == "天井を削除" and st.session_state.get('execute_ceiling_deletion'):
                         st.session_state.execute_ceiling_deletion = False
                         should_execute = True
@@ -5315,8 +5828,18 @@ def main():
                             json_data = _parse_json_cached(st.session_state.json_bytes)
                             walls = json_data['walls']
                             
-                            # 可視化画像のパラメータを取得
-                            min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                            # 可視化画像のパラメータを取得（フロア選択時はそのフロアの壁のみの bounds を使用）
+                            if _step3_floor_level is not None:
+                                _exec_walls_for_bounds = [w for w in json_data['walls'] if w.get('floor_level', 1) == _step3_floor_level]
+                            else:
+                                _exec_walls_for_bounds = json_data['walls']
+                            if _exec_walls_for_bounds:
+                                _exc_xs = [w['start'][0] for w in _exec_walls_for_bounds] + [w['end'][0] for w in _exec_walls_for_bounds]
+                                _exc_ys = [w['start'][1] for w in _exec_walls_for_bounds] + [w['end'][1] for w in _exec_walls_for_bounds]
+                                min_x, max_x = min(_exc_xs), max(_exc_xs)
+                                min_y, max_y = min(_exc_ys), max(_exc_ys)
+                            else:
+                                min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                             scale = int(viz_scale)
                             margin = 50
@@ -5353,12 +5876,23 @@ def main():
                                 furniture_offset = furniture_params.get('offset_height', 0.0)
                                 
                                 # 各四角形をループして処理
+                                # 2F床面Z高さを取得（オブジェクト配置の z_offset 用）
+                                if _step3_floor_level == 2:
+                                    _furn_z = 2.4  # 2F床面は240cm固定
+                                    _furn_floor_walls = [w for w in json_data['walls']
+                                                        if w.get('floor_level') == 2 and w.get('source') != 'window_added']
+                                    _furn_ref_walls = _furn_floor_walls if _furn_floor_walls else None
+                                else:
+                                    _furn_z = 0.0
+                                    _furn_ref_walls = None
+
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
-                                    # 四角形範囲をメートル座標に変換
+                                    # 四角形範囲をメートル座標に変換（フロア別boundsを使用）
                                     x_start, y_start, width, depth = _snap_to_grid(
                                         (p1[0], p1[1], p2[0], p2[1]),
                                         json_data,
-                                        scale
+                                        scale,
+                                        ref_walls=_furn_ref_walls
                                     )
                                     
                                     # 家具を追加（オフセットも指定）
@@ -5372,6 +5906,11 @@ def main():
                                         depth,
                                         offset_m=furniture_offset
                                     )
+                                    
+                                    # フロア情報を追加（2F時は floor_level=2, z_offset=2F床面高さ）
+                                    if _step3_floor_level is not None:
+                                        updated_json['furniture'][-1]['floor_level'] = _step3_floor_level
+                                        updated_json['furniture'][-1]['z_offset'] = _furn_z
                                 
                                 # 自動保存: オブジェクト配置結果を JSON/可視化/3Dビューアに反映
                                 try:
@@ -6280,9 +6819,18 @@ def main():
                                         
                                         st.markdown(f"### 🪟 窓追加処理（{window_count}組）")
                                         
-                                        # 天井高さ（部屋の高さ）を取得
-                                        heights = [w.get('height', 2.4) for w in walls if 'height' in w]
+                                        # 天井高さ（部屋の高さ）を取得（フロア別壁から）
+                                        if _step3_floor_level is not None:
+                                            _rh_walls_click = [w for w in walls if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                        else:
+                                            _rh_walls_click = [w for w in walls if w.get('source') != 'window_added']
+                                        heights = [w.get('height', 2.4) for w in _rh_walls_click if 'height' in w]
                                         room_height = max(heights) if heights else 2.4
+                                        # 2F床面Z高さを取得
+                                        if _step3_floor_level == 2:
+                                            _click_floor_z = 2.4  # 2F床面は240cm固定
+                                        else:
+                                            _click_floor_z = 0.0
                                         
                                         # 各窓ペアを処理
                                         total_windows_added = 0
@@ -6315,7 +6863,9 @@ def main():
                                                     base_height,
                                                     room_height,
                                                     window_model if window_model != 'カスタム（手入力）' else None,
-                                                    window_height_mm
+                                                    window_height_mm,
+                                                    floor_level=_step3_floor_level,
+                                                    floor_z_offset=_click_floor_z
                                                 )
                                                 
                                                 added_wall_ids.extend([w['id'] for w in added_walls])
@@ -6362,15 +6912,34 @@ def main():
                                         if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
                                     ]
                                 
-                                    # 既存の通常壁のみから平均高さを取得（window_added壁は除外: 窓台・まぐさ壁は高さが小さく平均を下げるため）
-                                    regular_walls_for_height = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
+                                    # 既存の通常壁のみから平均高さを取得（フロア選択時は選択フロアのみ）
+                                    if _step3_floor_level is not None:
+                                        regular_walls_for_height = [w for w in updated_json['walls']
+                                                                     if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                    else:
+                                        regular_walls_for_height = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
                                     all_heights = [w.get('height', 2.4) for w in regular_walls_for_height if 'height' in w]
                                     wall_height_to_use = sum(all_heights) / len(all_heights) if all_heights else 2.4
                                 
-                                    # 線を追加（スケールをセッション状態から取得）
+                                    # フロア選択時の base_height を取得（2F壁の底面高さ）
+                                    if _step3_floor_level is not None and _step3_floor_level == 2:
+                                        _2f_bh_list = [w.get('base_height', 0) for w in updated_json['walls']
+                                                       if w.get('floor_level') == 2 and w.get('source') != 'window_added']
+                                        _new_wall_base_height = _2f_bh_list[0] if _2f_bh_list else 2.4
+                                    else:
+                                        _new_wall_base_height = 0.0
+
+                                    # 線を追加（フロア選択時は bounds を ref_walls で正しく指定）
+                                    _ref_w_for_add = [w for w in updated_json['walls'] if w.get('floor_level', 1) == _step3_floor_level] if _step3_floor_level is not None else None
                                     updated_json, direction, new_wall = _add_line_to_json(
-                                        updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale
+                                        updated_json, p1, p2, wall_height=wall_height_to_use, scale=st.session_state.viz_scale,
+                                        ref_walls=_ref_w_for_add
                                     )
+                                    
+                                    # フロア情報をセット（2F壁は floor_level=2, base_height=2F床高さ）
+                                    if _step3_floor_level is not None:
+                                        new_wall['floor_level'] = _step3_floor_level
+                                        new_wall['base_height'] = _new_wall_base_height
                                     
                                     total_added_count += 1
                                     add_details.append({
@@ -6493,12 +7062,14 @@ def main():
                                     floor_y1 = min(m_y1, m_y2)
                                     floor_y2 = max(m_y1, m_y2)
                                     
-                                    # 床データを追加
+                                    # 床データを追加（高さフィールドあり）
+                                    _floor_add_height = st.session_state.get('floor_add_height_m', 2.7)
                                     floor_data = {
                                         'x1': floor_x1,
                                         'y1': floor_y1,
                                         'x2': floor_x2,
-                                        'y2': floor_y2
+                                        'y2': floor_y2,
+                                        'height': round(_floor_add_height, 3)
                                     }
                                     updated_json['floors'].append(floor_data)
                                     total_floor_count += 1
@@ -6533,12 +7104,12 @@ def main():
                                 total_ceiling_count = 0
                                 ceiling_details = []
 
-                                # JSONに ceilings キーがなければ初期化
-                                if 'ceilings' not in updated_json:
-                                    updated_json['ceilings'] = []
-
-                                # 通常壁の上端高さ（天井高）を計算
-                                regular_walls_c = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
+                                # 通常壁の上端高さ（天井高）を計算（フロア選択時は選択フロアの壁のみ）
+                                if _step3_floor_level is not None:
+                                    regular_walls_c = [w for w in updated_json['walls']
+                                                       if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                else:
+                                    regular_walls_c = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
                                 top_heights = [w.get('base_height', 0) + w.get('height', 2.4) for w in regular_walls_c]
                                 avg_ceiling_h = round(sum(top_heights) / len(top_heights), 3) if top_heights else 2.4
 
@@ -6559,15 +7130,20 @@ def main():
                                     ceil_y1 = min(m_y1, m_y2)
                                     ceil_y2 = max(m_y1, m_y2)
 
-                                    ceiling_data = {
+                                    total_ceiling_count += 1
+
+                                    # 2F床（兼1F天井）をfloors配列に追加
+                                    if 'floors' not in updated_json:
+                                        updated_json['floors'] = []
+                                    _2f_floor_h = 2.41  # 2F床面は241cm（1F天井240cmの直上）
+                                    floor_for_ceiling = {
                                         'x1': ceil_x1,
                                         'y1': ceil_y1,
                                         'x2': ceil_x2,
                                         'y2': ceil_y2,
-                                        'height': avg_ceiling_h
+                                        'height': round(_2f_floor_h, 3)
                                     }
-                                    updated_json['ceilings'].append(ceiling_data)
-                                    total_ceiling_count += 1
+                                    updated_json['floors'].append(floor_for_ceiling)
 
                                     color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
                                     ceiling_details.append({
@@ -6596,17 +7172,21 @@ def main():
                             elif edit_mode == "天井を削除":
                                 # ===== 天井を削除モード（リスト選択方式）=====
                                 _indices_to_delete = st.session_state.pop('ceiling_indices_to_delete', [])
-                                if 'ceilings' not in updated_json or len(updated_json['ceilings']) == 0:
-                                    st.warning("⚠️ 削除できる天井がありません")
+                                # floors のうち height>0 のもの（2F床兼天井）が削除対象
+                                _all_floors = updated_json.get('floors', [])
+                                _ceiling_floors = [(i, f) for i, f in enumerate(_all_floors) if f.get('height', 0) > 0]
+                                if not _ceiling_floors:
+                                    st.warning("⚠️ 削除できる天井（2F床）がありません")
                                 elif not _indices_to_delete:
                                     st.warning("⚠️ 削除する天井が選択されていません")
                                 else:
-                                    _idx_set = set(_indices_to_delete)
-                                    _remaining = [_cd for _ci, _cd in enumerate(updated_json['ceilings']) if _ci not in _idx_set]
-                                    _deleted_count = len(updated_json['ceilings']) - len(_remaining)
-                                    updated_json['ceilings'] = _remaining
+                                    # _indices_to_delete は ceiling_floors のインデックス（0始まり）
+                                    _global_indices_to_del = {_ceiling_floors[i][0] for i in _indices_to_delete if i < len(_ceiling_floors)}
+                                    _remaining = [f for i, f in enumerate(_all_floors) if i not in _global_indices_to_del]
+                                    _deleted_count = len(_all_floors) - len(_remaining)
+                                    updated_json['floors'] = _remaining
                                     if _deleted_count > 0:
-                                        st.success(f"✅ {_deleted_count} 個の天井を削除しました")
+                                        st.success(f"✅ {_deleted_count} 個の天井（2F床）を削除しました")
                                     else:
                                         st.warning("⚠️ 天井の削除に失敗しました")
                             
@@ -6634,7 +7214,7 @@ def main():
                             viewer_html_bytes = temp_viewer_path.read_bytes()
                             
                             # オブジェクト配置モード、階段を配置モード、線を結合モード、線を追加モードでは、比較表示をせず即座にセッションへ反映して続行する
-                            if edit_mode in ("オブジェクトを配置", "階段を配置", "線を結合", "線を追加", "線を削除", "窓を追加", "天井を追加", "天井を削除"):
+                            if edit_mode in ("オブジェクトを配置", "階段を配置", "線を結合", "線を追加", "線を削除", "窓を追加", "天井を追加", "天井を削除", "床を追加"):
                                 try:
                                     # 更新済みJSON/可視化/ビューアは既に生成済みの場合がある
                                     # ここでは最新の temp_* が存在すればそれをセッションへ反映する
@@ -6643,6 +7223,33 @@ def main():
                                     st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                     st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                     st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                    # フロア別 viz も更新
+                                    try:
+                                        _s3e_walls = updated_json.get('walls', [])
+                                        _s3e_1f = [w for w in _s3e_walls if w.get('floor_level', 1) != 2]
+                                        _s3e_2f = [w for w in _s3e_walls if w.get('floor_level') == 2]
+                                        import tempfile as _tmpfile2
+                                        if _s3e_1f and st.session_state.get('viz_1f_bytes'):
+                                            _s3ej1 = {'walls': _s3e_1f, 'furniture': updated_json.get('furniture', [])}
+                                            with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe1:
+                                                json.dump(_s3ej1, _tfe1, ensure_ascii=False)
+                                                _tfe1_path = _tfe1.name
+                                            _vpe_1f = _tfe1_path.replace('.json', '_viz.png')
+                                            visualize_3d_walls(_tfe1_path, _vpe_1f, scale=int(st.session_state.get('viz_scale', 100)), wall_color=(0,0,0), bg_color=(255,255,255))
+                                            if Path(_vpe_1f).exists():
+                                                st.session_state['viz_1f_bytes'] = Path(_vpe_1f).read_bytes()
+                                        if _s3e_2f and st.session_state.get('viz_2f_bytes'):
+                                            _s3ej2 = {'walls': _s3e_2f, 'furniture': updated_json.get('furniture', [])}
+                                            with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe2:
+                                                json.dump(_s3ej2, _tfe2, ensure_ascii=False)
+                                                _tfe2_path = _tfe2.name
+                                            _vpe_2f = _tfe2_path.replace('.json', '_viz.png')
+                                            visualize_3d_walls(_tfe2_path, _vpe_2f, scale=int(st.session_state.get('viz_scale', 100)), wall_color=(0,0,0), bg_color=(255,255,255))
+                                            if Path(_vpe_2f).exists():
+                                                st.session_state['viz_2f_bytes'] = Path(_vpe_2f).read_bytes()
+                                    except Exception:
+                                        pass
 
                                     # 状態を完全にクリアして続行（統一関数を使用）
                                     _reset_selection_state()
