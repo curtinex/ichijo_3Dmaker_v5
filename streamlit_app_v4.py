@@ -1005,9 +1005,17 @@ try:
                 furnitureMesh.castShadow = true;
                 furnitureMesh.receiveShadow = true;
                 scene.add(furnitureMesh);
+
+                // 輪郭線を追加（壁と同じ edgeMaterial を使用）
+                const furnitureEdges = new THREE.EdgesGeometry(furnitureGeometry);
+                const furnitureEdgeLine = new THREE.LineSegments(furnitureEdges, edgeMaterial);
+                furnitureEdgeLine.position.copy(furnitureMesh.position);
+                scene.add(furnitureEdgeLine);
+
                 // 2F家具（z_offset > 0 または floor_level === 2）は floor2Meshes に登録
                 if (item.floor_level === 2 || (item.z_offset && item.z_offset > 0)) {
                     floor2Meshes.push(furnitureMesh);
+                    floor2Meshes.push(furnitureEdgeLine);
                 }
             });
 
