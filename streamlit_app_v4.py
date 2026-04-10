@@ -1127,7 +1127,7 @@ try:
                     if (keys.s) camera.position.addScaledVector(forward, -WALK_SPEED);
                     if (keys.d) camera.position.addScaledVector(right, WALK_SPEED);
                     if (keys.a) camera.position.addScaledVector(right, -WALK_SPEED);
-                    camera.position.y = EYE_HEIGHT;
+                    camera.position.y = (currentWalkFloor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
                     camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
                 } else if (!isWalkMode) {
                     controls.update();
