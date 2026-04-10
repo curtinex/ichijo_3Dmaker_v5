@@ -62,8 +62,8 @@ def install_ichijo_core():
         if target_dir not in sys.path:
             sys.path.insert(0, target_dir)
         
-        # 最新コミット（aaed720: 階段パターン生成関数をstair_utilsに移行）を指定
-        commit_hash = "aaed720"
+        # 最新コミット（4b31a05: v0.0.14 floor_level保存対応）を指定
+        commit_hash = "4b31a05"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
@@ -2744,6 +2744,9 @@ def main():
                             _walls_2f_merged = _walls_2f_saved
                     else:
                         _walls_2f_merged = _walls_2f_saved
+                    # 旧バージョンの ichijo_core では floor_level が保存されない場合があるため強制付与
+                    for _w2f in _walls_2f_merged:
+                        _w2f['floor_level'] = 2
                     _merged_data['walls'] = _merged_data.get('walls', []) + _walls_2f_merged
                     _merged_data.setdefault('metadata', {})['total_walls'] = len(_merged_data['walls'])
                     merged_json_path.write_text(json.dumps(_merged_data, indent=2, ensure_ascii=False), encoding='utf-8')
