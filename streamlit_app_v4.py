@@ -82,8 +82,11 @@ def install_ichijo_core():
         )
         
         if result.returncode == 0:
-            # インポートキャッシュをクリア
+            # sys.modules から古いキャッシュを完全に削除してから再インポート
             import importlib
+            for _k in list(sys.modules.keys()):
+                if _k == 'ichijo_core' or _k.startswith('ichijo_core.'):
+                    del sys.modules[_k]
             importlib.invalidate_caches()
             
             # インポート確認
