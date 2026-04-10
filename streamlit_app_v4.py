@@ -868,7 +868,7 @@ try:
                 const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
                 const centerX = (x1 + x2) / 2;
                 const centerY = (y1 + y2) / 2;
-                // 2F通常壁はbase_heightに関わらず1F天井(2.4m)から開始してギャップをなくす
+                // 2F通常壁はbase_height=2.4mから開始（旧データで2.7mが入っていても補正）
                 // ただしwindow_added壁は絶対Z高さが保存済みのためそのまま使用
                 const baseHeight = (wall.floor_level === 2 && wall.source !== 'window_added') ? 2.4 : (wall.base_height || 0);
                 const centerZ = baseHeight + (wall.height / 2);
@@ -2606,8 +2606,9 @@ def main():
                         json_1f_data = json.loads(json_path.read_text(encoding='utf-8'))
                         json_2f_data = json.loads(json_path_2f.read_text(encoding='utf-8'))
 
-                        # 2階の床面オフセット（将来的に階別スケール校正にも利用可）
-                        offset_2f = round(wall_height + slab_thickness, 3)
+                        # 2階の床面オフセット: 1F天井高(2.4m)から2F壁を開始
+                        # slab_thickness(スラブ厚)は3Dモデル上では無視し、1F/2Fは直接接する
+                        offset_2f = round(wall_height, 3)
 
                         # 1階にfloor_levelを付与
                         for _w in json_1f_data.get('walls', []):
@@ -7144,7 +7145,11 @@ def main():
                                                        if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
                                 else:
                                     regular_walls_c = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
-                                top_heights = [w.get('base_height', 0) + w.get('height', 2.4) for w in regular_walls_c]
+                                # 2F壁は3DビューアJS同様 base_height=2.4m を基準（旧データで2.7mが入っていても補正）
+                                top_heights = [
+                                    (2.4 if w.get('floor_level') == 2 else w.get('base_height', 0)) + w.get('height', 2.4)
+                                    for w in regular_walls_c
+                                ]
                                 avg_ceiling_h = round(sum(top_heights) / len(top_heights), 3) if top_heights else 2.4
 
                                 for rect_idx, (p1, p2) in enumerate(target_rects):
