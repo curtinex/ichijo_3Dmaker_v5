@@ -5769,8 +5769,19 @@ def main():
                                 json_data = _parse_json_cached(st.session_state.json_bytes)
                                 walls = json_data['walls']
                             
-                                # 可視化画像のパラメータを取得
-                                min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                # 可視化画像のパラメータを取得（フロア選択時はそのフロアの壁のみの bounds を使用）
+                                # should_execute ブロックと同様に、フロア別 viz 画像の座標系に合わせる
+                                if _step3_floor_level is not None:
+                                    _batch_walls_for_bounds = [w for w in json_data['walls'] if w.get('floor_level', 1) == _step3_floor_level]
+                                else:
+                                    _batch_walls_for_bounds = json_data['walls']
+                                if _batch_walls_for_bounds:
+                                    _bxs = [w['start'][0] for w in _batch_walls_for_bounds] + [w['end'][0] for w in _batch_walls_for_bounds]
+                                    _bys = [w['start'][1] for w in _batch_walls_for_bounds] + [w['end'][1] for w in _batch_walls_for_bounds]
+                                    min_x, max_x = min(_bxs), max(_bxs)
+                                    min_y, max_y = min(_bys), max(_bys)
+                                else:
+                                    min_x, max_x, min_y, max_y = _get_wall_bounds_cached(st.session_state.json_bytes)
                             
                                 scale = int(viz_scale)
                                 margin = 50
@@ -5968,6 +5979,35 @@ def main():
                                 # 3DビューアHTMLも更新
                                 st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                 st.session_state.viewer_html_name = temp_viewer_path.name
+
+                                # フロア別 viz も更新（should_execute パスと同様）
+                                try:
+                                    _be_walls = updated_json.get('walls', [])
+                                    _be_1f = [w for w in _be_walls if w.get('floor_level', 1) != 2]
+                                    _be_2f = [w for w in _be_walls if w.get('floor_level') == 2]
+                                    import tempfile as _tmpfile3
+                                    _be_stairs = updated_json.get('stairs', [])
+                                    _be_meta = updated_json.get('metadata', {})
+                                    if _be_1f and st.session_state.get('viz_1f_bytes'):
+                                        _be_j1 = {'walls': _be_1f, 'furniture': updated_json.get('furniture', []), 'stairs': _be_stairs, 'metadata': _be_meta}
+                                        with _tmpfile3.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tbe1:
+                                            json.dump(_be_j1, _tbe1, ensure_ascii=False)
+                                            _tbe1_path = _tbe1.name
+                                        _vbe_1f = _tbe1_path.replace('.json', '_viz.png')
+                                        visualize_3d_walls(_tbe1_path, _vbe_1f, scale=int(viz_scale), wall_color=(0,0,0), bg_color=(255,255,255))
+                                        if Path(_vbe_1f).exists():
+                                            st.session_state['viz_1f_bytes'] = Path(_vbe_1f).read_bytes()
+                                    if _be_2f and st.session_state.get('viz_2f_bytes'):
+                                        _be_j2 = {'walls': _be_2f, 'furniture': updated_json.get('furniture', []), 'stairs': _be_stairs, 'metadata': _be_meta}
+                                        with _tmpfile3.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tbe2:
+                                            json.dump(_be_j2, _tbe2, ensure_ascii=False)
+                                            _tbe2_path = _tbe2.name
+                                        _vbe_2f = _tbe2_path.replace('.json', '_viz.png')
+                                        visualize_3d_walls(_tbe2_path, _vbe_2f, scale=int(viz_scale), wall_color=(0,0,0), bg_color=(255,255,255))
+                                        if Path(_vbe_2f).exists():
+                                            st.session_state['viz_2f_bytes'] = Path(_vbe_2f).read_bytes()
+                                except Exception:
+                                    pass
                                 
                                 # 編集状態を完全にクリア（統一関数を使用）
                                 _reset_selection_state()
