@@ -5321,6 +5321,9 @@ def main():
                                 try:
                                     json_data_furn = _parse_json_cached(st.session_state.json_bytes)
                                     furniture_list = json_data_furn.get('furniture', [])
+                                    # フロア選択時は同フロアの家具のみ選択対象にする
+                                    if _step3_floor_level is not None:
+                                        furniture_list = [f for f in furniture_list if f.get('floor_level', 1) == _step3_floor_level]
                                     
                                     # スケール情報を取得（壁データから）
                                     min_x_t, _mx_t, min_y_t, _my_t = _get_wall_bounds_cached(st.session_state.json_bytes)
