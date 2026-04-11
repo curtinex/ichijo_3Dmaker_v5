@@ -1220,11 +1220,12 @@ try:
             out_path.write_text(html_content, encoding='utf-8')
             return out_path
         
-        def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None, floor_level=None, floor_z_offset=0.0):
+        def add_window_walls(json_data, wall1, wall2, window_height, base_height, room_height, window_model=None, window_height_mm=None, floor_level=None, floor_z_offset=0.0, double_window=False):
             """窓で分断された2本の壁の間に、床側と天井側の壁を追加（フォールバック版）
             
             floor_level: 1 or 2 (Noneの場合はwall1から継承)
             floor_z_offset: 2F床面Z高さ（base_heightの絶対値オフセット。2F壁の場合に使用）
+            double_window: Trueの場合、中央に仕切り壁を追加して二連窓を生成
             """
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
@@ -1258,43 +1259,159 @@ try:
             # floor_levelが指定されていない場合はwall1から継承
             _fl = floor_level if floor_level is not None else wall1.get('floor_level', 1)
             _fz = floor_z_offset  # 2F床面の絶対Z高さ（1Fなら0.0）
+            ceiling_height = room_height - (base_height + window_height)
+            half_dist = round(min_dist / 2, 3)
 
             added_walls = []
-            floor_wall = {
-                'id': max_id + 1,
-                'start': [round(window_start[0], 3), round(window_start[1], 3)],
-                'end': [round(window_end[0], 3), round(window_end[1], 3)],
-                'height': round(base_height, 3),
-                'base_height': round(_fz, 3),  # 2F時は2F床面高さ、1F時は0.0
-                'length': round(min_dist, 3),
-                'thickness': round(default_thickness, 3),
-                'source': 'window_added',
-                'floor_level': _fl,
-                'window_model': window_model,
-                'window_height_mm': window_height_mm,
-                'window_base_m': round(base_height, 3),
-                'window_base_mm': int(round(base_height * 1000))
-            }
-            walls.append(floor_wall)
-            added_walls.append(floor_wall)
-            ceiling_height = room_height - (base_height + window_height)
-            ceiling_wall = {
-                'id': max_id + 2,
-                'start': [round(window_start[0], 3), round(window_start[1], 3)],
-                'end': [round(window_end[0], 3), round(window_end[1], 3)],
-                'height': round(ceiling_height, 3),
-                'base_height': round(_fz + base_height + window_height, 3),  # 2F時はオフセット込み
-                'length': round(min_dist, 3),
-                'thickness': round(default_thickness, 3),
-                'source': 'window_added',
-                'floor_level': _fl,
-                'window_model': window_model,
-                'window_height_mm': window_height_mm,
-                'window_base_m': round(base_height + window_height, 3),
-                'window_base_mm': int(round((base_height + window_height) * 1000))
-            }
-            walls.append(ceiling_wall)
-            added_walls.append(ceiling_wall)
+
+            if double_window:
+                # ===== 二連窓：中央に仕切り壁を追加し、左右それぞれに窓を配置 =====
+                midpoint = [
+                    round((window_start[0] + window_end[0]) / 2, 3),
+                    round((window_start[1] + window_end[1]) / 2, 3)
+                ]
+                # 仕切り壁の向き：窓方向に対して垂直（壁の厚み方向）
+                dx = window_end[0] - window_start[0]
+                dy = window_end[1] - window_start[1]
+                length = math.sqrt(dx**2 + dy**2)
+                if length > 0:
+                    nx = -dy / length
+                    ny = dx / length
+                else:
+                    nx, ny = 1.0, 0.0
+                half_t = default_thickness / 2
+                div_start = [round(midpoint[0] - nx * half_t, 3), round(midpoint[1] - ny * half_t, 3)]
+                div_end   = [round(midpoint[0] + nx * half_t, 3), round(midpoint[1] + ny * half_t, 3)]
+                div_len   = round(math.sqrt((div_end[0]-div_start[0])**2 + (div_end[1]-div_start[1])**2), 3)
+
+                # 左床側壁 (window_start → midpoint)
+                left_floor = {
+                    'id': max_id + 1,
+                    'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                    'end': midpoint,
+                    'height': round(base_height, 3),
+                    'base_height': round(_fz, 3),
+                    'length': half_dist,
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height, 3),
+                    'window_base_mm': int(round(base_height * 1000))
+                }
+                walls.append(left_floor)
+                added_walls.append(left_floor)
+
+                # 左天井側壁 (window_start → midpoint)
+                left_ceiling = {
+                    'id': max_id + 2,
+                    'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                    'end': midpoint,
+                    'height': round(ceiling_height, 3),
+                    'base_height': round(_fz + base_height + window_height, 3),
+                    'length': half_dist,
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height + window_height, 3),
+                    'window_base_mm': int(round((base_height + window_height) * 1000))
+                }
+                walls.append(left_ceiling)
+                added_walls.append(left_ceiling)
+
+                # 右床側壁 (midpoint → window_end)
+                right_floor = {
+                    'id': max_id + 3,
+                    'start': midpoint,
+                    'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                    'height': round(base_height, 3),
+                    'base_height': round(_fz, 3),
+                    'length': half_dist,
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height, 3),
+                    'window_base_mm': int(round(base_height * 1000))
+                }
+                walls.append(right_floor)
+                added_walls.append(right_floor)
+
+                # 右天井側壁 (midpoint → window_end)
+                right_ceiling = {
+                    'id': max_id + 4,
+                    'start': midpoint,
+                    'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                    'height': round(ceiling_height, 3),
+                    'base_height': round(_fz + base_height + window_height, 3),
+                    'length': half_dist,
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height + window_height, 3),
+                    'window_base_mm': int(round((base_height + window_height) * 1000))
+                }
+                walls.append(right_ceiling)
+                added_walls.append(right_ceiling)
+
+                # 中央仕切り壁（垂直方向・床から天井まで全高）
+                divider_wall = {
+                    'id': max_id + 5,
+                    'start': div_start,
+                    'end': div_end,
+                    'height': round(room_height, 3),
+                    'base_height': round(_fz, 3),
+                    'length': div_len,
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_divider',
+                    'floor_level': _fl,
+                }
+                walls.append(divider_wall)
+                added_walls.append(divider_wall)
+
+            else:
+                # ===== 通常1連窓 =====
+                floor_wall = {
+                    'id': max_id + 1,
+                    'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                    'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                    'height': round(base_height, 3),
+                    'base_height': round(_fz, 3),  # 2F時は2F床面高さ、1F時は0.0
+                    'length': round(min_dist, 3),
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height, 3),
+                    'window_base_mm': int(round(base_height * 1000))
+                }
+                walls.append(floor_wall)
+                added_walls.append(floor_wall)
+                ceiling_wall = {
+                    'id': max_id + 2,
+                    'start': [round(window_start[0], 3), round(window_start[1], 3)],
+                    'end': [round(window_end[0], 3), round(window_end[1], 3)],
+                    'height': round(ceiling_height, 3),
+                    'base_height': round(_fz + base_height + window_height, 3),  # 2F時はオフセット込み
+                    'length': round(min_dist, 3),
+                    'thickness': round(default_thickness, 3),
+                    'source': 'window_added',
+                    'floor_level': _fl,
+                    'window_model': window_model,
+                    'window_height_mm': window_height_mm,
+                    'window_base_m': round(base_height + window_height, 3),
+                    'window_base_mm': int(round((base_height + window_height) * 1000))
+                }
+                walls.append(ceiling_wall)
+                added_walls.append(ceiling_wall)
+
             updated_data['metadata']['total_walls'] = len(walls)
             return updated_data, added_walls
         
@@ -4545,14 +4662,15 @@ def main():
                                     'model': 'J4415/JF4415',
                                     'width_mm': 1200,
                                     'height_mm': 1200,
-                                    'base_mm': 900
+                                    'base_mm': 900,
+                                    'double_window': False
                                 })
                             
                             # 各窓ごとに入力欄を表示
                             window_params_to_save = []
                             for window_idx in range(window_count):
                                 st.markdown(f"#### 窓{window_idx + 1}")
-                                col1, col2, col3 = st.columns(3)
+                                col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
                                 
                                 with col1:
                                     # 現在の型番を取得
@@ -4601,13 +4719,23 @@ def main():
                                     key=f"window_base_click_{window_idx}_{window_model}"
                                     )
                                     st.session_state.window_click_params_list[window_idx]['base_mm'] = window_base_mm
-                                
+
+                                with col4:
+                                    st.write("二連窓")  # ラベルの位置合わせ用
+                                    double_window_checked = st.checkbox(
+                                        "中央に仕切り壁を追加",
+                                        value=st.session_state.window_click_params_list[window_idx].get('double_window', False),
+                                        key=f"double_window_click_{window_idx}_{window_model}"
+                                    )
+                                    st.session_state.window_click_params_list[window_idx]['double_window'] = double_window_checked
+
                                 # パラメータを保存
                                 window_params_to_save.append({
                                     'model': window_model,
                                     'width_mm': WINDOW_CATALOG.get(window_model, {}).get("width", 0) if isinstance(WINDOW_CATALOG.get(window_model), dict) else 0,
                                     'height_mm': window_height_mm,
-                                    'base_mm': window_base_mm
+                                    'base_mm': window_base_mm,
+                                    'double_window': double_window_checked
                                 })
                             
                             # 実行ボタンを表示
@@ -5458,13 +5586,14 @@ def main():
                                     st.session_state.window_params_list.append({
                                         'model': 'J4415/JF4415',
                                         'height_mm': 467,
-                                        'base_mm': 1677
+                                        'base_mm': 1677,
+                                        'double_window': False
                                     })
                                 
                                 # 各窓の入力フォーム
                                 for idx in range(len(st.session_state.rect_coords_list)):
                                     with st.expander(f"🪟 窓 #{idx+1} のパラメータ", expanded=True):
-                                        col1, col2, col3 = st.columns([2, 1, 1])
+                                        col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
                                         
                                         # 型番選択
                                         with col1:
@@ -5528,6 +5657,15 @@ def main():
                                             )
                                             st.session_state.window_params_list[idx]['base_mm'] = base_mm
                                         
+                                        with col4:
+                                            st.write("二連窓")  # ラベルの位置合わせ用
+                                            double_window_rect = st.checkbox(
+                                                "中央に仕切り壁を追加",
+                                                value=st.session_state.window_params_list[idx].get('double_window', False),
+                                                key=f"double_window_rect_{idx}"
+                                            )
+                                            st.session_state.window_params_list[idx]['double_window'] = double_window_rect
+
                                         # デバッグ情報を表示
                                         st.caption(f"💡 現在の設定: 高さ={st.session_state.window_params_list[idx]['height_mm']}mm, "
                                                 f"床から={st.session_state.window_params_list[idx]['base_mm']}mm, "
@@ -5678,13 +5816,15 @@ def main():
                                             window_height_mm = window_param.get('height_mm', 1200)
                                             base_height_mm = window_param.get('base_mm', 900)
                                             window_model = window_param.get('model', None)
+                                            double_window = window_param.get('double_window', False)
                                             
                                             window_height = float(window_height_mm) / 1000.0
                                             base_height = float(base_height_mm) / 1000.0
                                             
                                             st.info(f"📝 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
                                                 f"高さ={window_height}m ({window_height_mm}mm), "
-                                                f"床から={base_height}m ({base_height_mm}mm)")
+                                                f"床から={base_height}m ({base_height_mm}mm)"
+                                                + ("【二連窓】" if double_window else ""))
                                         else:
                                             st.error(f"⚠️ 窓#{rect_idx+1}のパラメータが見つかりません")
                                             continue
@@ -5744,7 +5884,7 @@ def main():
                                     
                                         if len(walls_in_rect) == 2:
                                             # 2本の壁の間に床側と天井側の壁を追加
-                                            st.success(f"✅ 2本の壁を検出、窓追加処理を実行します")
+                                            st.success(f"✅ 2本の壁を検出、窓追加処理を実行します" + ("（二連窓）" if double_window else ""))
                                             st.write(f"**デバッグ:** window_height={window_height}m ({window_height_mm}mm), base_height={base_height}m ({base_height_mm}mm), room_height={room_height}m")
                                             st.write(f"**計算:** ceiling_height = {room_height} - ({base_height} + {window_height}) = {room_height - (base_height + window_height)}m")
                                             updated_json, added_walls = add_window_walls(
@@ -5757,7 +5897,8 @@ def main():
                                                 window_model if window_model != 'カスタム（手入力）' else None,
                                                 window_height_mm,
                                                 floor_level=_step3_floor_level,
-                                                floor_z_offset=_win_floor_z
+                                                floor_z_offset=_win_floor_z,
+                                                double_window=double_window
                                             )
                                             total_added_count += len(added_walls)
                                             #st.success(f"✅ {len(added_walls)}本の壁を追加しました（ID: {[w['id'] for w in added_walls]}）")
@@ -6950,14 +7091,16 @@ def main():
                                             window_width_mm = window_params.get('width_mm', 1200)
                                             window_height_mm = window_params.get('height_mm', 1200)
                                             base_height_mm = window_params.get('base_mm', 900)
+                                            _dbl_win = window_params.get('double_window', False)
                                             
                                             window_height = float(window_height_mm) / 1000.0
                                             base_height = float(base_height_mm) / 1000.0
                                             
-                                            st.markdown(f"#### 窓{window_idx + 1}")
+                                            st.markdown(f"#### 窓{window_idx + 1}" + ("（二連窓）" if _dbl_win else ""))
                                             st.info(f"📝 型番: {window_model if window_model and window_model != 'カスタム（手入力）' else 'カスタム'}, "
                                                 f"窓高さ={window_height}m ({window_height_mm}mm), "
-                                                f"床から={base_height}m ({base_height_mm}mm)")
+                                                f"床から={base_height}m ({base_height_mm}mm)"
+                                                + ("【二連窓】" if _dbl_win else ""))
                                             
                                             # 選択された2本の壁の間に窓を追加
                                             try:
@@ -6971,7 +7114,8 @@ def main():
                                                     window_model if window_model != 'カスタム（手入力）' else None,
                                                     window_height_mm,
                                                     floor_level=_step3_floor_level,
-                                                    floor_z_offset=_click_floor_z
+                                                    floor_z_offset=_click_floor_z,
+                                                    double_window=_dbl_win
                                                 )
                                                 
                                                 added_wall_ids.extend([w['id'] for w in added_walls])
