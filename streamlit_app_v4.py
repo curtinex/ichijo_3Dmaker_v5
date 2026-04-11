@@ -1563,7 +1563,8 @@ try:
                     if wall2_id not in connections:
                         connections[wall2_id] = []
                     # フロアが異なる壁同士は結合しない（XY座標が同一でも別フロアの壁）
-                    if wall1.get('floor_level') != wall2.get('floor_level'):
+                    # floor_level 未設定は 1F 扱い（デフォルト値を統一）
+                    if wall1.get('floor_level', 1) != wall2.get('floor_level', 1):
                         continue
                     angle_diff = _calc_angle_diff(wall1, wall2)
                     if angle_diff >= angle_threshold:
@@ -1644,8 +1645,8 @@ try:
                 for j, wall2 in enumerate(walls_in_selection):
                     if i >= j:
                         continue
-                    # フロアが異なる壁同士は結合しない
-                    if wall1.get('floor_level') != wall2.get('floor_level'):
+                    # フロアが異なる壁同士は結合しない（floor_level 未設定は 1F 扱い）
+                    if wall1.get('floor_level', 1) != wall2.get('floor_level', 1):
                         continue
                     connections = [
                         (wall1['end'], wall2['start'], 'end-start', wall1['end'], wall2['end']),
@@ -1681,7 +1682,10 @@ try:
                     if len(chain_walls) < 2:
                         continue
                     first_wall_id = chain_walls[0]['id']
-                    other_wall_ids = [w['id'] for w in chain_walls[1:]]
+                    # 安全ガード：チェーンの先頭壁と異なるフロアの壁は削除対象から除外
+                    _first_floor = chain_walls[0].get('floor_level', 1)
+                    other_wall_ids = [w['id'] for w in chain_walls[1:]
+                                      if w.get('floor_level', 1) == _first_floor]
                     for wall in walls:
                         if wall['id'] == first_wall_id:
                             wall['start'] = pair['new_start']
@@ -1694,6 +1698,9 @@ try:
                 elif 'wall1' in pair and 'wall2' in pair:
                     wall1_id = pair['wall1']['id']
                     wall2_id = pair['wall2']['id']
+                    # 安全ガード：異なるフロアの壁ペアは結合しない
+                    if pair['wall1'].get('floor_level', 1) != pair['wall2'].get('floor_level', 1):
+                        continue
                     conn = pair.get('connection')
                     w1 = pair['wall1']
                     w2 = pair['wall2']
@@ -6562,6 +6569,9 @@ def main():
                                                 wall for wall in updated_json['walls']
                                                 if _wall_in_rect(wall, rect, scale, margin, img_height, min_x, min_y, max_x, max_y)
                                             ]
+                                        # フロア選択中は同フロアの壁のみに限定（他フロア壁の誤検出防止）
+                                        if _step3_floor_level is not None:
+                                            walls_in_selection = [w for w in walls_in_selection if w.get('floor_level', 1) == _step3_floor_level]
                                         try:
                                             append_debug(f"walls_in_selection ids: {[w.get('id') for w in walls_in_selection]} (count={len(walls_in_selection)})")
                                         except Exception:
@@ -6580,6 +6590,9 @@ def main():
                                                     # updated_json の walls から該当IDを抽出（四角形外でも preview が見ていたIDを優先）
                                                     id_set = set(last_filtered)
                                                     walls_in_selection = [w for w in updated_json['walls'] if w.get('id') in id_set]
+                                                    # フロア選択中は同フロアの壁のみに限定
+                                                    if _step3_floor_level is not None:
+                                                        walls_in_selection = [w for w in walls_in_selection if w.get('floor_level', 1) == _step3_floor_level]
                                                     try:
                                                         st.write(f"🔧 プレビューのフィルタ済みIDを優先して walls_in_selection を置換しました: {list(id_set)}")
                                                     except Exception:
