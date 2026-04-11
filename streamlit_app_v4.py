@@ -1742,12 +1742,20 @@ try:
             updated_data['metadata']['total_walls'] = len(walls)
             return updated_data
         
-        def _delete_walls_in_json(json_data, wall_ids_to_delete):
-            """JSONデータ内の指定された壁線を削除（フォールバック版）"""
+        def _delete_walls_in_json(json_data, wall_ids_to_delete, floor_level=None):
+            """JSONデータ内の指定された壁線を削除（フォールバック版）
+            floor_level を指定すると同フロアの壁のみ削除（ID衝突対策）
+            """
             updated_data = copy.deepcopy(json_data)
             walls = updated_data['walls']
             delete_ids = set(wall_ids_to_delete)
-            walls[:] = [w for w in walls if w['id'] not in delete_ids]
+            if floor_level is not None:
+                # フロア指定時：IDとフロアレベルの両方で一致した壁のみ削除
+                walls[:] = [w for w in walls
+                            if not (w['id'] in delete_ids
+                                    and w.get('floor_level', 1) == floor_level)]
+            else:
+                walls[:] = [w for w in walls if w['id'] not in delete_ids]
             updated_data['metadata']['total_walls'] = len(walls)
             return updated_data
     
@@ -7088,7 +7096,8 @@ def main():
                                             
                                                 if walls_to_delete:
                                                     st.write(f"**削除対象の中間線:** 壁#{walls_to_delete}")
-                                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                                    # ID衝突対策：同フロアの壁のみを削除（他フロアで同アイディの壁を誤って削除しない）
+                                                    updated_json = _delete_walls_in_json(updated_json, walls_to_delete, floor_level=_step3_floor_level)
                                             
                                                 color_name = ["赤", "緑", "青", "黄", "マゼンタ", "シアン"][rect_idx % 6]
                                             
@@ -7299,9 +7308,9 @@ def main():
                                         })
                                     total_deleted_count = len(walls_to_delete)
                                     
-                                    # 壁を削除
+                                    # 壁を削除（ID衝突対策: 同フロアの壁のみ削除）
                                     if len(walls_to_delete) > 0:
-                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete, floor_level=_step3_floor_level)
                                     
                                     # 全体のリセットは後の共通処理で実行される
                                 
@@ -7315,9 +7324,9 @@ def main():
                                         })
                                     total_deleted_count = len(walls_to_delete)
                                     
-                                    # 壁を削除
+                                    # 壁を削除（ID衝突対策: 同フロアの壁のみ削除）
                                     if len(walls_to_delete) > 0:
-                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                        updated_json = _delete_walls_in_json(updated_json, walls_to_delete, floor_level=_step3_floor_level)
                                         # 削除成功後、選択リストをクリア（注：全体のリセットは後の共通処理で実行される）
                                         st.session_state.selected_walls_for_delete = []
                                 
@@ -7349,8 +7358,8 @@ def main():
                                                 total_deleted_count += 1
                                     
                                         if len(walls_to_delete) > 0:
-                                            # 壁を削除
-                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete)
+                                            # 壁を削除（ID衝突対策: 同フロアの壁のみ削除）
+                                            updated_json = _delete_walls_in_json(updated_json, walls_to_delete, floor_level=_step3_floor_level)
                                         else:
                                             st.warning("⚠️ 削除対象の壁が見つかりません")
                             
