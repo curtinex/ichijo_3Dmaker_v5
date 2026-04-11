@@ -1686,21 +1686,26 @@ try:
                     _first_floor = chain_walls[0].get('floor_level', 1)
                     other_wall_ids = [w['id'] for w in chain_walls[1:]
                                       if w.get('floor_level', 1) == _first_floor]
+                    # 先頭壁の更新：IDとフロアレベルの両方で特定（ID衝突対策）
                     for wall in walls:
-                        if wall['id'] == first_wall_id:
+                        if wall['id'] == first_wall_id and wall.get('floor_level', 1) == _first_floor:
                             wall['start'] = pair['new_start']
                             wall['end'] = pair['new_end']
                             dx = wall['end'][0] - wall['start'][0]
                             dy = wall['end'][1] - wall['start'][1]
                             wall['length'] = round(math.sqrt(dx**2 + dy**2), 3)
                             break
-                    walls[:] = [w for w in walls if w['id'] not in other_wall_ids]
+                    # 削除：IDが一致してもフロアレベルが异なる壁は守る（ID衝突対策）
+                    walls[:] = [w for w in walls
+                                if w['id'] not in other_wall_ids
+                                or w.get('floor_level', 1) != _first_floor]
                 elif 'wall1' in pair and 'wall2' in pair:
                     wall1_id = pair['wall1']['id']
                     wall2_id = pair['wall2']['id']
                     # 安全ガード：異なるフロアの壁ペアは結合しない
                     if pair['wall1'].get('floor_level', 1) != pair['wall2'].get('floor_level', 1):
                         continue
+                    _pair_floor = pair['wall1'].get('floor_level', 1)
                     conn = pair.get('connection')
                     w1 = pair['wall1']
                     w2 = pair['wall2']
@@ -1719,8 +1724,9 @@ try:
                     else:
                         new_start = pair.get('new_start')
                         new_end = pair.get('new_end')
+                    # wall1 の更新：IDとフロアレベルの両方で特定（ID衝突対策）
                     for wall in walls:
-                        if wall['id'] == wall1_id:
+                        if wall['id'] == wall1_id and wall.get('floor_level', 1) == _pair_floor:
                             if new_start is not None:
                                 wall['start'] = new_start
                             if new_end is not None:
@@ -1729,7 +1735,10 @@ try:
                             dy = wall['end'][1] - wall['start'][1]
                             wall['length'] = round(math.sqrt(dx**2 + dy**2), 3)
                             break
-                    walls[:] = [w for w in walls if w['id'] != wall2_id]
+                    # 削除：IDが一致してもフロアレベルが異なる壁は守る（ID衝突対策）
+                    walls[:] = [w for w in walls
+                                if not (w['id'] == wall2_id
+                                        and w.get('floor_level', 1) == _pair_floor)]
             updated_data['metadata']['total_walls'] = len(walls)
             return updated_data
         
