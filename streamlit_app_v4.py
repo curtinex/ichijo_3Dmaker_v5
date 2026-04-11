@@ -1562,6 +1562,9 @@ try:
                     wall2_id = wall2['id']
                     if wall2_id not in connections:
                         connections[wall2_id] = []
+                    # フロアが異なる壁同士は結合しない（XY座標が同一でも別フロアの壁）
+                    if wall1.get('floor_level') != wall2.get('floor_level'):
+                        continue
                     angle_diff = _calc_angle_diff(wall1, wall2)
                     if angle_diff >= angle_threshold:
                         continue
@@ -1640,6 +1643,9 @@ try:
             for i, wall1 in enumerate(walls_in_selection):
                 for j, wall2 in enumerate(walls_in_selection):
                     if i >= j:
+                        continue
+                    # フロアが異なる壁同士は結合しない
+                    if wall1.get('floor_level') != wall2.get('floor_level'):
                         continue
                     connections = [
                         (wall1['end'], wall2['start'], 'end-start', wall1['end'], wall2['end']),
@@ -6794,8 +6800,12 @@ def main():
                                                         ref_angle = _wall_angle_deg(selected_walls[0])
                                                         angle_tol = merge_angle_threshold
                                                         # 周辺壁を収集（角度が近く、端点距離が近いもの）
+                                                        # フロア別に編集中の場合は同フロアの壁のみに限定（他フロア壁の誤検出防止）
                                                         neighborhood = []
-                                                        for w in updated_json.get('walls', []):
+                                                        _nbr_walls_src = updated_json.get('walls', [])
+                                                        if _step3_floor_level is not None:
+                                                            _nbr_walls_src = [w for w in _nbr_walls_src if w.get('floor_level', 1) == _step3_floor_level]
+                                                        for w in _nbr_walls_src:
                                                             try:
                                                                 if _angle_diff_deg(_wall_angle_deg(w), ref_angle) < angle_tol:
                                                                     endpoints_sel = [selected_walls[0]['start'], selected_walls[0]['end'], selected_walls[1]['start'], selected_walls[1]['end']]
