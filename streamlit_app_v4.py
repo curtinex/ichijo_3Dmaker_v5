@@ -961,8 +961,13 @@ try:
                     if (floorData.height && floorData.height > 0) {
                         floor2Meshes.push(floor);
                     }
-                    // type=ceiling または height>4.0 の板は2F天井として ceiling2Meshes にも登録
-                    if (floorData.type === 'ceiling' || (floorData.height && floorData.height > 4.0)) {
+                    // 2F天井の判定:
+                    // floor_levelフィールドがある場合: type=ceiling かつ floor_level=2
+                    // 旧データ(floor_levelなし): type=ceilingかつheight>4.0m、またはheight>4.0m
+                    const is2FCeiling = floorData.type === 'ceiling'
+                        ? (floorData.floor_level === 2 || (!floorData.floor_level && floorData.height > 4.0))
+                        : (floorData.height && floorData.height > 4.0);
+                    if (is2FCeiling) {
                         ceiling2Meshes.push(floor);
                     }
                 });
@@ -7472,13 +7477,15 @@ def main():
                                         updated_json['floors'] = []
                                     # avg_ceiling_h は選択フロアの壁上端（1F≈2.4m, 2F≈5.1m）
                                     _2f_floor_h = round(avg_ceiling_h + 0.01, 3)
+                                    _ceil_floor_level = _step3_floor_level if _step3_floor_level is not None else 1
                                     floor_for_ceiling = {
                                         'x1': ceil_x1,
                                         'y1': ceil_y1,
                                         'x2': ceil_x2,
                                         'y2': ceil_y2,
                                         'height': round(_2f_floor_h, 3),
-                                        'type': 'ceiling'
+                                        'type': 'ceiling',
+                                        'floor_level': _ceil_floor_level
                                     }
                                     updated_json['floors'].append(floor_for_ceiling)
 
