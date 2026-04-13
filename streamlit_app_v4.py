@@ -5855,10 +5855,12 @@ def main():
                                 added_wall_ids = []
                                 
                                 # 天井高さ（部屋の高さ）を取得（フロア選択時は選択フロアの壁のみ）
+                                # window_added / window_divider は除外（dividerのheight=2.7mがroom_heightを汚染するのを防ぐ）
+                                _excl_sources = {'window_added', 'window_divider'}
                                 if _step3_floor_level is not None:
-                                    _rh_walls = [w for w in walls if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                    _rh_walls = [w for w in walls if w.get('source') not in _excl_sources and w.get('floor_level', 1) == _step3_floor_level]
                                 else:
-                                    _rh_walls = [w for w in walls if w.get('source') != 'window_added']
+                                    _rh_walls = [w for w in walls if w.get('source') not in _excl_sources]
                                 heights = [w.get('height', 2.4) for w in _rh_walls if 'height' in w]
                                 room_height = max(heights) if heights else 2.4
                                 # 2F床面のZ高さを取得（窓追加の base_height オフセット用）
@@ -7173,10 +7175,12 @@ def main():
                                         st.markdown(f"### 🪟 窓追加処理（{window_count}組）")
                                         
                                         # 天井高さ（部屋の高さ）を取得（フロア別壁から）
+                                        # window_added / window_divider は除外（dividerのheight=2.7mがroom_heightを汚染するのを防ぐ）
+                                        _excl_sources_click = {'window_added', 'window_divider'}
                                         if _step3_floor_level is not None:
-                                            _rh_walls_click = [w for w in walls if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
+                                            _rh_walls_click = [w for w in walls if w.get('source') not in _excl_sources_click and w.get('floor_level', 1) == _step3_floor_level]
                                         else:
-                                            _rh_walls_click = [w for w in walls if w.get('source') != 'window_added']
+                                            _rh_walls_click = [w for w in walls if w.get('source') not in _excl_sources_click]
                                         heights = [w.get('height', 2.4) for w in _rh_walls_click if 'height' in w]
                                         room_height = max(heights) if heights else 2.4
                                         # 2F床面Z高さを取得
