@@ -910,9 +910,10 @@ try:
                 const centerY = (y1 + y2) / 2;
                 // 2F通常壁は2.4mから開始し、高さを+0.3m（スラブ分）して2.7m→5.1mにする
                 // これにより1F天井(2.4m)とgapなく接続し、下30cmがスラブを表現する
-                // ただしwindow_added壁は絶対Z高さが保存済みのためそのまま使用
-                const baseHeight = (wall.floor_level === 2 && wall.source !== 'window_added') ? 2.4 : (wall.base_height || 0);
-                const wallH = (wall.floor_level === 2 && wall.source !== 'window_added') ? wall.height + 0.3 : wall.height;
+                // ただしwindow_added/window_divider壁は絶対Z高さが保存済みのためそのまま使用
+                const _isWindowWall = wall.source === 'window_added' || wall.source === 'window_divider';
+                const baseHeight = (wall.floor_level === 2 && !_isWindowWall) ? 2.4 : (wall.base_height || 0);
+                const wallH = (wall.floor_level === 2 && !_isWindowWall) ? wall.height + 0.3 : wall.height;
                 const centerZ = baseHeight + (wallH / 2);
 
                 const geometry = new THREE.BoxGeometry(length, wallH, wall.thickness);
