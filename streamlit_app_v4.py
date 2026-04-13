@@ -954,7 +954,7 @@ try:
                     const isCeiling = floorData.type === 'ceiling';
                     const floorThick = isCeiling ? 0.3 : 0.1;
                     const floorGeometry = new THREE.BoxGeometry(floorW, floorThick, floorD);
-                    const floorColor = isCeiling ? 0xd0d0c8 : 0xd2b48c;
+                    const floorColor = 0xd2b48c;
                     const floorMaterial = new THREE.MeshStandardMaterial({ color: floorColor });
                     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
                     // 天井: bottom=height、top=height+0.3m（壁上端から上に伸びてスラブ層を埋める）
