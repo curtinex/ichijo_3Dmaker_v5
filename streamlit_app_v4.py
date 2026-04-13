@@ -7496,7 +7496,8 @@ def main():
                                         updated_json['floors'] = []
                                     # avg_ceiling_h は選択フロアの壁上端（1F≈2.4m, 2F≈5.1m）
                                     # 3Dビュー側でtype=ceilingの場合0.3m厚で上方向に伸ばすのでheight=壁上端
-                                    _2f_floor_h = round(avg_ceiling_h, 3)
+                                    # 天井底面を1cm下げて2F壁との隙間をなくす
+                                    _2f_floor_h = round(avg_ceiling_h - 0.01, 3)
                                     _ceil_floor_level = _step3_floor_level if _step3_floor_level is not None else 1
                                     floor_for_ceiling = {
                                         'x1': ceil_x1,
