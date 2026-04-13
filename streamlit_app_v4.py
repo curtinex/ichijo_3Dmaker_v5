@@ -908,9 +908,9 @@ try:
                 const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
                 const centerX = (x1 + x2) / 2;
                 const centerY = (y1 + y2) / 2;
-                // 2F通常壁はbase_height=2.4mから開始（旧データで2.7mが入っていても補正）
+                // 2F通常壁はbase_height=2.7mから開始（スラブ0.3m分含む）
                 // ただしwindow_added壁は絶対Z高さが保存済みのためそのまま使用
-                const baseHeight = (wall.floor_level === 2 && wall.source !== 'window_added') ? 2.4 : (wall.base_height || 0);
+                const baseHeight = (wall.floor_level === 2 && wall.source !== 'window_added') ? 2.7 : (wall.base_height || 0);
                 const centerZ = baseHeight + (wall.height / 2);
 
                 const geometry = new THREE.BoxGeometry(length, wall.height, wall.thickness);
@@ -1000,6 +1000,17 @@ try:
             const has2F = wallsData.floors && wallsData.floors.some(f => f.height && f.height > 0);
             if (has2F) {
                 document.getElementById('floor2Btn').style.display = 'block';
+
+                // スラブボックスを自動描画（2.4m〜2.7m、全壁のバウンディングボックス範囲）
+                const slabW = maxX - minX;
+                const slabD = maxY - minY;
+                const slabGeometry = new THREE.BoxGeometry(slabW, 0.3, slabD);
+                const slabMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9 });
+                const slabMesh = new THREE.Mesh(slabGeometry, slabMaterial);
+                slabMesh.position.set((minX + maxX) / 2 - offsetX, 2.55, -((minY + maxY) / 2 - offsetY));
+                slabMesh.receiveShadow = true;
+                scene.add(slabMesh);
+                floor2Meshes.push(slabMesh);
             }
             // 2F天井判定
             if (ceiling2Meshes.length > 0) {
@@ -2829,9 +2840,8 @@ def main():
                         json_1f_data = json.loads(json_path.read_text(encoding='utf-8'))
                         json_2f_data = json.loads(json_path_2f.read_text(encoding='utf-8'))
 
-                        # 2階の床面オフセット: 1F天井高(2.4m)から2F壁を開始
-                        # slab_thickness(スラブ厚)は3Dモデル上では無視し、1F/2Fは直接接する
-                        offset_2f = round(wall_height, 3)
+                        # 2階の床面オフセット: 1F天井(2.4m) + スラブ(0.3m) = 2.7m から2F壁を開始
+                        offset_2f = round(wall_height + slab_thickness, 3)
 
                         # 1階にfloor_levelを付与
                         for _w in json_1f_data.get('walls', []):
@@ -5846,7 +5856,7 @@ def main():
                                 room_height = max(heights) if heights else 2.4
                                 # 2F床面のZ高さを取得（窓追加の base_height オフセット用）
                                 if _step3_floor_level == 2:
-                                    _win_floor_z = 2.4  # 2F床面は240cm固定
+                                    _win_floor_z = 2.7  # 2F床面は270cm（1F天井2.4m + スラブ0.3m）
                                 else:
                                     _win_floor_z = 0.0
                                 
@@ -6175,7 +6185,7 @@ def main():
                                 # 各四角形をループして処理
                                 # 2F床面Z高さを取得（オブジェクト配置の z_offset 用）
                                 if _step3_floor_level == 2:
-                                    _furn_z = 2.4  # 2F床面は240cm固定
+                                    _furn_z = 2.7  # 2F床面は270cm（1F天井2.4m + スラブ0.3m）
                                     _furn_floor_walls = [w for w in json_data['walls']
                                                         if w.get('floor_level') == 2 and w.get('source') != 'window_added']
                                     _furn_ref_walls = _furn_floor_walls if _furn_floor_walls else None
@@ -7164,7 +7174,7 @@ def main():
                                         room_height = max(heights) if heights else 2.4
                                         # 2F床面Z高さを取得
                                         if _step3_floor_level == 2:
-                                            _click_floor_z = 2.4  # 2F床面は240cm固定
+                                            _click_floor_z = 2.7  # 2F床面は270cm（1F天井2.4m + スラブ0.3m）
                                         else:
                                             _click_floor_z = 0.0
                                         
@@ -7449,9 +7459,9 @@ def main():
                                                        if w.get('source') != 'window_added' and w.get('floor_level', 1) == _step3_floor_level]
                                 else:
                                     regular_walls_c = [w for w in updated_json['walls'] if w.get('source') != 'window_added']
-                                # 2F壁は3DビューアJS同様 base_height=2.4m を基準（旧データで2.7mが入っていても補正）
+                                # 2F壁は3DビューアJS同様 base_height=2.7m を基準（スラブ0.3m含む）
                                 top_heights = [
-                                    (2.4 if w.get('floor_level') == 2 else w.get('base_height', 0)) + w.get('height', 2.4)
+                                    (2.7 if w.get('floor_level') == 2 else w.get('base_height', 0)) + w.get('height', 2.4)
                                     for w in regular_walls_c
                                 ]
                                 avg_ceiling_h = round(sum(top_heights) / len(top_heights), 3) if top_heights else 2.4
