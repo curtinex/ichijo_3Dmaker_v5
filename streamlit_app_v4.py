@@ -950,11 +950,21 @@ try:
                     const floorD = Math.abs(y2 - y1);
                     const centerX = (x1 + x2) / 2;
                     const centerY = (y1 + y2) / 2;
-                    const floorGeometry = new THREE.BoxGeometry(floorW, 0.1, floorD);
-                    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xd2b48c });
+                    // 天井オブジェクトは0.3m厚、床オブジェクトは0.1m厚
+                    const isCeiling = floorData.type === 'ceiling';
+                    const floorThick = isCeiling ? 0.3 : 0.1;
+                    const floorGeometry = new THREE.BoxGeometry(floorW, floorThick, floorD);
+                    const floorColor = isCeiling ? 0xd0d0c8 : 0xd2b48c;
+                    const floorMaterial = new THREE.MeshStandardMaterial({ color: floorColor });
                     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-                    // heightフィールドがあればそのZ高さに配置（2F床面など）、なければY=-0.05（1F床面）
-                    const floorY = (floorData.height !== undefined) ? floorData.height - 0.05 : -0.05;
+                    // 天井: bottom=height、top=height+0.3m（壁上端から上に伸びてスラブ層を埋める）
+                    // 床:  top=height、bottom=height-0.1m
+                    let floorY;
+                    if (floorData.height !== undefined) {
+                        floorY = isCeiling ? floorData.height + floorThick / 2 : floorData.height - floorThick / 2;
+                    } else {
+                        floorY = -floorThick / 2;  // 1F床
+                    }
                     floor.position.set(centerX - offsetX, floorY, -(centerY - offsetY));
                     floor.castShadow = true;   // 2F床が1F床への影を遮断
                     floor.receiveShadow = true;
@@ -7481,11 +7491,12 @@ def main():
 
                                     total_ceiling_count += 1
 
-                                    # 天井板をfloors配列に追加（壁上端の直上に配置）
+                                    # 天井板をfloors配列に追加（3Dビューでbottom=height、top=height+0.3mに配置）
                                     if 'floors' not in updated_json:
                                         updated_json['floors'] = []
                                     # avg_ceiling_h は選択フロアの壁上端（1F≈2.4m, 2F≈5.1m）
-                                    _2f_floor_h = round(avg_ceiling_h + 0.01, 3)
+                                    # 3Dビュー側でtype=ceilingの場合0.3m厚で上方向に伸ばすのでheight=壁上端
+                                    _2f_floor_h = round(avg_ceiling_h, 3)
                                     _ceil_floor_level = _step3_floor_level if _step3_floor_level is not None else 1
                                     floor_for_ceiling = {
                                         'x1': ceil_x1,
