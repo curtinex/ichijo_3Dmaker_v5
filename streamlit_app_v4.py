@@ -63,7 +63,7 @@ def install_ichijo_core():
             sys.path.insert(0, target_dir)
         
         # 最新コミット（ac8dd3a: furniture outline uses wall_color）を指定
-        commit_hash = "ac8dd3a"
+        commit_hash = "a6d850b"
         install_url = f"git+https://{token}@github.com/curtinex/ichijo_core.git@{commit_hash}"
         
         # アンインストール
