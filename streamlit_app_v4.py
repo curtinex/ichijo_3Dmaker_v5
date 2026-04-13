@@ -1267,6 +1267,9 @@ try:
             # floor_levelが指定されていない場合はwall1から継承
             _fl = floor_level if floor_level is not None else wall1.get('floor_level', 1)
             _fz = floor_z_offset  # 2F床面の絶対Z高さ（1Fなら0.0）
+            # 2F時: 下壁はスラブ分(0.3m)下(2.4m)から開始し高さも0.3m延ばす→窓開口は2.7m基準を維持
+            _floor_base_z = round(_fz - 0.3, 3) if _fz > 0 else round(_fz, 3)
+            _floor_slab_extra = 0.3 if _fz > 0 else 0.0
             ceiling_height = room_height - (base_height + window_height)
             half_dist = round(min_dist / 2, 3)
 
@@ -1297,8 +1300,8 @@ try:
                     'id': max_id + 1,
                     'start': [round(window_start[0], 3), round(window_start[1], 3)],
                     'end': midpoint,
-                    'height': round(base_height, 3),
-                    'base_height': round(_fz, 3),
+                    'height': round(base_height + _floor_slab_extra, 3),
+                    'base_height': round(_floor_base_z, 3),
                     'length': half_dist,
                     'thickness': round(default_thickness, 3),
                     'source': 'window_added',
@@ -1335,8 +1338,8 @@ try:
                     'id': max_id + 3,
                     'start': midpoint,
                     'end': [round(window_end[0], 3), round(window_end[1], 3)],
-                    'height': round(base_height, 3),
-                    'base_height': round(_fz, 3),
+                    'height': round(base_height + _floor_slab_extra, 3),
+                    'base_height': round(_floor_base_z, 3),
                     'length': half_dist,
                     'thickness': round(default_thickness, 3),
                     'source': 'window_added',
@@ -1368,13 +1371,13 @@ try:
                 walls.append(right_ceiling)
                 added_walls.append(right_ceiling)
 
-                # 中央仕切り壁（垂直方向・床から天井まで全高）
+                # 中央仕切り壁（垂直方向・床から天井まで全高、2F時はスラブ分も含む）
                 divider_wall = {
                     'id': max_id + 5,
                     'start': div_start,
                     'end': div_end,
-                    'height': round(room_height, 3),
-                    'base_height': round(_fz, 3),
+                    'height': round(room_height + _floor_slab_extra, 3),
+                    'base_height': round(_floor_base_z, 3),
                     'length': div_len,
                     'thickness': round(default_thickness, 3),
                     'source': 'window_divider',
@@ -1389,8 +1392,8 @@ try:
                     'id': max_id + 1,
                     'start': [round(window_start[0], 3), round(window_start[1], 3)],
                     'end': [round(window_end[0], 3), round(window_end[1], 3)],
-                    'height': round(base_height, 3),
-                    'base_height': round(_fz, 3),  # 2F時は2F床面高さ、1F時は0.0
+                    'height': round(base_height + _floor_slab_extra, 3),
+                    'base_height': round(_floor_base_z, 3),  # 2F時は2.4m(スラブ下端)、1F時は0.0
                     'length': round(min_dist, 3),
                     'thickness': round(default_thickness, 3),
                     'source': 'window_added',
