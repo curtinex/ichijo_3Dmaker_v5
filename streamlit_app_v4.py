@@ -2428,7 +2428,37 @@ def main():
                                 st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                 st.session_state.viz_name = "visualization_restored.png"
                                 st.session_state.refined_img = Image.open(temp_viz_path) # Also restore PIL image for editing
-                            
+
+                            # 2F壁が存在する場合、1F/2F個別の可視化を生成（Step2/3の階別表示に必要）
+                            _walls_all = data.get('walls', [])
+                            _has_2f_walls = any(w.get('floor_level') == 2 for w in _walls_all)
+                            if _has_2f_walls:
+                                try:
+                                    _data_1f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level', 1) == 1]}
+                                    _data_2f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level') == 2]}
+                                    _json_1f_str = json.dumps(_data_1f, ensure_ascii=False)
+                                    _json_2f_str = json.dumps(_data_2f, ensure_ascii=False)
+                                    _temp_json_1f = out_dir / "restored_1f.json"
+                                    _temp_json_2f = out_dir / "restored_2f.json"
+                                    _temp_viz_1f = out_dir / "visualization_restored_1f.png"
+                                    _temp_viz_2f = out_dir / "visualization_restored_2f.png"
+                                    _temp_json_1f.write_text(_json_1f_str, encoding='utf-8')
+                                    _temp_json_2f.write_text(_json_2f_str, encoding='utf-8')
+                                    try:
+                                        visualize_3d_walls(str(_temp_json_1f), str(_temp_viz_1f), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                        visualize_3d_walls(str(_temp_json_2f), str(_temp_viz_2f), scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                    except TypeError:
+                                        visualize_3d_walls(str(_temp_json_1f), str(_temp_viz_1f), scale=int(viz_scale))
+                                        visualize_3d_walls(str(_temp_json_2f), str(_temp_viz_2f), scale=int(viz_scale))
+                                    st.session_state['viz_1f_bytes'] = _temp_viz_1f.read_bytes() if _temp_viz_1f.exists() else None
+                                    st.session_state['viz_2f_bytes'] = _temp_viz_2f.read_bytes() if _temp_viz_2f.exists() else None
+                                except Exception:
+                                    st.session_state['viz_1f_bytes'] = None
+                                    st.session_state['viz_2f_bytes'] = None
+                            else:
+                                st.session_state['viz_1f_bytes'] = None
+                                st.session_state['viz_2f_bytes'] = None
+
                             # Regenerate 3D Viewer
                             try:
                                 _generate_3d_viewer_html(temp_json_path, temp_viewer_path)
