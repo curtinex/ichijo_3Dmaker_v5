@@ -733,7 +733,7 @@ try:
 
             // --- ウォークスルーモード設定 (iframe対応: マウスドラッグ+WASD) ---
             const EYE_HEIGHT = 1.6;
-            const EYE_HEIGHT_2F = 4.0;
+            const EYE_HEIGHT_2F = 4.3;  // 2F床2.7m + 目線1.6m
             let currentWalkFloor = 1;
             const WALK_SPEED = 0.05;
             const MOUSE_SENS = 0.003;
@@ -1226,7 +1226,7 @@ try:
                     camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
                     // アプローチB: 人体アバターをカメラ前方0.4mに配置（背後から視認できる）
                     if (humanFigure && humanFigure.visible) {
-                        const floorY = (currentWalkFloor === 2) ? 2.4 : 0.0;
+                        const floorY = (currentWalkFloor === 2) ? 2.7 : 0.0;  // 2F床270cm
                         const AVATAR_FORWARD = 0.4;
                         const fx = camera.position.x + (-Math.sin(yaw)) * AVATAR_FORWARD;
                         const fz = camera.position.z + (-Math.cos(yaw)) * AVATAR_FORWARD;
