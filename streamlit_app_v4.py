@@ -669,6 +669,14 @@ try:
             flex-direction: column; text-align: center; font-size: 20px;
         }
         #walkOverlay .hint { font-size: 14px; margin-top: 10px; opacity: 0.85; }
+        #humanBtn {
+            position: absolute; top: 145px; right: 10px;
+            background: rgba(180,100,50,0.85); color: white;
+            border: none; padding: 10px 16px; border-radius: 5px;
+            font-size: 14px; cursor: pointer; z-index: 200;
+        }
+        #humanBtn:hover { background: rgba(160,80,30,0.95); }
+        #humanBtn.active { background: rgba(100,60,20,0.95); }
     </style>
 </head>
 <body>
@@ -680,6 +688,7 @@ try:
     <button id="modeBtn">ウォークスルーモード</button>
     <button id="floor2Btn">🏠 2階を非表示</button>
     <button id="ceiling2Btn">🔲 2F天井を非表示</button>
+    <button id="humanBtn">🧍 人体モデル 表示</button>
     <div id="floorSelectPanel">
         <button id="floor1WalkBtn" class="floorWalkBtn active">🏠 1階</button>
         <button id="floor2WalkBtn" class="floorWalkBtn">🏠 2階</button>
@@ -817,6 +826,73 @@ try:
 
             document.getElementById('floor1WalkBtn').addEventListener('click', () => { if (isWalkMode) setWalkFloor(1); });
             document.getElementById('floor2WalkBtn').addEventListener('click', () => { if (isWalkMode) setWalkFloor(2); });
+
+            // ===== 人体モデル =====
+            // パーツを組み合わせた簡易人体（身長1.60m、肩幅0.40m）
+            // 設計: 脚底=0m → 頭頂=1.60m
+            //   脚: 0.00〜0.70m  腰: 0.70〜0.90m  胴: 0.90〜1.33m
+            //   首: 1.33〜1.42m  頭(球r=0.09): 中心1.51m, 頂1.60m
+            function createHumanFigure() {
+                const group = new THREE.Group();
+                const skinMat  = new THREE.MeshStandardMaterial({ color: 0xF5CBA7, roughness: 0.8 });
+                const clothMat = new THREE.MeshStandardMaterial({ color: 0x4A90D9, roughness: 0.8 });
+                const pantsMat = new THREE.MeshStandardMaterial({ color: 0x2C3E50, roughness: 0.8 });
+
+                // 頭（球 r=0.09m → 頂点1.60m）
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 8), skinMat);
+                head.position.y = 1.51;
+                group.add(head);
+
+                // 首（円柱 高さ0.09m: 1.33〜1.42m）
+                const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.09, 8), skinMat);
+                neck.position.y = 1.375;
+                group.add(neck);
+
+                // 胴体（箱: 肩幅0.40m 高さ0.43m 奥0.18m: 0.90〜1.33m）
+                const torso = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.43, 0.18), clothMat);
+                torso.position.y = 1.115;
+                group.add(torso);
+
+                // 腰（箱: 幅0.32m 高さ0.20m: 0.70〜0.90m）
+                const hip = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.20, 0.16), pantsMat);
+                hip.position.y = 0.80;
+                group.add(hip);
+
+                // 左脚・右脚（円柱 高さ0.70m: 0.00〜0.70m）
+                const legGeo = new THREE.CylinderGeometry(0.065, 0.055, 0.70, 8);
+                const legL = new THREE.Mesh(legGeo, pantsMat);
+                legL.position.set(-0.10, 0.35, 0);
+                const legR = new THREE.Mesh(legGeo, pantsMat);
+                legR.position.set( 0.10, 0.35, 0);
+                group.add(legL);
+                group.add(legR);
+
+                return group;
+            }
+
+            let humanFigure = null;
+            let humanVisible = false;
+
+            document.getElementById('humanBtn').addEventListener('click', () => {
+                humanVisible = !humanVisible;
+                const btn = document.getElementById('humanBtn');
+                if (humanVisible) {
+                    if (!humanFigure) {
+                        humanFigure = createHumanFigure();
+                        // 間取り中央に初期配置（アプローチA）
+                        humanFigure.position.set(0, 0, 0);
+                        scene.add(humanFigure);
+                    }
+                    humanFigure.visible = true;
+                    btn.textContent = '🧍 人体モデル 非表示';
+                    btn.classList.add('active');
+                } else {
+                    if (humanFigure) humanFigure.visible = false;
+                    btn.textContent = '🧍 人体モデル 表示';
+                    btn.classList.remove('active');
+                }
+            });
+            // ===== 人体モデルここまで =====
 
             document.getElementById('modeBtn').addEventListener('click', () => {
                 if (!isWalkMode) switchToWalkMode();
@@ -1148,6 +1224,15 @@ try:
                     if (keys.a) camera.position.addScaledVector(right, -WALK_SPEED);
                     camera.position.y = (currentWalkFloor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
                     camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+                    // アプローチB: 人体アバターをカメラ前方0.8mに配置（背後から視認できる）
+                    if (humanFigure && humanFigure.visible) {
+                        const floorY = (currentWalkFloor === 2) ? 2.4 : 0.0;
+                        const AVATAR_FORWARD = 0.8;
+                        const fx = camera.position.x + (-Math.sin(yaw)) * AVATAR_FORWARD;
+                        const fz = camera.position.z + (-Math.cos(yaw)) * AVATAR_FORWARD;
+                        humanFigure.position.set(fx, floorY, fz);
+                        humanFigure.rotation.y = yaw;
+                    }
                 } else if (!isWalkMode) {
                     controls.update();
                 }
