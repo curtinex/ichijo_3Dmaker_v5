@@ -1224,10 +1224,10 @@ try:
                     if (keys.a) camera.position.addScaledVector(right, -WALK_SPEED);
                     camera.position.y = (currentWalkFloor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
                     camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
-                    // アプローチB: 人体アバターをカメラ前方0.8mに配置（背後から視認できる）
+                    // アプローチB: 人体アバターをカメラ前方0.4mに配置（背後から視認できる）
                     if (humanFigure && humanFigure.visible) {
                         const floorY = (currentWalkFloor === 2) ? 2.4 : 0.0;
-                        const AVATAR_FORWARD = 0.8;
+                        const AVATAR_FORWARD = 0.4;
                         const fx = camera.position.x + (-Math.sin(yaw)) * AVATAR_FORWARD;
                         const fz = camera.position.z + (-Math.cos(yaw)) * AVATAR_FORWARD;
                         humanFigure.position.set(fx, floorY, fz);
@@ -6412,7 +6412,37 @@ def main():
                                         st.session_state.viz_bytes = temp_viz_path.read_bytes()
                                         st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                         st.session_state.viewer_html_name = temp_viewer_path.name
-                                        
+
+                                        # フロア別 viz も更新（編集画面に削除後の状態を反映）
+                                        try:
+                                            _del_walls = updated_json.get('walls', [])
+                                            _del_1f = [w for w in _del_walls if w.get('floor_level', 1) != 2]
+                                            _del_2f = [w for w in _del_walls if w.get('floor_level') == 2]
+                                            import tempfile as _tmpfile_del
+                                            _del_stairs = updated_json.get('stairs', [])
+                                            _del_meta = updated_json.get('metadata', {})
+                                            _del_furniture = updated_json.get('furniture', [])
+                                            if _del_1f and st.session_state.get('viz_1f_bytes'):
+                                                _del_j1 = {'walls': _del_1f, 'furniture': _del_furniture, 'stairs': _del_stairs, 'metadata': _del_meta}
+                                                with _tmpfile_del.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _td1:
+                                                    json.dump(_del_j1, _td1, ensure_ascii=False)
+                                                    _td1_path = _td1.name
+                                                _vdel_1f = _td1_path.replace('.json', '_viz.png')
+                                                visualize_3d_walls(_td1_path, _vdel_1f, scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                if Path(_vdel_1f).exists():
+                                                    st.session_state['viz_1f_bytes'] = Path(_vdel_1f).read_bytes()
+                                            if _del_2f and st.session_state.get('viz_2f_bytes'):
+                                                _del_j2 = {'walls': _del_2f, 'furniture': _del_furniture, 'stairs': _del_stairs, 'metadata': _del_meta}
+                                                with _tmpfile_del.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _td2:
+                                                    json.dump(_del_j2, _td2, ensure_ascii=False)
+                                                    _td2_path = _td2.name
+                                                _vdel_2f = _td2_path.replace('.json', '_viz.png')
+                                                visualize_3d_walls(_td2_path, _vdel_2f, scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                                if Path(_vdel_2f).exists():
+                                                    st.session_state['viz_2f_bytes'] = Path(_vdel_2f).read_bytes()
+                                        except Exception:
+                                            pass
+
                                         # 選択クリア
                                         st.session_state.selected_furniture_to_delete = []
                                         _reset_selection_state()
