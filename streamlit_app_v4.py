@@ -677,6 +677,23 @@ try:
         }
         #humanBtn:hover { background: rgba(160,80,30,0.95); }
         #humanBtn.active { background: rgba(100,60,20,0.95); }
+        #dpad {
+            position: fixed; bottom: 80px; left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(2, 60px); gap: 6px;
+            z-index: 300;
+        }
+        .dpad-btn {
+            background: rgba(255,255,255,0.22); border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 12px; color: white; font-size: 26px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; user-select: none; -webkit-user-select: none;
+            touch-action: none;
+        }
+        .dpad-btn:active { background: rgba(255,255,255,0.48); }
+        .dpad-empty { background: transparent; border: none; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -694,8 +711,16 @@ try:
         <button id="floor2WalkBtn" class="floorWalkBtn">🏠 2階</button>
     </div>
     <div id="walkOverlay">
-        <div>クリックして開始</div>
-        <div class="hint">WASD: 移動 &nbsp;|&nbsp; マウスドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
+        <div>タップ / クリックして開始</div>
+        <div class="hint">画面下ボタン / WASD: 移動 &nbsp;|&nbsp; ドラッグ: 視点変更 &nbsp;|&nbsp; 右上ボタン: 終了</div>
+    </div>
+    <div id="dpad">
+        <div class="dpad-empty"></div>
+        <button class="dpad-btn" id="dpadUp">↑</button>
+        <div class="dpad-empty"></div>
+        <button class="dpad-btn" id="dpadLeft">←</button>
+        <button class="dpad-btn" id="dpadDown">↓</button>
+        <button class="dpad-btn" id="dpadRight">→</button>
     </div>
 
     <script type="importmap">
@@ -777,6 +802,30 @@ try:
             });
             document.addEventListener('mouseup', () => { isDragging = false; });
 
+            // タッチ操作: 1本指ドラッグで視点変更
+            renderer.domElement.addEventListener('touchstart', e => {
+                if (!isWalkMode || !walkStarted) return;
+                e.preventDefault();
+                const t = e.touches[0];
+                isDragging = true;
+                lastMouseX = t.clientX;
+                lastMouseY = t.clientY;
+            }, { passive: false });
+            renderer.domElement.addEventListener('touchmove', e => {
+                if (!isDragging || !isWalkMode) return;
+                e.preventDefault();
+                const t = e.touches[0];
+                const dx = t.clientX - lastMouseX;
+                const dy = t.clientY - lastMouseY;
+                lastMouseX = t.clientX;
+                lastMouseY = t.clientY;
+                yaw   -= dx * MOUSE_SENS;
+                pitch -= dy * MOUSE_SENS;
+                pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+                camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+            }, { passive: false });
+            renderer.domElement.addEventListener('touchend', () => { isDragging = false; });
+
             function setWalkFloor(floor) {
                 currentWalkFloor = floor;
                 camera.position.y = (floor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
@@ -792,6 +841,7 @@ try:
                 Object.keys(keys).forEach(k => keys[k] = false);
                 document.getElementById('walkOverlay').style.display = 'none';
                 document.getElementById('floorSelectPanel').style.display = 'none';
+                document.getElementById('dpad').style.display = 'none';
                 document.getElementById('modeBtn').textContent = 'ウォークスルーモード';
                 camera.position.set(camDist, camDist * 0.8, camDist);
                 controls.target.set((minX + maxX) / 2 - offsetX, 0, -((minY + maxY) / 2 - offsetY));
@@ -811,17 +861,11 @@ try:
                 pitch = Math.asin(Math.max(-1, Math.min(1, dir.y)));
                 document.getElementById('floorSelectPanel').style.display = 'flex';
                 document.getElementById('walkOverlay').style.display = 'flex';
+                document.getElementById('dpad').style.display = 'none';
                 document.getElementById('modeBtn').textContent = '俯瞰モードに切替';
                 info.innerHTML = `<strong>ウォークスルーモード</strong>
-<div style="margin-top:8px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,34px);gap:4px;font-size:12px;text-align:center;">
-  <div></div>
-  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">↑</span><b>W</b><span style="font-size:9px;opacity:.8;">前進</span></div>
-  <div></div>
-  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">←</span><b>A</b><span style="font-size:9px;opacity:.8;">左</span></div>
-  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">↓</span><b>S</b><span style="font-size:9px;opacity:.8;">後退</span></div>
-  <div style="background:rgba(255,255,255,0.25);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span style="font-size:14px;">→</span><b>D</b><span style="font-size:9px;opacity:.8;">右</span></div>
-</div>
-<div style="margin-top:8px;font-size:12px;">🖱 ドラッグ: 視点変更</div>`;
+<div style="margin-top:6px;font-size:12px;">🎮 画面下ボタン / WASD: 移動</div>
+<div style="margin-top:4px;font-size:12px;">👆 ドラッグ: 視点変更</div>`;
             }
 
             document.getElementById('floor1WalkBtn').addEventListener('click', () => { if (isWalkMode) setWalkFloor(1); });
@@ -899,12 +943,29 @@ try:
                 else switchToOrbitMode();
             });
 
-            document.getElementById('walkOverlay').addEventListener('click', () => {
+            function startWalk() {
                 if (isWalkMode && !walkStarted) {
                     walkStarted = true;
                     document.getElementById('walkOverlay').style.display = 'none';
+                    document.getElementById('dpad').style.display = 'grid';
                 }
-            });
+            }
+            document.getElementById('walkOverlay').addEventListener('click', startWalk);
+            document.getElementById('walkOverlay').addEventListener('touchstart', e => { e.preventDefault(); startWalk(); }, { passive: false });
+
+            // タッチ操作: Dパッドボタン
+            function bindDpad(id, key) {
+                const btn = document.getElementById(id);
+                btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; }, { passive: false });
+                btn.addEventListener('touchend',   e => { e.preventDefault(); keys[key] = false; }, { passive: false });
+                btn.addEventListener('mousedown', () => { keys[key] = true; });
+                btn.addEventListener('mouseup',   () => { keys[key] = false; });
+                btn.addEventListener('mouseleave', () => { keys[key] = false; });
+            }
+            bindDpad('dpadUp',    'w');
+            bindDpad('dpadDown',  's');
+            bindDpad('dpadLeft',  'a');
+            bindDpad('dpadRight', 'd');
             // --- ウォークスルーモード設定ここまで ---
 
             AMBIENT_LIGHT_PLACEHOLDER
