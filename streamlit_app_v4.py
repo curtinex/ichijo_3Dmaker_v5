@@ -768,6 +768,7 @@ try:
             let yaw = 0, pitch = 0;
             let isDragging = false;
             let lastMouseX = 0, lastMouseY = 0;
+            let walkCameraY = EYE_HEIGHT;
 
             document.addEventListener('keydown', e => {
                 if (!isWalkMode) return;
@@ -795,12 +796,20 @@ try:
                 const dy = e.clientY - lastMouseY;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
-                yaw   -= dx * MOUSE_SENS;
+                yaw   += dx * MOUSE_SENS;
                 pitch -= dy * MOUSE_SENS;
                 pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
                 camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
             });
             document.addEventListener('mouseup', () => { isDragging = false; });
+
+            // スクロールでカメラ高さ変更（ウォークスルーモード時）
+            renderer.domElement.addEventListener('wheel', e => {
+                if (!isWalkMode || !walkStarted) return;
+                e.preventDefault();
+                walkCameraY += e.deltaY * 0.01;
+                walkCameraY = Math.max(0.3, Math.min(20, walkCameraY));
+            }, { passive: false });
 
             // タッチ操作: 1本指ドラッグで視点変更
             renderer.domElement.addEventListener('touchstart', e => {
@@ -819,7 +828,7 @@ try:
                 const dy = t.clientY - lastMouseY;
                 lastMouseX = t.clientX;
                 lastMouseY = t.clientY;
-                yaw   -= dx * MOUSE_SENS;
+                yaw   += dx * MOUSE_SENS;
                 pitch -= dy * MOUSE_SENS;
                 pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
                 camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
@@ -828,7 +837,8 @@ try:
 
             function setWalkFloor(floor) {
                 currentWalkFloor = floor;
-                camera.position.y = (floor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
+                walkCameraY = (floor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
+                camera.position.y = walkCameraY;
                 document.getElementById('floor1WalkBtn').classList.toggle('active', floor === 1);
                 document.getElementById('floor2WalkBtn').classList.toggle('active', floor === 2);
             }
@@ -1283,7 +1293,7 @@ try:
                     if (keys.s) camera.position.addScaledVector(forward, -WALK_SPEED);
                     if (keys.d) camera.position.addScaledVector(right, WALK_SPEED);
                     if (keys.a) camera.position.addScaledVector(right, -WALK_SPEED);
-                    camera.position.y = (currentWalkFloor === 2) ? EYE_HEIGHT_2F : EYE_HEIGHT;
+                    camera.position.y = walkCameraY;
                     camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
                     // アプローチB: 人体アバターをカメラ前方0.4mに配置（背後から視認できる）
                     if (humanFigure && humanFigure.visible) {
