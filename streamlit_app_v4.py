@@ -803,12 +803,13 @@ try:
             });
             document.addEventListener('mouseup', () => { isDragging = false; });
 
-            // スクロールでカメラ高さ変更（ウォークスルーモード時）
+            // スクロールでFOV変更（ウォークスルーモード時: カメラ位置固定・見える範囲を変更）
             renderer.domElement.addEventListener('wheel', e => {
                 if (!isWalkMode || !walkStarted) return;
                 e.preventDefault();
-                walkCameraY += e.deltaY * 0.01;
-                walkCameraY = Math.max(0.3, Math.min(20, walkCameraY));
+                camera.fov += e.deltaY * 0.05;
+                camera.fov = Math.max(20, Math.min(100, camera.fov));
+                camera.updateProjectionMatrix();
             }, { passive: false });
 
             // タッチ操作: 1本指ドラッグで視点変更
