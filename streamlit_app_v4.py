@@ -796,7 +796,7 @@ try:
                 const dy = e.clientY - lastMouseY;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
-                yaw   += dx * MOUSE_SENS;
+                yaw   -= dx * MOUSE_SENS;
                 pitch -= dy * MOUSE_SENS;
                 pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
                 camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
@@ -829,7 +829,7 @@ try:
                 const dy = t.clientY - lastMouseY;
                 lastMouseX = t.clientX;
                 lastMouseY = t.clientY;
-                yaw   += dx * MOUSE_SENS;
+                yaw   -= dx * MOUSE_SENS;
                 pitch -= dy * MOUSE_SENS;
                 pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
                 camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
