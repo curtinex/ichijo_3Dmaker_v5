@@ -332,8 +332,9 @@ def _render_logged_in_sidebar(user_email, supabase):
                                 if sub.get('current_period_end'):
                                     from datetime import datetime
                                     current_period_end = datetime.fromtimestamp(sub['current_period_end']).strftime('%Y年%m月%d日')
-                            except Exception:
-                                pass
+                                st.session_state.pop('stripe_retrieve_error', None)
+                            except Exception as e:
+                                st.session_state['stripe_retrieve_error'] = str(e)
                 else:
                     if trial_expires_str:
                         from datetime import datetime, timezone
@@ -382,8 +383,14 @@ def _render_logged_in_sidebar(user_email, supabase):
                     st.markdown("[Checkout に進む](" + checkout_url + ")")
                 st.success("Checkout に遷移中です。新しいタブが開かない場合は上のリンクをクリックしてください。")
     else:
+        # Stripe取得エラーの表示（デバッグ用）
+        if st.session_state.get('stripe_retrieve_error'):
+            st.error(f"Stripe状態取得エラー: {st.session_state['stripe_retrieve_error']}")
         if cancel_at_period_end:
             st.warning(f"⚠️ 解約手続き済みです。\n{current_period_end or '次回更新日'}までは有料プランをご利用いただけます。その後、自動的に無料プランへ移行します。")
+            # 再開成功メッセージを再描画後も表示
+            if st.session_state.pop('resume_success', False):
+                st.success("自動更新を再開しました。引き続き有料プランをご利用いただけます。")
             if st.button("有料プランの自動更新を再開する", key="resume_sub_btn"):
                 secret, _, _ = get_stripe_config()
                 if secret:
@@ -391,13 +398,16 @@ def _render_logged_in_sidebar(user_email, supabase):
                         stripe.api_key = secret
                         # 解約予約を取り消し、自動更新を再開する
                         stripe.Subscription.modify(stripe_sub_id, cancel_at_period_end=False)
-                        st.success("自動更新を再開しました。引き続き有料プランをご利用いただけます。")
+                        st.session_state['resume_success'] = True
                         _safe_rerun_or_stop()
                     except Exception as e:
                         st.error(f"再開処理に失敗しました: {e}")
                 else:
                     st.error("Stripeの設定がありません。")
         else:
+            # 解約成功メッセージを再描画後も表示
+            if st.session_state.pop('cancel_success', False):
+                st.success("✅ 解約を予約しました。次回更新日以降、自動的に無料プランへ移行します。")
             st.info("現在、有料プランをご利用中です。")
             if stripe_sub_id:
                 cancel_confirm = st.checkbox("解約手続きを行う")
@@ -409,7 +419,7 @@ def _render_logged_in_sidebar(user_email, supabase):
                                 stripe.api_key = secret
                                 # 次回更新日（期間終了時）に解約するよう予約
                                 stripe.Subscription.modify(stripe_sub_id, cancel_at_period_end=True)
-                                st.success("解約を予約しました。画面を再読み込みするとステータスが更新されます。")
+                                st.session_state['cancel_success'] = True
                                 _safe_rerun_or_stop()
                             except Exception as e:
                                 st.error(f"解約処理に失敗しました: {e}")
