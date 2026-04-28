@@ -150,6 +150,10 @@ def webhook():
                     status = sub.get('status')
                     customer_id = sub.get('customer')
                     payload = {'status': status}
+                    # status が canceled の場合は plan も free に降格する
+                    if status == 'canceled':
+                        payload['plan'] = 'free'
+                        payload['stripe_subscription_id'] = None
                     if sub.get('current_period_end'):
                         dt = datetime.datetime.utcfromtimestamp(sub['current_period_end'])
                         payload['trial_expires'] = dt.isoformat()
