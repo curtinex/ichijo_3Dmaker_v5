@@ -328,10 +328,11 @@ def _render_logged_in_sidebar(user_email, supabase):
                             try:
                                 stripe.api_key = secret
                                 sub = stripe.Subscription.retrieve(stripe_sub_id)
-                                cancel_at_period_end = sub.get('cancel_at_period_end', False)
-                                if sub.get('current_period_end'):
+                                cancel_at_period_end = getattr(sub, 'cancel_at_period_end', False)
+                                period_end_ts = getattr(sub, 'current_period_end', None)
+                                if period_end_ts:
                                     from datetime import datetime
-                                    current_period_end = datetime.fromtimestamp(sub['current_period_end']).strftime('%Y年%m月%d日')
+                                    current_period_end = datetime.fromtimestamp(period_end_ts).strftime('%Y年%m月%d日')
                                 st.session_state.pop('stripe_retrieve_error', None)
                             except Exception as e:
                                 st.session_state['stripe_retrieve_error'] = str(e)
