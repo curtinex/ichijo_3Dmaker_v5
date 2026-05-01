@@ -3599,6 +3599,7 @@ def main():
                                         _calib_json = _copy2.deepcopy(calibrated_json)
                                         _walls_1f = [_w for _w in _calib_json.get('walls', []) if _w.get('floor_level', 1) == 1]
                                         _walls_2f = [_w for _w in _calib_json.get('walls', []) if _w.get('floor_level') == 2]
+                                        _calib_furn_all = _calib_json.get('furniture', [])
                                         _json_1f_tmp = out_dir / "_tmp_viz_1f.json"
                                         _json_2f_tmp = out_dir / "_tmp_viz_2f.json"
                                         _viz_1f_path = out_dir / "visualization_1f.png"
@@ -3607,6 +3608,7 @@ def main():
                                             try:
                                                 _j1 = _copy2.deepcopy(_calib_json)
                                                 _j1['walls'] = _walls_1f
+                                                _j1['furniture'] = [f for f in _calib_furn_all if f.get('floor_level', 1) == 1]
                                                 _json_1f_tmp.write_text(json.dumps(_j1, ensure_ascii=False), encoding='utf-8')
                                                 visualize_3d_walls(str(_json_1f_tmp), str(_viz_1f_path), scale=int(st.session_state.viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
                                                 if _viz_1f_path.exists():
@@ -3617,6 +3619,7 @@ def main():
                                             try:
                                                 _j2 = _copy2.deepcopy(_calib_json)
                                                 _j2['walls'] = _walls_2f
+                                                _j2['furniture'] = [f for f in _calib_furn_all if f.get('floor_level') == 2]
                                                 _json_2f_tmp.write_text(json.dumps(_j2, ensure_ascii=False), encoding='utf-8')
                                                 visualize_3d_walls(str(_json_2f_tmp), str(_viz_2f_path), scale=int(st.session_state.viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
                                                 if _viz_2f_path.exists():
@@ -4051,7 +4054,8 @@ def main():
                             _s3_walls_2f = [w for w in _s3_merged if w.get('floor_level') == 2]
                             import tempfile as _tmpfile
                             if _s3_walls_1f and st.session_state.get('viz_1f_bytes'):
-                                _s3j_1f = {'walls': _s3_walls_1f, 'furniture': result['updated_json'].get('furniture', [])}
+                                _s3_furn_all = result['updated_json'].get('furniture', [])
+                                _s3j_1f = {'walls': _s3_walls_1f, 'furniture': [f for f in _s3_furn_all if f.get('floor_level', 1) == 1]}
                                 with _tmpfile.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tf:
                                     json.dump(_s3j_1f, _tf, ensure_ascii=False)
                                     _tf_path = _tf.name
@@ -4060,7 +4064,8 @@ def main():
                                 if Path(_vp_1f).exists():
                                     st.session_state['viz_1f_bytes'] = Path(_vp_1f).read_bytes()
                             if _s3_walls_2f and st.session_state.get('viz_2f_bytes'):
-                                _s3j_2f = {'walls': _s3_walls_2f, 'furniture': result['updated_json'].get('furniture', [])}
+                                _s3_furn_all = result['updated_json'].get('furniture', [])
+                                _s3j_2f = {'walls': _s3_walls_2f, 'furniture': [f for f in _s3_furn_all if f.get('floor_level') == 2]}
                                 with _tmpfile.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tf2:
                                     json.dump(_s3j_2f, _tf2, ensure_ascii=False)
                                     _tf2_path = _tf2.name
@@ -4137,7 +4142,17 @@ def main():
                             json_data_del = _parse_json_cached(st.session_state.json_bytes)
                             furniture_list = json_data_del.get('furniture', [])
                             
-                            min_x, _mx, min_y, _my = _get_wall_bounds_cached(st.session_state.json_bytes)
+                            # フロア選択時はフロア固有のboundsを使用（viz_1f/viz_2f画像の座標系に合わせる）
+                            if _step3_floor_level is not None:
+                                _del_hl_walls = [w for w in json_data_del.get('walls', []) if w.get('floor_level', 1) == _step3_floor_level]
+                                if _del_hl_walls:
+                                    _dhl_xs = [w['start'][0] for w in _del_hl_walls] + [w['end'][0] for w in _del_hl_walls]
+                                    _dhl_ys = [w['start'][1] for w in _del_hl_walls] + [w['end'][1] for w in _del_hl_walls]
+                                    min_x, min_y = min(_dhl_xs), min(_dhl_ys)
+                                else:
+                                    min_x, _mx, min_y, _my = _get_wall_bounds_cached(st.session_state.json_bytes)
+                            else:
+                                min_x, _mx, min_y, _my = _get_wall_bounds_cached(st.session_state.json_bytes)
                             scale_val = int(st.session_state.viz_scale)
                             margin_val = 50
                             img_height_val = viz_img.height
@@ -5544,8 +5559,17 @@ def main():
                                     if _step3_floor_level is not None:
                                         furniture_list = [f for f in furniture_list if f.get('floor_level', 1) == _step3_floor_level]
                                     
-                                    # スケール情報を取得（壁データから）
-                                    min_x_t, _mx_t, min_y_t, _my_t = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    # スケール情報を取得（フロア選択時はフロア固有boundsを使用）
+                                    if _step3_floor_level is not None:
+                                        _click_furn_walls = [w for w in json_data_furn.get('walls', []) if w.get('floor_level', 1) == _step3_floor_level]
+                                        if _click_furn_walls:
+                                            _cfw_xs = [w['start'][0] for w in _click_furn_walls] + [w['end'][0] for w in _click_furn_walls]
+                                            _cfw_ys = [w['start'][1] for w in _click_furn_walls] + [w['end'][1] for w in _click_furn_walls]
+                                            min_x_t, _mx_t, min_y_t, _my_t = min(_cfw_xs), max(_cfw_xs), min(_cfw_ys), max(_cfw_ys)
+                                        else:
+                                            min_x_t, _mx_t, min_y_t, _my_t = _get_wall_bounds_cached(st.session_state.json_bytes)
+                                    else:
+                                        min_x_t, _mx_t, min_y_t, _my_t = _get_wall_bounds_cached(st.session_state.json_bytes)
                                     scale_t = int(st.session_state.viz_scale)
                                     margin_t = 50
                                     img_height_t = viz_img.height
@@ -6247,8 +6271,9 @@ def main():
                                     import tempfile as _tmpfile3
                                     _be_stairs = updated_json.get('stairs', [])
                                     _be_meta = updated_json.get('metadata', {})
+                                    _be_furn_all = updated_json.get('furniture', [])
                                     if _be_1f and st.session_state.get('viz_1f_bytes'):
-                                        _be_j1 = {'walls': _be_1f, 'furniture': updated_json.get('furniture', []), 'stairs': _be_stairs, 'metadata': _be_meta}
+                                        _be_j1 = {'walls': _be_1f, 'furniture': [f for f in _be_furn_all if f.get('floor_level', 1) == 1], 'stairs': _be_stairs, 'metadata': _be_meta}
                                         with _tmpfile3.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tbe1:
                                             json.dump(_be_j1, _tbe1, ensure_ascii=False)
                                             _tbe1_path = _tbe1.name
@@ -6257,7 +6282,7 @@ def main():
                                         if Path(_vbe_1f).exists():
                                             st.session_state['viz_1f_bytes'] = Path(_vbe_1f).read_bytes()
                                     if _be_2f and st.session_state.get('viz_2f_bytes'):
-                                        _be_j2 = {'walls': _be_2f, 'furniture': updated_json.get('furniture', []), 'stairs': _be_stairs, 'metadata': _be_meta}
+                                        _be_j2 = {'walls': _be_2f, 'furniture': [f for f in _be_furn_all if f.get('floor_level') == 2], 'stairs': _be_stairs, 'metadata': _be_meta}
                                         with _tmpfile3.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tbe2:
                                             json.dump(_be_j2, _tbe2, ensure_ascii=False)
                                             _tbe2_path = _tbe2.name
@@ -6669,8 +6694,9 @@ def main():
                                                 _walls_1f_s = [w for w in _all_walls_s if w.get('floor_level', 1) != 2]
                                                 _walls_2f_s = [w for w in _all_walls_s if w.get('floor_level') == 2]
                                                 _meta_s = updated_json.get('metadata', {})
+                                                _furn_s_all = updated_json.get('furniture', [])
                                                 if _walls_1f_s:
-                                                    _j1f = {'walls': _walls_1f_s, 'metadata': _meta_s, 'stairs': _stairs_s}
+                                                    _j1f = {'walls': _walls_1f_s, 'furniture': [f for f in _furn_s_all if f.get('floor_level', 1) == 1], 'metadata': _meta_s, 'stairs': _stairs_s}
                                                     _p1f = Path(st.session_state.out_dir) / "_viz_1f_stair.json"
                                                     _p1f.write_text(json.dumps(_j1f, ensure_ascii=False), encoding='utf-8')
                                                     _v1f = Path(st.session_state.out_dir) / "visualization_1f.png"
@@ -6678,7 +6704,7 @@ def main():
                                                     if _v1f.exists():
                                                         st.session_state['viz_1f_bytes'] = _v1f.read_bytes()
                                                 if _walls_2f_s:
-                                                    _j2f = {'walls': _walls_2f_s, 'metadata': _meta_s, 'stairs': _stairs_s}
+                                                    _j2f = {'walls': _walls_2f_s, 'furniture': [f for f in _furn_s_all if f.get('floor_level') == 2], 'metadata': _meta_s, 'stairs': _stairs_s}
                                                     _p2f = Path(st.session_state.out_dir) / "_viz_2f_stair.json"
                                                     _p2f.write_text(json.dumps(_j2f, ensure_ascii=False), encoding='utf-8')
                                                     _v2f = Path(st.session_state.out_dir) / "visualization_2f.png"
@@ -7864,8 +7890,9 @@ def main():
                                         import tempfile as _tmpfile2
                                         _s3e_stairs = updated_json.get('stairs', [])
                                         _s3e_meta = updated_json.get('metadata', {})
+                                        _s3e_furn_all = updated_json.get('furniture', [])
                                         if _s3e_1f and st.session_state.get('viz_1f_bytes'):
-                                            _s3ej1 = {'walls': _s3e_1f, 'furniture': updated_json.get('furniture', []), 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
+                                            _s3ej1 = {'walls': _s3e_1f, 'furniture': [f for f in _s3e_furn_all if f.get('floor_level', 1) == 1], 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
                                             with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe1:
                                                 json.dump(_s3ej1, _tfe1, ensure_ascii=False)
                                                 _tfe1_path = _tfe1.name
@@ -7874,7 +7901,7 @@ def main():
                                             if Path(_vpe_1f).exists():
                                                 st.session_state['viz_1f_bytes'] = Path(_vpe_1f).read_bytes()
                                         if _s3e_2f and st.session_state.get('viz_2f_bytes'):
-                                            _s3ej2 = {'walls': _s3e_2f, 'furniture': updated_json.get('furniture', []), 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
+                                            _s3ej2 = {'walls': _s3e_2f, 'furniture': [f for f in _s3e_furn_all if f.get('floor_level') == 2], 'stairs': _s3e_stairs, 'metadata': _s3e_meta}
                                             with _tmpfile2.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tfe2:
                                                 json.dump(_s3ej2, _tfe2, ensure_ascii=False)
                                                 _tfe2_path = _tfe2.name
