@@ -2602,8 +2602,9 @@ def main():
                             _has_2f_walls = any(w.get('floor_level') == 2 for w in _walls_all)
                             if _has_2f_walls:
                                 try:
-                                    _data_1f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level', 1) == 1]}
-                                    _data_2f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level') == 2]}
+                                    _furn_all_restore = data.get('furniture', [])
+                                    _data_1f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level', 1) == 1], 'furniture': [f for f in _furn_all_restore if f.get('floor_level', 1) == 1]}
+                                    _data_2f = {**data, 'walls': [w for w in _walls_all if w.get('floor_level') == 2], 'furniture': [f for f in _furn_all_restore if f.get('floor_level') == 2]}
                                     _json_1f_str = json.dumps(_data_1f, ensure_ascii=False)
                                     _json_2f_str = json.dumps(_data_2f, ensure_ascii=False)
                                     _temp_json_1f = out_dir / "restored_1f.json"
@@ -3207,10 +3208,12 @@ def main():
                         _merged_all = json.loads(merged_json_path.read_text(encoding='utf-8'))
                         _merged_walls_1f = [_w for _w in _merged_all.get('walls', []) if _w.get('floor_level', 1) != 2]
                         _merged_walls_2f = [_w for _w in _merged_all.get('walls', []) if _w.get('floor_level') == 2]
+                        _merged_furn_all = _merged_all.get('furniture', [])
                         if _merged_walls_1f:
                             import copy as _copy_viz
                             _tmp_1f = _copy_viz.deepcopy(_merged_all)
                             _tmp_1f['walls'] = _merged_walls_1f
+                            _tmp_1f['furniture'] = [f for f in _merged_furn_all if f.get('floor_level', 1) == 1]
                             _tmp_1f_path = out_dir / "_viz_1f_merged.json"
                             _tmp_1f_path.write_text(json.dumps(_tmp_1f, ensure_ascii=False), encoding='utf-8')
                             _viz_1f_merged_path = out_dir / "visualization_1f.png"
@@ -3220,6 +3223,7 @@ def main():
                         if _merged_walls_2f:
                             _tmp_2f = _copy_viz.deepcopy(_merged_all)
                             _tmp_2f['walls'] = _merged_walls_2f
+                            _tmp_2f['furniture'] = [f for f in _merged_furn_all if f.get('floor_level') == 2]
                             _tmp_2f_path = out_dir / "_viz_2f_merged.json"
                             _tmp_2f_path.write_text(json.dumps(_tmp_2f, ensure_ascii=False), encoding='utf-8')
                             _viz_2f_merged_path = out_dir / "visualization_2f.png"
@@ -6445,6 +6449,36 @@ def main():
                                     st.session_state.viewer_html_bytes = temp_viewer_path.read_bytes()
                                     st.session_state.viewer_html_name = temp_viewer_path.name
 
+                                    # フロア別 viz も更新（配置後の状態を編集画面に反映）
+                                    try:
+                                        _place_walls = updated_json.get('walls', [])
+                                        _place_1f = [w for w in _place_walls if w.get('floor_level', 1) != 2]
+                                        _place_2f = [w for w in _place_walls if w.get('floor_level') == 2]
+                                        _place_furn = updated_json.get('furniture', [])
+                                        _place_stairs = updated_json.get('stairs', [])
+                                        _place_meta = updated_json.get('metadata', {})
+                                        import tempfile as _tmpfile_place
+                                        if _place_1f and st.session_state.get('viz_1f_bytes'):
+                                            _place_j1 = {'walls': _place_1f, 'furniture': [f for f in _place_furn if f.get('floor_level', 1) == 1], 'stairs': _place_stairs, 'metadata': _place_meta}
+                                            with _tmpfile_place.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tp1:
+                                                json.dump(_place_j1, _tp1, ensure_ascii=False)
+                                                _tp1_path = _tp1.name
+                                            _vplace_1f = _tp1_path.replace('.json', '_viz.png')
+                                            visualize_3d_walls(_tp1_path, _vplace_1f, scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                            if Path(_vplace_1f).exists():
+                                                st.session_state['viz_1f_bytes'] = Path(_vplace_1f).read_bytes()
+                                        if _place_2f and st.session_state.get('viz_2f_bytes'):
+                                            _place_j2 = {'walls': _place_2f, 'furniture': [f for f in _place_furn if f.get('floor_level') == 2], 'stairs': _place_stairs, 'metadata': _place_meta}
+                                            with _tmpfile_place.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _tp2:
+                                                json.dump(_place_j2, _tp2, ensure_ascii=False)
+                                                _tp2_path = _tp2.name
+                                            _vplace_2f = _tp2_path.replace('.json', '_viz.png')
+                                            visualize_3d_walls(_tp2_path, _vplace_2f, scale=int(viz_scale), wall_color=(0, 0, 0), bg_color=(255, 255, 255))
+                                            if Path(_vplace_2f).exists():
+                                                st.session_state['viz_2f_bytes'] = Path(_vplace_2f).read_bytes()
+                                    except Exception:
+                                        pass
+
                                     # 選択状態をクリア（統一関数を使用）
                                     _reset_selection_state()
                                 except Exception as e:
@@ -6506,7 +6540,7 @@ def main():
                                             _del_meta = updated_json.get('metadata', {})
                                             _del_furniture = updated_json.get('furniture', [])
                                             if _del_1f and st.session_state.get('viz_1f_bytes'):
-                                                _del_j1 = {'walls': _del_1f, 'furniture': _del_furniture, 'stairs': _del_stairs, 'metadata': _del_meta}
+                                                _del_j1 = {'walls': _del_1f, 'furniture': [f for f in _del_furniture if f.get('floor_level', 1) == 1], 'stairs': _del_stairs, 'metadata': _del_meta}
                                                 with _tmpfile_del.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _td1:
                                                     json.dump(_del_j1, _td1, ensure_ascii=False)
                                                     _td1_path = _td1.name
@@ -6515,7 +6549,7 @@ def main():
                                                 if Path(_vdel_1f).exists():
                                                     st.session_state['viz_1f_bytes'] = Path(_vdel_1f).read_bytes()
                                             if _del_2f and st.session_state.get('viz_2f_bytes'):
-                                                _del_j2 = {'walls': _del_2f, 'furniture': _del_furniture, 'stairs': _del_stairs, 'metadata': _del_meta}
+                                                _del_j2 = {'walls': _del_2f, 'furniture': [f for f in _del_furniture if f.get('floor_level') == 2], 'stairs': _del_stairs, 'metadata': _del_meta}
                                                 with _tmpfile_del.NamedTemporaryFile(suffix='.json', delete=False, mode='w', encoding='utf-8') as _td2:
                                                     json.dump(_del_j2, _td2, ensure_ascii=False)
                                                     _td2_path = _td2.name
