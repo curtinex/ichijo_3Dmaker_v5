@@ -3,7 +3,7 @@ stripe
 numpy
 Pillow
 PyMuPDF
-streamlit-image-coordinates
+streamlit-image-coordinates==0.4.0
 opencv-python-headless
 
 # Webhook receiver
