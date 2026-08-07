@@ -131,6 +131,16 @@ import zipfile
 import numpy as np
 import streamlit as st
 import fitz  # PyMuPDF (for page count)
+
+# streamlit_image_coordinates が削除済みの UseColumnWith を参照するため、事前にパッチ
+try:
+    import streamlit.elements.image as _st_img
+    if not hasattr(_st_img, "UseColumnWith"):
+        from typing import Literal, Optional, Union
+        _st_img.UseColumnWith = Optional[Union[Literal["auto", "always", "never"], bool]]
+except Exception:
+    pass
+
 from streamlit_image_coordinates import streamlit_image_coordinates
 from PIL import Image
 import stripe
